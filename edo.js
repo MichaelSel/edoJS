@@ -1404,7 +1404,7 @@ let scale = edo.scale([0,1,2])
 // console.log(edo.path_on_tree([2,3,4],[0,1,0,1,1,1,2]))
 // console.log(edo.shortest_path(7,3,-8))
 // console.log(edo.count_pitches([0,3,3,2,4,3,4]))
-console.log(edo.find_motives([0,1,3,0,1,3,4,3,4,0,1,0,1]))
+// console.log(edo.find_motives([0,1,3,0,1,3,4,3,4,0,1,0,1]))
 
 
 // console.log(scale.count.transpositions())
