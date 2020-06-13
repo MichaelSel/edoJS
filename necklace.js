@@ -1,3 +1,4 @@
+/*shows a single necklace*/
 const show_necklace = function (container_id, size =600, pitches = [0,2,4,5,7,9,11],edo=12) {
     let height=size
     let width=size
@@ -181,7 +182,6 @@ const show_necklace = function (container_id, size =600, pitches = [0,2,4,5,7,9,
 
             let hue = Math.floor(scale(this.length,0,height-100,0,360))
             let rgb = Raphael.hsl2rgb(hue,100,50)
-            console.log()
             this.drawing = paper.path("M" + this.x1+"," + this.y1 +"L" + this.x2 +"," + this.y2)
                 .attr('stroke',rgb.hex)
                 .attr('stroke-width',3)
@@ -195,11 +195,10 @@ const show_necklace = function (container_id, size =600, pitches = [0,2,4,5,7,9,
     return necklace
 }
 
-
+/*calls show_necklace for many necklaces*/
 const make_necklaces = function (container_id,size=300,necklaces,edo=12) {
     let list = []
     for (let necklace of necklaces) {
-        console.log(necklace)
         list.push(show_necklace(container_id,size,necklace,edo))
     }
 }

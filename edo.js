@@ -313,8 +313,9 @@ class EDO {
 
             return result;
         },
-        motives : (melody) => {
+        motives : (melody,intervalic=true) => {
             /*Returns every repeating pattern in a given set of pitches (melody)*/
+            if(intervalic) melody = this.convert.to_steps(melody)
 
             let seen = []
             let motives = []
@@ -329,21 +330,23 @@ class EDO {
                 return matches
             }
 
-            for(let window=1;window<melody.length/2+1;window++) {
-                for(let i=0;i<melody.length-(2*window) +1;i++) {
+            for(let window=1;window<melody.length+1;window++) {
+                for(let i=0;i<melody.length+1;i++) {
                     let motive = melody.slice(i,i+window)
                     if(!is_element_of(motive,seen)) {
                         let incidence = subfinder(melody,motive).length
-                        if(incidence>1) {
-                            motives.push([motive,incidence])
+                        if((!intervalic && incidence>1) || (intervalic && incidence>0)) {
+                            motives.push({motive: motive,incidence:incidence})
                             seen.push(motive)
                         }
                     }
                 }
             }
             motives.sort(function (a, b) {
-                return b[0].length - a[0].length || b[1] - a[1] ;
+                if(intervalic) return b.incidence - a.incidence || b.motive.length - a.motive.length;
+                else return b.motive.length - a.motive.length || b.incidence - a.incidence ;
             });
+
             return motives
         },
         simple_ratios: (limit=17,cache=true) => {
@@ -601,6 +604,44 @@ class EDO {
             return paths
 
         },
+        path_n_steps: (destination,motives=[],n_steps=8) => {
+            /*
+            * returns all the ways to reach a destination pitch by providing a set of motives  and a number of steps
+            * For instance, if the destination is 3, the motives (a single interval in this case) are 3 and -3 and the number of steps is 3,
+            * the function will output [3,3,-3]
+            * */
+            const up_motives = motives.filter((m)=>this.get.motive_interval_shift(m)>0)
+            const down_motives = motives.filter((m)=>this.get.motive_interval_shift(m)<0)
+            const static_motives = motives.filter((m)=>this.get.motive_interval_shift(m)==0)
+            let success = []
+            const run_it = function (used=[]) {
+                let sum = used.flat().reduce((t,e)=>t+e,0)
+                let length = used.flat().length
+                if(length>n_steps || (length==n_steps && sum!=destination)) return null
+                if(length==n_steps && sum==destination) return used
+                if(sum<destination) {
+                    for(let i=0;i<up_motives.length;i++) {
+                        let result = run_it(used.concat([up_motives[i]]))
+
+                        if(result!=null) success.push(result)
+                    }
+                }
+                else if(sum>destination) {
+                    for(let i=0;i<down_motives.length;i++) {
+                        let result = run_it(used.concat([down_motives[i]]))
+                        if(result!=null) success.push(result)
+                    }
+                }
+                for(let i=0;i<static_motives.length;i++) {
+                    let result = run_it(used.concat([static_motives[i]]))
+                    if(result!=null) success.push(result)
+                }
+
+            }
+            run_it()
+
+            return unique_in_array(success)
+        },
         scales:(min_step=1,max_step=4,min_sizes=2,max_sizes=3, EDO = this) => {
             /*Generates all possible necklaces based on input parameters.
 
@@ -842,6 +883,11 @@ class EDO {
                 }
             }
             return {ratio: closest_name, cents_offset: interval_in_cents-closest_ratio, decimal: numeric}
+        },
+        motive_interval_shift: (pitches) => {
+            /*Gets an array of intervals in order, and returns the interval traversed by the end of the motive
+             */
+            return pitches.reduce((t,e)=>t+e)
         }
     }
     convert = {
@@ -918,8 +964,76 @@ class EDO {
         },
         cents_to_ratio: (cents) => {
             return Math.pow(2,cents/1200)
+        },
+        midi_to_name: (note_number,offset=0) => {
+            /*Given a midi note code as an integer, returns its note name and octave disposition (e.g C4 for 60).*/
+
+            //only supports 12 edo, so it returns the input if in other edo
+            if(this.edo!=12) return note_number
+
+            //If it's an array of notes
+            if(Array.isArray(note_number)) {
+                return note_number.map((a) => this.convert.midi_to_name(a,offset))
+            }
+            else {
+                note_number=note_number+offset
+                let octave = Math.floor(note_number/12)-1
+                let note_name = this.convert.pc_to_name(mod(note_number,12))
+                return note_name.trim() + octave
+            }
+
+
+        },
+        pc_to_name: (pc) => {
+            /*Given a pitch class as an int, returns its name (e.g G for 7)*/
+
+            let PC = {
+                0: 'C ',
+                1: 'C#',
+                2: 'D ',
+                3: 'Eb',
+                4: 'E ',
+                5: 'F ',
+                6: 'F#',
+                7: 'G ',
+                8: 'Ab',
+                9: 'A ',
+                10: 'Bb',
+                11: 'B ',
+                '*': '**'
+            }
+            return PC[pc]
+        },
+        intervals_to_pitches: (intervals,starting_pitch=0,modulus=undefined) => {
+
+            /*Given a list of intervals (or list of lists), returns pitches made with the intervals
+            starting from starting_pitch*/
+            let pitches
+            if(modulus) pitches = [mod(starting_pitch,modulus)]
+            else pitches=[starting_pitch]
+            for(let interval of intervals) {
+                if(Array.isArray(interval)) {
+                    starting_pitch = pitches.flat()[pitches.flat().length-1]
+                    let result = this.convert.intervals_to_pitches(interval,starting_pitch)
+                    result=result.slice(1)
+                    pitches.push(result)
+                }
+                else {
+                    if(modulus) pitches.push(mod(parseInt(pitches[pitches.length-1])+parseInt(interval)),modulus)
+                    else pitches.push(parseInt(pitches[pitches.length-1])+parseInt(interval))
+                }
+            }
+            return pitches
+        },
+        midi_to_intervals: (midi) => {
+            let intervals = []
+            for(let i=0;i<midi.length-1;i++) {
+                intervals.push(midi[i+1]-midi[i])
+            }
+            return intervals
         }
     }
+
 
 }
 
@@ -1637,6 +1751,7 @@ class Scale {
     }
 }
 
+module.exports = EDO
 
 // let edo = new EDO(12)
 
