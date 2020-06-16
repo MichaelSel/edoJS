@@ -313,39 +313,58 @@ class EDO {
 
             return result;
         },
-        motives : (melody,intervalic=true) => {
-            /*Returns every repeating pattern in a given set of pitches (melody)*/
-            if(intervalic) melody = this.convert.to_steps(melody)
+        subset_indices: (find=[0,2,3], arr = [0,0,2,0,2,3,3]) => {
+            /*Gets a subset to find and returns the indices from a given array (arr) that form that subset
+            *
+            * For instance if we are looking for [0,2,3] in the array [0,0,2,0,2,3,3], the function
+            * will return
+            *               [
+                              [ 0, 2, 5 ], [ 0, 2, 6 ],
+                              [ 0, 4, 5 ], [ 0, 4, 6 ],
+                              [ 1, 2, 5 ], [ 1, 2, 6 ],
+                              [ 1, 4, 5 ], [ 1, 4, 6 ],
+                              [ 3, 4, 5 ], [ 3, 4, 6 ]
+                            ]
+            * Which are all the ways to form [0,2,3] from arr (in order)
+            * */
+            let paths = []
 
-            let seen = []
+            const run_it = function (find,arr,path=[],ind=0) {
+                if(find.length==0) return path
+                let find_this = find[0]
+                for (let i = ind; i < arr.length; i++) {
+                    if(arr[i]==find_this) {
+                        let res = run_it(find.slice(1),arr,[...path,i],i+1)
+                        if(res) paths.push(res)
+                    }
+                }
+            }
+            run_it(find,arr)
+            return paths
+        },
+        motives: (melody,intervalic=true) => {
             let motives = []
 
-            const subfinder = function (mylist,pattern) {
-                let matches = []
-                for(let i=0;i<mylist.length;i++) {
-                    if(array_compare(mylist[i],pattern[0]) && array_compare(mylist.slice(i,i+pattern.length),pattern)) {
-                        matches.push(pattern)
-                    }
-                }
-                return matches
-            }
+            if(!intervalic) {
+                let all_subsets = unique_in_array(this.get.subsets(melody))
+                all_subsets.forEach((subset) => {
+                    let incidence = this.get.subset_indices(subset,melody).length
+                    motives.push({motive:subset,incidence:incidence})
+                })
+            } else {
+                let all_subsets = this.get.subsets(melody).map((subset)=>this.convert.to_steps(subset))
+                let unique_subsets = unique_in_array(all_subsets)
 
-            for(let window=1;window<melody.length+1;window++) {
-                for(let i=0;i<melody.length+1;i++) {
-                    let motive = melody.slice(i,i+window)
-                    if(!is_element_of(motive,seen)) {
-                        let incidence = subfinder(melody,motive).length
-                        if((!intervalic && incidence>1) || (intervalic && incidence>0)) {
-                            motives.push({motive: motive,incidence:incidence})
-                            seen.push(motive)
-                        }
+                motives = unique_subsets.map((subset)=>{
+                    let count = 0
+                    for (let i = 0; i < all_subsets.length; i++) {
+                        if(array_compare(subset,all_subsets[i])) count++
                     }
-                }
+                    return {motive:subset,incidence:count}
+                })
             }
-            motives.sort(function (a, b) {
-                if(intervalic) return b.incidence - a.incidence || b.motive.length - a.motive.length;
-                else return b.motive.length - a.motive.length || b.incidence - a.incidence ;
-            });
+            motives = motives.filter((motive)=>motive.motive.length>0)
+            motives = motives.sort((a,b)=> b.incidence-a.incidence || b.motive.length-a.motive.length)
 
             return motives
         },
@@ -888,6 +907,54 @@ class EDO {
             /*Gets an array of intervals in order, and returns the interval traversed by the end of the motive
              */
             return pitches.reduce((t,e)=>t+e)
+        },
+        subsets: (pitches) => {
+            /*Returns all the subsets from a given array of pitches.
+            * The subsets respect order.
+            *
+            * For [0,2,3] the returned subsets are [0] [2] [3] [0,2] [0,3] [2,3] [0,2,3]*/
+            pitches = pitches.reduce(
+                (subsets, value) => subsets.concat(
+                    subsets.map(set => [...set, value])
+                ),
+                [[]]
+            )
+            pitches = pitches.filter((el)=>el.length>0)
+            return pitches
+        },
+        contour: (pitches,local=false) => {
+            /* returns a vector describing the contour of the given pitches.
+
+            If local is set to true, every cell in the vector will be
+            either 1 if note n is higher than n-1, 0 if note n is the same as n-1, and -1 if note n is lower than n-1
+            For instance [0,0,4,7,4,7,4,0] will in local mode will return [0,1,1,-1,1,-1,-1]
+
+            if local is set to false (default), the contour of the line is expressed such that the actual pc class of the
+            note is removed but its relative position in regards to the entire line is keps.
+            [0,4,7,12,16,7,12,16] (Bach prelude in C) has 5 distinct note heights, so it will return
+            [0,1,2,3, 4, 2,3, 4] indicating the relative height of each note in the entire phrase
+            * */
+
+            if(local) {
+                let vector = []
+                for (let i = 1; i < pitches.length; i++) {
+                    if(pitches[i]>pitches[i-1]) vector.push(1)
+                    else if(pitches[i]==pitches[i-1]) vector.push(0)
+                    else vector.push(-1)
+                }
+                return vector
+            } else {
+                let catalog = {}
+                let unique_pitches = unique_in_array(pitches)
+                unique_pitches = unique_pitches.sort((a,b)=>a-b)
+                for (let i = 0; i < unique_pitches.length; i++) {
+                    catalog[unique_pitches[i]]=i
+                }
+
+                let vector = pitches.map((pitch)=>catalog[pitch])
+                return vector
+            }
+
         }
     }
     convert = {
@@ -1826,8 +1893,4 @@ module.exports = EDO
 // console.log(scale.is.invertible())
 // console.log(scale.is.subset([[0,1,4,5,7,8,9],[0,1,4,5,7,8,11]]))
 // console.log(scale.is.in_lower_edos())
-
-
-
-
 
