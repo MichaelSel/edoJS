@@ -1,4 +1,5 @@
-// const FixedContentNecklace = require("../edoJS/FixedContentNecklace")
+const fs = require('fs');
+
 class FixedContentNecklace {
     constructor(number_list) {
         /*
@@ -1887,17 +1888,33 @@ class Scale {
 
         }
     }
+    export = {
+        scala: (dir="scala/",filename=undefined) => {
+            let scale_name = this.get.name()
+            filename = filename || scale_name + ".scl"
+            let file = "! " + filename + "\n"
+            file += "!\n" + scale_name + " " + JSON.stringify(this.get.pitches()) + "\n"
+            file += String(this.count.pitches()+1) + "\n!\n"
+            let scale_in_cents = this.to.cents()
+            for(let pitch of scale_in_cents) {
+                file+= String(pitch) + "\n"
+            }
+            file+="2/1"
+            fs.writeFile(dir + filename, file, function(err) {
+                if(err) {
+                    return console.log(err);
+                }
+            });
+        }
+    }
 }
 module.exports = EDO
 
 
-let edo = new EDO(12)
-// edo.get.motives_diatonic([4,9,7,5,11,9,7],[0,2,4,5,7,9,11])
+let edo = new EDO(24)
 
-
-
-// let scale = edo.scale([0,1,4,5,7,8,11])
-// let scale = edo.scale([0,2,4,5,7,9,11])
+let scale = edo.scale([0,1,4,5,8,11,14,15,18,21])
+console.log(scale.export.scala())
 
 
 
