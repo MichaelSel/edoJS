@@ -402,6 +402,11 @@ class EDO {
             return motives
         },
         motives_diatonic: (melody, scale,allow_skips=false) => {
+            /*
+            * Same as get.motives() only instead of considering pitches as pitch classes, it looks at them as scale degrees
+            * As such, in the scale [0,2,4,5,7,9,11], [0,2,4] and [2,4,5] are considered the same motive
+            * This is because while the former has steps of size [2,2] and the latter  [2,1] they both represent moving
+            * 2 scale degrees up step wise in the scale [1,1]*/
             let not_in_scale = melody.filter((note)=>scale.indexOf(note)==-1)
             if(not_in_scale.length>0) return null
             scale = unique_in_array(scale).sort((a,b)=>a-b)
