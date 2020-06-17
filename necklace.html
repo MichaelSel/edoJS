@@ -14,11 +14,10 @@
 </body>
 <script src="necklace.js"></script>
 <script>
-// let necklace = show_necklace("container",200)
-// let necklace2 = show_necklace("container",200)
-let edo = new EDO(12)
-let scale = edo.scale([0,2,4,5,7,9,11])
-let trichords = scale.get.trichords()
-make_necklaces("container",200,trichords)
+    let divisions = 12
+    let edo = new EDO(divisions)
+    let scale = edo.scale([0,2,4,5,7,9,11])
+    let trichords = scale.get.trichords()
+    make_necklaces("container",200,trichords)
 </script>
 </html>

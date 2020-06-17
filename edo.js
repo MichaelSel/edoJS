@@ -313,10 +313,10 @@ class EDO {
 
             return result;
         },
-        subset_indices: (find=[0,2,3], arr = [0,0,2,0,2,3,3]) => {
+        subset_indices: (find=[0,2,3], arr = [0,0,2,0,2,3,3],allow_skips=true) => {
             /*Gets a subset to find and returns the indices from a given array (arr) that form that subset
             *
-            * For instance if we are looking for [0,2,3] in the array [0,0,2,0,2,3,3], the function
+            * For instance if we are looking for [0,2,3] in the array [0,0,2,0,2,3,3], and allow_skips=true the function
             * will return
             *               [
                               [ 0, 2, 5 ], [ 0, 2, 6 ],
@@ -326,33 +326,64 @@ class EDO {
                               [ 3, 4, 5 ], [ 3, 4, 6 ]
                             ]
             * Which are all the ways to form [0,2,3] from arr (in order)
+            *
+            * If allow_skips=false the function will return [[3,4,5]] which is the only way to form [0,2,3] without
+            * skipping elements
             * */
             let paths = []
 
-            const run_it = function (find,arr,path=[],ind=0) {
+            const run_it_with_skips = function (find,arr,path=[],ind=0) {
                 if(find.length==0) return path
                 let find_this = find[0]
                 for (let i = ind; i < arr.length; i++) {
                     if(arr[i]==find_this) {
-                        let res = run_it(find.slice(1),arr,[...path,i],i+1)
+                        let res = run_it_with_skips(find.slice(1),arr,[...path,i],i+1)
                         if(res) paths.push(res)
                     }
                 }
             }
-            run_it(find,arr)
+
+            const run_it_no_skips = function (find,arr) {
+                loop1:
+                for (let i = 0; i < arr.length - (find.length-1); i++) {
+                    loop2:
+                    for (let j = 0; j < find.length; j++) {
+                        if(find[j]!=arr[i+j]) continue loop1
+                        if(j==find.length-1) {
+                            let arr = new Array(find.length).fill(0)
+                            arr.forEach((el,ind)=>arr[ind]=i+ind)
+                            paths.push(arr)
+
+                        }
+                    }
+                }
+
+            }
+            if(allow_skips) run_it_with_skips(find,arr)
+            else run_it_no_skips (find,arr)
+
             return paths
         },
-        motives: (melody,intervalic=true) => {
-            let motives = []
+        motives: (melody,intervalic=true, allow_skips=false) => {
+            /*
+            * Extracts every possible "motive" from a "melody".
+            * A motive can be intervalic (default) such that it looks at the intervals rather than the pitch classes
+            * The function also keeps track of the number of times each motive appeared.
+            * For instance, [7,7,7,3] in intervalic mode, the function will return []
+            *
+            * */
 
+
+
+            let motives = []
             if(!intervalic) {
-                let all_subsets = unique_in_array(this.get.subsets(melody))
+                let all_subsets = unique_in_array(this.get.subsets(melody,allow_skips))
                 all_subsets.forEach((subset) => {
-                    let incidence = this.get.subset_indices(subset,melody).length
+                    let incidence = this.get.subset_indices(subset,melody,allow_skips).length
                     motives.push({motive:subset,incidence:incidence})
                 })
             } else {
-                let all_subsets = this.get.subsets(melody).map((subset)=>this.convert.to_steps(subset))
+                let all_subsets = this.get.subsets(melody,allow_skips).map((subset)=>this.convert.to_steps(subset))
                 let unique_subsets = unique_in_array(all_subsets)
 
                 motives = unique_subsets.map((subset)=>{
@@ -363,10 +394,22 @@ class EDO {
                     return {motive:subset,incidence:count}
                 })
             }
+
+
             motives = motives.filter((motive)=>motive.motive.length>0)
             motives = motives.sort((a,b)=> b.incidence-a.incidence || b.motive.length-a.motive.length)
 
             return motives
+        },
+        motives_diatonic: (melody, scale,allow_skips=false) => {
+            let not_in_scale = melody.filter((note)=>scale.indexOf(note)==-1)
+            if(not_in_scale.length>0) return null
+            scale = unique_in_array(scale).sort((a,b)=>a-b)
+
+            let scale_degrees=melody.map((note)=>scale.indexOf(note)+1)
+            let motives = this.get.motives(scale_degrees,true,allow_skips)
+            return motives
+
         },
         simple_ratios: (limit=17,cache=true) => {
             let primes = primes_in_range(limit)
@@ -908,17 +951,32 @@ class EDO {
              */
             return pitches.reduce((t,e)=>t+e)
         },
-        subsets: (pitches) => {
+        subsets: (pitches,allow_skips=true) => {
             /*Returns all the subsets from a given array of pitches.
             * The subsets respect order.
+            * If allow_skips=true the function will return subsets that require skipping over items as well
             *
-            * For [0,2,3] the returned subsets are [0] [2] [3] [0,2] [0,3] [2,3] [0,2,3]*/
-            pitches = pitches.reduce(
-                (subsets, value) => subsets.concat(
-                    subsets.map(set => [...set, value])
-                ),
-                [[]]
-            )
+            *
+            * In that case for [0,2,3] the returned subsets are [0] [2] [3] [0,2] [0,3] [2,3] [0,2,3]
+            * but if allow_skips=false, [0,3] will not be included because this subset skips 2*/
+
+            if(allow_skips) {
+                pitches = pitches.reduce(
+                    (subsets, value) => subsets.concat(
+                        subsets.map(set => [...set, value])
+                    ),
+                    [[]]
+                )
+            } else {
+                let subsets = []
+                for (let window = 1; window < pitches.length+1; window++) {
+                    for (let i = 0; i < pitches.length - window+1; i++) {
+                        subsets.push(pitches.slice(i,i+window))
+                    }
+                }
+                pitches=subsets
+            }
+
             pitches = pitches.filter((el)=>el.length>0)
             return pitches
         },
@@ -955,6 +1013,14 @@ class EDO {
                 return vector
             }
 
+        },
+        pitch_distribution: (pitches) => {
+            let unique = unique_in_array(pitches)
+
+
+            let dist = unique.map((el)=>{return {note:el,rate: pitches.filter(x => x==el).length/pitches.length}})
+            dist = dist.sort((a,b)=>b.rate-a.rate)
+            return dist
         }
     }
     convert = {
@@ -1817,10 +1883,12 @@ class Scale {
         }
     }
 }
-
 module.exports = EDO
 
-// let edo = new EDO(12)
+
+let edo = new EDO(12)
+// edo.get.motives_diatonic([4,9,7,5,11,9,7],[0,2,4,5,7,9,11])
+
 
 
 // let scale = edo.scale([0,1,4,5,7,8,11])
@@ -1893,4 +1961,5 @@ module.exports = EDO
 // console.log(scale.is.invertible())
 // console.log(scale.is.subset([[0,1,4,5,7,8,9],[0,1,4,5,7,8,11]]))
 // console.log(scale.is.in_lower_edos())
+
 

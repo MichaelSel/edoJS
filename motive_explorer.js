@@ -14,10 +14,12 @@ const JS = function (thing) {
 edo = new EDO(12)
 
 
-let melody = [4,3,4,3,4,-1,2,0,-3]
+let melody = [7,5,4,3,2,1,3,5,6,7]
 console.log("\n\nMELODY:",JS(edo.convert.midi_to_name(melody,60)))
 
 console.log("\nCONTOUR:",JS(edo.get.contour(melody)))
+
+console.log("\nPitch Distribution:",edo.get.pitch_distribution(melody))
 
 
 let motives = edo.get.motives(melody)

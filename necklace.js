@@ -78,14 +78,14 @@ const show_necklace = function (container_id, size =600, pitches = [0,2,4,5,7,9,
                 node.text.remove()
             }
             this.nodes = []
-
+            let radius = Math.min((this.radius*2*Math.PI / this.edo)/2-5,15)
             //node parameters
             for(let note=0;note<this.edo;note++) {
                 let angle = (note * (360 / this.edo)) - 90
                 let rad_angle = angle * Math.PI / 180
                 let cx = Math.floor(this.cx + (this.radius * Math.cos(rad_angle)))
                 let cy = Math.floor(this.cy + (this.radius * Math.sin(rad_angle)))
-                let node = new Node(height/20,cx,cy,note,pitches.indexOf(note)!=-1)
+                let node = new Node(radius,cx,cy,note,pitches.indexOf(note)!=-1)
                 this.nodes.push(node)
             }
 
@@ -149,7 +149,7 @@ const show_necklace = function (container_id, size =600, pitches = [0,2,4,5,7,9,
 
             this.text = paper.text(this.cx,this.cy,this.name)
                 .attr('fill','white')
-                .attr('font-size',height/15)
+                .attr('font-size',this.radius)
 
             this.drawing.push(this.text)
 
