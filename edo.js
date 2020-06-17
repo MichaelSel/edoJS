@@ -1759,6 +1759,21 @@ class Scale {
             let result = temp_edo.get.shortest_path(destination_scale_degree-1,up_steps,down_steps)
             console.log(result)
 
+        },
+        lattice: (hor=3,ver=4,as_notes=false) => {
+            let lattice = ""
+            for (let i = this.edo; i >= -this.edo; i-=ver) {
+                let line = ""
+                for (let j = 0; j < this.edo ; j++) {
+                    let num =mod(i+(j*hor),this.edo)
+                    let note
+                    if(as_notes) note = this.parent.convert.pc_to_name(num)
+                    else note = String(num)
+                    line+=note+" ".repeat(3-note.length)
+                }
+                lattice+=line+"\n\n"
+            }
+            console.log(lattice)
         }
     }
     to = {
@@ -1911,10 +1926,10 @@ class Scale {
 module.exports = EDO
 
 
-let edo = new EDO(24)
+let edo = new EDO(12)
 
 let scale = edo.scale([0,1,4,5,8,11,14,15,18,21])
-console.log(scale.export.scala())
+console.log(scale.get.lattice(3,4,true))
 
 
 
