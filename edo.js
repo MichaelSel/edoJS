@@ -428,7 +428,7 @@ class EDO {
             }
             return ratios
         },
-        invertion: (scale,cache=true) => {
+        inversion: (scale,cache=true) => {
             /*Inverts the intervals of the collection*/
             if(!this.catalog[String(scale)]) this.catalog[String(scale)] = {}
             if(this.catalog[String(scale)]['inverted']) return this.catalog[String(scale)]['inverted']
@@ -678,9 +678,9 @@ class EDO {
             * For instance, if the destination is 3, the motives (a single interval in this case) are 3 and -3 and the number of steps is 3,
             * the function will output [3,3,-3]
             * */
-            const up_motives = motives.filter((m)=>this.get.motive_interval_shift(m)>0)
-            const down_motives = motives.filter((m)=>this.get.motive_interval_shift(m)<0)
-            const static_motives = motives.filter((m)=>this.get.motive_interval_shift(m)==0)
+            const up_motives = motives.filter((m)=>this.get.interval_shift(m)>0)
+            const down_motives = motives.filter((m)=>this.get.interval_shift(m)<0)
+            const static_motives = motives.filter((m)=>this.get.interval_shift(m)==0)
             let success = []
             const run_it = function (used=[]) {
                 let sum = used.flat().reduce((t,e)=>t+e,0)
@@ -952,10 +952,9 @@ class EDO {
             }
             return {ratio: closest_name, cents_offset: interval_in_cents-closest_ratio, decimal: numeric}
         },
-        motive_interval_shift: (pitches) => {
-            /*Gets an array of intervals in order, and returns the interval traversed by the end of the motive
-             */
-            return pitches.reduce((t,e)=>t+e)
+        interval_shift: (intervals) => {
+            /*Gets an array of intervals in order, and returns the interval traversed by the end*/
+            return intervals.reduce((t,e)=>t+e)
         },
         subsets: (pitches,allow_skips=true) => {
             /*Returns all the subsets from a given array of pitches.
@@ -1021,6 +1020,7 @@ class EDO {
 
         },
         pitch_distribution: (pitches) => {
+            /*returns the distribution (as fractions) of the pitches in a set of pitches*/
             let unique = unique_in_array(pitches)
 
 
@@ -1391,7 +1391,7 @@ class Scale {
                                                      [  2   0]
                 As such, the name for this scale will be 4-5
                 */
-            let normal = this.to.normal_order()
+            let normal = this.get.normal_order()
             let total = 0
             normal.forEach((i) => {
                 total+=Math.pow(2,i)
@@ -1774,23 +1774,22 @@ class Scale {
                 lattice+=line+"\n\n"
             }
             console.log(lattice)
-        }
-    }
-    to = {
-        steps: (cache=true) => {
-            /*Instead of PCs, this returns the scale represented by intervals*/
-            if(this.catalog['steps']) return this.catalog['steps']
+        },
+        inversion: (cache=true) => {
+            /*Inverts the intervals of the scale*/
+            if(this.catalog['inverted']) return this.catalog['inverted']
 
-            let intervals = this.parent.convert.to_steps(this.pitches.concat([this.edo]),cache=false)
-            if(cache) this.catalog['steps'] = intervals
-            return intervals
+            let scale = this.parent.get.inversion(this.pitches,cache=false)
+            if(cache) this.catalog['inverted'] = scale
+
+            return scale
         },
         prime_form: (cache=true) => {
             /*Returns the scale in prime form*/
             if(this.catalog['prime form']) return this.catalog['prime form']
-            let i_self = this.parent.scale(this.to.inverted())
-            let norm_ord = this.parent.scale(this.to.normal_order())
-            let i_norm_ord = this.parent.scale(i_self.to.normal_order())
+            let i_self = this.parent.scale(this.get.inversion())
+            let norm_ord = this.parent.scale(this.get.normal_order())
+            let i_norm_ord = this.parent.scale(i_self.get.normal_order())
             let scale_steps = norm_ord.to.steps()
             let i_scale_steps = i_norm_ord.to.steps()
             let result = norm_ord.pitches
@@ -1808,15 +1807,6 @@ class Scale {
             if(cache) this.catalog['prime form'] = result
             return result
         },
-        inverted: (cache=true) => {
-            /*Inverts the intervals of the scale*/
-            if(this.catalog['inverted']) return this.catalog['inverted']
-
-            let scale = this.parent.get.invertion(this.pitches,cache=false)
-            if(cache) this.catalog['inverted'] = scale
-
-            return scale
-        },
         normal_order:  (cache=true) => {
             /*
             Returns the scale in normal order
@@ -1833,6 +1823,16 @@ class Scale {
             return result
 
         },
+    }
+    to = {
+        steps: (cache=true) => {
+            /*Instead of PCs, this returns the scale represented by intervals*/
+            if(this.catalog['steps']) return this.catalog['steps']
+
+            let intervals = this.parent.convert.to_steps(this.pitches.concat([this.edo]),cache=false)
+            if(cache) this.catalog['steps'] = intervals
+            return intervals
+        },
         cents: () => {
             /*Returns the scale's representation in cents [0,100,300, etc.]*/
             return this.pitches.map((note) => note*this.parent.cents_per_step)
@@ -1842,7 +1842,7 @@ class Scale {
     is = {
         normal_order: () => {
             /*Returns True if the scale is in normal order and False if it isn't*/
-            return array_compare(this.pitches,this.to.normal_order())
+            return array_compare(this.pitches,this.get.normal_order())
         },
         one_of: (scales) => {
             /*Checks if the scale (as a whole!) is one of the scales given in a list of scales (and all of their modes)*/
@@ -1854,14 +1854,14 @@ class Scale {
         },
         prime_form: () => {
             /*Returns True if the scale is in prime form and False if it isn't*/
-            return array_compare(this.pitches,this.to.prime_form())
+            return array_compare(this.pitches,this.get.prime_form())
         },
         invertible: (cache=true) => {
             /*Returns True if the scale is invertible and False if it isn't*/
             if(this.catalog['invertible']) return this.catalog['invertible']
 
-            let scale=this.to.normal_order()
-            let i_scale = this.parent.scale(this.to.inverted()).to.normal_order()
+            let scale=this.get.normal_order()
+            let i_scale = this.parent.scale(this.get.inversion()).get.normal_order()
             let result = true
             if(array_compare(scale,i_scale)) result=false
             if(cache) this.catalog['invertible']=result
@@ -1929,20 +1929,42 @@ module.exports = EDO
 let edo = new EDO(12)
 
 let scale = edo.scale([0,1,4,5,8,11,14,15,18,21])
-console.log(scale.get.lattice(3,4,true))
-
-
-
-// console.log(edo.convert.interval_to_ratio(7))
-// console.log(edo.convert.name_to_scale('12-1495'))
 //
+// console.log(edo.convert.interval_to_ratio(7))
+// console.log(edo.convert.ratio_to_interval(1.5))
+// console.log(edo.convert.ratio_to_cents(1.5))
+// console.log(edo.convert.interval_to_cents(3))
+// console.log(edo.convert.intervals_to_scale([2,2,1,2,2,2,1]))
+// console.log(edo.convert.cents_to_ratio(700))
+// console.log(edo.convert.midi_to_name([0,2,4,5,7,9,11],60))
+// console.log(edo.convert.pc_to_name([0,2,4,5,7,9,11]))
+// console.log(edo.convert.intervals_to_pitches([2,2,2,2,2,2]))
+// console.log(edo.convert.midi_to_intervals([60,62,64,65,67,69,71]))
+// console.log(edo.convert.name_to_scale('12-1495'))
+// console.log(edo.convert.to_steps([0,2,4,5,7,9,11]))
+//
+// console.log(edo.get.permutations([0,2,3]))
+// console.log(edo.get.subset_indices([0,2,3],[0,0,2,0,2,3]))
 // console.log(edo.get.ratio_approximation(7))
 // console.log(edo.get.interval_stack([2,3],3,true))
 // console.log(edo.get.path_on_tree([2,3,4],[0,1,0,1,1,1,2]))
 // console.log(edo.get.motives([0,1,3,0,1,3,4,3,4,0,1,0,1]))
+// console.log(edo.get.motives_diatonic([4,9,7,5,11,9,7],[0,2,4,5,7,9,11]))
 // console.log(edo.get.shortest_path(-5,[3,4],[-7]))
 // console.log(edo.get.shortest_path(7,3,-8))
+// console.log(edo.get.path_n_steps(7,[[0,2,4],[3,2,1]],8))
 // console.log(edo.get.scales(1,3,2,3))
+// console.log(edo.get.necklace([0,2,4,5,6,8,9]))
+// console.log(edo.get.simple_ratios())
+// console.log(edo.get.inversion([0,2,4,5,8]))
+// console.log(edo.get.normal_order([0,2,4,5,8]))
+// console.log(edo.get.modes([0,2,4,5,8]))
+// console.log(edo.get.interval_shift([2,3,-2,1,4,-7]))
+// console.log(edo.get.subsets([0,2,3,4],true))
+// console.log(edo.get.contour([0,2,3,4],false))
+// console.log(edo.get.pitch_distribution([0,2,0,2,3,4,2,2,2,2,2,0,1,2,0]))
+//
+// console.log(edo.is.subset([0,2,3],[3,2,1,0,1,2,3]))
 //
 // console.log(edo.count.pitches([0,3,3,2,4,3,4]))
 //
@@ -1984,12 +2006,12 @@ console.log(scale.get.lattice(3,4,true))
 // console.log(scale.get.rothenberg_propriety())
 // console.log(scale.get.levenshtein([0,1,2]))
 // console.log(scale.get.shortest_path(2,2,-1))
-//
+// console.log(scale.get.inversion())
+// console.log(scale.get.prime_form())
+// console.log(scale.get.lattice(3,4,true))
+// console.log(scale.get.normal_order())
 //
 // console.log(scale.to.steps())
-// console.log(scale.to.prime_form())
-// console.log(scale.to.inverted())
-// console.log(scale.to.normal_order())
 // console.log(scale.to.cents())
 //
 // console.log(scale.is.one_of([[0,1,4,5,7,8,11],[1,3,5,7,9,10]]))
@@ -1998,5 +2020,7 @@ console.log(scale.get.lattice(3,4,true))
 // console.log(scale.is.invertible())
 // console.log(scale.is.subset([[0,1,4,5,7,8,9],[0,1,4,5,7,8,11]]))
 // console.log(scale.is.in_lower_edos())
+//
+// console.log(scale.export.scala())
 
 
