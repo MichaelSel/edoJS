@@ -1027,6 +1027,11 @@ class EDO {
             let dist = unique.map((el)=>{return {note:el,rate: pitches.filter(x => x==el).length/pitches.length}})
             dist = dist.sort((a,b)=>b.rate-a.rate)
             return dist
+        },
+        transposition: (pitches,amount=0,as_PC=true) => {
+            pitches = pitches.map((pitch) => pitch+amount)
+            if (as_PC) pitches=pitches.map((pitch)=>mod(pitch,this.edo))
+            return pitches
         }
     }
     convert = {
@@ -1237,7 +1242,10 @@ class Scale {
             /*Returns the number of major and minor (sounding) triads in the scale
 
             For other chord qualities use a combination of Scale.count_chord_quality() and self.gen.ratio_to_interval()*/
-            return this.count.chord_quality([this.parent.M3s,this.parent.P5s]) + this.count.chord_quality([this.parent.m3s,this.parent.P5s])
+            let major = this.count.chord_quality([[...this.parent.M3s],[...this.parent.P5s]])
+            let minor = this.count.chord_quality([[...this.parent.m3s],[...this.parent.P5s]])
+
+            return major+minor
 
         },
         interval: (interval) => {
@@ -1823,6 +1831,9 @@ class Scale {
             return result
 
         },
+        transposition: (amount=0) => {
+            return this.parent.get.transposition(this.pitches,amount)
+        }
     }
     to = {
         steps: (cache=true) => {
@@ -1928,7 +1939,7 @@ module.exports = EDO
 
 let edo = new EDO(12)
 
-let scale = edo.scale([0,1,4,5,8,11,14,15,18,21])
+let scale = edo.scale([0,2,4,5,7,9,11])
 //
 // console.log(edo.convert.interval_to_ratio(7))
 // console.log(edo.convert.ratio_to_interval(1.5))
@@ -1963,6 +1974,7 @@ let scale = edo.scale([0,1,4,5,8,11,14,15,18,21])
 // console.log(edo.get.subsets([0,2,3,4],true))
 // console.log(edo.get.contour([0,2,3,4],false))
 // console.log(edo.get.pitch_distribution([0,2,0,2,3,4,2,2,2,2,2,0,1,2,0]))
+// console.log(edo.get.transposition([0,2,4,6,2,4,5,1,2,5,4,5,8,7],5))
 //
 // console.log(edo.is.subset([0,2,3],[3,2,1,0,1,2,3]))
 //
@@ -2010,7 +2022,8 @@ let scale = edo.scale([0,1,4,5,8,11,14,15,18,21])
 // console.log(scale.get.prime_form())
 // console.log(scale.get.lattice(3,4,true))
 // console.log(scale.get.normal_order())
-//
+// console.log(scale.get.transposition(5))
+
 // console.log(scale.to.steps())
 // console.log(scale.to.cents())
 //

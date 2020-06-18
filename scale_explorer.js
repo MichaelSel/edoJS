@@ -5,9 +5,13 @@ let scale
     
 /*
 7-NOTE SCALES:
-*/    
+*/
 
-scale = edo.scale([0, 1, 3, 4, 7, 8, 11])  // 1p-p5pl based on two augmented triads+added note
+
+
+// scale = edo.scale([0, 1, 2, 4, 6, 8, 10])
+// scale = edo.scale([0, 1, 3, 4, 7, 8, 10])
+// scale = edo.scale([0, 1, 3, 4, 7, 8, 11])  // 1p-p5pl based on two augmented triads+added note
 // scale = edo.scale([0, 1, 4, 5, 7, 8, 11])  // 1p+p5pl
 // scale = edo.scale([0, 2, 3, 6, 7, 8, 11])
 // scale = edo.scale([0, 2, 4, 6, 7, 8, 10])  // same necklace minor: [0,1,3,5,7,9,11] 1n+l5pn
