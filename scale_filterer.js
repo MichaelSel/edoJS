@@ -16,7 +16,7 @@ console.log("Found",scales.length,"scales. Filtering...")
 
 
 for (let scale of scales) {
-    console.log(JS(scale.count.major_minor_triads()))
+    console.log(JS(scale.pitches))
 }
 
 
