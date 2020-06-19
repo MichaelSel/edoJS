@@ -10,14 +10,22 @@ let scale
 
 
 // scale = edo.scale([0, 1, 2, 4, 6, 8, 10])
+
 // scale = edo.scale([0, 1, 3, 4, 7, 8, 10])
+
 // scale = edo.scale([0, 1, 3, 4, 7, 8, 11])  // 1p-p5pl based on two augmented triads+added note
+// scale = edo.scale([0, 1, 3, 6, 7, 8, 11]) //Maqam Athar Kurd
+// scale = edo.scale([0, 1, 4, 5, 7, 8, 10])  // Maqam Hijaz ver 1
+// scale = edo.scale([0, 1, 4, 5, 7, 8, 11])  // Maqam Hijazkar
 // scale = edo.scale([0, 1, 4, 5, 7, 8, 11])  // 1p+p5pl
+// scale = edo.scale([0, 2, 3, 5, 7, 8, 11])  // Maqam Nahawand
 // scale = edo.scale([0, 2, 3, 6, 7, 8, 11])
 // scale = edo.scale([0, 2, 4, 6, 7, 8, 10])  // same necklace minor: [0,1,3,5,7,9,11] 1n+l5pn
 // scale = edo.scale([0, 2, 4, 6, 8, 10, 11])
 // scale = edo.scale([0, 3, 4, 6, 7, 8, 11])  // 1l+l5pl based on two augmented triads+added note
 // scale = edo.scale([0, 3, 4, 6, 7, 9, 10])  // octatonic without note 2 1l+l5lp
+
+
 
 
 /*
@@ -69,7 +77,12 @@ let scale
 // scale = edo.scale([0, 4, 6, 8, 11])
 
 // scale = edo.scale([0, 3, 6, 10])  // half dim is a scale!
-
+// scale = edo.scale([0,1,4,5]) //Jins Hijaz
+// scale = edo.scale([0,1,4,5,6]) //Jins Hijaz Murassa‘
+// scale = edo.scale([0,1,3,5]) //Jins Kurd
+// scale = edo.scale([0,1,3,5,6]) //Jins Lami
+// scale = edo.scale([0,2,4,5]) //Jins Upper ‘Ajam
+// scale = edo.scale([0,2,4,5,7]) //Jins ‘Ajam
 
 
 
