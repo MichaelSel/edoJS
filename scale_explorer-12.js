@@ -9,7 +9,7 @@ let scale
 
 
 
-// scale = edo.scale([0, 1, 2, 4, 6, 8, 10])
+scale = edo.scale([0, 1, 2, 4, 6, 8, 10]).mode(4)
 
 // scale = edo.scale([0, 1, 3, 4, 7, 8, 10])
 
@@ -83,7 +83,6 @@ let scale
 // scale = edo.scale([0,1,3,5,6]) //Jins Lami
 // scale = edo.scale([0,2,4,5]) //Jins Upper ‘Ajam
 // scale = edo.scale([0,2,4,5,7]) //Jins ‘Ajam
-
 
 
 

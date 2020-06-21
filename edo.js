@@ -172,13 +172,6 @@ class FixedContentNecklace {
         return (index<0)?-1: this.alphabet[index]
     }
 }
-// const get_divisors = function (n) {
-//     let divisors = []
-//     for (let i=2;i<Math.ceil(n/2);i++) {
-//         if(n%parseInt(i)==0) divisors.push(i)
-//     }
-//     return divisors
-// }
 const combinations = (set, k) => {
     if (k > set.length || k <= 0) {
         return []
@@ -203,39 +196,6 @@ const combinations = (set, k) => {
 
     return combs
 }
-// const is_element_of = (arr,bigger_arr) => {
-//     if(arr.length==0 || bigger_arr.length ==0) return false
-//     arr = JSON.stringify(arr)
-//     arr2 = JSON.stringify(bigger_arr)
-//     return arr2.indexOf(arr)!=-1
-// }
-// const mod = (n, m) => {
-//     return ((n % m) + m) % m;
-// }
-// const unique_in_array = (list) => {
-//
-//     let unique  = new Set(list.map(JSON.stringify));
-//     unique = Array.from(unique).map(JSON.parse);
-//
-//     return unique
-// }
-// const array_compare = (arr1,arr2) => {
-//     arr1 = JSON.stringify(arr1)
-//     arr2 = JSON.stringify(arr2)
-//     return arr1==arr2
-// }
-// const primes_in_range = (upper=17,lower=2) => {
-//     let primes = []
-//     for(let num=lower;num<=upper;num++) {
-//         if(num>1) {
-//             for(let i=2;i<num;i++) {
-//                 if(num%i==0) break
-//                 else primes.push(num)
-//             }
-//         }
-//     }
-//     return primes
-// }
 
 class EDO {
 
@@ -2022,6 +1982,18 @@ class Scale {
                 }
             });
         }
+    }
+    mode (mode_num=0) {
+        let modes = this.get.modes()
+        let mode = modes[this.parent.mod(mode_num,modes.length)]
+        return new Mode(mode,this.parent)
+    }
+
+}
+class Mode extends Scale {
+    constructor(pitches,parent) {
+        super(pitches,parent);
+        this.pitches = pitches
     }
 }
 module.exports = EDO

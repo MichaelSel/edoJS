@@ -98,3 +98,6 @@ let scale = edo.scale([0,2,4,5,7,9,11])
 // console.log(scale.is.in_lower_edos())
 //
 // console.log(scale.export.scala())
+
+//scale.mode inherits everything from scale
+// console.log(scale.mode(3).pitches)
