@@ -292,6 +292,17 @@ class EDO {
                 if(thing2.indexOf(note)==-1) return false
             }
             return true
+        },
+        is_element_of: (arr,bigger_arr) => {
+            if(arr.length==0 || bigger_arr.length ==0) return false
+            arr = JSON.stringify(arr)
+            let arr2 = JSON.stringify(bigger_arr)
+            return arr2.indexOf(arr)!=-1
+        },
+        same: (arr1,arr2) => {
+            arr1 = JSON.stringify(arr1)
+            arr2 = JSON.stringify(arr2)
+            return arr1==arr2
         }
     }
     get = {
@@ -1081,6 +1092,32 @@ class EDO {
 
             }
             return collection
+        },
+        primes_in_range: (upper=17,lower=2) => {
+            let primes = []
+            for(let num=lower;num<=upper;num++) {
+                if(num>1) {
+                    for(let i=2;i<num;i++) {
+                        if(num%i==0) break
+                        else primes.push(num)
+                    }
+                }
+            }
+            return primes
+        },
+        unique_elements : (list) => {
+
+            let unique  = new Set(list.map(JSON.stringify));
+            unique = Array.from(unique).map(JSON.parse);
+
+            return unique
+        },
+        divisors : (n) => {
+            let divisors = []
+            for (let i=2;i<Math.ceil(n/2);i++) {
+                if(n%parseInt(i)==0) divisors.push(i)
+            }
+            return divisors
         }
     }
     convert = {
@@ -1225,6 +1262,10 @@ class EDO {
             }
             return intervals
         }
+    }
+
+    mod (n, m) {
+        return ((n % m) + m) % m;
     }
 
 
