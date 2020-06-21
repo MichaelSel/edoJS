@@ -3,7 +3,7 @@ const EDO = require("./edo")
 let edo = new EDO(12)
 
 let scale = edo.scale([0,2,4,5,7,9,11])
-
+//
 // console.log(edo.convert.interval_to_ratio(7))
 // console.log(edo.convert.ratio_to_interval(1.5))
 // console.log(edo.convert.ratio_to_cents(1.5))
@@ -86,7 +86,7 @@ let scale = edo.scale([0,2,4,5,7,9,11])
 // console.log(scale.get.lattice(3,4,true))
 // console.log(scale.get.normal_order())
 // console.log(scale.get.transposition(5))
-
+//
 // console.log(scale.to.steps())
 // console.log(scale.to.cents())
 //

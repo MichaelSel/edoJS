@@ -172,13 +172,13 @@ class FixedContentNecklace {
         return (index<0)?-1: this.alphabet[index]
     }
 }
-const get_divisors = function (n) {
-    let divisors = []
-    for (let i=2;i<Math.ceil(n/2);i++) {
-        if(n%parseInt(i)==0) divisors.push(i)
-    }
-    return divisors
-}
+// const get_divisors = function (n) {
+//     let divisors = []
+//     for (let i=2;i<Math.ceil(n/2);i++) {
+//         if(n%parseInt(i)==0) divisors.push(i)
+//     }
+//     return divisors
+// }
 const combinations = (set, k) => {
     if (k > set.length || k <= 0) {
         return []
@@ -203,39 +203,39 @@ const combinations = (set, k) => {
 
     return combs
 }
-const is_element_of = (arr,bigger_arr) => {
-    if(arr.length==0 || bigger_arr.length ==0) return false
-    arr = JSON.stringify(arr)
-    arr2 = JSON.stringify(bigger_arr)
-    return arr2.indexOf(arr)!=-1
-}
-const mod = (n, m) => {
-    return ((n % m) + m) % m;
-}
-const unique_in_array = (list) => {
-
-    let unique  = new Set(list.map(JSON.stringify));
-    unique = Array.from(unique).map(JSON.parse);
-
-    return unique
-}
-const array_compare = (arr1,arr2) => {
-    arr1 = JSON.stringify(arr1)
-    arr2 = JSON.stringify(arr2)
-    return arr1==arr2
-}
-const primes_in_range = (upper=17,lower=2) => {
-    let primes = []
-    for(let num=lower;num<=upper;num++) {
-        if(num>1) {
-            for(let i=2;i<num;i++) {
-                if(num%i==0) break
-                else primes.push(num)
-            }
-        }
-    }
-    return primes
-}
+// const is_element_of = (arr,bigger_arr) => {
+//     if(arr.length==0 || bigger_arr.length ==0) return false
+//     arr = JSON.stringify(arr)
+//     arr2 = JSON.stringify(bigger_arr)
+//     return arr2.indexOf(arr)!=-1
+// }
+// const mod = (n, m) => {
+//     return ((n % m) + m) % m;
+// }
+// const unique_in_array = (list) => {
+//
+//     let unique  = new Set(list.map(JSON.stringify));
+//     unique = Array.from(unique).map(JSON.parse);
+//
+//     return unique
+// }
+// const array_compare = (arr1,arr2) => {
+//     arr1 = JSON.stringify(arr1)
+//     arr2 = JSON.stringify(arr2)
+//     return arr1==arr2
+// }
+// const primes_in_range = (upper=17,lower=2) => {
+//     let primes = []
+//     for(let num=lower;num<=upper;num++) {
+//         if(num>1) {
+//             for(let i=2;i<num;i++) {
+//                 if(num%i==0) break
+//                 else primes.push(num)
+//             }
+//         }
+//     }
+//     return primes
+// }
 
 class EDO {
 
@@ -247,7 +247,7 @@ class EDO {
         this.M3s = this.convert.ratio_to_interval(5 / 4, 20)
         this.m3s = this.convert.ratio_to_interval(6 / 5, 20)
         this.P5s = this.convert.ratio_to_interval(3 / 2, 5)
-        this.edo_divisors = get_divisors(edo)
+        this.edo_divisors = this.get.divisors(edo)
         this.catalog = {}
 
     }
@@ -293,7 +293,7 @@ class EDO {
             }
             return true
         },
-        is_element_of: (arr,bigger_arr) => {
+        element_of: (arr,bigger_arr) => {
             if(arr.length==0 || bigger_arr.length ==0) return false
             arr = JSON.stringify(arr)
             let arr2 = JSON.stringify(bigger_arr)
@@ -396,12 +396,12 @@ class EDO {
                 })
             } else {
                 let all_subsets = this.get.subsets(melody,allow_skips).map((subset)=>this.convert.to_steps(subset))
-                let unique_subsets = unique_in_array(all_subsets)
+                let unique_subsets = this.get.unique_elements(all_subsets)
 
                 motives = unique_subsets.map((subset)=>{
                     let count = 0
                     for (let i = 0; i < all_subsets.length; i++) {
-                        if(array_compare(subset,all_subsets[i])) count++
+                        if(this.is.same(subset,all_subsets[i])) count++
                     }
                     return {motive:subset,incidence:count}
                 })
@@ -421,7 +421,7 @@ class EDO {
             * 2 scale degrees up step wise in the scale [1,1]*/
             let not_in_scale = melody.filter((note)=>scale.indexOf(note)==-1)
             if(not_in_scale.length>0) return null
-            scale = unique_in_array(scale).sort((a,b)=>a-b)
+            scale = this.get.unique_elements(scale).sort((a,b)=>a-b)
 
             let scale_degrees=melody.map((note)=>scale.indexOf(note)+1)
             let motives = this.get.motives(scale_degrees,true,allow_skips)
@@ -429,7 +429,7 @@ class EDO {
 
         },
         simple_ratios: (limit=17,cache=true) => {
-            let primes = primes_in_range(limit)
+            let primes = this.get.primes_in_range(limit)
             let ratios = {}
             for(let i=2;i<limit+1;i++) {
                 for(let j=1;j<i;j++) {
@@ -466,7 +466,7 @@ class EDO {
             })
 
 
-            pitches = unique_in_array(pitches)
+            pitches = this.get.unique_elements(pitches)
 
             pitches.sort((a,b) => a-b)
             let modes = this.get.modes(pitches)
@@ -518,7 +518,7 @@ class EDO {
                 modes.push(mode)
             }
 
-            modes = unique_in_array(modes)
+            modes = this.get.unique_elements(modes)
             if(cache) this.catalog[String(scale)]['modes'] = modes
             return modes
         },
@@ -719,7 +719,7 @@ class EDO {
             }
             run_it()
 
-            return unique_in_array(success)
+            return this.get.unique_elements(success)
         },
         scales:(min_step=1,max_step=4,min_sizes=2,max_sizes=3, EDO = this) => {
             /*Generates all possible necklaces based on input parameters.
@@ -757,7 +757,7 @@ class EDO {
                 */
 
             //get all unique combinations of size s from set of intervals set
-            const calc_comb = function (s,set) {
+            const calc_comb = (s,set) => {
                 let solutions = []
                 for (let i=0;i<set.length;i++) {
                     let n=set[i]
@@ -783,7 +783,7 @@ class EDO {
 
 
                 }
-                return unique_in_array(solutions)
+                return this.get.unique_elements(solutions)
             }
 
             //returns all possible step sizes based on the min_step and max_step parameters
@@ -853,7 +853,7 @@ class EDO {
         },
         necklace:(lst) => {
             let necklaces = []
-            let unique_steps = unique_in_array(lst)
+            let unique_steps = this.get.unique_elements(lst)
             let map = {}
             let n = []
             unique_steps.forEach((step,i)=>{
@@ -916,7 +916,7 @@ class EDO {
             }
 
             let all_perm = []
-            intervals = unique_in_array(intervals)
+            intervals = this.get.unique_elements(intervals)
             let base = intervals.length
             let mapping = {}
             let result = []
@@ -1019,7 +1019,7 @@ class EDO {
                 return vector
             } else {
                 let catalog = {}
-                let unique_pitches = unique_in_array(pitches)
+                let unique_pitches = this.get.unique_elements(pitches)
                 unique_pitches = unique_pitches.sort((a,b)=>a-b)
                 for (let i = 0; i < unique_pitches.length; i++) {
                     catalog[unique_pitches[i]]=i
@@ -1032,7 +1032,7 @@ class EDO {
         },
         pitch_distribution: (pitches) => {
             /*returns the distribution (as fractions) of the pitches in a set of pitches*/
-            let unique = unique_in_array(pitches)
+            let unique = this.get.unique_elements(pitches)
 
 
             let dist = unique.map((el)=>{return {note:el,rate: pitches.filter(x => x==el).length/pitches.length}})
@@ -1041,7 +1041,7 @@ class EDO {
         },
         transposition: (pitches,amount=0,as_PC=true) => {
             pitches = pitches.map((pitch) => pitch+amount)
-            if (as_PC) pitches=pitches.map((pitch)=>mod(pitch,this.edo))
+            if (as_PC) pitches=pitches.map((pitch)=>this.mod(pitch,this.edo))
             return pitches
         },
         random_melody: (length=8,range = [0,12], repetitions=false, from_PCs=undefined,avoid_leaps=false) => {
@@ -1208,7 +1208,7 @@ class EDO {
             else {
                 note_number=note_number+offset
                 let octave = Math.floor(note_number/12)-1
-                let note_name = this.convert.pc_to_name(mod(note_number,12))
+                let note_name = this.convert.pc_to_name(this.mod(note_number,12))
                 return note_name.trim() + octave
             }
 
@@ -1282,7 +1282,7 @@ class Scale {
         this.pitches = pitches.map((pitch) => pitch+diff_from_zero)
         this.edo = this.parent.edo
         this.pitches = this.pitches.map((pitch) => pitch%parent.edo)
-        this.pitches = unique_in_array(this.pitches)
+        this.pitches = this.parent.get.unique_elements(this.pitches)
         this.pitches.sort((a, b) => a-b)
 
         this.name = this.get.name()
@@ -1363,7 +1363,7 @@ class Scale {
                     t_scale.push((note+i+1) % this.edo)
                 })
                 t_scale.sort((a,b) => a-b)
-                if(is_element_of(t_scale,scales)) return scales.length
+                if(this.parent.is.element_of(t_scale,scales)) return scales.length
                 scales.push(t_scale)
 
             }
@@ -1560,7 +1560,7 @@ class Scale {
                     }
                 }
             })
-            trichords = unique_in_array(trichords)
+            trichords = this.parent.get.unique_elements(trichords)
             if(cache) this.catalog['trichords'] = trichords
             return trichords
 
@@ -1588,7 +1588,7 @@ class Scale {
                     }
                 }
             })
-            tetrachords = unique_in_array(tetrachords)
+            tetrachords = this.parent.get.unique_elements(tetrachords)
             if(cache) this.catalog['tetrachords'] = tetrachords
             return tetrachords
         },
@@ -1614,7 +1614,7 @@ class Scale {
                 let temp = new Set(notes)
                 if(temp.size==levels) stacks.push(notes)
             })
-            stacks = unique_in_array(stacks)
+            stacks = this.parent.get.unique_elements(stacks)
             return stacks
         },
         common_tone_transpositions: (normalize=true) => {
@@ -1627,7 +1627,7 @@ class Scale {
             for (let note of this.pitches) {
                 let transposition = [note]
                 for(let interval of intervals) {
-                    let next_note = mod(transposition.slice(-1)[0]+interval,this.edo)
+                    let next_note = this.parent.mod(transposition.slice(-1)[0]+interval,this.edo)
                     transposition.push(next_note)
                 }
                 if(normalize) transposition.sort((a,b)=>a-b)
@@ -1654,7 +1654,7 @@ class Scale {
             To get the rorations normalized to zero (the modes) use Scale.get_modes()*/
             let rotations = []
             let rotate = [...this.pitches]
-            while (!is_element_of(rotate,rotations)) {
+            while (!this.parent.is.element_of(rotate,rotations)) {
                 rotations.push(rotate)
                 rotate = [...rotate.slice(1),...rotate.slice(0,1)]
             }
@@ -1725,8 +1725,8 @@ class Scale {
             let vector = []
             for (let i=0; i<this.pitches.length;i++) {
                 let note = this.pitches[i]
-                let ln = this.pitches[mod(i-1,this.pitches.length)]
-                let un = this.pitches[mod(i+1,this.pitches.length)]
+                let ln = this.pitches[this.parent.mod(i-1,this.pitches.length)]
+                let un = this.pitches[this.parent.mod(i+1,this.pitches.length)]
                 ln = this.get.lerdahl_attraction(note,ln)
                 un = this.get.lerdahl_attraction(note,un)
                 if(ln<1 && un<1) vector.push('*')
@@ -1740,7 +1740,7 @@ class Scale {
         step_sizes: (cache=true) => {
             /*Convert the scales PCs into a list of ICs representing the size of each step in the scale*/
             if(this.catalog['step sizes']) return this.catalog['step sizes']
-            let lst = unique_in_array(this.to.steps())
+            let lst = this.parent.get.unique_elements(this.to.steps())
             lst.sort((a,b) => a-b)
             if(cache) this.catalog['step sizes'] = lst
             return lst
@@ -1863,7 +1863,7 @@ class Scale {
             for (let i = this.edo; i >= -this.edo; i-=ver) {
                 let line = ""
                 for (let j = 0; j < this.edo ; j++) {
-                    let num =mod(i+(j*hor),this.edo)
+                    let num =this.parent.mod(i+(j*hor),this.edo)
                     let note
                     if(as_notes) note = this.parent.convert.pc_to_name(num)
                     else note = String(num)
@@ -1943,19 +1943,19 @@ class Scale {
     is = {
         normal_order: () => {
             /*Returns True if the scale is in normal order and False if it isn't*/
-            return array_compare(this.pitches,this.get.normal_order())
+            return this.parent.is.same(this.pitches,this.get.normal_order())
         },
         one_of: (scales) => {
             /*Checks if the scale (as a whole!) is one of the scales given in a list of scales (and all of their modes)*/
             let scale = this.pitches
             let all_modes = scales.map((item) => this.parent.get.modes(item))
             all_modes = all_modes.flat(1)
-            if(is_element_of(scale,all_modes)) return true
+            if(this.parent.is.element_of(scale,all_modes)) return true
             return false
         },
         prime_form: () => {
             /*Returns True if the scale is in prime form and False if it isn't*/
-            return array_compare(this.pitches,this.get.prime_form())
+            return this.parent.is.same(this.pitches,this.get.prime_form())
         },
         invertible: (cache=true) => {
             /*Returns True if the scale is invertible and False if it isn't*/
@@ -1964,7 +1964,7 @@ class Scale {
             let scale=this.get.normal_order()
             let i_scale = this.parent.scale(this.get.inversion()).get.normal_order()
             let result = true
-            if(array_compare(scale,i_scale)) result=false
+            if(this.parent.is.same(scale,i_scale)) result=false
             if(cache) this.catalog['invertible']=result
             return result
         },
