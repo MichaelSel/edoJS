@@ -1,0 +1,8 @@
+{
+  "opts": {
+    "template": "node_modules/tui-jsdoc-template",
+    "encoding": "utf8",
+    "destination": "./out/",
+    "recurse": true
+  }
+}

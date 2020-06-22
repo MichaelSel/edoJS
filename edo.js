@@ -197,10 +197,13 @@ const combinations = (set, k) => {
     return combs
 }
 
+/** Class representing some EDO tuning system. */
 class EDO {
 
-    // self = this
-
+    /**
+     * Create a tuning system.
+     * @param {number} edo - The number of equal divisions of the octave.
+     */
     constructor(edo=12) {
         this.edo = edo
         this.cents_per_step = (12 / edo) * 100
@@ -212,18 +215,29 @@ class EDO {
 
     }
 
-
+    /**
+     * Returns a new Scale Object with given pitches
+     * @param  {Array<Number>} pitches - a collection of pitch classes
+     * @return {Scale}
+     */
     scale (pitches) {
         return new Scale(pitches,this)
     }
 
+
+    /**A collection of functions that return an amount
+     * @namespace EDO#count*/
     count = {
+        /**
+         * Returns the pitch and the number of its occurrences as a tuple for every unique value in pitches
+         * @param  {Array<Number>} pitches - a collection of pitches (not necessarily pitch classes)
+         * @example
+         * // returns [[3,3],[4,2], [2,1], [0,1]]
+         * count.pitches([0, 3, 3, 2, 4, 3, 4])
+         * @return {Array<Number>} A pitch, and how many times it appears
+         * @memberOf EDO#count
+         */
         pitches: (pitches) => {
-            /*Returns the number of occurrences for every PC present in "pitches"
-
-            E.g. [0,3,3,2,4,3,4] will return tuples order with most common to list common pitch such:
-            [(3,3),(4,2), (2,1), (0,1)]*/
-
             let counts = []
             let unique = new Set(pitches)
             for (let pitch of unique) {
@@ -236,6 +250,14 @@ class EDO {
             counts.sort((a,b)=>b[1]-a[1])
             return counts
         },
+
+        /**
+         * Returns the number of commons tones between two collections of pitches
+         * @param  {Array<Number>} list1 - a collection of pitches (not necessarily pitch classes)
+         * @param  {Array<Number>} list2 - a collection of pitches (not necessarily pitch classes)
+         * @return {Number} The number of common tones between the two lists
+         * @memberOf EDO#count
+         */
         common_tones : (list1,list2) => {
             let common_tones = 0
             for(let note of list2) {
@@ -244,29 +266,68 @@ class EDO {
             return common_tones
         },
     }
+
+
+    /**A collection of functions that return a boolean
+     * @namespace*/
     is = {
+        /**
+         * Returns true if some collection of pitches (thing) is a subset of another collection of pitches (thing2)
+         * @param  {Array<Number>} thing - a collection of pitches (not necessarily pitch classes)
+         * @param  {Array<Number>} thing2 - a collection of pitches (not necessarily pitch classes)
+         * @return {Boolean}
+         * @memberOf EDO#is
+         */
         subset:  (thing,thing2) => {
-            /*returns True if thing is a subset of thing2*/
 
             for(let note of thing) {
                 if(thing2.indexOf(note)==-1) return false
             }
             return true
         },
+
+        /**
+         * Returns True if arr is an element in an array of arrays (bigger_arr)
+         * @param  {Array<Number>} arr - a collection of pitches (not necessarily pitch classes)
+         * @param  {Array<Array<Number>>} bigger_arr - an array of arrays containing a collection of pitches (not necessarily pitch classes)
+         * @return {Boolean}
+         * @memberOf EDO#is
+         */
         element_of: (arr,bigger_arr) => {
             if(arr.length==0 || bigger_arr.length ==0) return false
             arr = JSON.stringify(arr)
             let arr2 = JSON.stringify(bigger_arr)
             return arr2.indexOf(arr)!=-1
         },
+
+        /**
+         * Returns True if arr1 equals arr2 in contents and in order.
+         * @param  {Array<Number>} arr1 - a collection of pitches (not necessarily pitch classes)
+         * @param  {Array<Number>} arr2 - a collection of pitches (not necessarily pitch classes)
+         * @return {Boolean}
+         * @memberOf EDO#is
+         */
         same: (arr1,arr2) => {
             arr1 = JSON.stringify(arr1)
             arr2 = JSON.stringify(arr2)
             return arr1==arr2
         }
     }
+
+    /**A collection of functions manipulates an input
+     * @namespace*/
     get = {
+        /**
+         * Gets an array and returns every possible ordering of that array.
+         * @param  {Array<Number>} pitches - (usually) a collection of pitches, but could be used with any type of array
+         * @example
+         * // [[ 0, 2, 3 ],[ 0, 3, 2 ],[ 2, 0, 3 ],[ 2, 3, 0 ],[ 3, 0, 2 ],[ 3, 2, 0 ]]
+         * get.permutations([0, 2, 3])
+         * @return {Array<Array<Number>>}
+         * @memberOf EDO#get
+         */
         permutations : (inputArr) => {
+
             let result = [];
 
             const do_it = (arr, m = []) => {
@@ -285,23 +346,19 @@ class EDO {
 
             return result;
         },
-        subset_indices: (find=[0,2,3], arr = [0,0,2,0,2,3,3],allow_skips=true) => {
-            /*Gets a subset to find and returns the indices from a given array (arr) that form that subset
-            *
-            * For instance if we are looking for [0,2,3] in the array [0,0,2,0,2,3,3], and allow_skips=true the function
-            * will return
-            *               [
-                              [ 0, 2, 5 ], [ 0, 2, 6 ],
-                              [ 0, 4, 5 ], [ 0, 4, 6 ],
-                              [ 1, 2, 5 ], [ 1, 2, 6 ],
-                              [ 1, 4, 5 ], [ 1, 4, 6 ],
-                              [ 3, 4, 5 ], [ 3, 4, 6 ]
-                            ]
-            * Which are all the ways to form [0,2,3] from arr (in order)
-            *
-            * If allow_skips=false the function will return [[3,4,5]] which is the only way to form [0,2,3] without
-            * skipping elements
-            * */
+
+        /**
+         * Gets a subset to find and returns the indices from a given array (arr) that form that subset
+         * @param  {Array<Number>} find - a collection of pitches to find (in order)
+         * @param  {Array<Number>} arr - a bigger collection where we search
+         * @param  {Boolean} [allow_skips=true] - if false, the search will only be done on consecutive items
+         * @example
+         * // returns [[ 0, 2, 5 ], [ 0, 2, 6 ],[ 0, 4, 5 ], [ 0, 4, 6 ],[ 1, 2, 5 ], [ 1, 2, 6 ],[ 1, 4, 5 ], [ 1, 4, 6 ],[ 3, 4, 5 ], [ 3, 4, 6 ]]
+         * get.subset_indices([0, 2, 3], [0, 0, 2, 0, 2, 3, 3])
+         * @return {Array<Array<Number>>}
+         * @memberOf EDO#get
+         */
+        subset_indices: (find, arr,allow_skips=true) => {
             let paths = []
 
             const run_it_with_skips = function (find,arr,path=[],ind=0) {
@@ -336,17 +393,18 @@ class EDO {
 
             return paths
         },
+
+        /**
+         * Extracts every possible "motive" from a "melody".
+         * A motive can be intervalic (default) such that it looks at the intervals rather than the pitch classes.
+         * The function also keeps track of the number of times each motive appeared.
+         * @param  {Array<Number>} melody - a collection of pitches to find (in order)
+         * @param  {Boolean} [intervalic=true] - looks at the intervals rather than the pitch classes.
+         * @param  {Boolean} [allow_skips=true] - if false, the search will only be done on consecutive items
+         * @return {Array<motives>}
+         * @memberOf EDO#get
+         */
         motives: (melody,intervalic=true, allow_skips=false) => {
-            /*
-            * Extracts every possible "motive" from a "melody".
-            * A motive can be intervalic (default) such that it looks at the intervals rather than the pitch classes
-            * The function also keeps track of the number of times each motive appeared.
-            * For instance, [7,7,7,3] in intervalic mode, the function will return []
-            *
-            * */
-
-
-
             let motives = []
             if(!intervalic) {
                 let all_subsets = unique_in_array(this.get.subsets(melody,allow_skips))
@@ -373,12 +431,19 @@ class EDO {
 
             return motives
         },
+
+        /**
+         * Same as get.motives() only instead of considering pitches as pitch classes, it looks at them as scale degrees
+         * As such, in the scale [0,2,4,5,7,9,11], [0,2,4] and [2,4,5] are considered the same motive
+         * This is because while the former has steps of size [2,2] and the latter  [2,1] they both represent moving
+         * 2 scale degrees up step wise in the scale [1,1]
+         * @param  {Array<Number>} melody - a collection of pitches to find (in order)
+         * @param  {Array<Number>} scale - a diatonic context (collection of PCs) for the motive search
+         * @param  {Boolean} [allow_skips=true] - if false, the search will only be done on consecutive items
+         * @return {Array<motive>}
+         * @memberOf EDO#get*/
         motives_diatonic: (melody, scale,allow_skips=false) => {
-            /*
-            * Same as get.motives() only instead of considering pitches as pitch classes, it looks at them as scale degrees
-            * As such, in the scale [0,2,4,5,7,9,11], [0,2,4] and [2,4,5] are considered the same motive
-            * This is because while the former has steps of size [2,2] and the latter  [2,1] they both represent moving
-            * 2 scale degrees up step wise in the scale [1,1]*/
+
             let not_in_scale = melody.filter((note)=>scale.indexOf(note)==-1)
             if(not_in_scale.length>0) return null
             scale = this.get.unique_elements(scale).sort((a,b)=>a-b)
@@ -388,6 +453,13 @@ class EDO {
             return motives
 
         },
+
+        /** Returns simple ratios in fraction form, decimal form, and their representation in cents with a given limit.
+         * @param  {Number} [limit=17] - the limit
+         * @param  {Boolean} cache - if true, the result will be cached for faster retrival
+         * @return {Object}
+         * @memberOf EDO#get
+         */
         simple_ratios: (limit=17,cache=true) => {
             let primes = this.get.primes_in_range(limit)
             let ratios = {}
@@ -399,20 +471,32 @@ class EDO {
             }
             return ratios
         },
+
+        /** Returns the inversion of a given set of pitches
+         *
+         * @param  {Array<Number>} scale - a collection of pitches (not necessarily PCs)
+         * @param  {Boolean} cache - if true, the result will be cached for faster retrival
+         * @return {Array<Number>} The inverted input
+         * @memberOf EDO#get*/
         inversion: (scale,cache=true) => {
-            /*Inverts the intervals of the collection*/
+
             if(!this.catalog[String(scale)]) this.catalog[String(scale)] = {}
             if(this.catalog[String(scale)]['inverted']) return this.catalog[String(scale)]['inverted']
 
             let steps = this.convert.to_steps(scale)
             let r_steps = [...steps]
             r_steps.reverse()
-            r_steps = r_steps.slice(1).concat(r_steps.slice(0,1))
 
             let i_scale = this.convert.intervals_to_scale(r_steps)
             if(cache) this.catalog[String(scale)]['inverted'] = i_scale
             return i_scale
         },
+
+        /** Returns the normal order of a given set of pitches
+         * @param  {Array<Number>} lst - a collection of PCs
+         * @param  {Boolean} cache - if true, the result will be cached for faster retrival
+         * @return {Array<Number>} The normal order of the input
+         * @memberOf EDO#get*/
         normal_order: (lst,cache=true) => {
             let edo = this.edo
             if(!this.catalog[String(lst)]) this.catalog[String(lst)] = {}
@@ -458,6 +542,12 @@ class EDO {
             }
             return result
         },
+
+        /** Returns the normal order of a given set of pitches
+         * @param  {Array<Number>} scale - a collection of PCs
+         * @param  {Boolean} cache - if true, the result will be cached for faster retrieval
+         * @return {Array<Array<Number>>}
+         * @memberOf EDO#get*/
         modes: (scale,cache=true) => {
             let edo = this.edo
             if(!this.catalog[String(scale)]) this.catalog[String(scale)] = {}
@@ -482,77 +572,58 @@ class EDO {
             if(cache) this.catalog[String(scale)]['modes'] = modes
             return modes
         },
+
+        /** Returns the path taken (as pitches) after climbing up a interval "fractal" tree
+         *
+         * In an interval tree where each branch adds (or subtracts) an interval recursively.
+         * For instance, such a tree could have 2 interval branches. One "on the left" adding -3 to the current
+         * pitch, and the one "on the right" adding +2 to the current pitch.
+         * If you climbed this tree using some path, for instance "left, left, right, left, right, right", you
+         * will in essence move -3 -3 +2 -3 +2 +2 such that if you start with pitch class 0 you get:
+         * 0 -3 -6 -4 -7 -5 -3 which if we ignore octave (i.e. indicate pitch classes) we get: 0 9 6 8 5 7 9.
+         *
+         *
+         * @param  {Array<Number>} intervals - the "branches" coming out of each node on the tree. For instance, [3,-3,2]
+         * would represent a tree with three branches coming out of each node, the leftmost is +3 the middle one is -3,
+         * and the rightmost one is +2.
+         *
+         * @param  {Array<Number>} path - the indication of how to traverse the tree. The list contains the indexes of
+         * the branch to be climbed at each itiration. so [0,0,1,1,2] would mean go up the leftmost branch twice,
+         * then go up the middle branch twice, finally go up the rightmost branch once (Note, this example uses
+         * three branches, but there could be any number of branches).
+         *
+         * @param  {Number} [starting_pitch=0] - Indicates the starting pitch of the tree
+         * (the pitch to be added to rather than starting at 0).
+         *
+         * @return {Array<Number>} the path
+         * @memberOf EDO#get*/
         path_on_tree: (intervals,path,starting_pitch=0) =>{
-            /*Climbs up a interval "fractal" tree and returns the path taken
-
-            In an interval tree where each branch adds (or subtracts) an interval recursively.
-            For instance, such a tree could have 2 interval branches. One "on the left" adding -3 to the current
-            pitch, and the one "on the right" adding +2 to the current pitch.
-            If you climbed this tree using some path, for instance "left, left, right, left, right, right", you
-            will in essence move -3 -3 +2 -3 +2 +2 such that if you start with pitch class 0 you get:
-            0 -3 -6 -4 -7 -5 -3 which if we ignore octave (i.e. indicate pitch classes) we get: 0 9 6 8 5 7 9.
-
-
-            Parameters
-            ----------
-            intervals : list
-                the "branches" coming out of each node on the tree. For instance, [3,-3,2] would represent a
-                tree with three branches coming out of each node, the leftmost is +3 the middle one is -3, and
-                the rightmost one is +2.
-            path : list
-                the indication of how to traverse the tree. The list contains the indexes of the branch to be
-                climbed at each itiration. so [0,0,1,1,2] would mean go up the leftmost branch twice, then go
-                up the middle branch twice, finally go up the rightmost branch once (Note, this example uses
-                three branches, but there could be any number of branches).
-            starting_pitch : int (optional)
-                Indicates the starting pitch of the tree (the pitch to be added to rather than starting at 0).
-
-
-            Returns
-            -------
-            list
-                the path
-            */
-
             let result = [starting_pitch]
             for (let branch of path) {
                 result.push(result[result.length-1]+intervals[branch]) //adds the interval at index=branch to the last value stored.
             }
             return result
         },
+
+        /** Finds the required operation to get to a destination note using given intervals
+         *
+         * Finds the shortest path towards a given note (destination) by starting on note 0,
+         * and moving up only using the "up_interval(s)", or down using the "down_interval(s)".
+         * For instance, for the path from 0 to -4, by only moving up by minor 3rds (3) and down by perfect
+         * 5ths (-7), the function will return [3,3,3,3,3,3,-7,-7] which is the shortest way to get from 0
+         * to -4 using only these intervals.
+         *
+         * Note: the order of the intervals is mutable and can be jumbled up at will without harming the
+         * result. In the example given, as long as there are six 3s and two -7s. the sum will be -4. So
+         * there is potential for permutations.
+         *
+         *
+         * @param  {Number} destination - the destination note. This is an int that represents some interval away from 0.
+         * @param  {Array<Number>} up_interval - the interval(s) used to move upwards
+         * @param  {Array<Number>} down_interval - the interval(s) used to move downwards
+         * @return {Array<Array<Number>>} a sorted array of the intervals needed to reach the destination starting from 0.
+         * @memberOf EDO#get*/
         shortest_path: (destination,up_interval=[3,4],down_interval=[-1,-2], used = [],life_span=10) => {
-            /*
-            * Finds the required operation to get to a destination note using given intervals
-
-            Finds the shortest path towards a given note (destination) by starting on note 0,
-            and moving up only using the "up_interval(s)", or down using the "down_interval(s)".
-            For instance, for the path from 0 to -4, by only moving up by minor 3rds (3) and down by perfect
-            5ths (-7), the function will return [3,3,3,3,3,3,-7,-7] which is the shortest way to get from 0
-            to -4 using only these intervals.
-
-            Note: the order of the intervals is mutable and can be jumbled up at will without harming the
-            result. In the example given, as long as there are six 3s and two -7s. the sum will be -4. So
-            there is potential for permutations.
-
-
-            Parameters
-            ----------
-            destination : int
-                the destination note. This is an int that represents some interval away from 0.
-            up_interval : int (optional)
-                the interval used to move upwards
-            down_interval : int (optional)
-                the interval used to move downwards
-
-
-            Returns
-            -------
-            list
-                a sorted list of the intervals needed to reach the destination starting from 0.*/
-
-
-
-
 
             const shortest_path_single_up_down = function  (destination,up_interval=1,down_interval=-1,max_length=10) {
                 /*
@@ -643,12 +714,18 @@ class EDO {
             return paths
 
         },
+
+        /** Returns all the ways to reach a destination pitch by providing a set of motives and a number of steps
+         *
+         * @example
+         * // returns [3,3,-3]
+         * get.path_n_steps(3,[[3],[-3]],3)
+         * @param  {Number} destination - the destination note. This is an int that represents some interval away from 0.
+         * @param  {Array<Array<Number>>} motives - a list of motives to be used
+         * @param  {Number} n_steps - The exact number of pitches needed
+         * @return {Array<Array<Number>>} An array of all the ways possible.
+         * @memberOf EDO#get*/
         path_n_steps: (destination,motives=[],n_steps=8) => {
-            /*
-            * returns all the ways to reach a destination pitch by providing a set of motives  and a number of steps
-            * For instance, if the destination is 3, the motives (a single interval in this case) are 3 and -3 and the number of steps is 3,
-            * the function will output [3,3,-3]
-            * */
             const up_motives = motives.filter((m)=>this.get.interval_shift(m)>0)
             const down_motives = motives.filter((m)=>this.get.interval_shift(m)<0)
             const static_motives = motives.filter((m)=>this.get.interval_shift(m)==0)
@@ -681,40 +758,27 @@ class EDO {
 
             return this.get.unique_elements(success)
         },
+
+        /** Generates all possible necklaces (unique scales without their modes) based on input parameters.
+         *
+         * @param  {Number} min_step - The smallest step size that can be used to form scales. If min_step=3, no scale will contain
+         * intervals smaller than 3 (so no intervals of size 2, or 1 will be found in any scale)
+         * @param  {Number} max_step - The largest step that can be used to form scales. If max_step=3, no scale will contain
+         * intervals larger than 3 (so no intervals of size >3 will be found in any scale)
+         * @param  {Number} min_sizes - The minimal amount of variety in step size needed to make a scale. if min_sizes=2,
+         * then scales with step sizes that belong to fewer than 2 interval classes will not be included.
+         *
+         * In the case of min_sizes=2, the following scales will be excluded: [0,1,2,3,4,5,6,7,8,9,10,11],
+         * [0,2,4,6,8,10], [0,3,6,9], etc.
+         *
+         * * @param  {Number} max_sizes - The maximal amount of variety in step size allowed to make a scale.
+         * if max_sizes=2, then scales that use more than 2 step sizes will be excluded.
+         *
+         * In the case of max_sizes=2, the following scale will be excluded: [0,1,4,5,7,10,11], because it has >2 (3)
+         * step sizes. step size=1 between 0 and 1, step size=2 between 5 and 7, and step size = 3 between 1 and 4.
+         * @return {Array<Scale>} all the scales that abide by the criteria given
+         * @memberOf EDO#get*/
         scales:(min_step=1,max_step=4,min_sizes=2,max_sizes=3, EDO = this) => {
-            /*Generates all possible necklaces based on input parameters.
-
-                Generates all possible necklaces based on input parameters and stores then in the scales attribute.
-
-                Attributes
-                ----------
-                scales : list
-                    list containing all scales as their own lists
-
-
-
-                Parameters
-                ----------
-                min_step : int
-                    The smallest step that can be used to form scales. If min_step=3, no scale will contain
-                    intervals smaller than 3 (so no intervals of size 2, or 1 will be found in any scale)
-                max_step : int
-                    The largest step that can be used to form scales. If max_step=3, no scale will contain
-                    intervals larger than 3 (so no intervals of size >3 will be found in any scale)
-                min_sizes : int
-                    The minimal amount of variety in step size needed to make a scale. if min_sizes=2, then
-                    scales with step sizes that belong to fewer than 2 interval classes will not be included.
-
-                    In the case of min_sizes=2, the following scales will be excluded: [0,1,2,3,4,5,6,7,8,9,10,11],
-                    [0,2,4,6,8,10], [0,3,6,9], etc.
-                max_sizes : int
-                    The maximal amount of variety in step size allowed to make a scale. if max_sizes=2, then
-                    scales that use more than 2 step sizes will be excluded.
-
-                    In the case of max_sizes=2, the following scale will be excluded: [0,1,4,5,7,10,11], because
-                    it has >2 (3) step sizes. step size=1 between 0 and 1, step size=2 between 5 and 7,
-                    and step size = 3 between 1 and 4.
-                */
 
             //get all unique combinations of size s from set of intervals set
             const calc_comb = (s,set) => {
@@ -811,6 +875,11 @@ class EDO {
 
 
         },
+
+        /** Returns all necklaces from a given set of intervals
+         * @param  {Array<Number>} lst - a set of intervals
+         * @return {Array<Array<Number>>} Necklaces
+         * @memberOf EDO#get*/
         necklace:(lst) => {
             let necklaces = []
             let unique_steps = this.get.unique_elements(lst)
@@ -833,37 +902,25 @@ class EDO {
             })
             return necklaces
         },
+
+        /** Makes every stacking combination of intervals from 'intervals' up to "height" stack_size.
+         *
+         * For instance, given the intervals [2,3] and stack_size = 3, the function will return a list of lists
+         * such that every list will be of length 3 (stack_size) containing an exhaustive list of every
+         * combination using the intervals 2 and 3 (in this case).
+         * As such, it will return  [[2, 2, 2], [2, 2, 3], [2, 3, 2], [3, 2, 2], [2, 3, 3], [3, 2, 3],
+         * [3, 3, 2], [3, 3, 3]] which represents every combination or 2s and 3s in any order of length 3.
+         *
+         * if as_pitches is set to True, instead of returning the list of intervals classes of length 3, it
+         * will return a list of pitches starting from 0 (which can go above 11). If set to True the function
+         * will return  [[0, 2, 4, 6], [0, 2, 4, 7], [0, 2, 5, 7], [0, 3, 5, 7], [0, 2, 5, 8], [0, 3, 5, 8],
+         * [0, 3, 6, 8], [0, 3, 6, 9]]
+         * @param  {Array<Number>} intervals - the intervals be used
+         * @param  {Number} [stack_size=3] - the size of the stack of pitches.
+         * @param  {Boolean} [as_pitches=false] - Indicates whether the returned result represents interval classes or pitches
+         * @return {Array<Number>} a list of interval classes or pitches
+         * @memberOf EDO#get*/
         interval_stack: (intervals, stack_size=3,as_pitches=false) => {
-            /*makes every stacking combination of intervals from 'intervals' up to "height" stack_size.
-
-            For instance, given the intervals [2,3] and stack_size = 3, the function will return a list of lists
-            such that every list will be of length 3 (stack_size) containing an exhaustive list of every
-            combination using the intervals 2 and 3 (in this case).
-            As such, it will return  [[2, 2, 2], [2, 2, 3], [2, 3, 2], [3, 2, 2], [2, 3, 3], [3, 2, 3],
-            [3, 3, 2], [3, 3, 3]] which represents every combination or 2s and 3s in any order of length 3.
-
-            if as_pitches is set to True, instead of returning the list of intervals classes of length 3, it
-            will return a list of pitches starting from 0 (which can go above 11). If set to True the function
-            will return  [[0, 2, 4, 6], [0, 2, 4, 7], [0, 2, 5, 7], [0, 3, 5, 7], [0, 2, 5, 8], [0, 3, 5, 8],
-            [0, 3, 6, 8], [0, 3, 6, 9]]
-
-
-            Parameters
-            ----------
-            intervals : list
-                the intervals be used
-            stack_size : int
-                the size of the stack of pitches.
-            as_pitches : bool (optional)
-                Indicates whether the returned result represents interval classes or pitches
-
-
-            Returns
-            -------
-            list of lists
-                a list of interval classes or pitches
-            */
-
             const decToBase = (n,b) => {
                 if(n==0) return [0]
                 let digits= []
@@ -905,8 +962,16 @@ class EDO {
             }
             return result
         },
+
+        /** Returns the closest ratio (within a given limit) for any interval class.
+         * @param  {Number} interval - An interval class
+         * @param  {Number} [limit=17] - The harmonic limit
+         * @param  {Boolean} cache - if true, the result will be cached for faster retrival
+         * @return {Object}
+         * @returns {approximation}
+         * @memberOf EDO#get
+         */
         ratio_approximation: (interval,limit=17) =>{
-            /*find closest ratio within a given limit*/
             let closest_ratio = 0
             let closest_name = ""
             let numeric = 0
@@ -923,19 +988,30 @@ class EDO {
             }
             return {ratio: closest_name, cents_offset: interval_in_cents-closest_ratio, decimal: numeric}
         },
+
+        /** Gets a melody represented as intervals, and returns the interval traversed by the end.
+         * @param  {Array<Number>} intervals - Melody represented in intervals
+         * @returns {Number} the interval traversed by the melody
+         * @memberOf EDO#get
+         */
         interval_shift: (intervals) => {
             /*Gets an array of intervals in order, and returns the interval traversed by the end*/
             return intervals.reduce((t,e)=>t+e)
         },
-        subsets: (pitches,allow_skips=true) => {
-            /*Returns all the subsets from a given array of pitches.
-            * The subsets respect order.
-            * If allow_skips=true the function will return subsets that require skipping over items as well
-            *
-            *
-            * In that case for [0,2,3] the returned subsets are [0] [2] [3] [0,2] [0,3] [2,3] [0,2,3]
-            * but if allow_skips=false, [0,3] will not be included because this subset skips 2*/
 
+        /** Returns all the subsets (in order) from a given array of pitches.
+         * @param  {Array<Number>} pitches - a given array of pitches
+         * @param  {Boolean} allow_skips - if set to false, function will only return subsets that have consecutive members
+         * @example
+         * //returns [[0], [2], [3], [0, 2], [0, 3], [2, 3], [0, 2, 3]]
+         * get.subsets([0,2,3],true)
+         * @example
+         * //returns [[0], [2], [3], [0, 2], [2, 3], [0, 2, 3]]
+         * get.subsets([0,2,3],false)
+         * @returns {Array<Array<Number>>}
+         * @memberOf EDO#get
+         */
+        subsets: (pitches,allow_skips=true) => {
             if(allow_skips) {
                 pitches = pitches.reduce(
                     (subsets, value) => subsets.concat(
@@ -956,18 +1032,24 @@ class EDO {
             pitches = pitches.filter((el)=>el.length>0)
             return pitches
         },
+
+        /** Returns a vector describing the contour of the given pitches.
+         *
+         * If local is set to true, every cell in the vector will be
+         * either 1 if note n is higher than n-1, 0 if note n is the same as n-1, and -1 if note n is lower than n-1
+         * For instance [0,0,4,7,4,7,4,0] will in local mode will return [0,1,1,-1,1,-1,-1]
+         *
+         * If local is set to false (default), the contour of the line is expressed such that the actual pc class of the
+         * note is removed but its relative position in regards to the entire line is keps.
+         * [0,4,7,12,16,7,12,16] (Bach prelude in C) has 5 distinct note heights, so it will return
+         * [0,1,2,3, 4, 2,3, 4] indicating the relative height of each note in the entire phrase
+         * @param  {Array<Number>} pitches - a given array of pitches
+         * @param  {Boolean} [local=false] - if set to false, function will only return subsets that have consecutive members
+         * @returns {Array<Number>}
+         * @memberOf EDO#get
+         */
         contour: (pitches,local=false) => {
-            /* returns a vector describing the contour of the given pitches.
 
-            If local is set to true, every cell in the vector will be
-            either 1 if note n is higher than n-1, 0 if note n is the same as n-1, and -1 if note n is lower than n-1
-            For instance [0,0,4,7,4,7,4,0] will in local mode will return [0,1,1,-1,1,-1,-1]
-
-            if local is set to false (default), the contour of the line is expressed such that the actual pc class of the
-            note is removed but its relative position in regards to the entire line is keps.
-            [0,4,7,12,16,7,12,16] (Bach prelude in C) has 5 distinct note heights, so it will return
-            [0,1,2,3, 4, 2,3, 4] indicating the relative height of each note in the entire phrase
-            * */
 
             if(local) {
                 let vector = []
@@ -990,30 +1072,50 @@ class EDO {
             }
 
         },
-        pitch_distribution: (pitches) => {
-            /*returns the distribution (as fractions) of the pitches in a set of pitches*/
-            let unique = this.get.unique_elements(pitches)
 
+        /** Returns the distribution (as fractions adding up to 1) of the pitches in a set of pitches
+         *
+         * @param  {Array<Number>} pitches - a given array of pitches
+         * @returns {Array<distribution>}
+         * @memberOf EDO#get
+         */
+        pitch_distribution: (pitches) => {
+            let unique = this.get.unique_elements(pitches)
 
             let dist = unique.map((el)=>{return {note:el,rate: pitches.filter(x => x==el).length/pitches.length}})
             dist = dist.sort((a,b)=>b.rate-a.rate)
             return dist
         },
+
+        /** Transposes the input by a given amount
+         *
+         * @param  {Array<Number>} pitches - a given array of pitches
+         * @param  {Number} [amount=0] - the interval by which to transpose
+         * @param  {Boolean} [as_PC=true] - if true, the intervals returns will conform to a single octave
+         * @returns {Array<Number>}
+         * @memberOf EDO#get
+         */
         transposition: (pitches,amount=0,as_PC=true) => {
             pitches = pitches.map((pitch) => pitch+amount)
             if (as_PC) pitches=pitches.map((pitch)=>this.mod(pitch,this.edo))
             return pitches
         },
+
+        /** Returns an array of (length) pitches, with lowest note not lower than range[0],
+         * and highest note not higher than range[1].
+         *
+         * @param  {Number} [length=8] - The number of pitches in the melody
+         * @param  {Array<number>} [range=[0, 12]] - the lower and upper limits (inclusive) for the melody
+         * @param  {Boolean} [repetitions=false] - If repetitions is false, the returned melody will note have the
+         * same pitch appear twice (although it may have the same pitch class, but in a different octave).
+         * @param  {Array<number>} [from_PCs] - If from_PCs is provided, the pitches returned will be only ones
+         * that appear in from_PCs.
+         * @param  {Number|Boolean} [avoid_leaps=false] - If avoid_leaps is provided (a number), the generator will
+         * ATTEMPT to move in intervals that equal to avoid_leaps or smaller
+         * @returns {Array<Number>}
+         * @memberOf EDO#get
+         */
         random_melody: (length=8,range = [0,12], repetitions=false, from_PCs=undefined,avoid_leaps=false) => {
-            /*returns an array of (length) pitches, with lowest note not lower than range[0],
-            and highest note not higher than range[1].
-
-            If from_PCs is provided, the pitches returned will be only ones that appear in from_PCs.
-            If repetitions is false, the returned melody will note have the same pitch appear twice
-            (altough it may have the same pitch class, but in a different octave),
-
-            If avoid_leaps is provided, the generator will attempt to move in intervals = avoid_leaps or smaller
-            */
             let pitches = []
             if(from_PCs) {
                 from_PCs = from_PCs.map((pc)=>mod(pc,this.edo))
@@ -1053,6 +1155,60 @@ class EDO {
             }
             return collection
         },
+
+        /** Gets an array that may have duplications and returns the array without duplications
+         *
+         * @param  {Array<number>} list - an array with duplications
+         * @returns {Array<Number>} an array without duplications
+         * @memberOf EDO#get
+         */
+        unique_elements : (list) => {
+
+            let unique  = new Set(list.map(JSON.stringify));
+            unique = Array.from(unique).map(JSON.parse);
+
+            return unique
+        },
+
+        /** <pre>Returns a lattice from the pitches in the scale</pre>
+
+         * @param {Number} [hor=3] - the gap between numbers horizontally
+         * @param {Number} [ver=4] - the gap between numbers vertically
+         * @param {Boolean} [as_notes=false]
+         * @example
+         * let edo = new EDO(12) //define tuning
+         * edo.get.lattice()
+         * //returns
+         //0  3  6  9  0  3  6  9  0  3  6  9
+         //
+         //8  11 2  5  8  11 2  5  8  11 2  5
+         //
+         //4  7  10 1  4  7  10 1  4  7  10 1
+         //
+         //0  3  6  9  0  3  6  9  0  3  6  9
+         //
+         //8  11 2  5  8  11 2  5  8  11 2  5
+         //
+         //4  7  10 1  4  7  10 1  4  7  10 1
+         //
+         //0  3  6  9  0  3  6  9  0  3  6  9
+         * @memberOf EDO#get*/
+        lattice: (hor=3,ver=4,as_notes=false) => {
+            let lattice = ""
+            for (let i = this.edo; i >= -this.edo; i-=ver) {
+                let line = ""
+                for (let j = 0; j < this.edo ; j++) {
+                    let num =this.mod(i+(j*hor),this.edo)
+                    let note
+                    if(as_notes) note = this.convert.pc_to_name(num)
+                    else note = String(num)
+                    line+=note+" ".repeat(3-note.length)
+                }
+                lattice+=line+"\n\n"
+            }
+            return lattice
+        },
+
         primes_in_range: (upper=17,lower=2) => {
             let primes = []
             for(let num=lower;num<=upper;num++) {
@@ -1065,13 +1221,6 @@ class EDO {
             }
             return primes
         },
-        unique_elements : (list) => {
-
-            let unique  = new Set(list.map(JSON.stringify));
-            unique = Array.from(unique).map(JSON.parse);
-
-            return unique
-        },
         divisors : (n) => {
             let divisors = []
             for (let i=2;i<Math.ceil(n/2);i++) {
@@ -1080,7 +1229,16 @@ class EDO {
             return divisors
         }
     }
+
+    /**A collection of functions that converts an input into other equivalent representations
+     * @namespace*/
     convert = {
+        /** Gets a melody as pitches and returns the melody as intervals
+         *
+         * @param  {Array<number>} lst - a collection of pitches
+         * @param  {Boolean} [cache=true] - when true the result is cached for faster future retrieval
+         * @returns {Array<Number>} an array of intervals
+         * @memberOf EDO#convert*/
         to_steps: (lst,cache=true) => {
             if(!this.catalog[String(lst)]) this.catalog[String(lst)] = {}
             if(this.catalog[String(lst)]['steps']) return this.catalog[String(lst)]['steps']
@@ -1093,6 +1251,12 @@ class EDO {
             if(cache) this.catalog[String(lst)]['steps'] = intervals
             return intervals
         },
+
+        /** Gets a scale's name, and returns it as a Scale object
+         *
+         * @param  {String} name - a scale's name (based on this API's naming formula)
+         * @returns {Scale} a scale object
+         * @memberOf EDO#convert*/
         name_to_scale: (name) => {
             name = name.split('-')
             let edo = name[0]
@@ -1110,6 +1274,13 @@ class EDO {
             vector.reverse()
             return this.scale(vector)
         },
+
+        /** Returns all of the IC in the EDO that equal to a given ratio (with a given tolerance in cents)
+         *
+         * @param  {Number} ratio - A harmonic ratio
+         * @param  {Number} tolerance - a tolerance (allowed error) in cents
+         * @returns {Array<Number>} Interval classes that fit that ratio
+         * @memberOf EDO#convert*/
         ratio_to_interval:(ratio,tolerance=10) => {
             let intervals = []
             let cents = this.convert.ratio_to_cents(ratio)
@@ -1120,28 +1291,34 @@ class EDO {
             }
             return intervals
         },
+
+        /** Returns a value in cents to a given input ratio
+         *
+         * @param  {Number} ratio - A harmonic ratio
+         * @returns {Number} The ratio represented in cents
+         * @memberOf EDO#convert*/
         ratio_to_cents: (ratio) => {
             return 1200*Math.log2(ratio)
         },
+
+        /** Returns a value in cents from a given interval
+         *
+         * @param  {Number} interval - Some interval
+         * @returns {Number} the interval represented in cents
+         * @memberOf EDO#convert*/
         interval_to_cents: (interval) => {
             return this.cents_per_step*interval
         },
+
+        /** Gets a list of intervals classes. Returns a scale as list of pitch classes.
+         *
+         * @param  {Array<Number>} intervals - A list of intervals
+         * @example
+         * // returns [0,2,4,5,7,9,11]
+         * convert.intervals_to_scale([2, 2, 1, 2, 2, 2, 1])
+         * @returns {Number} A scale made up by adding the intervals in order
+         * @memberOf EDO#convert*/
         intervals_to_scale: (intervals) => {
-            /*Gets a list of intervals classes. Returns a scale as list of pitch classes.
-
-            Gets [2,2,1,2,2,2,1]
-            Return [0,2,4,5,7,9,11]
-
-            Parameters
-            ----------
-            intervals : list
-
-
-            Returns
-            -------
-            list
-                scale as pitch classes
-            */
             let pcs = [0]
 
             intervals.forEach((interval) => {
@@ -1149,12 +1326,33 @@ class EDO {
             })
             return pcs
         },
+
+        /** Returns a ratio as a decimal number from a given interval
+         *
+         * @param  {Number} interval - Some interval
+         * @returns {Number} a ratio
+         * @memberOf EDO#convert*/
         interval_to_ratio: (interval) => {
             return Math.pow(2,interval/this.edo)
         },
+
+        /** Returns a ratio as a decimal number from an interval represented in cents
+         *
+         * @param  {Number} cents - an interval in cents
+         * @returns {Number} a ratio
+         * @memberOf EDO#convert*/
         cents_to_ratio: (cents) => {
             return Math.pow(2,cents/1200)
         },
+
+        /** Returns the name of the note (including octave) from a midi value
+         * @param  {Array<Number>|Number} note_number - a midi note number or an array of midi note numbers
+         * @param  {Number} offset - an amount by which to shift note_number
+         * @example
+         * //returns ["C4","D4"]
+         * convert.midi_to_name([60,62])
+         * @returns {Array<String>|String} The input as note name(s)
+         * @memberOf EDO#convert*/
         midi_to_name: (note_number,offset=0) => {
             /*Given a midi note code as an integer, returns its note name and octave disposition (e.g C4 for 60).*/
 
@@ -1174,9 +1372,13 @@ class EDO {
 
 
         },
-        pc_to_name: (pc) => {
-            /*Given a pitch class as an int, returns its name (e.g G for 7)*/
 
+        /** Returns the name of a note from a given pitch class
+         * @param  {Number} pc - a pitch class
+         * @returns {String} The input as a note name
+         * @memberOf EDO#convert
+         * */
+        pc_to_name: (pc) => {
             let PC = {
                 0: 'C ',
                 1: 'C#',
@@ -1194,12 +1396,17 @@ class EDO {
             }
             return PC[pc]
         },
-        intervals_to_pitches: (intervals,starting_pitch=0,modulus=undefined) => {
 
-            /*Given a list of intervals (or list of lists), returns pitches made with the intervals
-            starting from starting_pitch*/
+        /** Given a list of intervals (or list of lists), returns pitches made with the intervals
+         * starting from starting_pitch
+         * @param  {Array<Number>|Array<Array<Number>>} intervals - a list of intervals
+         * @param  {Number} [starting_pitch=0]
+         * @param  {Boolean} [modulo] if modulo is provided, the pitches will conform to it
+         * @returns {Array<Number>|Array<Array<Number>>} The input as pitches
+         * @memberOf EDO#convert*/
+        intervals_to_pitches: (intervals,starting_pitch=0,modulo=undefined) => {
             let pitches
-            if(modulus) pitches = [mod(starting_pitch,modulus)]
+            if(modulo) pitches = [mod(starting_pitch,modulo)]
             else pitches=[starting_pitch]
             for(let interval of intervals) {
                 if(Array.isArray(interval)) {
@@ -1209,12 +1416,17 @@ class EDO {
                     pitches.push(result)
                 }
                 else {
-                    if(modulus) pitches.push(mod(parseInt(pitches[pitches.length-1])+parseInt(interval)),modulus)
+                    if(modulo) pitches.push(mod(parseInt(pitches[pitches.length-1])+parseInt(interval)),modulo)
                     else pitches.push(parseInt(pitches[pitches.length-1])+parseInt(interval))
                 }
             }
             return pitches
         },
+
+        /** Given a list of midi notes, returns a list of intervals
+         * @param  {Array<Number>} midi - a list of midi pitches
+         * @returns {Array<Number>} The input as intervals
+         * @memberOf EDO#convert*/
         midi_to_intervals: (midi) => {
             let intervals = []
             for(let i=0;i<midi.length-1;i++) {
@@ -1231,6 +1443,7 @@ class EDO {
 
 }
 
+/** Class representing a scale within an EDO system */
 class Scale {
     constructor(pitches,parent) {
         this.parent = parent
@@ -1248,58 +1461,101 @@ class Scale {
         this.name = this.get.name()
     }
 
+    /**A collection of functions that return an amount
+     * @namespace*/
     count = {
+        /**
+         * <pre>Returns the number of Perfect Fifths (with a tolerance of 5 cents) in the scale.
+         *
+         * (To count other intervals or set a different tolerance use @Scale.count.ratio())</pre>
+         * @return {Number}
+         * @memberOf Scale#count
+         */
         P5s: () => {
-            /*Returns the number of Perfect Fifths (with a tolerance of 5 cents) in the scale
-
-            To count other intervals or set a different tolerance use Scale.count_ratio()*/
             return this.count.interval(this.parent.P5s)
         },
-        M3s: () => {
-            /*Returns the number of Major Thirds (with a tolerance of 20 cents) in the scale
 
-            To count other intervals or set a different tolerance use Scale.count_ratio()*/
+        /**
+         * <pre>Returns the number of Major Thirds (with a tolerance of 20 cents) in the scale.
+         *
+         * (To count other intervals or set a different tolerance use @Scale.count.ratio())</pre>
+         * @return {Number}
+         * @memberOf Scale#count
+         */
+        M3s: () => {
             return this.count.interval(this.parent.M3s)
         },
-        m3s: () => {
-            /*Returns the number of Minor Thirds (with a tolerance of 20 cents) in the scale
 
-            To count other intervals or set a different tolerance use Scale.count_ratio()*/
+        /**
+         * <pre>Returns the number of Minor Thirds (with a tolerance of 20 cents) in the scale.
+         *
+         * (To count other intervals or set a different tolerance use @Scale.count.ratio())</pre>
+         * @return {Number}
+         * @memberOf Scale#count
+         */
+        m3s: () => {
             return this.count.interval(this.parent.m3s)
         },
-        thirds: () => {
-            /* Returns the number of Major and Minor Thirds (with a tolerance of 20 cents) in the scale
 
-            To count other intervals or set a different tolerance use Scale.count_ratio()*/
+        /**
+         * <pre>Returns the number of Major and Minor Thirds (with a tolerance of 20 cents) in the scale.
+         *
+         * (To count other intervals or set a different tolerance use @Scale.count.ratio())</pre>
+         * @return {Number}
+         * @memberOf Scale#count
+         */
+        thirds: () => {
             return this.count.interval(this.parent.M3s.concat(this.parent.m3s))
         },
+
+        /**
+         * <pre>Returns the number of pitches in the scale (its cardinality).
+         * @return {Number}
+         * @memberOf Scale#count
+         */
         pitches: () => {
-            /*Returns the number of pitches in the scale*/
             return this.pitches.length
         },
-        rotational_symmetries: () => {
-            /*Returns the number of rotational symmetries in the scale*/
 
+        /**
+         * <pre>Returns the number of rotational symmetries in the scale.
+         * @return {Number}
+         * @memberOf Scale#count
+         */
+        rotational_symmetries: () => {
             return this.edo / this.count.transpositions()
         },
-        modes: () => {
-        /*Returns the number of unique modes in the scale
 
-        E.g. returns 7 for the major scale, and 1 for the whole tone scale*/
+        /**
+         * <pre>Returns the number of unique modes in the scale.
+         * @return {Number}
+         * @memberOf Scale#count
+         * @example
+         * E.g returns 7 for the major scale, and 1 for the whole tone scale*/
+        modes: () => {
         return this.get.modes().length
         },
-        major_minor_triads: () => {
-            /*Returns the number of major and minor (sounding) triads in the scale
 
-            For other chord qualities use a combination of Scale.count_chord_quality() and self.gen.ratio_to_interval()*/
+        /**
+         * <pre>Returns the number of major and minor (sounding) triads in the scale.
+         *
+         * For other chord qualities use a combination of Scale.count.chord_quality() and EDO.convert.ratio_to_interval()
+         * </pre>
+         * @return {Number}
+         * @memberOf Scale#count*/
+        major_minor_triads: () => {
             let major = this.count.chord_quality([[...this.parent.M3s],[...this.parent.P5s]])
             let minor = this.count.chord_quality([[...this.parent.m3s],[...this.parent.P5s]])
 
             return major+minor
-
         },
+
+        /**
+         * Returns the number of intervals of size IC in the scale.
+         * @param {Number} interval - some interval class.
+         * @return {Number}
+         * @memberOf Scale#count*/
         interval: (interval) => {
-            /*Returns the number of intervals of size IC in the scale*/
             let scale = this.pitches
             let count = 0
             for(let note of scale) {
@@ -1312,8 +1568,14 @@ class Scale {
 
             return count
         },
+
+        /**
+         * Returns number of unique transpositions available for the scale.
+         * @param {Boolean} [cache=true] - when true, the result will be cached for faster retrieval.
+         * @return {Number}
+         * @function
+         * @memberOf Scale#count*/
         transpositions: (cache=true) => {
-            /*Returns number of unique transpositions available for the scale*/
             if(this.catalog['# transpositions']) return this.catalog['# transpositions']
             let scale = this.pitches
             let scales = [scale]
@@ -1330,10 +1592,16 @@ class Scale {
             let result = scales.length
             if(cache) this.catalog['# transpositions'] = result
             return result
-
         },
+
+        /**
+         * Returns the number of imperfections (notes that do not have a P5 above them) in the scale.
+         * @param {Number} [tolerance=10] - allowed tolerance in cents (away from P5)
+         * @param {Boolean} [cache=true] - when true, the result will be cached for faster retrieval.
+         * @return {Number}
+         * @memberOf Scale#count*/
         imperfections: (tolerance=10,cache=true) => {
-            /*Returns the number of imperfections (notes that do not have a P5 above them) in the scale*/
+
             if(this.catalog['# imperfections']) return this.catalog['# imperfections']
 
             let scale = this.pitches
@@ -1359,10 +1627,15 @@ class Scale {
             return imperfections
 
         },
-        chord_quality: (intervals) => {
-            /*Returns the number of times a certain chord quality (specific in PCs above the root) exists in the scale
-            e.g. intervals = [4,7,11] counts the number of times a major 7th (if in 12 TET) appears in a scale*/
 
+        /**
+         * Returns the number of times a certain chord quality (specific in PCs above the root) exists in the scale.
+         * @param {Array<Number>} intervals - intervals above 0
+         * @return {Number}
+         * @example
+         * Scale.count.chord_quality([4, 7, 11]) counts the number of times a major 7th (if in 12 TET) appears in a scale
+         * @memberOf Scale#count*/
+        chord_quality: (intervals) => {
             let scale = this.pitches
             let count=0
             let modes = this.get.modes()
@@ -1389,19 +1662,46 @@ class Scale {
                 }
             return count
         },
+
+        /**
+         * Returns the number of unique trichords available in the scale.
+         * @return {Number}
+         * @function
+         * @memberOf Scale#count*/
         trichords: () => {
-            /*Returns the number of unique trichords available in the scale*/
             return this.get.trichords().length
         },
+
+        /**
+         * Returns the number of unique tetrachords available in the scale.
+         * @return {Number}
+         * @function
+         * @memberOf Scale#count*/
         tetrachords: () => {
-            /*Returns the number of unique tetrachords available in the scale*/
             return this.get.tetrachords().length
         },
+
+        /**
+         * Counts how many times some ratio appears in the scale within a given tolerance.
+         * @param {Number} ratio
+         * @param {Number} [tolerance=10] - a tolerance in cents
+         * @return {Number}
+         * @function
+         * @memberOf Scale#count*/
         ratio: (ratio,tolerance=10) => {
-            /*Counts how many times some ratio appears in the scale within a given tolerance*/
+            /**/
             let intervals = this.parent.convert.ratio_to_interval(ratio,tolerance)
             return this.count.interval(intervals)
         },
+
+        /**
+         * Counts how many simple ratios appear in the scale.
+         * @param {Number} [limit=17] - some harmonic limit
+         * @param {Number} [tolerance=15] - a tolerance in cents
+         * @returns simple_ratio
+         * @memberOf Scale#count
+         *
+         * */
         simple_ratios: (limit=17,tolerance=15) => {
             let ratios = this.parent.get.simple_ratios(limit=limit)
             let unique = 0
@@ -1415,8 +1715,14 @@ class Scale {
             }
             return {discrete:unique,instances: total}
         },
+
+        /**
+         * Returns the maximal number of consecutive steps of size 'size' in the scale.
+         * @param {Number} size - the size of the step
+         * @returns {Number}
+         * @memberOf Scale#count
+         * */
         consecutive_steps: (size) => {
-            /*Returns the maximal number of consecutive steps of size 'size'*/
             let counts = []
             let steps = this.to.steps()
             steps = [...steps,...steps]
@@ -1437,6 +1743,9 @@ class Scale {
 
         }
     }
+
+    /**A collection of functions manipulates the scale and returns diverse information about it
+    * @namespace*/
     get = {
         name: () => {
             /*
@@ -1458,24 +1767,34 @@ class Scale {
 
 
         },
+
+        /** Returns all the various modes (normalized to 0, that include all pitches) available from this scale
+         * @param  {Boolean} cache - When true, the result will be cached for faster retrieval
+         * @returns {Array<Array<Number>>} An array of the different modes
+         * @memberOf Scale#get
+         */
         modes: (cache=true) => {
-            /*Returns all the various modes (normalized to 0, that include all pitches) available from this scale
-
-            :param cache:
-            :return:*/
-
             if(this.catalog['modes']) return this.catalog['modes']
 
             let modes = this.parent.get.modes(this.pitches)
             if(cache) return this.catalog['modes'] = modes
             return modes
         },
+
+        /** Returns the scale's pitches as pitch classes
+         * @returns {Array<Number>} The scale's pitches as PCs
+         * @memberOf Scale#get
+         */
         pitches: () => {
-            /*Returns the scale's pitchs as pitch classes*/
             return this.pitches
         },
+
+        /** Returns the interval vector of the scale.
+         * @param  {Boolean} cache - When true, the result will be cached for faster retrieval
+         * @returns {Array<Number>} An array representing the vector
+         * @memberOf Scale#get
+         */
         interval_vector: (cache=true) => {
-            /*Returns the interval vector of the scale*/
             if(this.catalog['interval vector']) return this.catalog['interval vector']
             let scale = this.pitches
             let vector = []
@@ -1500,6 +1819,12 @@ class Scale {
 
 
         },
+
+        /** Returns every trichord (normalized to 0) available in this scale
+         * @param  {Boolean} cache - When true, the result will be cached for faster retrieval
+         * @returns {Array<Number>} An array representing the vector
+         * @memberOf Scale#get
+         */
         trichords: (cache=true) => {
             /*
             Returns a list of every trichord (normalized to 0) available in this scale.
@@ -1525,6 +1850,12 @@ class Scale {
             return trichords
 
         },
+
+        /** Returns every tetrachord (normalized to 0) available in this scale
+         * @param  {Boolean} cache - When true, the result will be cached for faster retrieval
+         * @returns {Array<Number>} An array representing the vector
+         * @memberOf Scale#get
+         */
         tetrachords: (cache=true) => {
             /*
             Returns a list of every tetrachord (normalized to 0) available in this scale.
@@ -1552,15 +1883,18 @@ class Scale {
             if(cache) this.catalog['tetrachords'] = tetrachords
             return tetrachords
         },
+
+        /** Returns a list of lists of size "levels" made out of scale degrees with "skip" steps skipped apart.
+         * @param  {Number} levels - The number of levels to the stack
+         * @param  {Number} skip - The number of scale steps to skip between each level on the stack
+         * @returns {Array<Array<Number>>} An array containing all of the stacks
+         * @memberOf Scale#get
+         * @example
+         * [0,2,4,5,7,9,11] in 12-TET Scale.get.stacks(3,1)
+         * //returns [[0, 3, 6], [0, 3, 7], [0, 4, 7]]
+         * To get all quartal qualities, instead of skip=1, skip should be set to equal to 2. (C, skipping D, and E, and selecting F, etc.)
+         */
         stacks: (levels,skip) => {
-            /*Returns a list of lists of size "levels" made out of scale degrees with "skip" steps skipped apart.
-
-            E.g in [0,2,4,5,7,9,11] in 12-TET levels = 3 (number of pitches per stack)
-            and skip=1 (number of scale degrees skipped between pitches) the function returns all the triads available
-            in the major tonality as  [[0, 3, 6], [0, 3, 7], [0, 4, 7]].
-
-            To get all quartal qualities, instead of skip=1, skip should be set to equal to 2. (C, skipping D, and E, and selecting F, etc.)*/
-
             let scale = this.pitches
 
             let diapason = ((skip+1)*(levels-1))+1
@@ -1577,9 +1911,21 @@ class Scale {
             stacks = this.parent.get.unique_elements(stacks)
             return stacks
         },
+
+        /** Returns all the transpositions of the scale that share a common tone with the original scale
+         * As well the the number of notes altered to get from the original scale to the new scale as a "Tuple"
+         * @param  {Boolean} normalize - when true, all of the transpositions will be constructed on 0
+         * @returns {Array<Array<Number>,Number>} An array containing all of the stacks
+         * @memberOf Scale#get
+         * @example
+         * [0,2,4,5,7,9,11] in 12-TET Scale.get.common_tone_transpositions()
+         * //returns [[[0,2,4,5,7,9,11],0],[[0,2,4,5,7,9,10],1],[[0,2,4,6,7,9,11],1],[[1,2,4,6,7,9,11],2],[[1,2,4,6,8,9,11],3],[[1,3,4,6,8,9,11],4],[[1,3,4,6,8,10,11],5]]
+         * @example
+         * [0,2,4,5,7,9,11] in 12-TET Scale.get.common_tone_transpositions(false)
+         * //returns [[[0,2,4,5,7,9,11],0],[[5,7,9,10,0,2,4],1],[[7,9,11,0,2,4,6],1],[[2,4,6,7,9,11,1],2],[[9,11,1,2,4,6,8],3],[[4,6,8,9,11,1,3],4],[[11,1,3,4,6,8,10],5]]
+         */
         common_tone_transpositions: (normalize=true) => {
-            /*Returns all the transpositions of the scale that share a common tone with the original scale
-            As well the the number of notes altered to get from the original scale to the new scale as a Tuple*/
+
 
             let transpositions = []
             let intervals = this.to.steps()
@@ -1598,6 +1944,14 @@ class Scale {
             return transpositions
 
         },
+
+        /** Returns the sets that the scale is contained in from a given list of sets
+         * @param  {Array<Array<Number>>} scales - a list of scales
+         * @returns {Array<Array<Number>>} the scales that contain the Scale object
+         * @memberOf Scale#get
+         * @example
+         * [0,3,7] in 12-TET Scale.get.supersets([[0,1,2,3,4,5,6,7],[0,3,4,7],[0,1,2]])
+         * //returns [[0,1,2,3,4,5,6,7],[0,3,4,7]]*/
         supersets: (scales) => {
             let sets = []
             for (let scale of scales) {
@@ -1606,12 +1960,19 @@ class Scale {
                     if(this.is.subset(mode)) sets.push(scale)
                 }
             }
+            sets = this.parent.get.unique_elements(sets)
             return sets
         },
-        rotations: () => {
-            /*Returns all of the rotations of the scale (not normalized to 0).
 
-            To get the rorations normalized to zero (the modes) use Scale.get_modes()*/
+        /** <pre>Returns all of the rotations of the scale (not normalized to 0).
+         *
+         * To get the rotations normalized to zero (the modes) use {@link Scale.get.modes()}</pre>
+         * @returns {Array<Array<Number>>} The rotations of the scale
+         * @memberOf Scale#get
+         * @example
+         * [0,3,7]  Scale.get.rotations()
+         * //returns [[0,3,7],[3,7,0],[7,0,3]]*/
+        rotations: () => {
             let rotations = []
             let rotate = [...this.pitches]
             while (!this.parent.is.element_of(rotate,rotations)) {
@@ -1620,18 +1981,28 @@ class Scale {
             }
             return rotations
         },
-        permutations: () => {
-            /*Returns every ordering (permutation) of notes in the scale*/
 
+        /** <pre>Returns every ordering (permutation) of notes in the scale
+         *
+         * Uses {@link EDO.get.permutations()}</pre>
+         * @returns {Array<Array<Number>>} The permutations of the scale
+         * @memberOf Scale#get
+         * @example
+         * [0,3,7]  Scale.get.permutations()
+         * //returns [[0,3,7],[0,7,3],[3,0,7],[3,7,0],[7,0,3],[7,3,0]]*/
+        permutations: () => {
             return this.parent.get.permutations(this.pitches)
         },
+
+        /** <pre>Gets a list of intervals above a root, and returns all the positions in the scale where this
+         chord quality can be created
+         *
+         * @returns {Array<Number>} The PCs on which the quality can be built
+         * @memberOf Scale#get
+         * @example
+         * [0,4,7] in 12-EDO Scale.get.position_of_quality([4,7]) (a major triad)
+         * //returns [0,5,7] because you can construct a major triad on 0, 5, and 7*/
         position_of_quality: (intervals) => {
-            /*Gets a list of intervals about a root, and returns all the positions in the scale where this
-            chord quality can be created
-
-            E.g in [0,2,4,5,7,9,11] intervals = [4,7] (major triad) will return [0,5,7] because you can construct a major
-            triad on 0, 5, and 7.*/
-
             let result = []
             let double_scale = [...this.pitches,...this.pitches]
 
@@ -1644,8 +2015,13 @@ class Scale {
 
 
         },
+
+        /** <pre>Calculates the attraction between note1 to note2 according to Lerdahl's formula in TPS
+         * @param {Number} note1 - The first PC
+         * @param {Number} note2 - The second PC
+         * @returns {Number} The value of attraction between note1 and note2
+         * @memberOf Scale#get*/
         lerdahl_attraction: (note1,note2) => {
-            /*Calculates the attraction between note1 to note2 according to Lerdahl's formula in TPS*/
             if(note1==note2) return 0
             note1 = {pitch:note1}
             note2 = {pitch:note2}
@@ -1676,12 +2052,18 @@ class Scale {
             // I find that omitting the square generalizes better
             return (note2.anchoring/note1.anchoring)*(1/dist)
         },
+
+        /** <pre>Returns a graphic vector showing the tendencies of each note in the scale
+         * @returns {Array<String>} The attraction vector
+         * @see Scale.get.lerdahl_attraction()
+         * @example
+         * let edo = new EDO(12) //define tuning
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //major scale
+         * scale.get.lerdahl_attraction_vector()
+         * //returns [*,<>,*,<>,*,<<,>>]
+         * @memberOf Scale#get*/
         lerdahl_attraction_vector: () =>{
-            /*
-            see @lerdahl_attraction
-            Returns a graphic vector showing the tendencies of each note in the scale
-            [*,<<,>>,*,<>,*,etc.]
-            */
+
             let vector = []
             for (let i=0; i<this.pitches.length;i++) {
                 let note = this.pitches[i]
@@ -1697,8 +2079,17 @@ class Scale {
             return vector
 
         },
+
+        /** <pre>Returns a list of unique step sizes that appear in the scale
+         * @returns {Array<Number>} The step sizes
+         * @example
+         * let edo = new EDO(12) //define tuning
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //major scale
+         * scale.get.step_sizes()
+         * //returns [1,2]
+         * @memberOf Scale#get*/
         step_sizes: (cache=true) => {
-            /*Convert the scales PCs into a list of ICs representing the size of each step in the scale*/
+
             if(this.catalog['step sizes']) return this.catalog['step sizes']
             let lst = this.parent.get.unique_elements(this.to.steps())
             lst.sort((a,b) => a-b)
@@ -1707,12 +2098,19 @@ class Scale {
 
 
         },
-        least_step_multiplier: () => {
-            /*the smallest multiplier between the sizes of steps
 
-            E.g in [0,1,4,5,7,8,11] there are 3 kinds of steps 1,2, and 3.
-            2 is a multiplier of 2 over 1. 3 is a multiplier of 3 over one and 1.5 over two.
-            Therefore, the function will return 1.5.*/
+        /** <pre>Returns the smallest multiplier between the sizes of steps
+         * @returns {Number} The step sizes
+         * @example
+         * let edo = new EDO(12) //define tuning
+         * let scale = edo.scale([0,1,4,5,7,8,11]) //define scale with 3 kinds of steps (1,2, and 3)
+         * scale.get.least_step_multiplier()
+         * //returns 1.5
+         * //2 is a multiplier of 2 over 1. 3 is a multiplier of 3 over one and 1.5 over two.
+         * //Therefore, the function will return 1.5.
+         * @memberOf Scale#get*/
+        least_step_multiplier: () => {
+
             let steps= this.get.step_sizes()
             if(steps.length==1) return 1
             let size = this.edo
@@ -1721,6 +2119,16 @@ class Scale {
             }
             return size
         },
+
+        /** <pre>Returns the Rothenberg Propriety value for this scale
+         * @param {Boolean} [cache=true] - When true, the result will be cached for future retrieval.
+         * @returns {('strictly proper'|'proper'|'improper')} The step sizes
+         * @example
+         * let edo = new EDO(12) //define tuning
+         * let scale = edo.scale([0,2,4,7,9]) //a major pentatonic scale
+         * scale.get.rothenberg_propriety()
+         * //returns "strictly proper"
+         * @memberOf Scale#get*/
         rothenberg_propriety : (cache=true) => {
             if(this.catalog['rothenberg']) return this.catalog['rothenberg']
 
@@ -1752,6 +2160,22 @@ class Scale {
             if(cache) this.catalog['rothenberg'] = result
             return result
         },
+
+        /** <pre>Returns the Levenshtein distance of the scale to another scale
+         * @param {Array<Number>} t - Some collection of pitches to perferm the comparison with
+         * @param {Boolean} [ratio_calc=false] - When true, the function computes the
+         levenshtein distance ratio of similarity between two strings
+         * @returns {Number}
+         * @example
+         * let edo = new EDO(12) //define tuning
+         * let scale = edo.scale([0,2,4,7,9]) //a major pentatonic scale
+         * scale.get.levenshtein([0,2,4,5,7,9,11])
+         * //returns 1
+         *
+         * @example
+         * scale.get.levenshtein([0,2,4,5,7,9,11],true)
+         * //returns 0.9230769230769231
+         * @memberOf Scale#get*/
         levenshtein: (t,ratio_calc=false) => {
             /*Returns the Levenshtein distance of the scale to another scale*/
 
@@ -1798,12 +2222,26 @@ class Scale {
                 }
             }
             if(ratio_calc) {
-                let Ratio = ((s.length+ t.length) - distance[row][col]) / (s.length + t.length)
+                let Ratio = ((s.length+ t.length) - distance[row-1][col-1]) / (s.length + t.length)
+
                 return Ratio
             } else {
                 return distance[s.length][t.length]
             }
         },
+
+        /** <pre>Same as {@link EDO.get.shortest_path()} but for diatonic cases.
+         * Instead of thinking in "intervals" it thinks in steps and scale degrees.
+         so in the context of C major, moving from E to G is a move of size 3 (scale degrees),
+         and from C to E is also 3 (scale degrees) even though in one case it's a minor third and in
+         the other its a Major third.
+
+         In this function the starting point is scale_degree 1</pre>
+
+         * @param {Number} destination_scale_degree
+         * @param {Number} up_steps
+         * @param {Number} down_steps
+         * @memberOf Scale#get*/
         shortest_path: (destination_scale_degree,up_steps=1,down_steps=-1) => {
             /*same as EDO.shortest_path only for diatonic cases
             Instead of thinking in "intervals" it thinks in steps and scale degrees.
@@ -1818,21 +2256,13 @@ class Scale {
             console.log(result)
 
         },
-        lattice: (hor=3,ver=4,as_notes=false) => {
-            let lattice = ""
-            for (let i = this.edo; i >= -this.edo; i-=ver) {
-                let line = ""
-                for (let j = 0; j < this.edo ; j++) {
-                    let num =this.parent.mod(i+(j*hor),this.edo)
-                    let note
-                    if(as_notes) note = this.parent.convert.pc_to_name(num)
-                    else note = String(num)
-                    line+=note+" ".repeat(3-note.length)
-                }
-                lattice+=line+"\n\n"
-            }
-            console.log(lattice)
-        },
+
+
+        /** <pre>Returns the scale's inversion</pre>
+
+         * @param {Boolean} [cache=true] - When true, the result will be cached for future retrieval
+         * @returns {Array<Number>} the inverted pitches
+         * @memberOf Scale#get*/
         inversion: (cache=true) => {
             /*Inverts the intervals of the scale*/
             if(this.catalog['inverted']) return this.catalog['inverted']
@@ -1842,6 +2272,12 @@ class Scale {
 
             return scale
         },
+
+        /** <pre>Returns the scale's pitches in prime form</pre>
+
+         * @param {Boolean} [cache=true] - When true, the result will be cached for future retrieval
+         * @returns {Array<Number>} The pitches in prime form
+         * @memberOf Scale#get*/
         prime_form: (cache=true) => {
             /*Returns the scale in prime form*/
             if(this.catalog['prime form']) return this.catalog['prime form']
@@ -1865,6 +2301,12 @@ class Scale {
             if(cache) this.catalog['prime form'] = result
             return result
         },
+
+        /** <pre>Returns the scale's pitches in normal order</pre>
+
+         * @param {Boolean} [cache=true] - When true, the result will be cached for future retrieval
+         * @returns {Array<Number>} The pitches in normal order
+         * @memberOf Scale#get*/
         normal_order:  (cache=true) => {
             /*
             Returns the scale in normal order
@@ -1881,44 +2323,84 @@ class Scale {
             return result
 
         },
-        transposition: (amount=0) => {
+
+        /** <pre>Returns the scale's pitches transposed by a certain amount</pre>
+         * @param {Number} amount - The amount by which to transpose the pitches
+         * @returns {Array<Number>} The transposed pitches
+         * @memberOf Scale#get*/
+        transposition: (amount) => {
             return this.parent.get.transposition(this.pitches,amount)
         }
     }
+
+    /**A collection of functions that convert data from one representation to another
+     * @namespace*/
     to = {
+        /**
+         * Instead of PCs, this returns the scale represented by intervals (steps between notes)
+         * @param {Boolean} [cache=true] - when true, the result is cached for future retrieval
+         * @returns {Array<Number>}
+         * @memberOf Scale#to
+         * */
         steps: (cache=true) => {
-            /*Instead of PCs, this returns the scale represented by intervals*/
+
             if(this.catalog['steps']) return this.catalog['steps']
 
             let intervals = this.parent.convert.to_steps(this.pitches.concat([this.edo]),cache=false)
             if(cache) this.catalog['steps'] = intervals
             return intervals
         },
+
+        /**
+         * Returns the scale's representation in cents [0,100,300, etc.]
+         * @returns {Array<Number>}
+         * @memberOf Scale#to
+         * */
         cents: () => {
-            /*Returns the scale's representation in cents [0,100,300, etc.]*/
             return this.pitches.map((note) => note*this.parent.cents_per_step)
         }
 
     }
+
+    /**A collection of functions that returns a Boolean about various features regarding the scale
+     * @namespace*/
     is = {
+        /**
+         * Returns True if the scale is in normal order and False if it isn't
+         * @returns {Boolean}
+         * @memberOf Scale#is
+         * */
         normal_order: () => {
-            /*Returns True if the scale is in normal order and False if it isn't*/
             return this.parent.is.same(this.pitches,this.get.normal_order())
         },
+
+        /**Checks if the scale (as a whole!) is one of the scales given in a list of scales (or in one of their modes)
+         * @param {Array<Array<Number>>} scales - a collection of scales (or necklaces)
+         * @returns {Boolean}
+         * @memberOf Scale#is */
         one_of: (scales) => {
-            /*Checks if the scale (as a whole!) is one of the scales given in a list of scales (and all of their modes)*/
+            /**/
             let scale = this.pitches
             let all_modes = scales.map((item) => this.parent.get.modes(item))
             all_modes = all_modes.flat(1)
             if(this.parent.is.element_of(scale,all_modes)) return true
             return false
         },
+
+        /**
+         * Returns True if the scale is in prime form and False if it isn't.
+         * @returns {Boolean}
+         * @memberOf Scale#is
+         * */
         prime_form: () => {
-            /*Returns True if the scale is in prime form and False if it isn't*/
             return this.parent.is.same(this.pitches,this.get.prime_form())
         },
+
+        /**Returns True if the scale is invertible and False if it isn't
+         * @param {Boolean} [cache=true] - when true, the result will be cached for future retrieval
+         * @returns {Boolean}
+         * @memberOf Scale#is */
         invertible: (cache=true) => {
-            /*Returns True if the scale is invertible and False if it isn't*/
             if(this.catalog['invertible']) return this.catalog['invertible']
 
             let scale=this.get.normal_order()
@@ -1928,6 +2410,8 @@ class Scale {
             if(cache) this.catalog['invertible']=result
             return result
         },
+
+
         subset: (scales) => {
             /*returns True if the scale is a subset of one of multiple scales provided*/
             const is_subset_of_one = function (scale1,scale2) {
@@ -1964,8 +2448,15 @@ class Scale {
 
         }
     }
+
+    /**A collection of functions that exports various file formats
+     * @namespace*/
     export = {
-        scala: (dir="scala/",filename=undefined) => {
+        /**Generates a scala file with the current tuning of the scale
+         * @param {String} [dir=true] - The directory to which the file will be saved
+         * @param {String} [filename] - When not provided, the file name will be the name of the scale
+         * @memberOf Scale#export */
+        scala: (dir="scala/",filename) => {
             let scale_name = this.get.name()
             filename = filename || scale_name + ".scl"
             let file = "! " + filename + "\n"
@@ -1983,19 +2474,50 @@ class Scale {
             });
         }
     }
-    mode (mode_num=0) {
+
+
+    /**
+     * Returns a Scale object with pitches corresponding to the nth mode of the original scale
+     * @param {Number} n - Mode number to be returned (starting at 0)
+     * @returns {Scale}
+     * */
+    mode (n=0) {
         let modes = this.get.modes()
-        let mode = modes[this.parent.mod(mode_num,modes.length)]
-        return new Mode(mode,this.parent)
+        let mode = modes[this.parent.mod(n,modes.length)]
+        return new Scale(mode,this.parent)
     }
 
-}
-class Mode extends Scale {
-    constructor(pitches,parent) {
-        super(pitches,parent);
-        this.pitches = pitches
+    /**
+     * Returns a Scale object with pitches corresponding to the inversion of the original scale.
+     * @returns {Scale}
+     * */
+    invert () {
+        let pitches = this.get.inversion()
+        return new Scale(pitches,this.parent)
     }
+
+    /**
+     * Returns a Scale object with pitches corresponding to the normal order of the original scale.
+     * @returns {Scale}
+     * */
+    normal () {
+        let pitches = this.get.normal_order()
+        return new Scale(pitches,this.parent)
+    }
+
+    /**
+     * Returns a Scale object with pitches corresponding to the prime form of the original scale.
+     * @returns {Scale}
+     * */
+    prime () {
+        let pitches = this.get.prime_form()
+        return new Scale(pitches,this.parent)
+    }
+
+
 }
+
+
 module.exports = EDO
 
 

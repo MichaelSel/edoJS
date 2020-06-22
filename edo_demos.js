@@ -1,8 +1,11 @@
+const JS = function (thing) {
+    return JSON.stringify(thing).replace(/"/g,'')
+}
 const EDO = require("./edo")
 
 let edo = new EDO(12)
 
-let scale = edo.scale([0,2,4,5,7,9,11])
+let scale = edo.scale([0,3,7])
 //
 // console.log(edo.convert.interval_to_ratio(7))
 // console.log(edo.convert.ratio_to_interval(1.5))
@@ -70,7 +73,7 @@ let scale = edo.scale([0,2,4,5,7,9,11])
 // console.log(scale.get.tetrachords())
 // console.log(scale.get.stacks(3, 1))
 // console.log(scale.get.common_tone_transpositions())
-// console.log(scale.get.supersets([[0,1,2,3,4,5,6,7],[0,3,4,7],[0,1,2]]))
+// console.log(JS(scale.get.supersets([[0,1,2,3,4,5,6,7],[0,3,4,7],[0,1,2]])))
 // console.log(scale.get.rotations())
 // console.log(scale.get.permutations())
 // console.log(scale.get.position_of_quality([0,4,7]))
@@ -98,6 +101,7 @@ let scale = edo.scale([0,2,4,5,7,9,11])
 // console.log(scale.is.in_lower_edos())
 //
 // console.log(scale.export.scala())
+//
+// console.log(scale.prime().mode(1).invert().normal().pitches)
 
-//scale.mode inherits everything from scale
-// console.log(scale.mode(3).pitches)
+
