@@ -68,7 +68,7 @@
             
             <div class="container-source members">
                 <code><a href="edo.js.html">edo.js</a></code>,
-                <code><a href="edo.js.html#line207">line 207</a></code>
+                <code><a href="edo.js.html#line229">line 229</a></code>
             </div>
             
         </h4>
@@ -80,7 +80,7 @@
 
     
     <div class="description">
-        Create a tuning system.
+        <p>Creates a tuning context and system that exposes powerful functions for manipulating, analyzing, and generating music.</p><p>This is the main class of the project. At its center stand 4 collections (see "Namespaces" below) of functions.</p><ul> <li> <a href="EDO_convert.html">EDO.convert</a> is a set of functions used to change between equivalent representations within the tuning context.</li> <li> <a href="EDO_count.html">EDO.count</a> is a set of functions used to count stuff.</li> <li> <a href="EDO_get.html">EDO.get</a> is a set of functions used to manipulate and generate stuff.</li> <li> <a href="EDO_is.html">EDO.is</a> is a set of functions used for boolean truth statements.</li></ul>
     </div>
     
 
@@ -200,6 +200,11 @@
 
 
     
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>//Basic usage:let edo = new EDO(12) //create a new EDO context with 12 divisions.//once the object has been created, you can access its functions.edo.get.inversion([0,2,4,5,7,9,11]) //inverts the pitches//returns [0, 2,  4, 6, 7, 9, 11]edo.convert.ratio_to_interval(3/2)//returns [7]edo.count.pitches([0, 3, 3, 2, 4, 3, 4])//returns [[3,3],[4,2], [2,1], [0,1]] (3 appears 3 times, 4 appears 2 times, etc.)edo.is.subset([2,4],[1,2,3,4,5])//returns true (the set [2,4] IS a subset of [1,2,3,4,5])</code></pre>
+
+    
 
 </dd>
 
@@ -284,7 +289,7 @@
             
             <div class="container-source members">
                 <code><a href="edo.js.html">edo.js</a></code>,
-                <code><a href="edo.js.html#line223">line 223</a></code>
+                <code><a href="edo.js.html#line245">line 245</a></code>
             </div>
             
         </h4>

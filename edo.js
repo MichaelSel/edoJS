@@ -201,8 +201,30 @@ const combinations = (set, k) => {
 class EDO {
 
     /**
-     * Create a tuning system.
+     * <p>Creates a tuning context and system that exposes powerful functions for manipulating, analyzing, and generating music.</p>
+     * <p>This is the main class of the project. At its center stand 4 collections (see "Namespaces" below) of functions.</p>
+     * <ul>
+     *  <li> [EDO.convert]{@link EDO#convert} is a set of functions used to change between equivalent representations within the tuning context.</li>
+     *  <li> [EDO.count]{@link EDO#count} is a set of functions used to count stuff.</li>
+     *  <li> [EDO.get]{@link EDO#get} is a set of functions used to manipulate and generate stuff.</li>
+     *  <li> [EDO.is]{@link EDO#is} is a set of functions used for boolean truth statements.</li></ul>
      * @param {number} edo - The number of equal divisions of the octave.
+     * @example
+     * //Basic usage:
+     * let edo = new EDO(12) //create a new EDO context with 12 divisions.
+     *
+     * //once the object has been created, you can access its functions.
+     * edo.get.inversion([0,2,4,5,7,9,11]) //inverts the pitches
+     * //returns [0, 2,  4, 6, 7, 9, 11]
+     *
+     * edo.convert.ratio_to_interval(3/2)
+     * //returns [7]
+     *
+     * edo.count.pitches([0, 3, 3, 2, 4, 3, 4])
+     * //returns [[3,3],[4,2], [2,1], [0,1]] (3 appears 3 times, 4 appears 2 times, etc.)
+     *
+     * edo.is.subset([2,4],[1,2,3,4,5])
+     * //returns true (the set [2,4] IS a subset of [1,2,3,4,5])
      */
     constructor(edo=12) {
         this.edo = edo
@@ -232,8 +254,9 @@ class EDO {
          * Returns the pitch and the number of its occurrences as a tuple for every unique value in pitches
          * @param  {Array<Number>} pitches - a collection of pitches (not necessarily pitch classes)
          * @example
-         * // returns [[3,3],[4,2], [2,1], [0,1]]
-         * count.pitches([0, 3, 3, 2, 4, 3, 4])
+         * let edo = new EDO(12) // define a tuning system
+         * edo.count.pitches([0, 3, 3, 2, 4, 3, 4])
+         * // returns [[3,3],[4,2], [2,1], [0,1]] (3 appears 3 times, 4 appears 2 times, etc.)
          * @return {Array<Number>} A pitch, and how many times it appears
          * @memberOf EDO#count
          */
@@ -257,6 +280,10 @@ class EDO {
          * @param  {Array<Number>} list2 - a collection of pitches (not necessarily pitch classes)
          * @return {Number} The number of common tones between the two lists
          * @memberOf EDO#count
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * edo.count.common_tones([1,2,4],[2,3,4,5])
+         * //returns 2 (because 2 and 4 are in both lists)
          */
         common_tones : (list1,list2) => {
             let common_tones = 0
@@ -269,7 +296,7 @@ class EDO {
 
 
     /**A collection of functions that return a boolean
-     * @namespace*/
+     * @namespace EDO#is*/
     is = {
         /**
          * Returns true if some collection of pitches (thing) is a subset of another collection of pitches (thing2)
@@ -277,6 +304,14 @@ class EDO {
          * @param  {Array<Number>} thing2 - a collection of pitches (not necessarily pitch classes)
          * @return {Boolean}
          * @memberOf EDO#is
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * edo.is.subset([2,4],[1,2,3,4,5])
+         * //returns true (the set [2,4] IS a subset of [1,2,3,4,5])
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * edo.is.subset([2,4],[1,2,3,5])
+         * //returns false (the set [2,4] is NOT a subset of [1,2,3,5])
          */
         subset:  (thing,thing2) => {
 
@@ -292,6 +327,14 @@ class EDO {
          * @param  {Array<Array<Number>>} bigger_arr - an array of arrays containing a collection of pitches (not necessarily pitch classes)
          * @return {Boolean}
          * @memberOf EDO#is
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * edo.is.subset([2,4],[[1,2,3,4],[1,2,4]])
+         * //returns false (the set [2,4] is NOT equal to [1,2,3,4] or to [1,2,4])
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * edo.is.subset([2,4],[[1,2,3,4],[1,2,4],[2,4]])
+         * //returns true
          */
         element_of: (arr,bigger_arr) => {
             if(arr.length==0 || bigger_arr.length ==0) return false
@@ -306,6 +349,16 @@ class EDO {
          * @param  {Array<Number>} arr2 - a collection of pitches (not necessarily pitch classes)
          * @return {Boolean}
          * @memberOf EDO#is
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * edo.is.same([2,4],[4,2]])
+         * //returns false
+         *
+         * @example
+         * //Also supports more complicated structures
+         * let edo = new EDO(12) // define a tuning system
+         * edo.is.same([2,[4,[1,2,3]]],[2,[4,[1,2,3]]])
+         * //returns true
          */
         same: (arr1,arr2) => {
             arr1 = JSON.stringify(arr1)
@@ -315,14 +368,14 @@ class EDO {
     }
 
     /**A collection of functions manipulates an input
-     * @namespace*/
+     * @namespace EDO#get*/
     get = {
         /**
          * Gets an array and returns every possible ordering of that array.
          * @param  {Array<Number>} pitches - (usually) a collection of pitches, but could be used with any type of array
          * @example
+         * edo.get.permutations([0, 2, 3])
          * // [[ 0, 2, 3 ],[ 0, 3, 2 ],[ 2, 0, 3 ],[ 2, 3, 0 ],[ 3, 0, 2 ],[ 3, 2, 0 ]]
-         * get.permutations([0, 2, 3])
          * @return {Array<Array<Number>>}
          * @memberOf EDO#get
          */
@@ -403,6 +456,15 @@ class EDO {
          * @param  {Boolean} [allow_skips=true] - if false, the search will only be done on consecutive items
          * @return {Array<motives>}
          * @memberOf EDO#get
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * edo.get.motives([7,6,7,6,7,2,5,3,0]).slice(0,4) //get first 3 motives
+         * //returns
+         * [
+         *   { motive: [ -1, 1 ], incidence: 2 }, //going a half-step down, then up appears twice
+         *   { motive: [ -1 ], incidence: 2 }, //going a half-step down appears twice
+         *   { motive: [ 1 ], incidence: 2 } //going a half-step up appears twice
+         * ]
          */
         motives: (melody,intervalic=true, allow_skips=false) => {
             let motives = []
@@ -477,7 +539,11 @@ class EDO {
          * @param  {Array<Number>} scale - a collection of pitches (not necessarily PCs)
          * @param  {Boolean} cache - if true, the result will be cached for faster retrival
          * @return {Array<Number>} The inverted input
-         * @memberOf EDO#get*/
+         * @memberOf EDO#get
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * edo.get.inversion([0,2,4,5,7,9,11])
+         * //returns [0, 2,  4, 6, 7, 9, 11]*/
         inversion: (scale,cache=true) => {
 
             if(!this.catalog[String(scale)]) this.catalog[String(scale)] = {}
@@ -547,7 +613,21 @@ class EDO {
          * @param  {Array<Number>} scale - a collection of PCs
          * @param  {Boolean} cache - if true, the result will be cached for faster retrieval
          * @return {Array<Array<Number>>}
-         * @memberOf EDO#get*/
+         * @memberOf EDO#get
+         * @example
+         * let edo = new EDO(12) // create a tuning context
+         * edo.get.modes([0,2,4,5,7,9,11]) //Major scale
+         * //returns
+         * [
+         *  [0,2,4,5,7,9,11], //Ionian
+         *  [0,2,3,5,7,9,10], //Dorian
+         *  [0,1,3,5,7,8,10], //Phrigian
+         *  [0,2,4,6,7,9,11], //Lydian
+         *  [0,2,4,5,7,9,10], //Mixolydian
+         *  [0,2,3,5,7,8,10], //Aeolian
+         *  [0,1,3,5,6,8,10]  //Locrian
+         * ]
+         * */
         modes: (scale,cache=true) => {
             let edo = this.edo
             if(!this.catalog[String(scale)]) this.catalog[String(scale)] = {}
@@ -903,23 +983,52 @@ class EDO {
             return necklaces
         },
 
-        /** Makes every stacking combination of intervals from 'intervals' up to "height" stack_size.
+        /** <p>Makes every stacking combination of intervals from 'intervals' up to 'height' stack_size.</p>
          *
-         * For instance, given the intervals [2,3] and stack_size = 3, the function will return a list of lists
+         * <p>For instance, given the intervals [2,3] and stack_size = 3, the function will return a list of lists
          * such that every list will be of length 3 (stack_size) containing an exhaustive list of every
          * combination using the intervals 2 and 3 (in this case).
          * As such, it will return  [[2, 2, 2], [2, 2, 3], [2, 3, 2], [3, 2, 2], [2, 3, 3], [3, 2, 3],
-         * [3, 3, 2], [3, 3, 3]] which represents every combination or 2s and 3s in any order of length 3.
+         * [3, 3, 2], [3, 3, 3]] which represents every combination or 2s and 3s in any order of length 3.</p>
          *
-         * if as_pitches is set to True, instead of returning the list of intervals classes of length 3, it
+         * <p>if as_pitches is set to True, instead of returning the list of intervals classes of length 3, it
          * will return a list of pitches starting from 0 (which can go above 11). If set to True the function
          * will return  [[0, 2, 4, 6], [0, 2, 4, 7], [0, 2, 5, 7], [0, 3, 5, 7], [0, 2, 5, 8], [0, 3, 5, 8],
-         * [0, 3, 6, 8], [0, 3, 6, 9]]
+         * [0, 3, 6, 8], [0, 3, 6, 9]]</p>
          * @param  {Array<Number>} intervals - the intervals be used
          * @param  {Number} [stack_size=3] - the size of the stack of pitches.
          * @param  {Boolean} [as_pitches=false] - Indicates whether the returned result represents interval classes or pitches
          * @return {Array<Number>} a list of interval classes or pitches
-         * @memberOf EDO#get*/
+         * @memberOf EDO#get
+         * @example
+         * let edo = new EDO(12) // create a tuning context
+         * edo.get.interval_stack([3,2],3)
+         * //returns
+         *      [
+         *       [ 2, 2, 2 ],
+         *       [ 3, 2, 2 ],
+         *       [ 2, 3, 2 ],
+         *       [ 2, 2, 3 ],
+         *       [ 3, 3, 2 ],
+         *       [ 3, 2, 3 ],
+         *       [ 2, 3, 3 ],
+         *       [ 3, 3, 3 ]
+         *      ]
+         *
+         * @example
+         * edo.get.interval_stack([3,2],3,true)
+         * //returns
+         * [
+         *  [ 0, 2, 4, 6 ],
+         *  [ 0, 3, 5, 7 ],
+         *  [ 0, 2, 5, 7 ],
+         *  [ 0, 2, 4, 7 ],
+         *  [ 0, 3, 6, 8 ],
+         *  [ 0, 3, 5, 8 ],
+         *  [ 0, 2, 5, 8 ],
+         *  [ 0, 3, 6, 9 ]
+         * ]
+         * */
         interval_stack: (intervals, stack_size=3,as_pitches=false) => {
             const decToBase = (n,b) => {
                 if(n==0) return [0]
@@ -993,6 +1102,10 @@ class EDO {
          * @param  {Array<Number>} intervals - Melody represented in intervals
          * @returns {Number} the interval traversed by the melody
          * @memberOf EDO#get
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * edo.get.interval_shift([2,-3,4,-1])
+         * //returns 2 (moving up 2, then down 3, then up 4, then down 1 will get you +2 above where you started)
          */
         interval_shift: (intervals) => {
             /*Gets an array of intervals in order, and returns the interval traversed by the end*/
@@ -1033,20 +1146,28 @@ class EDO {
             return pitches
         },
 
-        /** Returns a vector describing the contour of the given pitches.
+        /** <p>Returns a vector describing the contour of the given pitches.</p>
          *
-         * If local is set to true, every cell in the vector will be
+         * <p>If local is set to true, every cell in the vector will be
          * either 1 if note n is higher than n-1, 0 if note n is the same as n-1, and -1 if note n is lower than n-1
-         * For instance [0,0,4,7,4,7,4,0] will in local mode will return [0,1,1,-1,1,-1,-1]
+         * For instance [0,0,4,7,4,7,4,0] will in local mode will return [0,1,1,-1,1,-1,-1]</p>
          *
-         * If local is set to false (default), the contour of the line is expressed such that the actual pc class of the
+         * <p>If local is set to false (default), the contour of the line is expressed such that the actual pc class of the
          * note is removed but its relative position in regards to the entire line is keps.
          * [0,4,7,12,16,7,12,16] (Bach prelude in C) has 5 distinct note heights, so it will return
-         * [0,1,2,3, 4, 2,3, 4] indicating the relative height of each note in the entire phrase
+         * [0,1,2,3, 4, 2,3, 4] indicating the relative height of each note in the entire phrase</p>
          * @param  {Array<Number>} pitches - a given array of pitches
          * @param  {Boolean} [local=false] - if set to false, function will only return subsets that have consecutive members
          * @returns {Array<Number>}
          * @memberOf EDO#get
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * edo.get.contour([0,4,7,12,16,7,12,16])
+         * //returns [0, 1, 2, 3, 4, 2, 3, 4]
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * edo.get.contour([0,4,7,12,16,7,12,16],true)
+         * //returns [1, 1, 1, 1,-1, 1, 1]
          */
         contour: (pitches,local=false) => {
 
@@ -1170,7 +1291,7 @@ class EDO {
             return unique
         },
 
-        /** <pre>Returns a lattice from the pitches in the scale</pre>
+        /** <p>Returns a lattice from the pitches in the scale</p>
 
          * @param {Number} [hor=3] - the gap between numbers horizontally
          * @param {Number} [ver=4] - the gap between numbers vertically
@@ -1231,14 +1352,18 @@ class EDO {
     }
 
     /**A collection of functions that converts an input into other equivalent representations
-     * @namespace*/
+     * @namespace EDO#convert*/
     convert = {
         /** Gets a melody as pitches and returns the melody as intervals
          *
          * @param  {Array<number>} lst - a collection of pitches
          * @param  {Boolean} [cache=true] - when true the result is cached for faster future retrieval
          * @returns {Array<Number>} an array of intervals
-         * @memberOf EDO#convert*/
+         * @memberOf EDO#convert
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * edo.convert.to_steps([0,2,4,5,7,9,11])
+         * //returns [ 2, 2, 1, 2, 2, 2 ]*/
         to_steps: (lst,cache=true) => {
             if(!this.catalog[String(lst)]) this.catalog[String(lst)] = {}
             if(this.catalog[String(lst)]['steps']) return this.catalog[String(lst)]['steps']
@@ -1256,7 +1381,11 @@ class EDO {
          *
          * @param  {String} name - a scale's name (based on this API's naming formula)
          * @returns {Scale} a scale object
-         * @memberOf EDO#convert*/
+         * @memberOf EDO#convert
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * edo.convert.name_to_scale('12-1387')
+         * //returns Scale object corresponding to the diatonic scale*/
         name_to_scale: (name) => {
             name = name.split('-')
             let edo = name[0]
@@ -1278,9 +1407,18 @@ class EDO {
         /** Returns all of the IC in the EDO that equal to a given ratio (with a given tolerance in cents)
          *
          * @param  {Number} ratio - A harmonic ratio
-         * @param  {Number} tolerance - a tolerance (allowed error) in cents
+         * @param  {Number} [tolerance=10] - a tolerance (allowed error) in cents
          * @returns {Array<Number>} Interval classes that fit that ratio
-         * @memberOf EDO#convert*/
+         * @memberOf EDO#convert
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * edo.convert.ratio_to_interval(3/2)
+         * //[7]
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * edo.convert.ratio_to_interval(5/4,20) //increased the default tolerance (default 10 won't accept IC 4)
+         * //returns [4]
+         * */
         ratio_to_interval:(ratio,tolerance=10) => {
             let intervals = []
             let cents = this.convert.ratio_to_cents(ratio)
@@ -1296,7 +1434,11 @@ class EDO {
          *
          * @param  {Number} ratio - A harmonic ratio
          * @returns {Number} The ratio represented in cents
-         * @memberOf EDO#convert*/
+         * @memberOf EDO#convert
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * edo.convert.ratio_to_cents(5/4)
+         * //returns 386.3137138648348*/
         ratio_to_cents: (ratio) => {
             return 1200*Math.log2(ratio)
         },
@@ -1305,7 +1447,11 @@ class EDO {
          *
          * @param  {Number} interval - Some interval
          * @returns {Number} the interval represented in cents
-         * @memberOf EDO#convert*/
+         * @memberOf EDO#convert
+         * @example
+         * let edo = new EDO(17) // define a tuning with 17 divisions of the octave
+         * edo.convert.interval_to_cents(6)
+         * //returns 423.5294117647059*/
         interval_to_cents: (interval) => {
             return this.cents_per_step*interval
         },
@@ -1314,8 +1460,9 @@ class EDO {
          *
          * @param  {Array<Number>} intervals - A list of intervals
          * @example
+         * let edo = new EDO(12) // define a tuning system with 12 divisions of the octave
+         * edo.convert.intervals_to_scale([2, 2, 1, 2, 2, 2, 1])
          * // returns [0,2,4,5,7,9,11]
-         * convert.intervals_to_scale([2, 2, 1, 2, 2, 2, 1])
          * @returns {Number} A scale made up by adding the intervals in order
          * @memberOf EDO#convert*/
         intervals_to_scale: (intervals) => {
@@ -1331,7 +1478,11 @@ class EDO {
          *
          * @param  {Number} interval - Some interval
          * @returns {Number} a ratio
-         * @memberOf EDO#convert*/
+         * @memberOf EDO#convert
+         * @example
+         * let edo = new EDO(12) // define a tuning system with 12 divisions of the octave
+         * edo.convert.interval_to_ratio(7)
+         * // returns 1.4983070768766815*/
         interval_to_ratio: (interval) => {
             return Math.pow(2,interval/this.edo)
         },
@@ -1340,7 +1491,11 @@ class EDO {
          *
          * @param  {Number} cents - an interval in cents
          * @returns {Number} a ratio
-         * @memberOf EDO#convert*/
+         * @memberOf EDO#convert
+         * @example
+         * let edo = new EDO(12) // define a tuning system with 12 divisions of the octave
+         * edo.convert.cents_to_ratio(700)
+         * // returns 1.4983070768766815*/
         cents_to_ratio: (cents) => {
             return Math.pow(2,cents/1200)
         },
@@ -1349,8 +1504,9 @@ class EDO {
          * @param  {Array<Number>|Number} note_number - a midi note number or an array of midi note numbers
          * @param  {Number} offset - an amount by which to shift note_number
          * @example
+         * let edo = new EDO(12) // define a tuning system with 12 divisions of the octave
+         * edo.convert.midi_to_name([60,62])
          * //returns ["C4","D4"]
-         * convert.midi_to_name([60,62])
          * @returns {Array<String>|String} The input as note name(s)
          * @memberOf EDO#convert*/
         midi_to_name: (note_number,offset=0) => {
@@ -1373,10 +1529,14 @@ class EDO {
 
         },
 
-        /** Returns the name of a note from a given pitch class
+        /** Returns the name of a note from a given pitch class (supports only 12-edo)
          * @param  {Number} pc - a pitch class
          * @returns {String} The input as a note name
          * @memberOf EDO#convert
+         * @example
+         * let edo = new EDO(12) // define a tuning system with 12 divisions of the octave
+         * edo.convert.midi_to_name(4)
+         * //returns "E"
          * */
         pc_to_name: (pc) => {
             let PC = {
@@ -1394,6 +1554,7 @@ class EDO {
                 11: 'B ',
                 '*': '**'
             }
+            if(this.edo!=12) return undefined
             return PC[pc]
         },
 
@@ -1403,7 +1564,11 @@ class EDO {
          * @param  {Number} [starting_pitch=0]
          * @param  {Boolean} [modulo] if modulo is provided, the pitches will conform to it
          * @returns {Array<Number>|Array<Array<Number>>} The input as pitches
-         * @memberOf EDO#convert*/
+         * @memberOf EDO#convert
+         * @example
+         * let edo = new EDO(12) // define a tuning system with 12 divisions of the octave
+         * edo.convert.intervals_to_pitches([2,3])
+         * //returns [ 0, 2, 5 ]*/
         intervals_to_pitches: (intervals,starting_pitch=0,modulo=undefined) => {
             let pitches
             if(modulo) pitches = [mod(starting_pitch,modulo)]
@@ -1426,7 +1591,11 @@ class EDO {
         /** Given a list of midi notes, returns a list of intervals
          * @param  {Array<Number>} midi - a list of midi pitches
          * @returns {Array<Number>} The input as intervals
-         * @memberOf EDO#convert*/
+         * @memberOf EDO#convert
+         * @example
+         * let edo = new EDO(12) // define a tuning system with 12 divisions of the octave
+         * edo.convert.midi_to_intervals([60,64,57,61])
+         * //returns [ 4, -7, 4 ]*/
         midi_to_intervals: (midi) => {
             let intervals = []
             for(let i=0;i<midi.length-1;i++) {

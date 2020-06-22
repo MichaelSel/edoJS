@@ -3,5 +3,9 @@ const JS = function (thing) {
 }
 const EDO = require("./edo")
 let edo = new EDO(12)
-let scale = edo.scale([0, 2,4,7,9,11])
-console.log(JS(edo.get.lattice()))
+
+console.log(edo.get.motives([7,6,7,6,7,2,5,3,0]).slice(0,4))
+
+
+
+

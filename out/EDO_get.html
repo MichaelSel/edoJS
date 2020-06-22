@@ -131,7 +131,7 @@
             
             <div class="container-source members">
                 <code><a href="edo.js.html">edo.js</a></code>,
-                <code><a href="edo.js.html#line1051">line 1051</a></code>
+                <code><a href="edo.js.html#line1172">line 1172</a></code>
             </div>
             
         </h4>
@@ -143,7 +143,7 @@
 
     
     <div class="description">
-        Returns a vector describing the contour of the given pitches.If local is set to true, every cell in the vector will beeither 1 if note n is higher than n-1, 0 if note n is the same as n-1, and -1 if note n is lower than n-1For instance [0,0,4,7,4,7,4,0] will in local mode will return [0,1,1,-1,1,-1,-1]If local is set to false (default), the contour of the line is expressed such that the actual pc class of thenote is removed but its relative position in regards to the entire line is keps.[0,4,7,12,16,7,12,16] (Bach prelude in C) has 5 distinct note heights, so it will return[0,1,2,3, 4, 2,3, 4] indicating the relative height of each note in the entire phrase
+        <p>Returns a vector describing the contour of the given pitches.</p><p>If local is set to true, every cell in the vector will beeither 1 if note n is higher than n-1, 0 if note n is the same as n-1, and -1 if note n is lower than n-1For instance [0,0,4,7,4,7,4,0] will in local mode will return [0,1,1,-1,1,-1,-1]</p><p>If local is set to false (default), the contour of the line is expressed such that the actual pc class of thenote is removed but its relative position in regards to the entire line is keps.[0,4,7,12,16,7,12,16] (Bach prelude in C) has 5 distinct note heights, so it will return[0,1,2,3, 4, 2,3, 4] indicating the relative height of each note in the entire phrase</p>
     </div>
     
 
@@ -329,6 +329,13 @@
 
 
     
+        <h5>Examples</h5>
+        
+    <pre class="prettyprint"><code>let edo = new EDO(12) // define a tuning systemedo.get.contour([0,4,7,12,16,7,12,16])//returns [0, 1, 2, 3, 4, 2, 3, 4]</code></pre>
+
+    <pre class="prettyprint"><code>let edo = new EDO(12) // define a tuning systemedo.get.contour([0,4,7,12,16,7,12,16],true)//returns [1, 1, 1, 1,-1, 1, 1]</code></pre>
+
+    
 
 </dd>
 
@@ -344,7 +351,7 @@
             
             <div class="container-source members">
                 <code><a href="edo.js.html">edo.js</a></code>,
-                <code><a href="edo.js.html#line997">line 997</a></code>
+                <code><a href="edo.js.html#line1110">line 1110</a></code>
             </div>
             
         </h4>
@@ -489,6 +496,11 @@
 
 
     
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>let edo = new EDO(12) // define a tuning systemedo.get.interval_shift([2,-3,4,-1])//returns 2 (moving up 2, then down 3, then up 4, then down 1 will get you +2 above where you started)</code></pre>
+
+    
 
 </dd>
 
@@ -504,7 +516,7 @@
             
             <div class="container-source members">
                 <code><a href="edo.js.html">edo.js</a></code>,
-                <code><a href="edo.js.html#line923">line 923</a></code>
+                <code><a href="edo.js.html#line1032">line 1032</a></code>
             </div>
             
         </h4>
@@ -516,7 +528,7 @@
 
     
     <div class="description">
-        Makes every stacking combination of intervals from 'intervals' up to "height" stack_size.For instance, given the intervals [2,3] and stack_size = 3, the function will return a list of listssuch that every list will be of length 3 (stack_size) containing an exhaustive list of everycombination using the intervals 2 and 3 (in this case).As such, it will return  [[2, 2, 2], [2, 2, 3], [2, 3, 2], [3, 2, 2], [2, 3, 3], [3, 2, 3],[3, 3, 2], [3, 3, 3]] which represents every combination or 2s and 3s in any order of length 3.if as_pitches is set to True, instead of returning the list of intervals classes of length 3, itwill return a list of pitches starting from 0 (which can go above 11). If set to True the functionwill return  [[0, 2, 4, 6], [0, 2, 4, 7], [0, 2, 5, 7], [0, 3, 5, 7], [0, 2, 5, 8], [0, 3, 5, 8],[0, 3, 6, 8], [0, 3, 6, 9]]
+        <p>Makes every stacking combination of intervals from 'intervals' up to 'height' stack_size.</p><p>For instance, given the intervals [2,3] and stack_size = 3, the function will return a list of listssuch that every list will be of length 3 (stack_size) containing an exhaustive list of everycombination using the intervals 2 and 3 (in this case).As such, it will return  [[2, 2, 2], [2, 2, 3], [2, 3, 2], [3, 2, 2], [2, 3, 3], [3, 2, 3],[3, 3, 2], [3, 3, 3]] which represents every combination or 2s and 3s in any order of length 3.</p><p>if as_pitches is set to True, instead of returning the list of intervals classes of length 3, itwill return a list of pitches starting from 0 (which can go above 11). If set to True the functionwill return  [[0, 2, 4, 6], [0, 2, 4, 7], [0, 2, 5, 7], [0, 3, 5, 7], [0, 2, 5, 8], [0, 3, 5, 8],[0, 3, 6, 8], [0, 3, 6, 9]]</p>
     </div>
     
 
@@ -743,6 +755,13 @@
 
 
     
+        <h5>Examples</h5>
+        
+    <pre class="prettyprint"><code>let edo = new EDO(12) // create a tuning contextedo.get.interval_stack([3,2],3)//returns     [      [ 2, 2, 2 ],      [ 3, 2, 2 ],      [ 2, 3, 2 ],      [ 2, 2, 3 ],      [ 3, 3, 2 ],      [ 3, 2, 3 ],      [ 2, 3, 3 ],      [ 3, 3, 3 ]     ]</code></pre>
+
+    <pre class="prettyprint"><code>edo.get.interval_stack([3,2],3,true)//returns[ [ 0, 2, 4, 6 ], [ 0, 3, 5, 7 ], [ 0, 2, 5, 7 ], [ 0, 2, 4, 7 ], [ 0, 3, 6, 8 ], [ 0, 3, 5, 8 ], [ 0, 2, 5, 8 ], [ 0, 3, 6, 9 ]]</code></pre>
+
+    
 
 </dd>
 
@@ -758,7 +777,7 @@
             
             <div class="container-source members">
                 <code><a href="edo.js.html">edo.js</a></code>,
-                <code><a href="edo.js.html#line481">line 481</a></code>
+                <code><a href="edo.js.html#line547">line 547</a></code>
             </div>
             
         </h4>
@@ -926,6 +945,11 @@
 
 
     
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>let edo = new EDO(12) // define a tuning systemedo.get.inversion([0,2,4,5,7,9,11])//returns [0, 2,  4, 6, 7, 9, 11]</code></pre>
+
+    
 
 </dd>
 
@@ -941,7 +965,7 @@
             
             <div class="container-source members">
                 <code><a href="edo.js.html">edo.js</a></code>,
-                <code><a href="edo.js.html#line1196">line 1196</a></code>
+                <code><a href="edo.js.html#line1317">line 1317</a></code>
             </div>
             
         </h4>
@@ -953,7 +977,7 @@
 
     
     <div class="description">
-        <pre>Returns a lattice from the pitches in the scale</pre>
+        <p>Returns a lattice from the pitches in the scale</p>
     </div>
     
 
@@ -1196,7 +1220,7 @@
             
             <div class="container-source members">
                 <code><a href="edo.js.html">edo.js</a></code>,
-                <code><a href="edo.js.html#line551">line 551</a></code>
+                <code><a href="edo.js.html#line631">line 631</a></code>
             </div>
             
         </h4>
@@ -1362,6 +1386,11 @@
 
 
     
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>let edo = new EDO(12) // create a tuning contextedo.get.modes([0,2,4,5,7,9,11]) //Major scale//returns[ [0,2,4,5,7,9,11], //Ionian [0,2,3,5,7,9,10], //Dorian [0,1,3,5,7,8,10], //Phrigian [0,2,4,6,7,9,11], //Lydian [0,2,4,5,7,9,10], //Mixolydian [0,2,3,5,7,8,10], //Aeolian [0,1,3,5,6,8,10]  //Locrian]</code></pre>
+
+    
 
 </dd>
 
@@ -1377,7 +1406,7 @@
             
             <div class="container-source members">
                 <code><a href="edo.js.html">edo.js</a></code>,
-                <code><a href="edo.js.html#line407">line 407</a></code>
+                <code><a href="edo.js.html#line469">line 469</a></code>
             </div>
             
         </h4>
@@ -1614,6 +1643,11 @@
 
 
     
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>let edo = new EDO(12) // define a tuning systemedo.get.motives([7,6,7,6,7,2,5,3,0]).slice(0,4) //get first 3 motives//returns[  { motive: [ -1, 1 ], incidence: 2 }, //going a half-step down, then up appears twice  { motive: [ -1 ], incidence: 2 }, //going a half-step down appears twice  { motive: [ 1 ], incidence: 2 } //going a half-step up appears twice]</code></pre>
+
+    
 
 </dd>
 
@@ -1629,7 +1663,7 @@
             
             <div class="container-source members">
                 <code><a href="edo.js.html">edo.js</a></code>,
-                <code><a href="edo.js.html#line445">line 445</a></code>
+                <code><a href="edo.js.html#line507">line 507</a></code>
             </div>
             
         </h4>
@@ -1877,7 +1911,7 @@
             
             <div class="container-source members">
                 <code><a href="edo.js.html">edo.js</a></code>,
-                <code><a href="edo.js.html#line883">line 883</a></code>
+                <code><a href="edo.js.html#line963">line 963</a></code>
             </div>
             
         </h4>
@@ -2037,7 +2071,7 @@
             
             <div class="container-source members">
                 <code><a href="edo.js.html">edo.js</a></code>,
-                <code><a href="edo.js.html#line500">line 500</a></code>
+                <code><a href="edo.js.html#line566">line 566</a></code>
             </div>
             
         </h4>
@@ -2220,7 +2254,7 @@
             
             <div class="container-source members">
                 <code><a href="edo.js.html">edo.js</a></code>,
-                <code><a href="edo.js.html#line728">line 728</a></code>
+                <code><a href="edo.js.html#line808">line 808</a></code>
             </div>
             
         </h4>
@@ -2431,7 +2465,7 @@
             
             <div class="container-source members">
                 <code><a href="edo.js.html">edo.js</a></code>,
-                <code><a href="edo.js.html#line600">line 600</a></code>
+                <code><a href="edo.js.html#line680">line 680</a></code>
             </div>
             
         </h4>
@@ -2681,7 +2715,7 @@
             
             <div class="container-source members">
                 <code><a href="edo.js.html">edo.js</a></code>,
-                <code><a href="edo.js.html#line329">line 329</a></code>
+                <code><a href="edo.js.html#line382">line 382</a></code>
             </div>
             
         </h4>
@@ -2826,7 +2860,7 @@
     
         <h5>Example</h5>
         
-    <pre class="prettyprint"><code>// [[ 0, 2, 3 ],[ 0, 3, 2 ],[ 2, 0, 3 ],[ 2, 3, 0 ],[ 3, 0, 2 ],[ 3, 2, 0 ]]get.permutations([0, 2, 3])</code></pre>
+    <pre class="prettyprint"><code>edo.get.permutations([0, 2, 3])// [[ 0, 2, 3 ],[ 0, 3, 2 ],[ 2, 0, 3 ],[ 2, 3, 0 ],[ 3, 0, 2 ],[ 3, 2, 0 ]]</code></pre>
 
     
 
@@ -2844,7 +2878,7 @@
             
             <div class="container-source members">
                 <code><a href="edo.js.html">edo.js</a></code>,
-                <code><a href="edo.js.html#line1082">line 1082</a></code>
+                <code><a href="edo.js.html#line1203">line 1203</a></code>
             </div>
             
         </h4>
@@ -3002,7 +3036,7 @@
             
             <div class="container-source members">
                 <code><a href="edo.js.html">edo.js</a></code>,
-                <code><a href="edo.js.html#line1118">line 1118</a></code>
+                <code><a href="edo.js.html#line1239">line 1239</a></code>
             </div>
             
         </h4>
@@ -3337,7 +3371,7 @@
             
             <div class="container-source members">
                 <code><a href="edo.js.html">edo.js</a></code>,
-                <code><a href="edo.js.html#line974">line 974</a></code>
+                <code><a href="edo.js.html#line1083">line 1083</a></code>
             </div>
             
         </h4>
@@ -3599,7 +3633,7 @@
             
             <div class="container-source members">
                 <code><a href="edo.js.html">edo.js</a></code>,
-                <code><a href="edo.js.html#line781">line 781</a></code>
+                <code><a href="edo.js.html#line861">line 861</a></code>
             </div>
             
         </h4>
@@ -3805,7 +3839,7 @@
             
             <div class="container-source members">
                 <code><a href="edo.js.html">edo.js</a></code>,
-                <code><a href="edo.js.html#line626">line 626</a></code>
+                <code><a href="edo.js.html#line706">line 706</a></code>
             </div>
             
         </h4>
@@ -4011,7 +4045,7 @@
             
             <div class="container-source members">
                 <code><a href="edo.js.html">edo.js</a></code>,
-                <code><a href="edo.js.html#line463">line 463</a></code>
+                <code><a href="edo.js.html#line525">line 525</a></code>
             </div>
             
         </h4>
@@ -4224,7 +4258,7 @@
             
             <div class="container-source members">
                 <code><a href="edo.js.html">edo.js</a></code>,
-                <code><a href="edo.js.html#line361">line 361</a></code>
+                <code><a href="edo.js.html#line414">line 414</a></code>
             </div>
             
         </h4>
@@ -4477,7 +4511,7 @@
             
             <div class="container-source members">
                 <code><a href="edo.js.html">edo.js</a></code>,
-                <code><a href="edo.js.html#line1014">line 1014</a></code>
+                <code><a href="edo.js.html#line1127">line 1127</a></code>
             </div>
             
         </h4>
@@ -4665,7 +4699,7 @@
             
             <div class="container-source members">
                 <code><a href="edo.js.html">edo.js</a></code>,
-                <code><a href="edo.js.html#line1098">line 1098</a></code>
+                <code><a href="edo.js.html#line1219">line 1219</a></code>
             </div>
             
         </h4>
@@ -4917,7 +4951,7 @@
             
             <div class="container-source members">
                 <code><a href="edo.js.html">edo.js</a></code>,
-                <code><a href="edo.js.html#line1165">line 1165</a></code>
+                <code><a href="edo.js.html#line1286">line 1286</a></code>
             </div>
             
         </h4>

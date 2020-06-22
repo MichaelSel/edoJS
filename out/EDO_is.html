@@ -131,7 +131,7 @@
             
             <div class="container-source members">
                 <code><a href="edo.js.html">edo.js</a></code>,
-                <code><a href="edo.js.html#line296">line 296</a></code>
+                <code><a href="edo.js.html#line339">line 339</a></code>
             </div>
             
         </h4>
@@ -297,6 +297,13 @@
 
 
     
+        <h5>Examples</h5>
+        
+    <pre class="prettyprint"><code>let edo = new EDO(12) // define a tuning systemedo.is.subset([2,4],[[1,2,3,4],[1,2,4]])//returns false (the set [2,4] is NOT equal to [1,2,3,4] or to [1,2,4])</code></pre>
+
+    <pre class="prettyprint"><code>let edo = new EDO(12) // define a tuning systemedo.is.subset([2,4],[[1,2,3,4],[1,2,4],[2,4]])//returns true</code></pre>
+
+    
 
 </dd>
 
@@ -312,7 +319,7 @@
             
             <div class="container-source members">
                 <code><a href="edo.js.html">edo.js</a></code>,
-                <code><a href="edo.js.html#line310">line 310</a></code>
+                <code><a href="edo.js.html#line363">line 363</a></code>
             </div>
             
         </h4>
@@ -478,6 +485,13 @@
 
 
     
+        <h5>Examples</h5>
+        
+    <pre class="prettyprint"><code>let edo = new EDO(12) // define a tuning systemedo.is.same([2,4],[4,2]])//returns false</code></pre>
+
+    <pre class="prettyprint"><code>//Also supports more complicated structureslet edo = new EDO(12) // define a tuning systemedo.is.same([2,[4,[1,2,3]]],[2,[4,[1,2,3]]])//returns true</code></pre>
+
+    
 
 </dd>
 
@@ -493,7 +507,7 @@
             
             <div class="container-source members">
                 <code><a href="edo.js.html">edo.js</a></code>,
-                <code><a href="edo.js.html#line281">line 281</a></code>
+                <code><a href="edo.js.html#line316">line 316</a></code>
             </div>
             
         </h4>
@@ -657,6 +671,13 @@
     
 </dl>
 
+
+    
+        <h5>Examples</h5>
+        
+    <pre class="prettyprint"><code>let edo = new EDO(12) // define a tuning systemedo.is.subset([2,4],[1,2,3,4,5])//returns true (the set [2,4] IS a subset of [1,2,3,4,5])</code></pre>
+
+    <pre class="prettyprint"><code>let edo = new EDO(12) // define a tuning systemedo.is.subset([2,4],[1,2,3,5])//returns false (the set [2,4] is NOT a subset of [1,2,3,5])</code></pre>
 
     
 
