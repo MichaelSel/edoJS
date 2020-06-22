@@ -1,0 +1,2292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Namespace: convert | Namespace: convert</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/bootstrap.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-jsdoc.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/tui-doc.css">
+
+    
+</head>
+<body>
+<nav class="lnb" id="lnb">
+    <div class="logo" style="">
+        
+            <img src="img/toast-ui.png" width="100%" height="100%">
+        
+    </div>
+    <div class="title">
+        <h1><a href="index.html" class="link">Namespace: convert</a></h1>
+        
+    </div>
+    <div class="search-container" id="search-container">
+        <input type="text" placeholder="Search">
+        <ul></ul>
+    </div>
+    
+    <div class="lnb-api hidden"><h3>Classes</h3><ul><li><a href="EDO.html">EDO</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="EDO_sub"><div class="member-type">Methods</div><ul class="inner"><li><a href="EDO.html#scale">scale</a></li></ul></div></li><li><a href="Scale.html">Scale</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="Scale_sub"><div class="member-type">Methods</div><ul class="inner"><li><a href="Scale.html#invert">invert</a></li><li><a href="Scale.html#mode">mode</a></li><li><a href="Scale.html#normal">normal</a></li><li><a href="Scale.html#prime">prime</a></li></ul></div></li></ul></div><div class="lnb-api hidden"><h3>Namespaces</h3><ul><li><a href="EDO_convert.html">EDO#convert</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="EDO#convert_sub"><div class="member-type">Methods</div><ul class="inner"><li><a href="EDO_convert.html#.cents_to_ratio">cents_to_ratio</a></li><li><a href="EDO_convert.html#.interval_to_cents">interval_to_cents</a></li><li><a href="EDO_convert.html#.interval_to_ratio">interval_to_ratio</a></li><li><a href="EDO_convert.html#.intervals_to_pitches">intervals_to_pitches</a></li><li><a href="EDO_convert.html#.intervals_to_scale">intervals_to_scale</a></li><li><a href="EDO_convert.html#.midi_to_intervals">midi_to_intervals</a></li><li><a href="EDO_convert.html#.midi_to_name">midi_to_name</a></li><li><a href="EDO_convert.html#.name_to_scale">name_to_scale</a></li><li><a href="EDO_convert.html#.pc_to_name">pc_to_name</a></li><li><a href="EDO_convert.html#.ratio_to_cents">ratio_to_cents</a></li><li><a href="EDO_convert.html#.ratio_to_interval">ratio_to_interval</a></li><li><a href="EDO_convert.html#.to_steps">to_steps</a></li></ul></div></li><li><a href="EDO_count.html">EDO#count</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="EDO#count_sub"><div class="member-type">Methods</div><ul class="inner"><li><a href="EDO_count.html#.common_tones">common_tones</a></li><li><a href="EDO_count.html#.pitches">pitches</a></li></ul></div></li><li><a href="EDO_get.html">EDO#get</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="EDO#get_sub"><div class="member-type">Methods</div><ul class="inner"><li><a href="EDO_get.html#.contour">contour</a></li><li><a href="EDO_get.html#.interval_shift">interval_shift</a></li><li><a href="EDO_get.html#.interval_stack">interval_stack</a></li><li><a href="EDO_get.html#.inversion">inversion</a></li><li><a href="EDO_get.html#.lattice">lattice</a></li><li><a href="EDO_get.html#.modes">modes</a></li><li><a href="EDO_get.html#.motives">motives</a></li><li><a href="EDO_get.html#.motives_diatonic">motives_diatonic</a></li><li><a href="EDO_get.html#.necklace">necklace</a></li><li><a href="EDO_get.html#.normal_order">normal_order</a></li><li><a href="EDO_get.html#.path_n_steps">path_n_steps</a></li><li><a href="EDO_get.html#.path_on_tree">path_on_tree</a></li><li><a href="EDO_get.html#.permutations">permutations</a></li><li><a href="EDO_get.html#.pitch_distribution">pitch_distribution</a></li><li><a href="EDO_get.html#.random_melody">random_melody</a></li><li><a href="EDO_get.html#.ratio_approximation">ratio_approximation</a></li><li><a href="EDO_get.html#.scales">scales</a></li><li><a href="EDO_get.html#.shortest_path">shortest_path</a></li><li><a href="EDO_get.html#.simple_ratios">simple_ratios</a></li><li><a href="EDO_get.html#.subset_indices">subset_indices</a></li><li><a href="EDO_get.html#.subsets">subsets</a></li><li><a href="EDO_get.html#.transposition">transposition</a></li><li><a href="EDO_get.html#.unique_elements">unique_elements</a></li></ul></div></li><li><a href="EDO_is.html">EDO#is</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="EDO#is_sub"><div class="member-type">Methods</div><ul class="inner"><li><a href="EDO_is.html#.element_of">element_of</a></li><li><a href="EDO_is.html#.same">same</a></li><li><a href="EDO_is.html#.subset">subset</a></li></ul></div></li><li><a href="Scale_count.html">Scale#count</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="Scale#count_sub"><div class="member-type">Methods</div><ul class="inner"><li><a href="Scale_count.html#.chord_quality">chord_quality</a></li><li><a href="Scale_count.html#.consecutive_steps">consecutive_steps</a></li><li><a href="Scale_count.html#.imperfections">imperfections</a></li><li><a href="Scale_count.html#.interval">interval</a></li><li><a href="Scale_count.html#.M3s">M3s</a></li><li><a href="Scale_count.html#.m3s">m3s</a></li><li><a href="Scale_count.html#.major_minor_triads">major_minor_triads</a></li><li><a href="Scale_count.html#.modes">modes</a></li><li><a href="Scale_count.html#.P5s">P5s</a></li><li><a href="Scale_count.html#.pitches">pitches</a></li><li><a href="Scale_count.html#.ratio">ratio</a></li><li><a href="Scale_count.html#.rotational_symmetries">rotational_symmetries</a></li><li><a href="Scale_count.html#.simple_ratios">simple_ratios</a></li><li><a href="Scale_count.html#.tetrachords">tetrachords</a></li><li><a href="Scale_count.html#.thirds">thirds</a></li><li><a href="Scale_count.html#.transpositions">transpositions</a></li><li><a href="Scale_count.html#.trichords">trichords</a></li></ul></div></li><li><a href="Scale_export.html">Scale#export</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="Scale#export_sub"><div class="member-type">Methods</div><ul class="inner"><li><a href="Scale_export.html#.scala">scala</a></li></ul></div></li><li><a href="Scale_get.html">Scale#get</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="Scale#get_sub"><div class="member-type">Methods</div><ul class="inner"><li><a href="Scale_get.html#.common_tone_transpositions">common_tone_transpositions</a></li><li><a href="Scale_get.html#.interval_vector">interval_vector</a></li><li><a href="Scale_get.html#.inversion">inversion</a></li><li><a href="Scale_get.html#.least_step_multiplier">least_step_multiplier</a></li><li><a href="Scale_get.html#.lerdahl_attraction">lerdahl_attraction</a></li><li><a href="Scale_get.html#.lerdahl_attraction_vector">lerdahl_attraction_vector</a></li><li><a href="Scale_get.html#.levenshtein">levenshtein</a></li><li><a href="Scale_get.html#.modes">modes</a></li><li><a href="Scale_get.html#.normal_order">normal_order</a></li><li><a href="Scale_get.html#.permutations">permutations</a></li><li><a href="Scale_get.html#.pitches">pitches</a></li><li><a href="Scale_get.html#.position_of_quality">position_of_quality</a></li><li><a href="Scale_get.html#.prime_form">prime_form</a></li><li><a href="Scale_get.html#.rotations">rotations</a></li><li><a href="Scale_get.html#.rothenberg_propriety">rothenberg_propriety</a></li><li><a href="Scale_get.html#.shortest_path">shortest_path</a></li><li><a href="Scale_get.html#.stacks">stacks</a></li><li><a href="Scale_get.html#.step_sizes">step_sizes</a></li><li><a href="Scale_get.html#.supersets">supersets</a></li><li><a href="Scale_get.html#.tetrachords">tetrachords</a></li><li><a href="Scale_get.html#.transposition">transposition</a></li><li><a href="Scale_get.html#.trichords">trichords</a></li></ul></div></li><li><a href="Scale_is.html">Scale#is</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="Scale#is_sub"><div class="member-type">Methods</div><ul class="inner"><li><a href="Scale_is.html#.invertible">invertible</a></li><li><a href="Scale_is.html#.normal_order">normal_order</a></li><li><a href="Scale_is.html#.one_of">one_of</a></li><li><a href="Scale_is.html#.prime_form">prime_form</a></li></ul></div></li><li><a href="Scale_to.html">Scale#to</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="Scale#to_sub"><div class="member-type">Methods</div><ul class="inner"><li><a href="Scale_to.html#.cents">cents</a></li><li><a href="Scale_to.html#.steps">steps</a></li></ul></div></li></ul></div>
+</nav>
+<div id="resizer"></div>
+
+<div class="main" id="main">
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>
+            <span class="ancestors"><a href="EDO.html">EDO</a>#</span>convert</h2>
+        
+    
+</header>
+
+<article>
+    
+        <div class="container-overview">
+        
+            
+                <div class="description">A collection of functions that converts an input into other equivalent representations</div>
+            
+
+            
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+            
+        
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        <dl>
+                
+
+<dt>
+    
+        <h4 class="name" id=".cents_to_ratio">
+            
+                <span class="type-signature"><span class="icon green">static</span> </span>cents_to_ratio<span class="signature">(cents)</span><span class="type-signature"> &rarr; {Number}</span>
+                
+            
+            <div class="container-source members">
+                <code><a href="edo.js.html">edo.js</a></code>,
+                <code><a href="edo.js.html#line1344">line 1344</a></code>
+            </div>
+            
+        </h4>
+
+        
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Returns a ratio as a decimal number from an interval represented in cents
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="container-params">
+        <h5>Parameters:</h5>
+        
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>cents</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">an interval in cents</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="container-returns">
+        <h5>Returns:</h5>
+        
+                
+
+
+
+<span class="param-type">Number</span>
+
+
+
+
+
+- a ratio
+
+
+
+
+            
+    </div>
+    
+
+    
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+</dd>
+
+            
+                
+
+<dt>
+    
+        <h4 class="name" id=".interval_to_cents">
+            
+                <span class="type-signature"><span class="icon green">static</span> </span>interval_to_cents<span class="signature">(interval)</span><span class="type-signature"> &rarr; {Number}</span>
+                
+            
+            <div class="container-source members">
+                <code><a href="edo.js.html">edo.js</a></code>,
+                <code><a href="edo.js.html#line1309">line 1309</a></code>
+            </div>
+            
+        </h4>
+
+        
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Returns a value in cents from a given interval
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="container-params">
+        <h5>Parameters:</h5>
+        
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>interval</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Some interval</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="container-returns">
+        <h5>Returns:</h5>
+        
+                
+
+
+
+<span class="param-type">Number</span>
+
+
+
+
+
+- the interval represented in cents
+
+
+
+
+            
+    </div>
+    
+
+    
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+</dd>
+
+            
+                
+
+<dt>
+    
+        <h4 class="name" id=".interval_to_ratio">
+            
+                <span class="type-signature"><span class="icon green">static</span> </span>interval_to_ratio<span class="signature">(interval)</span><span class="type-signature"> &rarr; {Number}</span>
+                
+            
+            <div class="container-source members">
+                <code><a href="edo.js.html">edo.js</a></code>,
+                <code><a href="edo.js.html#line1335">line 1335</a></code>
+            </div>
+            
+        </h4>
+
+        
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Returns a ratio as a decimal number from a given interval
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="container-params">
+        <h5>Parameters:</h5>
+        
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>interval</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Some interval</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="container-returns">
+        <h5>Returns:</h5>
+        
+                
+
+
+
+<span class="param-type">Number</span>
+
+
+
+
+
+- a ratio
+
+
+
+
+            
+    </div>
+    
+
+    
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+</dd>
+
+            
+                
+
+<dt>
+    
+        <h4 class="name" id=".intervals_to_pitches">
+            
+                <span class="type-signature"><span class="icon green">static</span> </span>intervals_to_pitches<span class="signature">(intervals, starting_pitch<span class="signature-attributes">opt</span>, modulo<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Array.&lt;Number>|Array.&lt;Array.&lt;Number>>}</span>
+                
+            
+            <div class="container-source members">
+                <code><a href="edo.js.html">edo.js</a></code>,
+                <code><a href="edo.js.html#line1407">line 1407</a></code>
+            </div>
+            
+        </h4>
+
+        
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Given a list of intervals (or list of lists), returns pitches made with the intervalsstarting from starting_pitch
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="container-params">
+        <h5>Parameters:</h5>
+        
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>intervals</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;Number></span>
+|
+
+<span class="param-type">Array.&lt;Array.&lt;Number>></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">a list of intervals</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>starting_pitch</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    0
+                
+                </td>
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>modulo</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">if modulo is provided, the pitches will conform to it</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="container-returns">
+        <h5>Returns:</h5>
+        
+                
+
+
+
+<span class="param-type">Array.&lt;Number></span>
+|
+
+<span class="param-type">Array.&lt;Array.&lt;Number>></span>
+
+
+
+
+
+- The input as pitches
+
+
+
+
+            
+    </div>
+    
+
+    
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+</dd>
+
+            
+                
+
+<dt>
+    
+        <h4 class="name" id=".intervals_to_scale">
+            
+                <span class="type-signature"><span class="icon green">static</span> </span>intervals_to_scale<span class="signature">(intervals)</span><span class="type-signature"> &rarr; {Number}</span>
+                
+            
+            <div class="container-source members">
+                <code><a href="edo.js.html">edo.js</a></code>,
+                <code><a href="edo.js.html#line1321">line 1321</a></code>
+            </div>
+            
+        </h4>
+
+        
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Gets a list of intervals classes. Returns a scale as list of pitch classes.
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="container-params">
+        <h5>Parameters:</h5>
+        
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>intervals</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;Number></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">A list of intervals</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="container-returns">
+        <h5>Returns:</h5>
+        
+                
+
+
+
+<span class="param-type">Number</span>
+
+
+
+
+
+- A scale made up by adding the intervals in order
+
+
+
+
+            
+    </div>
+    
+
+    
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>// returns [0,2,4,5,7,9,11]convert.intervals_to_scale([2, 2, 1, 2, 2, 2, 1])</code></pre>
+
+    
+
+</dd>
+
+            
+                
+
+<dt>
+    
+        <h4 class="name" id=".midi_to_intervals">
+            
+                <span class="type-signature"><span class="icon green">static</span> </span>midi_to_intervals<span class="signature">(midi)</span><span class="type-signature"> &rarr; {Array.&lt;Number>}</span>
+                
+            
+            <div class="container-source members">
+                <code><a href="edo.js.html">edo.js</a></code>,
+                <code><a href="edo.js.html#line1430">line 1430</a></code>
+            </div>
+            
+        </h4>
+
+        
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Given a list of midi notes, returns a list of intervals
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="container-params">
+        <h5>Parameters:</h5>
+        
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>midi</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;Number></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">a list of midi pitches</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="container-returns">
+        <h5>Returns:</h5>
+        
+                
+
+
+
+<span class="param-type">Array.&lt;Number></span>
+
+
+
+
+
+- The input as intervals
+
+
+
+
+            
+    </div>
+    
+
+    
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+</dd>
+
+            
+                
+
+<dt>
+    
+        <h4 class="name" id=".midi_to_name">
+            
+                <span class="type-signature"><span class="icon green">static</span> </span>midi_to_name<span class="signature">(note_number, offset)</span><span class="type-signature"> &rarr; {Array.&lt;String>|String}</span>
+                
+            
+            <div class="container-source members">
+                <code><a href="edo.js.html">edo.js</a></code>,
+                <code><a href="edo.js.html#line1356">line 1356</a></code>
+            </div>
+            
+        </h4>
+
+        
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Returns the name of the note (including octave) from a midi value
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="container-params">
+        <h5>Parameters:</h5>
+        
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>note_number</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;Number></span>
+|
+
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">a midi note number or an array of midi note numbers</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>offset</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">an amount by which to shift note_number</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="container-returns">
+        <h5>Returns:</h5>
+        
+                
+
+
+
+<span class="param-type">Array.&lt;String></span>
+|
+
+<span class="param-type">String</span>
+
+
+
+
+
+- The input as note name(s)
+
+
+
+
+            
+    </div>
+    
+
+    
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>//returns ["C4","D4"]convert.midi_to_name([60,62])</code></pre>
+
+    
+
+</dd>
+
+            
+                
+
+<dt>
+    
+        <h4 class="name" id=".name_to_scale">
+            
+                <span class="type-signature"><span class="icon green">static</span> </span>name_to_scale<span class="signature">(name)</span><span class="type-signature"> &rarr; {<a href="Scale.html">Scale</a>}</span>
+                
+            
+            <div class="container-source members">
+                <code><a href="edo.js.html">edo.js</a></code>,
+                <code><a href="edo.js.html#line1260">line 1260</a></code>
+            </div>
+            
+        </h4>
+
+        
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Gets a scale's name, and returns it as a Scale object
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="container-params">
+        <h5>Parameters:</h5>
+        
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>name</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">a scale's name (based on this API's naming formula)</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="container-returns">
+        <h5>Returns:</h5>
+        
+                
+
+
+
+<span class="param-type"><a href="Scale.html">Scale</a></span>
+
+
+
+
+
+- a scale object
+
+
+
+
+            
+    </div>
+    
+
+    
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+</dd>
+
+            
+                
+
+<dt>
+    
+        <h4 class="name" id=".pc_to_name">
+            
+                <span class="type-signature"><span class="icon green">static</span> </span>pc_to_name<span class="signature">(pc)</span><span class="type-signature"> &rarr; {String}</span>
+                
+            
+            <div class="container-source members">
+                <code><a href="edo.js.html">edo.js</a></code>,
+                <code><a href="edo.js.html#line1381">line 1381</a></code>
+            </div>
+            
+        </h4>
+
+        
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Returns the name of a note from a given pitch class
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="container-params">
+        <h5>Parameters:</h5>
+        
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>pc</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">a pitch class</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="container-returns">
+        <h5>Returns:</h5>
+        
+                
+
+
+
+<span class="param-type">String</span>
+
+
+
+
+
+- The input as a note name
+
+
+
+
+            
+    </div>
+    
+
+    
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+</dd>
+
+            
+                
+
+<dt>
+    
+        <h4 class="name" id=".ratio_to_cents">
+            
+                <span class="type-signature"><span class="icon green">static</span> </span>ratio_to_cents<span class="signature">(ratio)</span><span class="type-signature"> &rarr; {Number}</span>
+                
+            
+            <div class="container-source members">
+                <code><a href="edo.js.html">edo.js</a></code>,
+                <code><a href="edo.js.html#line1300">line 1300</a></code>
+            </div>
+            
+        </h4>
+
+        
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Returns a value in cents to a given input ratio
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="container-params">
+        <h5>Parameters:</h5>
+        
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>ratio</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">A harmonic ratio</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="container-returns">
+        <h5>Returns:</h5>
+        
+                
+
+
+
+<span class="param-type">Number</span>
+
+
+
+
+
+- The ratio represented in cents
+
+
+
+
+            
+    </div>
+    
+
+    
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+</dd>
+
+            
+                
+
+<dt>
+    
+        <h4 class="name" id=".ratio_to_interval">
+            
+                <span class="type-signature"><span class="icon green">static</span> </span>ratio_to_interval<span class="signature">(ratio, tolerance)</span><span class="type-signature"> &rarr; {Array.&lt;Number>}</span>
+                
+            
+            <div class="container-source members">
+                <code><a href="edo.js.html">edo.js</a></code>,
+                <code><a href="edo.js.html#line1284">line 1284</a></code>
+            </div>
+            
+        </h4>
+
+        
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Returns all of the IC in the EDO that equal to a given ratio (with a given tolerance in cents)
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="container-params">
+        <h5>Parameters:</h5>
+        
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>ratio</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">A harmonic ratio</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>tolerance</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">a tolerance (allowed error) in cents</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="container-returns">
+        <h5>Returns:</h5>
+        
+                
+
+
+
+<span class="param-type">Array.&lt;Number></span>
+
+
+
+
+
+- Interval classes that fit that ratio
+
+
+
+
+            
+    </div>
+    
+
+    
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+</dd>
+
+            
+                
+
+<dt>
+    
+        <h4 class="name" id=".to_steps">
+            
+                <span class="type-signature"><span class="icon green">static</span> </span>to_steps<span class="signature">(lst, cache<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Array.&lt;Number>}</span>
+                
+            
+            <div class="container-source members">
+                <code><a href="edo.js.html">edo.js</a></code>,
+                <code><a href="edo.js.html#line1242">line 1242</a></code>
+            </div>
+            
+        </h4>
+
+        
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Gets a melody as pitches and returns the melody as intervals
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="container-params">
+        <h5>Parameters:</h5>
+        
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>lst</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;number></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">a collection of pitches</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>cache</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    true
+                
+                </td>
+            
+
+            <td class="description last">when true the result is cached for faster future retrieval</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="container-returns">
+        <h5>Returns:</h5>
+        
+                
+
+
+
+<span class="param-type">Array.&lt;Number></span>
+
+
+
+
+
+- an array of intervals
+
+
+
+
+            
+    </div>
+    
+
+    
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+</dd>
+
+            </dl>
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<footer>
+    <img class="logo" src="img/toast-ui.png" style="">
+    <div class="footer-text">NHN Entertainment. Frontend Development Lab</div>
+</footer>
+<script>prettyPrint();</script>
+<script src="scripts/jquery.min.js"></script>
+<script src="scripts/tui-doc.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+    <script>
+        var id = 'EDO#convert_sub'.replace(/"/g, '_');
+        var selectedApi = document.getElementById(id); // do not use jquery selector
+        var $selectedApi = $(selectedApi);
+
+        $selectedApi.removeClass('hidden');
+        $selectedApi.parent().find('.glyphicon').removeClass('glyphicon-plus').addClass('glyphicon-minus');
+        showLnbApi();
+    </script>
+
+</body>
+</html>
