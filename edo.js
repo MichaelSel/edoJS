@@ -448,14 +448,15 @@ class EDO {
         },
 
         /**
-         * Extracts every possible "motive" from a "melody".
-         * A motive can be intervalic (default) such that it looks at the intervals rather than the pitch classes.
-         * The function also keeps track of the number of times each motive appeared.
+         * <p>Extracts every possible "motive" from a given melody.</p>
+         * <p>A motive can be intervalic (default) such that it looks at the intervals rather than the pitch classes.
+         * The function also keeps track of the number of times each motive appeared.</p>
          * @param  {Array<Number>} melody - a collection of pitches to find (in order)
          * @param  {Boolean} [intervalic=true] - looks at the intervals rather than the pitch classes.
          * @param  {Boolean} [allow_skips=true] - if false, the search will only be done on consecutive items
          * @return {Array<motives>}
          * @memberOf EDO#get
+         * @function
          * @example
          * let edo = new EDO(12) // define a tuning system
          * edo.get.motives([7,6,7,6,7,2,5,3,0]).slice(0,4) //get first 3 motives
@@ -495,19 +496,34 @@ class EDO {
         },
 
         /**
-         * Same as get.motives() only instead of considering pitches as pitch classes, it looks at them as scale degrees
-         * As such, in the scale [0,2,4,5,7,9,11], [0,2,4] and [2,4,5] are considered the same motive
-         * This is because while the former has steps of size [2,2] and the latter  [2,1] they both represent moving
-         * 2 scale degrees up step wise in the scale [1,1]
+         * <p>Same as [EDO.get.motives()]{@link EDO#get.motives} only instead of considering pitches as pitch classes, it looks at them as scale degrees.</p>
+         * <p>As such, in the scale <code>[0,2,4,5,7,9,11]</code>, <code>[0,2,4]</code> and <code>[2,4,5]</code> are considered the same motive
+         * This is because while the former has steps of size <code>[2,2]</code> and the latter <code>[2,1]</code> they both represent moving
+         * 2 scale degrees up step wise in the scale <code>[1,1]</code>.</p>
          * @param  {Array<Number>} melody - a collection of pitches to find (in order)
          * @param  {Array<Number>} scale - a diatonic context (collection of PCs) for the motive search
          * @param  {Boolean} [allow_skips=true] - if false, the search will only be done on consecutive items
          * @return {Array<motive>}
-         * @memberOf EDO#get*/
+         * @memberOf EDO#get
+         * @see {@link EDO#get.motives}
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * let melody = [8,7,7,8,7,7,8,7,7,15,15,14,12,12,10,8,8,7,5,5] // Mozart Symphony no. 40
+         * let scale = edo.scale([0,2,3,5,7,8,10]) //natural minor
+         * edo.get.motives_diatonic(melody,scale) // find diatonic motives in the melody
+         *                      .slice(0,3) //show top 3
+         * //returns (motives are represented in change in scale degrees)
+         * [
+         *  { motive: [ 0 ], incidence: 9 },
+         *  { motive: [ -1 ], incidence: 6 },
+         *  { motive: [ -1, 0 ], incidence: 5 }
+         * ]
+         */
         motives_diatonic: (melody, scale,allow_skips=false) => {
-
-            let not_in_scale = melody.filter((note)=>scale.indexOf(note)==-1)
+            if (scale instanceof Scale) scale = scale.pitches
+            let not_in_scale = melody.filter((note)=>scale.indexOf(this.mod(note,this.edo))==-1)
             if(not_in_scale.length>0) return null
+
             scale = this.get.unique_elements(scale).sort((a,b)=>a-b)
 
             let scale_degrees=melody.map((note)=>scale.indexOf(note)+1)
@@ -524,6 +540,7 @@ class EDO {
          */
         simple_ratios: (limit=17,cache=true) => {
             let primes = this.get.primes_in_range(limit)
+            console.log(primes)
             let ratios = {}
             for(let i=2;i<limit+1;i++) {
                 for(let j=1;j<i;j++) {
@@ -562,7 +579,11 @@ class EDO {
          * @param  {Array<Number>} lst - a collection of PCs
          * @param  {Boolean} cache - if true, the result will be cached for faster retrival
          * @return {Array<Number>} The normal order of the input
-         * @memberOf EDO#get*/
+         * @memberOf EDO#get
+         * @example
+         * let edo = new EDO(12) //Create a tuning context
+         * edo.get.normal_order([0,2,4,5,7,9,11])
+         * //returns [0, 1, 2, 3, 5, 6, 8, 10]*/
         normal_order: (lst,cache=true) => {
             let edo = this.edo
             if(!this.catalog[String(lst)]) this.catalog[String(lst)] = {}
@@ -653,22 +674,22 @@ class EDO {
             return modes
         },
 
-        /** Returns the path taken (as pitches) after climbing up a interval "fractal" tree
+        /** <p>Returns the path taken (as pitches) after climbing up a interval "fractal" tree.</p>
          *
-         * In an interval tree where each branch adds (or subtracts) an interval recursively.
+         * <p>In an interval tree where each branch adds (or subtracts) an interval recursively.
          * For instance, such a tree could have 2 interval branches. One "on the left" adding -3 to the current
          * pitch, and the one "on the right" adding +2 to the current pitch.
          * If you climbed this tree using some path, for instance "left, left, right, left, right, right", you
-         * will in essence move -3 -3 +2 -3 +2 +2 such that if you start with pitch class 0 you get:
-         * 0 -3 -6 -4 -7 -5 -3 which if we ignore octave (i.e. indicate pitch classes) we get: 0 9 6 8 5 7 9.
+         * will in essence move <code>[-3, -3, +2, -3, +2, +2]</code> such that if you start with pitch class 0 you get:
+         * <code>[0, -3, -6, -4, -7, -5, -3]</code> which if we ignore octave (i.e. indicate pitch classes) we get: <code>[0, 9, 6, 8, 5, 7, 9]</code>.</p>
          *
          *
-         * @param  {Array<Number>} intervals - the "branches" coming out of each node on the tree. For instance, [3,-3,2]
+         * @param  {Array<Number>} intervals - the "branches" coming out of each node on the tree. For instance, <code>[3,-3,2]</code>
          * would represent a tree with three branches coming out of each node, the leftmost is +3 the middle one is -3,
          * and the rightmost one is +2.
          *
          * @param  {Array<Number>} path - the indication of how to traverse the tree. The list contains the indexes of
-         * the branch to be climbed at each itiration. so [0,0,1,1,2] would mean go up the leftmost branch twice,
+         * the branch to be climbed at each iteration. so <code>[0,0,1,1,2]</code> would mean go up the leftmost branch twice,
          * then go up the middle branch twice, finally go up the rightmost branch once (Note, this example uses
          * three branches, but there could be any number of branches).
          *
@@ -685,80 +706,56 @@ class EDO {
             return result
         },
 
-        /** Finds the required operation to get to a destination note using given intervals
+        /** <p>Finds the required operation to get to a destination note using given intervals</p>
          *
-         * Finds the shortest path towards a given note (destination) by starting on note 0,
-         * and moving up only using the "up_interval(s)", or down using the "down_interval(s)".
-         * For instance, for the path from 0 to -4, by only moving up by minor 3rds (3) and down by perfect
-         * 5ths (-7), the function will return [3,3,3,3,3,3,-7,-7] which is the shortest way to get from 0
-         * to -4 using only these intervals.
+         * <p>Finds the shortest path towards a given note (destination) by starting on note 0 and moving using the
+         * intervals provided.
+         * For instance, for <code>destination = -4</code> and <code>intervals = [-7,3]</code> (reaching -4, by only moving up by minor 3rds (3) and down by perfect
+         * 5ths (-7)), the function will return <code>[3,3,3,3,3,3,-7,-7]</code> which is the shortest way to get from 0
+         * to -4 using only these intervals.</p>
          *
-         * Note: the order of the intervals is mutable and can be jumbled up at will without harming the
+         * <p>Note: the order of the intervals is mutable and can be jumbled up at will without harming the
          * result. In the example given, as long as there are six 3s and two -7s. the sum will be -4. So
-         * there is potential for permutations.
+         * there is potential for permutations.</p>
          *
          *
          * @param  {Number} destination - the destination note. This is an int that represents some interval away from 0.
-         * @param  {Array<Number>} up_interval - the interval(s) used to move upwards
-         * @param  {Array<Number>} down_interval - the interval(s) used to move downwards
-         * @return {Array<Array<Number>>} a sorted array of the intervals needed to reach the destination starting from 0.
-         * @memberOf EDO#get*/
-        shortest_path: (destination,up_interval=[3,4],down_interval=[-1,-2], used = [],life_span=10) => {
+         * @param  {Array<Number> | Number} intervals - the interval classes to be used (usually at least one positive interval to move up and one negative to move down)
+         * @return {Array<Array<Number>>} an sorted array of the intervals needed to reach the destination starting from 0.
+         * @memberOf EDO#get
+         * @example
+         * //The quickest way to get to E (from 0) moving up with P5s and down with m3s
+         * let path = edo.get.shortest_path(7,[5,-3]) // returns [ -3, 5, 5 ]
+         * let all = edo.get.permutations(path) //all permutation of the result
+         * //returns
+         * [
+         *  [ -3, 5, 5 ],
+         *  [ -3, 5, 5 ],
+         *  [ 5, -3, 5 ],
+         *  [ 5, 5, -3 ],
+         *  [ 5, -3, 5 ],
+         *  [ 5, 5, -3 ]
+         * ]
+         * all = all.map((path)=>edo.convert.intervals_to_pitches(path)) //convert the intervals into pitches
+         * let as_pitches = all.map((path)=>edo.convert.midi_to_name(path,60)) //convert the pitches into pitch names
+         * //returns
+         * [
+         *  [ 'C4', 'A3', 'D4', 'G4' ],
+         *  [ 'C4', 'A3', 'D4', 'G4' ],
+         *  [ 'C4', 'F4', 'D4', 'G4' ],
+         *  [ 'C4', 'F4', 'Bb4', 'G4' ],
+         *  [ 'C4', 'F4', 'D4', 'G4' ],
+         *  [ 'C4', 'F4', 'Bb4', 'G4' ]
+         * ]
+         *
+         * */
+        shortest_path: (destination,intervals=[5,-3], used = [],life_span=10) => {
 
-            const shortest_path_single_up_down = function  (destination,up_interval=1,down_interval=-1,max_length=10) {
-                /*
-                * Finds the required operation to get to a destination note using given intervals
-
-                Finds the shortest path towards a given note (destination) by starting on note 0,
-                and moving up only using the "up_interval", or down using the "down_interval".
-                For instance, for the path from 0 to -4, by only moving up by minor 3rds (3) and down by perfect
-                5ths (-7), the function will return [3,3,3,3,3,3,-7,-7] which is the shortest way to get from 0
-                to -4 using only these intervals.
-
-                Note: the order of the intervals is mutable and can be jumbled up at will without harming the
-                result. In the example given, as long as there are six 3s and two -7s. the sum will be -4. So
-                there is potential for permutations.
-
-
-                Parameters
-                ----------
-                destination : int
-                    the destination note. This is an int that represents some interval away from 0.
-                up_interval : int (optional)
-                    the interval used to move upwards
-                down_interval : int (optional)
-                    the interval used to move downwards
-
-
-                Returns
-                -------
-                list
-                    a sorted list of the intervals needed to reach the destination starting from 0.*/
-
-                down_interval = -Math.abs(down_interval)
-                up_interval = Math.abs(up_interval)
-                let steps = 0
-                let up = []
-                let down = []
-                let total = 0
-                while(total!=destination && steps<max_length) {
-                    total = [...up,...down].reduce((t,e)=>e+t,0)
-                    steps++
-                    if(total<destination) up.push(up_interval)
-                    else if(total>destination) down.push(down_interval)
-                }
-                if(total!=destination) return null
-                return [...up,...down]
-            }
-
-
-            if(!Array.isArray(up_interval) && !Array.isArray(down_interval)) {
-                return shortest_path_single_up_down(destination,up_interval,down_interval,life_span)
-
-            }
-            else {
-                if(!Array.isArray(up_interval)) up_interval=[up_interval]
-                if(!Array.isArray(down_interval)) down_interval=[down_interval]
+            let up_interval = []
+            let down_interval = []
+            for (let int of intervals) {
+                if(int>0) up_interval.push(int)
+                else if(int<0) down_interval.push(int)
             }
 
             let paths = []
@@ -789,8 +786,7 @@ class EDO {
 
 
             shortest_path_array(destination,up_interval,down_interval, used,life_span)
-            // paths = paths.sort((a,b)=>a.length-b.length)
-
+            paths = paths.sort((a,b)=>a-b)
             return paths
 
         },
@@ -956,10 +952,21 @@ class EDO {
 
         },
 
-        /** Returns all necklaces from a given set of intervals
+        /** Returns all necklaces from a given set of steps
          * @param  {Array<Number>} lst - a set of intervals
          * @return {Array<Array<Number>>} Necklaces
-         * @memberOf EDO#get*/
+         * @memberOf EDO#get
+         * @example
+         * let edo = new EDO(12)
+         * edo.get.necklace([2,2,1,2,2,2,1])
+         * //returns
+         * [ //These are the 3 unique orderings of the intervals in the input
+         *  [2, 2, 2, 1, 2, 2, 1], //any other combination would be some rotation of
+         *  [2, 2, 2, 2, 1, 2, 1], //one of these
+         *  [2, 2, 2, 2, 2, 1, 1]
+         * ]
+         * @see {@link https://en.wikipedia.org/wiki/Necklace_(combinatorics)}
+         * */
         necklace:(lst) => {
             let necklaces = []
             let unique_steps = this.get.unique_elements(lst)
@@ -985,16 +992,16 @@ class EDO {
 
         /** <p>Makes every stacking combination of intervals from 'intervals' up to 'height' stack_size.</p>
          *
-         * <p>For instance, given the intervals [2,3] and stack_size = 3, the function will return a list of lists
-         * such that every list will be of length 3 (stack_size) containing an exhaustive list of every
+         * <p>For instance, given the <code>intervals = [2,3]</code> and <code>stack_size = 3</code>, the function will return a list of lists
+         * such that every list will be of <code>length = 3</code> (<code>stack_size</code>) containing an exhaustive list of every
          * combination using the intervals 2 and 3 (in this case).
-         * As such, it will return  [[2, 2, 2], [2, 2, 3], [2, 3, 2], [3, 2, 2], [2, 3, 3], [3, 2, 3],
-         * [3, 3, 2], [3, 3, 3]] which represents every combination or 2s and 3s in any order of length 3.</p>
+         * As such, it will return  <code>[[2, 2, 2], [2, 2, 3], [2, 3, 2], [3, 2, 2], [2, 3, 3], [3, 2, 3],
+         * [3, 3, 2], [3, 3, 3]]</code> which represents every combination or 2s and 3s in any order of length 3.</p>
          *
-         * <p>if as_pitches is set to True, instead of returning the list of intervals classes of length 3, it
-         * will return a list of pitches starting from 0 (which can go above 11). If set to True the function
-         * will return  [[0, 2, 4, 6], [0, 2, 4, 7], [0, 2, 5, 7], [0, 3, 5, 7], [0, 2, 5, 8], [0, 3, 5, 8],
-         * [0, 3, 6, 8], [0, 3, 6, 9]]</p>
+         * <p>if <code>as_pitches = true</code>, instead of returning the list of intervals classes of length 3, it
+         * will return a list of pitches starting from 0 (which can go above 11). If set to true the function
+         * will return  <code>[[0, 2, 4, 6], [0, 2, 4, 7], [0, 2, 5, 7], [0, 3, 5, 7], [0, 2, 5, 8], [0, 3, 5, 8],
+         * [0, 3, 6, 8], [0, 3, 6, 9]]</code></p>
          * @param  {Array<Number>} intervals - the intervals be used
          * @param  {Number} [stack_size=3] - the size of the stack of pitches.
          * @param  {Boolean} [as_pitches=false] - Indicates whether the returned result represents interval classes or pitches
@@ -1079,6 +1086,15 @@ class EDO {
          * @return {Object}
          * @returns {approximation}
          * @memberOf EDO#get
+         * @example
+         * let edo = new EDO(12) // create a tuning context
+         * edo.get.ratio_approximation(7)
+         * //returns { ratio: '3/2', cents_offset: -1.955000865387433, decimal: 1.5 }
+         *
+         * let edo = new EDO(17) // Notice this is 17 divisions
+         * console.log(edo.get.ratio_approximation(3))
+         * //returns {ratio: '17/15', cents_offset: -4.921988887832043, decimal: 1.1333333333333333}
+         *
          */
         ratio_approximation: (interval,limit=17) =>{
             let closest_ratio = 0
@@ -1120,7 +1136,7 @@ class EDO {
          * get.subsets([0,2,3],true)
          * @example
          * //returns [[0], [2], [3], [0, 2], [2, 3], [0, 2, 3]]
-         * get.subsets([0,2,3],false)
+         * edo.get.subsets([0,2,3],false)
          * @returns {Array<Array<Number>>}
          * @memberOf EDO#get
          */
@@ -1150,12 +1166,12 @@ class EDO {
          *
          * <p>If local is set to true, every cell in the vector will be
          * either 1 if note n is higher than n-1, 0 if note n is the same as n-1, and -1 if note n is lower than n-1
-         * For instance [0,0,4,7,4,7,4,0] will in local mode will return [0,1,1,-1,1,-1,-1]</p>
+         * For instance <code>[0,0,4,7,4,7,4,0]</code> will in local mode will return <code>[0,1,1,-1,1,-1,-1]</code></p>
          *
          * <p>If local is set to false (default), the contour of the line is expressed such that the actual pc class of the
-         * note is removed but its relative position in regards to the entire line is keps.
-         * [0,4,7,12,16,7,12,16] (Bach prelude in C) has 5 distinct note heights, so it will return
-         * [0,1,2,3, 4, 2,3, 4] indicating the relative height of each note in the entire phrase</p>
+         * note is removed but its relative position in regards to the entire line is kept.
+         * <code>[0,4,7,12,16,7,12,16]</code> (Bach prelude in C) has 5 distinct note heights, so it will return
+         * <code>[0,1,2,3, 4, 2,3, 4]</code> indicating the relative height of each note in the entire phrase</p>
          * @param  {Array<Number>} pitches - a given array of pitches
          * @param  {Boolean} [local=false] - if set to false, function will only return subsets that have consecutive members
          * @returns {Array<Number>}
@@ -1199,6 +1215,19 @@ class EDO {
          * @param  {Array<Number>} pitches - a given array of pitches
          * @returns {Array<distribution>}
          * @memberOf EDO#get
+         * @example
+         * let edo = new EDO(12) // create a tuning context
+         * edo.get.pitch_distribution([8,7,7,8,7,7,8,7,7,15,15,14,12,12,10,8,8,7,5,5]) //Mozart Sym. 40
+         * //returns
+         * [
+         *  { note: 7, rate: 0.35 },
+         *  { note: 8, rate: 0.25 },
+         *  { note: 15, rate: 0.1 },
+         *  { note: 12, rate: 0.1 },
+         *  { note: 5, rate: 0.1 },
+         *  { note: 14, rate: 0.05 },
+         *  { note: 10, rate: 0.05 }
+         * ]
          */
         pitch_distribution: (pitches) => {
             let unique = this.get.unique_elements(pitches)
@@ -1215,6 +1244,10 @@ class EDO {
          * @param  {Boolean} [as_PC=true] - if true, the intervals returns will conform to a single octave
          * @returns {Array<Number>}
          * @memberOf EDO#get
+         * @example
+         * let edo = new EDO(12) //Create a tuning context
+         * edo.get.transposition([0,2,4,5,7,9,11],7)
+         * //returns [7, 9, 11, 0, 2, 4,  6]
          */
         transposition: (pitches,amount=0,as_PC=true) => {
             pitches = pitches.map((pitch) => pitch+amount)
@@ -1235,18 +1268,24 @@ class EDO {
          * ATTEMPT to move in intervals that equal to avoid_leaps or smaller
          * @returns {Array<Number>}
          * @memberOf EDO#get
+         * @example
+         * let edo = new EDO(12) //Create a tuning context
+         * edo.get.random_melody(4,[-3,2]) //returns e.g. [ -2, -1, 1, 2 ]
+         * edo.get.random_melody(4,[-3,2]) //returns e.g. [ 2, 1, -3, -2 ]
+         * edo.get.random_melody(6,[0,17],true,[0,2,4,5,7,9,11]) // returns e.g. [ 7, 9, 2, 17, 4, 4 ]
+         * edo.get.random_melody(6,[0,17],true,[0,2,4,5,7,9,11]) // returns e.g. [ 2, 5, 0, 2, 0, 9 ]
          */
         random_melody: (length=8,range = [0,12], repetitions=false, from_PCs=undefined,avoid_leaps=false) => {
             let pitches = []
             if(from_PCs) {
-                from_PCs = from_PCs.map((pc)=>mod(pc,this.edo))
-                from_PCs = unique_in_array(from_PCs)
+                from_PCs = from_PCs.map((pc)=>this.mod(pc,this.edo))
+                from_PCs = this.get.unique_elements(from_PCs)
                 for (let i = range[0]; i <=range[1] ; i++) {
-                    if(from_PCs.indexOf(mod(i,this.edo))!=-1) pitches.push(i)
+                    if(from_PCs.indexOf(this.mod(i,this.edo))!=-1) pitches.push(i)
                 }
             }
             else {
-                pitches = Array.from(Array(range[1]-range[0]), (_, i) => i + range[0])
+                pitches = Array.from(Array((range[1]+1)-range[0]), (_, i) => i + range[0])
             }
 
             let collection = []
@@ -1279,9 +1318,13 @@ class EDO {
 
         /** Gets an array that may have duplications and returns the array without duplications
          *
-         * @param  {Array<number>} list - an array with duplications
+         * @param  {Array<number|Array<Number>>} list - an array with duplications
          * @returns {Array<Number>} an array without duplications
          * @memberOf EDO#get
+         * @example
+         * let edo = new EDO(12) //Create a tuning context
+         * edo.get.unique_elements([1,[2,3],2,[2,3],2]) //notice that it accepts nested elements as well
+         * //returns [ 1, [ 2, 3 ], 2 ]
          */
         unique_elements : (list) => {
 
@@ -1612,8 +1655,56 @@ class EDO {
 
 }
 
-/** Class representing a scale within an EDO system */
+/** <p>Class representing a set of pitch classes within an EDO system</p>
+ * <p>(This class should have been called "Set" but because Set is a reserved work in JavaScript (as in most languages), "Scale" was selected as a compromise).</p> */
 class Scale {
+    /**
+     * <p>Creates a set of pitch classes within the context of the edo system.</p>
+     * <p>Unlike the [EDO Class]{@link EDO}, this class constains methods which are more directed at manipulating a set of pitch classes (regardless of their octave).
+     * At the center of this class stand 5 collections (see "Namespaces" below) of functions.</p>
+     * <ul>
+     *  <li> [Scale.to]{@link Scale#to} is a set of functions used to change between equivalent representations of the set.</li>
+     *  <li> [Scale.count]{@link Scale#count} is a set of functions used to count stuff.</li>
+     *  <li> [Scale.get]{@link Scale#get} is a set of functions used to manipulate and track, and generate stuff.</li>
+     *  <li> [Scale.is]{@link Scale#is} is a set of functions used for boolean truth statements.</li>
+     *  <li> [Scale.export]{@link Scale#export} is a set of functions used to export files.</li></ul>
+     *  <p>
+     *      In addition to the namespaces, Scale also has 4 methods that can be chained together:
+     * <ul>
+     *  <li> [Scale.invert()]{@link Scale#invert} returns the inversion of the original Scale object as a new Scale object.</li>
+     *  <li> [Scale.mode(n)]{@link Scale#mode} returns the nth mode of the original Scale object as a new Scale object.</li>
+     *  <li> [Scale.normal()]{@link Scale#normal} returns the normal order of the original Scale object as a new Scale object.</li>
+     *  <li> [Scale.prime()]{@link Scale#prime} returns the prime form of the original Scale object as a new Scale object.</li>
+     *  </ul>
+     *  </p>
+     * @param {Array<number>} pitches - The pitch classes of the set.
+     * @param {EDO} parent - and EDO context
+     *
+     * @example
+     * //Basic usage 1:
+     * let edo = new EDO(12) //create a new EDO context with 12 divisions.
+     * let scale = new Scale([0,2,4,5,7,9,11],edo) //pass the PCs and edo context to the scale
+     *
+     * //Basic usage 2 (preffered):
+     * let edo = new EDO(12) //create a new EDO context with 12 divisions.
+     * let scale = edo.scale([0,2,4,5,7,9,11]) //create an instance of Scale through the EDO.scale method rather than
+     *
+     * @example
+     * //for scale [0, 2, 3, 5, 6, 8, 9, 11 ] //octatonic
+     * scale.count.transpositions() //returns 3
+     * scale.is.mode_of([0, 1, 3, 4, 6, 7, 9, 10]) //returns true
+     * scale.to.cents() //returns [0, 200, 300, 500, 600, 800, 900, 1100]
+     * scale.get.stacks(3,2) //returns [ [ 0, 5, 9 ], [ 0, 4, 9 ] ]
+     *
+     * @example
+     * //chain functions
+     * let scale = edo.scale([0,2,4,5,7,9,11])
+     * scale.mode(2) //the 3rd mode (1st is 0)
+     *      .normal() //in normal order
+     *      .invert() //inverted
+     *      .prime() //in prime form
+     *      .get.pitches() //returns [0, 1, 3, 5, 6, 8, 10]
+     */
     constructor(pitches,parent) {
         this.parent = parent
         this.catalog = {}
@@ -2135,7 +2226,7 @@ class Scale {
 
         /** <pre>Returns all of the rotations of the scale (not normalized to 0).
          *
-         * To get the rotations normalized to zero (the modes) use {@link Scale.get.modes()}</pre>
+         * To get the rotations normalized to zero (the modes) use {@link Scale#get#modes()}</pre>
          * @returns {Array<Array<Number>>} The rotations of the scale
          * @memberOf Scale#get
          * @example
@@ -2556,6 +2647,20 @@ class Scale {
             return false
         },
 
+        /**<p>Checks if the scale is a mode / rotation of another scale</p>
+         *
+         * <p>To check again multiple scale see [Scale.is.one_of]{@link Scale#is.one_of}</p>
+         * @param {Array<Number>} scales - a collection of scales (or necklaces)
+         * @returns {Boolean}
+         * @memberOf Scale#is
+         * @see Scale#is.one_of
+         * */
+
+        mode_of: (scale) => {
+            let modes = this.parent.get.modes(scale)
+            return (this.parent.is.element_of(this.pitches,modes))
+        },
+
         /**
          * Returns True if the scale is in prime form and False if it isn't.
          * @returns {Boolean}
@@ -2687,7 +2792,10 @@ class Scale {
 }
 
 
-module.exports = EDO
+module.exports = {
+    EDO:EDO,
+    Scale:Scale
+}
 
 
 

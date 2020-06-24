@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/edoJS.iml" filepath="$PROJECT_DIR$/.idea/edoJS.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/edo-js.iml" filepath="$PROJECT_DIR$/.idea/edo-js.iml" />
     </modules>
   </component>
 </project>
