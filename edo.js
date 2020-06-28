@@ -401,6 +401,50 @@ class EDO {
         },
 
         /**
+         * <p>Gets an array with element-wise possibilities, and returns every subset given these possibilities</p>
+         * <p>For instance, given <code>[4,[7,8],[9,10,11]]</code> the function will return every set starting with 4, with EITHER 7 or 8 in the 2nd position, and EITHER 9, 10, or 11 in the 3rd. </p>
+         * @param  {Array<Number>} arr - element-wise possibilities
+         * @example
+         * edo.get.partitioned_subsets([4,[7,8],[10,11]])
+         * //returns
+         * [ [ 4, 7, 10 ], [ 4, 7, 11 ], [ 4, 8, 10 ], [ 4, 8, 11 ] ]
+         * @return {Array<Array<Number>>}
+         * @memberOf EDO#get
+         */
+        partitioned_subsets: (arr) => {
+            arr = arr
+                .map((el)=>!Array.isArray(el)?[el]:el)
+
+            let findings = []
+            const recur = function (sub) {
+
+                for (let i = 0; i < sub.length; i++) {
+                    if(sub[i].length>1) {
+                        sub[i].forEach((el)=> {
+                            if(i<sub.length-1) {
+                                let thing = [...sub.slice(0,i),[el],...sub.slice(i+1)]
+                                recur(thing)
+                            }
+                            else {
+                                findings.push([...sub.slice(0,i),[el]])
+                            }
+                        })
+                        break
+                    }
+                    else {
+                        if(i==sub.length-1) findings.push(sub)
+                    }
+                }
+            }
+
+            recur(arr)
+            findings = findings.map((subset)=>subset.map((el)=>el[0]))
+            return findings
+
+
+        },
+
+        /**
          * Gets a subset to find and returns the indices from a given array (arr) that form that subset
          * @param  {Array<Number>} find - a collection of pitches to find (in order)
          * @param  {Array<Number>} arr - a bigger collection where we search
@@ -538,7 +582,7 @@ class EDO {
          * @return {Object}
          * @memberOf EDO#get
          */
-        simple_ratios: (limit=17,cache=true) => {
+        simple_ratios: (limit=17,cache=false) => {
             let primes = this.get.primes_in_range(limit)
             console.log(primes)
             let ratios = {}
@@ -561,7 +605,7 @@ class EDO {
          * let edo = new EDO(12) // define a tuning system
          * edo.get.inversion([0,2,4,5,7,9,11])
          * //returns [0, 2,  4, 6, 7, 9, 11]*/
-        inversion: (scale,cache=true) => {
+        inversion: (scale,cache=false) => {
 
             if(!this.catalog[String(scale)]) this.catalog[String(scale)] = {}
             if(this.catalog[String(scale)]['inverted']) return this.catalog[String(scale)]['inverted']
@@ -584,7 +628,7 @@ class EDO {
          * let edo = new EDO(12) //Create a tuning context
          * edo.get.normal_order([0,2,4,5,7,9,11])
          * //returns [0, 1, 2, 3, 5, 6, 8, 10]*/
-        normal_order: (lst,cache=true) => {
+        normal_order: (lst,cache=false) => {
             let edo = this.edo
             if(!this.catalog[String(lst)]) this.catalog[String(lst)] = {}
             if(this.catalog[String(lst)]['normal_order']) return this.catalog[String(lst)]['normal_order']
@@ -649,7 +693,7 @@ class EDO {
          *  [0,1,3,5,6,8,10]  //Locrian
          * ]
          * */
-        modes: (scale,cache=true) => {
+        modes: (scale,cache=false,avoid_duplications=true) => {
             let edo = this.edo
             if(!this.catalog[String(scale)]) this.catalog[String(scale)] = {}
             if(this.catalog[String(scale)]['modes']) return this.catalog[String(scale)]['modes']
@@ -668,9 +712,9 @@ class EDO {
                 mode = mode.map((el)=>(el+shift)%this.edo)
                 modes.push(mode)
             }
-
-            modes = this.get.unique_elements(modes)
+            if(avoid_duplications) modes = this.get.unique_elements(modes)
             if(cache) this.catalog[String(scale)]['modes'] = modes
+
             return modes
         },
 
@@ -1260,11 +1304,12 @@ class EDO {
          *
          * @param  {Number} [length=8] - The number of pitches in the melody
          * @param  {Array<number>} [range=[0, 12]] - the lower and upper limits (inclusive) for the melody
-         * @param  {Boolean} [repetitions=false] - If repetitions is false, the returned melody will note have the
+         * @param  {Boolean} [repetitions=false] - If repetitions is false, the returned melody will not have the
          * same pitch appear twice (although it may have the same pitch class, but in a different octave).
          * @param  {Array<number>} [from_PCs] - If from_PCs is provided, the pitches returned will be only ones
          * that appear in from_PCs.
          * @param  {Number|Boolean} [avoid_leaps=false] - If avoid_leaps is provided (a number), the generator will
+         * @param  {Boolean} [end_with_first=false] - when true, the last note of the melody will be the same as the first
          * ATTEMPT to move in intervals that equal to avoid_leaps or smaller
          * @returns {Array<Number>}
          * @memberOf EDO#get
@@ -1275,7 +1320,7 @@ class EDO {
          * edo.get.random_melody(6,[0,17],true,[0,2,4,5,7,9,11]) // returns e.g. [ 7, 9, 2, 17, 4, 4 ]
          * edo.get.random_melody(6,[0,17],true,[0,2,4,5,7,9,11]) // returns e.g. [ 2, 5, 0, 2, 0, 9 ]
          */
-        random_melody: (length=8,range = [0,12], repetitions=false, from_PCs=undefined,avoid_leaps=false) => {
+        random_melody: (length=8,range = [0,12], allow_repetitions=false, from_PCs=undefined,avoid_leaps=false,end_with_first = false) => {
             let pitches = []
             if(from_PCs) {
                 from_PCs = from_PCs.map((pc)=>this.mod(pc,this.edo))
@@ -1294,25 +1339,28 @@ class EDO {
             while(collection.length<length) {
                 if(!avoid_leaps) {
                     let ind = Math.floor(Math.random() * (pitches.length) ) ;
+                    if(parseInt(pitches[ind])==collection[collection.length-1]) continue
                     collection.push(parseInt(pitches[ind]))
-                    if(!repetitions) pitches.splice(ind,1)
+
+                    if(!allow_repetitions) pitches.splice(ind,1)
                 } else {
                     let leapless_pitches = []
                     if(collection.length==0) leapless_pitches = pitches
                     else {
                         let leaper = avoid_leaps
                         do {
-                            leapless_pitches = pitches.filter((pitch)=> Math.abs(collection[collection.length-1]-pitch)<=leaper)
+                            leapless_pitches = pitches.filter((pitch)=> Math.abs(collection[collection.length-1]-pitch)<=leaper && collection[collection.length-1]-pitch!=0)
                             if(leapless_pitches.length==0) leaper++
                         } while (leapless_pitches.length==0)
                     }
 
                     let ind = Math.floor(Math.random() * (leapless_pitches.length) ) ;
                     collection.push(parseInt(leapless_pitches[ind]))
-                    if(!repetitions) pitches.splice(pitches.indexOf(leapless_pitches[ind]),1)
+                    if(!allow_repetitions) pitches.splice(pitches.indexOf(leapless_pitches[ind]),1)
                 }
 
             }
+            if(end_with_first) collection[collection.length-1] = collection[0]
             return collection
         },
 
@@ -1400,14 +1448,14 @@ class EDO {
         /** Gets a melody as pitches and returns the melody as intervals
          *
          * @param  {Array<number>} lst - a collection of pitches
-         * @param  {Boolean} [cache=true] - when true the result is cached for faster future retrieval
+         * @param  {Boolean} [cache=false] - when true the result is cached for faster future retrieval
          * @returns {Array<Number>} an array of intervals
          * @memberOf EDO#convert
          * @example
          * let edo = new EDO(12) // define a tuning system
          * edo.convert.to_steps([0,2,4,5,7,9,11])
          * //returns [ 2, 2, 1, 2, 2, 2 ]*/
-        to_steps: (lst,cache=true) => {
+        to_steps: (lst,cache=false) => {
             if(!this.catalog[String(lst)]) this.catalog[String(lst)] = {}
             if(this.catalog[String(lst)]['steps']) return this.catalog[String(lst)]['steps']
 
@@ -1730,39 +1778,58 @@ class Scale {
          * (To count other intervals or set a different tolerance use @Scale.count.ratio())</pre>
          * @return {Number}
          * @memberOf Scale#count
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //new Scale object
+         * scale.count.P5s() //returns 6 (C-G, D-A, E-B, F-C, G-D, A-E)
          */
         P5s: () => {
             return this.count.interval(this.parent.P5s)
         },
 
         /**
-         * <pre>Returns the number of Major Thirds (with a tolerance of 20 cents) in the scale.
+         * <p>Returns the number of Major Thirds (with a tolerance of 20 cents) in the scale.</p>
          *
-         * (To count other intervals or set a different tolerance use @Scale.count.ratio())</pre>
+         * <p>(To count other intervals or set a different tolerance use [Scale.count.ratio()]{@link Scale#count.ratio})</p>
          * @return {Number}
          * @memberOf Scale#count
+         * @see Scale#count.ratio
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //new Scale object
+         * scale.count.M3s() //returns 3 (C-E, F-A, G-B)
          */
         M3s: () => {
             return this.count.interval(this.parent.M3s)
         },
 
         /**
-         * <pre>Returns the number of Minor Thirds (with a tolerance of 20 cents) in the scale.
+         * <p>Returns the number of Minor Thirds (with a tolerance of 20 cents) in the scale.</p>
          *
-         * (To count other intervals or set a different tolerance use @Scale.count.ratio())</pre>
+         * <p>(To count other intervals or set a different tolerance use [Scale.count.ratio()]{@link Scale#count.ratio})</p>
          * @return {Number}
          * @memberOf Scale#count
+         * @see Scale#count.ratio
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //new Scale object
+         * scale.count.m3s() //returns 4
          */
         m3s: () => {
             return this.count.interval(this.parent.m3s)
         },
 
         /**
-         * <pre>Returns the number of Major and Minor Thirds (with a tolerance of 20 cents) in the scale.
+         * <p>Returns the number of Major and Minor Thirds (with a tolerance of 20 cents) in the scale</p>.
          *
-         * (To count other intervals or set a different tolerance use @Scale.count.ratio())</pre>
+         * <p>(To count other intervals or set a different tolerance use [Scale.count.ratio()]{@link Scale#count.ratio})</p>
          * @return {Number}
+         * @see Scale#count.ratio
          * @memberOf Scale#count
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //new Scale object
+         * scale.count.thirds() //returns 7
          */
         thirds: () => {
             return this.count.interval(this.parent.M3s.concat(this.parent.m3s))
@@ -1772,6 +1839,9 @@ class Scale {
          * <pre>Returns the number of pitches in the scale (its cardinality).
          * @return {Number}
          * @memberOf Scale#count
+         * @example
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //new Scale object
+         * scale.count.pitches() //returns 7
          */
         pitches: () => {
             return this.pitches.length
@@ -1781,28 +1851,46 @@ class Scale {
          * <pre>Returns the number of rotational symmetries in the scale.
          * @return {Number}
          * @memberOf Scale#count
+         *
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,3,5,6,8,9,11]) //Octatonic
+         * scale.count.rotational_symmetries() //returns 4
          */
         rotational_symmetries: () => {
             return this.edo / this.count.transpositions()
         },
 
         /**
-         * <pre>Returns the number of unique modes in the scale.
+         * <p>Returns the number of unique modes in the scale.</p>
          * @return {Number}
          * @memberOf Scale#count
          * @example
-         * E.g returns 7 for the major scale, and 1 for the whole tone scale*/
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //Major
+         * scale.count.modes() //returns 7
+         *
+         * scale = edo.scale([0,2,4,6,8,10]) //Whole-tone
+         * scale.count.modes() //returns 1
+         * */
         modes: () => {
         return this.get.modes().length
         },
 
         /**
-         * <pre>Returns the number of major and minor (sounding) triads in the scale.
+         * <p>Returns the number of major and minor (sounding) triads in the scale.</p>
          *
-         * For other chord qualities use a combination of Scale.count.chord_quality() and EDO.convert.ratio_to_interval()
-         * </pre>
+         * <p>For other chord qualities use a combination of [Scale.count.chord_quality()]{@link Scale#count.chord_quality} and [EDO.convert.ratio_to_interval()]{@link EDO#convert.ratio_to_interval}</p>
          * @return {Number}
-         * @memberOf Scale#count*/
+         * @memberOf Scale#count
+         *
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //Major
+         * scale.count.major_minor_triads() //returns 6
+         * @see Scale#count.chord_quality
+         * @see EDO#convert.ratio_to_interval*/
+
         major_minor_triads: () => {
             let major = this.count.chord_quality([[...this.parent.M3s],[...this.parent.P5s]])
             let minor = this.count.chord_quality([[...this.parent.m3s],[...this.parent.P5s]])
@@ -1811,11 +1899,24 @@ class Scale {
         },
 
         /**
-         * Returns the number of intervals of size IC in the scale.
-         * @param {Number} interval - some interval class.
+         * <p>Returns the number of intervals of size IC in the scale.</p>
+         * <p>When an array is passed, the function returns total amount of intervals found from the array.</p>
+         * @param {Number | Array<Number>} interval - some interval class.
          * @return {Number}
-         * @memberOf Scale#count*/
+         * @memberOf Scale#count
+         *
+         * @example
+         * let edo = new EDO(12) //Create a tuning context
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //define new scale (Major)
+         * scale.count.interval([3,4]) //returns 7 (the amount of IC3 in the scale + the amount of IC4 in the scale)
+         *
+         * @see Scale#count.chord_quality
+
+         * */
+
+
         interval: (interval) => {
+            if(!Array.isArray(interval)) interval = [interval]
             let scale = this.pitches
             let count = 0
             for(let note of scale) {
@@ -1831,11 +1932,11 @@ class Scale {
 
         /**
          * Returns number of unique transpositions available for the scale.
-         * @param {Boolean} [cache=true] - when true, the result will be cached for faster retrieval.
+         * @param {Boolean} [cache=false] - when true, the result will be cached for faster retrieval.
          * @return {Number}
          * @function
          * @memberOf Scale#count*/
-        transpositions: (cache=true) => {
+        transpositions: (cache=false) => {
             if(this.catalog['# transpositions']) return this.catalog['# transpositions']
             let scale = this.pitches
             let scales = [scale]
@@ -1856,11 +1957,18 @@ class Scale {
 
         /**
          * Returns the number of imperfections (notes that do not have a P5 above them) in the scale.
-         * @param {Number} [tolerance=10] - allowed tolerance in cents (away from P5)
-         * @param {Boolean} [cache=true] - when true, the result will be cached for faster retrieval.
+         * @param {Number} [tolerance=10] - allowed tolerance in cents (away from pure P5)
+         * @param {Boolean} [cache=false] - when true, the result will be cached for faster retrieval.
          * @return {Number}
-         * @memberOf Scale#count*/
-        imperfections: (tolerance=10,cache=true) => {
+         * @memberOf Scale#count
+         *
+         * @example
+         * let edo = new EDO(12) //Create a tuning context
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //define new scale (Major)
+         * scale.count.imperfections() //returns 1
+         * scale.count.imperfections(0) //returns 7
+         */
+        imperfections: (tolerance=10,cache=false) => {
 
             if(this.catalog['# imperfections']) return this.catalog['# imperfections']
 
@@ -1889,37 +1997,41 @@ class Scale {
         },
 
         /**
-         * Returns the number of times a certain chord quality (specific in PCs above the root) exists in the scale.
-         * @param {Array<Number>} intervals - intervals above 0
+         * <p>Returns the number of times a certain chord (or interval) quality (specified in PCs above the root) exists in the scale.</p>
+         * <p>E.g. <code>scale.count.chord_quality([4, 7, 11])</code> counts the number of times a major 7th (if in 12 TET) appears in a scale</p>
+         * @param {Array<Number|Array<Number>>} intervals - intervals above 0
          * @return {Number}
          * @example
-         * Scale.count.chord_quality([4, 7, 11]) counts the number of times a major 7th (if in 12 TET) appears in a scale
+         * let edo = new EDO(12) //Create a tuning context
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //define new scale (Major)
+         * //Major 7th
+         * scale.count.chord_quality([4, 7, 11]) //returns 2
+         *
+         * let scale = edo.scale([0,2,3,5,6,8,9,11]) //define new scale (Octatonic)
+         * //diminished triad
+         * scale.count.chord_quality([3, 6]) //returns 8
+         *
+         * @example
+         * //(in 12-EDO) count how many major OR minor triads are in the diatonic scale
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //define new scale (Major)
+         * //count how many times in the diatonic scale, the 1st interval is a PC3 OR PC4, and the 2nd interval a PC7
+         * scale.count.chord_quality([[3,4], 7]) //returns 6
          * @memberOf Scale#count*/
         chord_quality: (intervals) => {
             let scale = this.pitches
             let count=0
-            let modes = this.get.modes()
-            let exists = false
-            let valid = true
-            loop1:
-                for(let i=0;i<modes.length;i++){
-                    let mode = modes[i]
-                    valid = true
-                    loop2:
-                        for(let j=0;j<intervals.length;j++) {
-                            let interval = intervals[j]
-                            if(Array.isArray(interval)) {
-                                exists = interval.map((int) => mode.indexOf(int)!=-1)
+            intervals = this.parent.get.partitioned_subsets(intervals)
 
-                            }
-                            else {exists = [mode.indexOf(interval)!=-1]}
-                            if(exists.indexOf(true)==-1) {
-                                valid=false
-                                break loop2
-                            }
-                        }
-                    if(valid) count++
-                }
+            //modes including repetitions
+            let modes = this.parent.get.modes(this.pitches,false,false)
+
+            modes.forEach((mode)=> {
+                intervals.forEach((subset)=> {
+                    subset = subset.map((note)=>mode.indexOf(note)!=-1)
+                    if(subset.indexOf(false)==-1) count++
+                })
+            })
+
             return count
         },
 
@@ -1977,10 +2089,15 @@ class Scale {
         },
 
         /**
-         * Returns the maximal number of consecutive steps of size 'size' in the scale.
+         * Returns the maximal number of consecutive steps of size 'size' in the scale (and its rotations).
          * @param {Number} size - the size of the step
          * @returns {Number}
          * @memberOf Scale#count
+         *
+         * @example
+         * let edo = new EDO(12) //Create a tuning context
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //define new scale (Major)
+         * scale.count.consecutive_steps(2) //returns 3
          * */
         consecutive_steps: (size) => {
             let counts = []
@@ -2033,7 +2150,7 @@ class Scale {
          * @returns {Array<Array<Number>>} An array of the different modes
          * @memberOf Scale#get
          */
-        modes: (cache=true) => {
+        modes: (cache=false) => {
             if(this.catalog['modes']) return this.catalog['modes']
 
             let modes = this.parent.get.modes(this.pitches)
@@ -2054,7 +2171,7 @@ class Scale {
          * @returns {Array<Number>} An array representing the vector
          * @memberOf Scale#get
          */
-        interval_vector: (cache=true) => {
+        interval_vector: (cache=false) => {
             if(this.catalog['interval vector']) return this.catalog['interval vector']
             let scale = this.pitches
             let vector = []
@@ -2085,7 +2202,7 @@ class Scale {
          * @returns {Array<Number>} An array representing the vector
          * @memberOf Scale#get
          */
-        trichords: (cache=true) => {
+        trichords: (cache=false) => {
             /*
             Returns a list of every trichord (normalized to 0) available in this scale.
 
@@ -2116,7 +2233,7 @@ class Scale {
          * @returns {Array<Number>} An array representing the vector
          * @memberOf Scale#get
          */
-        tetrachords: (cache=true) => {
+        tetrachords: (cache=false) => {
             /*
             Returns a list of every tetrachord (normalized to 0) available in this scale.
 
@@ -2348,7 +2465,7 @@ class Scale {
          * scale.get.step_sizes()
          * //returns [1,2]
          * @memberOf Scale#get*/
-        step_sizes: (cache=true) => {
+        step_sizes: (cache=false) => {
 
             if(this.catalog['step sizes']) return this.catalog['step sizes']
             let lst = this.parent.get.unique_elements(this.to.steps())
@@ -2381,7 +2498,7 @@ class Scale {
         },
 
         /** <pre>Returns the Rothenberg Propriety value for this scale
-         * @param {Boolean} [cache=true] - When true, the result will be cached for future retrieval.
+         * @param {Boolean} [cache=false] - When true, the result will be cached for future retrieval.
          * @returns {('strictly proper'|'proper'|'improper')} The step sizes
          * @example
          * let edo = new EDO(12) //define tuning
@@ -2389,7 +2506,7 @@ class Scale {
          * scale.get.rothenberg_propriety()
          * //returns "strictly proper"
          * @memberOf Scale#get*/
-        rothenberg_propriety : (cache=true) => {
+        rothenberg_propriety : (cache=false) => {
             if(this.catalog['rothenberg']) return this.catalog['rothenberg']
 
             let scale = this.pitches
@@ -2520,10 +2637,10 @@ class Scale {
 
         /** <pre>Returns the scale's inversion</pre>
 
-         * @param {Boolean} [cache=true] - When true, the result will be cached for future retrieval
+         * @param {Boolean} [cache=false] - When true, the result will be cached for future retrieval
          * @returns {Array<Number>} the inverted pitches
          * @memberOf Scale#get*/
-        inversion: (cache=true) => {
+        inversion: (cache=false) => {
             /*Inverts the intervals of the scale*/
             if(this.catalog['inverted']) return this.catalog['inverted']
 
@@ -2535,10 +2652,10 @@ class Scale {
 
         /** <pre>Returns the scale's pitches in prime form</pre>
 
-         * @param {Boolean} [cache=true] - When true, the result will be cached for future retrieval
+         * @param {Boolean} [cache=false] - When true, the result will be cached for future retrieval
          * @returns {Array<Number>} The pitches in prime form
          * @memberOf Scale#get*/
-        prime_form: (cache=true) => {
+        prime_form: (cache=false) => {
             /*Returns the scale in prime form*/
             if(this.catalog['prime form']) return this.catalog['prime form']
             let i_self = this.parent.scale(this.get.inversion())
@@ -2564,10 +2681,10 @@ class Scale {
 
         /** <pre>Returns the scale's pitches in normal order</pre>
 
-         * @param {Boolean} [cache=true] - When true, the result will be cached for future retrieval
+         * @param {Boolean} [cache=false] - When true, the result will be cached for future retrieval
          * @returns {Array<Number>} The pitches in normal order
          * @memberOf Scale#get*/
-        normal_order:  (cache=true) => {
+        normal_order:  (cache=false) => {
             /*
             Returns the scale in normal order
 
@@ -2598,11 +2715,15 @@ class Scale {
     to = {
         /**
          * Instead of PCs, this returns the scale represented by intervals (steps between notes)
-         * @param {Boolean} [cache=true] - when true, the result is cached for future retrieval
+         * @param {Boolean} [cache=false] - when true, the result is cached for future retrieval
          * @returns {Array<Number>}
          * @memberOf Scale#to
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //new Scale object
+         * scale.to.steps() //returns [2,2,1,2,2,2,1]
          * */
-        steps: (cache=true) => {
+        steps: (cache=false) => {
 
             if(this.catalog['steps']) return this.catalog['steps']
 
@@ -2615,6 +2736,10 @@ class Scale {
          * Returns the scale's representation in cents [0,100,300, etc.]
          * @returns {Array<Number>}
          * @memberOf Scale#to
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //new Scale object
+         * scale.to.cents() //returns [0,200,400,500,700,900,1100]
          * */
         cents: () => {
             return this.pitches.map((note) => note*this.parent.cents_per_step)
@@ -2671,10 +2796,10 @@ class Scale {
         },
 
         /**Returns True if the scale is invertible and False if it isn't
-         * @param {Boolean} [cache=true] - when true, the result will be cached for future retrieval
+         * @param {Boolean} [cache=false] - when true, the result will be cached for future retrieval
          * @returns {Boolean}
          * @memberOf Scale#is */
-        invertible: (cache=true) => {
+        invertible: (cache=false) => {
             if(this.catalog['invertible']) return this.catalog['invertible']
 
             let scale=this.get.normal_order()
@@ -2700,7 +2825,7 @@ class Scale {
             }
             return false
         },
-        in_lower_edos: (cache=true) => {
+        in_lower_edos: (cache=false) => {
             /*Returns a list of (lower-order) EDOs if the scale can be represented in them
             For instance 12-EDO [0,3,6,9] also exists in in 4-EDO as [0,1,2,3]. Therefore the function will return [4]*/
 
