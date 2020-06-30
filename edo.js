@@ -1773,9 +1773,9 @@ class Scale {
      * @namespace*/
     count = {
         /**
-         * <pre>Returns the number of Perfect Fifths (with a tolerance of 5 cents) in the scale.
+         * <p>Returns the number of Perfect Fifths (with a tolerance of 5 cents) in the scale.</p>
          *
-         * (To count other intervals or set a different tolerance use @Scale.count.ratio())</pre>
+         * <p>(To count other intervals or set a different tolerance use @Scale.count.ratio())</p>
          * @return {Number}
          * @memberOf Scale#count
          * @example
@@ -1836,7 +1836,7 @@ class Scale {
         },
 
         /**
-         * <pre>Returns the number of pitches in the scale (its cardinality).
+         * <p>Returns the number of pitches in the scale (its cardinality).</p>
          * @return {Number}
          * @memberOf Scale#count
          * @example
@@ -1848,7 +1848,7 @@ class Scale {
         },
 
         /**
-         * <pre>Returns the number of rotational symmetries in the scale.
+         * <p>Returns the number of rotational symmetries in the scale.</p>
          * @return {Number}
          * @memberOf Scale#count
          *
@@ -2036,19 +2036,29 @@ class Scale {
         },
 
         /**
-         * Returns the number of unique trichords available in the scale.
+         * <p>Returns the number of unique trichords available in the scale.</p>
          * @return {Number}
          * @function
-         * @memberOf Scale#count*/
+         * @memberOf Scale#count
+         *
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //major
+         * scale.count.trichords() //returns 15*/
         trichords: () => {
             return this.get.trichords().length
         },
 
         /**
-         * Returns the number of unique tetrachords available in the scale.
+         * <p>Returns the number of unique tetrachords available in the scale.</p>
          * @return {Number}
          * @function
-         * @memberOf Scale#count*/
+         * @memberOf Scale#count
+         *
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //major
+         * scale.count.tetrachords() //returns 20*/
         tetrachords: () => {
             return this.get.tetrachords().length
         },
@@ -2149,6 +2159,21 @@ class Scale {
          * @param  {Boolean} cache - When true, the result will be cached for faster retrieval
          * @returns {Array<Array<Number>>} An array of the different modes
          * @memberOf Scale#get
+         *
+         * @see EDO#get.modes
+         *
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,7,9]) //pentatonic scale
+         * scale.get.modes()
+         * //returns
+         * [
+         *  [ 0, 2, 4, 7, 9 ],
+         *  [ 0, 2, 5, 7, 10 ],
+         *  [ 0, 3, 5, 8, 10 ],
+         *  [ 0, 2, 5, 7, 9 ],
+         *  [ 0, 3, 5, 7, 10 ]
+         * ]
          */
         modes: (cache=false) => {
             if(this.catalog['modes']) return this.catalog['modes']
@@ -2170,6 +2195,11 @@ class Scale {
          * @param  {Boolean} cache - When true, the result will be cached for faster retrieval
          * @returns {Array<Number>} An array representing the vector
          * @memberOf Scale#get
+         *
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //major scale
+         * scale.get.interval_vector() //returns [ 1, 5, 2, 3, 3, 1 ]
          */
         interval_vector: (cache=false) => {
             if(this.catalog['interval vector']) return this.catalog['interval vector']
@@ -2201,6 +2231,21 @@ class Scale {
          * @param  {Boolean} cache - When true, the result will be cached for faster retrieval
          * @returns {Array<Number>} An array representing the vector
          * @memberOf Scale#get
+         *
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,7,9]) //pentatonic scale
+         * scale.get.trichords()
+         * //returns
+         * [
+         *  [ 0, 2, 4 ],
+         *  [ 0, 2, 7 ],
+         *  [ 0, 3, 5 ],
+         *  [ 0, 4, 7 ],
+         *  [ 0, 3, 7 ],
+         *  [ 0, 2, 5 ]
+         * ]
+         *
          */
         trichords: (cache=false) => {
             /*
@@ -2232,6 +2277,12 @@ class Scale {
          * @param  {Boolean} cache - When true, the result will be cached for faster retrieval
          * @returns {Array<Number>} An array representing the vector
          * @memberOf Scale#get
+         *
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,7,9]) //pentatonic scale
+         * scale.get.tetrachords()
+         * //returns [ [ 0, 2, 4, 7 ], [ 0, 3, 5, 7 ], [ 0, 2, 5, 7 ], [ 0, 3, 5, 8 ] ]
          */
         tetrachords: (cache=false) => {
             /*
@@ -2261,15 +2312,28 @@ class Scale {
             return tetrachords
         },
 
-        /** Returns a list of lists of size "levels" made out of scale degrees with "skip" steps skipped apart.
+        /** <p>Returns a list of lists of size "levels" made out of scale degrees with "skip" steps skipped apart.</p>
          * @param  {Number} levels - The number of levels to the stack
          * @param  {Number} skip - The number of scale steps to skip between each level on the stack
          * @returns {Array<Array<Number>>} An array containing all of the stacks
          * @memberOf Scale#get
          * @example
          * [0,2,4,5,7,9,11] in 12-TET Scale.get.stacks(3,1)
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //major scale
+         * scale.get.stacks(3,1) //get all tercial stacks of 3
          * //returns [[0, 3, 6], [0, 3, 7], [0, 4, 7]]
-         * To get all quartal qualities, instead of skip=1, skip should be set to equal to 2. (C, skipping D, and E, and selecting F, etc.)
+         *
+         * scale.get.stacks(5,2) //get all quartal stacks of 5
+         * //returns
+         * [
+         *  [ 0, 5, 11, 4, 9 ],
+         *  [ 0, 5, 10, 3, 9 ],
+         *  [ 0, 5, 10, 3, 8 ],
+         *  [ 0, 6, 11, 4, 9 ],
+         *  [ 0, 5, 10, 4, 9 ]
+         * ]
          */
         stacks: (levels,skip) => {
             let scale = this.pitches
@@ -2291,15 +2355,24 @@ class Scale {
 
         /** Returns all the transpositions of the scale that share a common tone with the original scale
          * As well the the number of notes altered to get from the original scale to the new scale as a "Tuple"
-         * @param  {Boolean} normalize - when true, all of the transpositions will be constructed on 0
+         * @param  {Boolean} normalize - when true, all of the transpositions will be constructed by altering the original scale
          * @returns {Array<Array<Number>,Number>} An array containing all of the stacks
          * @memberOf Scale#get
          * @example
-         * [0,2,4,5,7,9,11] in 12-TET Scale.get.common_tone_transpositions()
-         * //returns [[[0,2,4,5,7,9,11],0],[[0,2,4,5,7,9,10],1],[[0,2,4,6,7,9,11],1],[[1,2,4,6,7,9,11],2],[[1,2,4,6,8,9,11],3],[[1,3,4,6,8,9,11],4],[[1,3,4,6,8,10,11],5]]
-         * @example
-         * [0,2,4,5,7,9,11] in 12-TET Scale.get.common_tone_transpositions(false)
-         * //returns [[[0,2,4,5,7,9,11],0],[[5,7,9,10,0,2,4],1],[[7,9,11,0,2,4,6],1],[[2,4,6,7,9,11,1],2],[[9,11,1,2,4,6,8],3],[[4,6,8,9,11,1,3],4],[[11,1,3,4,6,8,10],5]]
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //major scale
+         * scale.get.common_tone_transpositions()
+         * //returns
+         *
+         * [
+         *  [ [0, 2, 4, 5, 7, 9, 11], 0 ],
+         *  [ [0, 2, 4, 5, 7, 9, 10], 1 ],
+         *  [ [0, 2, 4, 6, 7, 9, 11], 1 ],
+         *  [ [1, 2, 4, 6, 7, 9, 11], 2 ],
+         *  [ [1, 2, 4, 6, 8, 9, 11], 3 ],
+         *  [ [1, 3, 4, 6, 8, 9, 11], 4 ],
+         *  [ [1, 3, 4, 6, 8, 10, 11], 5 ]
+         * ]
          */
         common_tone_transpositions: (normalize=true) => {
 
@@ -2327,7 +2400,9 @@ class Scale {
          * @returns {Array<Array<Number>>} the scales that contain the Scale object
          * @memberOf Scale#get
          * @example
-         * [0,3,7] in 12-TET Scale.get.supersets([[0,1,2,3,4,5,6,7],[0,3,4,7],[0,1,2]])
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,3,7]) //minor triad
+         * scale.get.supersets([[0,1,2,3,4,5,6,7],[0,3,4,7],[0,1,2]])
          * //returns [[0,1,2,3,4,5,6,7],[0,3,4,7]]*/
         supersets: (scales) => {
             let sets = []
@@ -2341,13 +2416,15 @@ class Scale {
             return sets
         },
 
-        /** <pre>Returns all of the rotations of the scale (not normalized to 0).
+        /** <p>Returns all of the rotations of the scale (not normalized to 0).</p>
          *
-         * To get the rotations normalized to zero (the modes) use {@link Scale#get#modes()}</pre>
+         * <p>To get the rotations normalized to zero (the modes) use [Scale.get.modes()]{@link Scale#get.modes}</p>
          * @returns {Array<Array<Number>>} The rotations of the scale
          * @memberOf Scale#get
          * @example
-         * [0,3,7]  Scale.get.rotations()
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,3,7]) //minor triad
+         * scale.get.rotations()
          * //returns [[0,3,7],[3,7,0],[7,0,3]]*/
         rotations: () => {
             let rotations = []
@@ -2359,25 +2436,40 @@ class Scale {
             return rotations
         },
 
-        /** <pre>Returns every ordering (permutation) of notes in the scale
+        /** <p>Returns every ordering (permutation) of notes in the scale</p>
          *
-         * Uses {@link EDO.get.permutations()}</pre>
+         * <p>Uses [EDO.get.permutations()]{@link EDO#get.permutations}</p>
          * @returns {Array<Array<Number>>} The permutations of the scale
          * @memberOf Scale#get
+         * @see EDO#get.permutations
+         *
          * @example
-         * [0,3,7]  Scale.get.permutations()
-         * //returns [[0,3,7],[0,7,3],[3,0,7],[3,7,0],[7,0,3],[7,3,0]]*/
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,3,7]) //minor triad
+         * scale.get.permutations()
+         * //returns
+         * [
+         *  [ 0, 4, 7 ],
+         *  [ 0, 7, 4 ],
+         *  [ 4, 0, 7 ],
+         *  [ 4, 7, 0 ],
+         *  [ 7, 0, 4 ],
+         *  [ 7, 4, 0 ]
+         * ]
+         * */
         permutations: () => {
             return this.parent.get.permutations(this.pitches)
         },
 
-        /** <pre>Gets a list of intervals above a root, and returns all the positions in the scale where this
-         chord quality can be created
+        /** <p>Gets a list of intervals above a root, and returns all the positions in the scale where this
+         chord quality can be created</p>
          *
          * @returns {Array<Number>} The PCs on which the quality can be built
          * @memberOf Scale#get
          * @example
-         * [0,4,7] in 12-EDO Scale.get.position_of_quality([4,7]) (a major triad)
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //major scale
+         * scale.get.position_of_quality([4,7]) (a major triad)
          * //returns [0,5,7] because you can construct a major triad on 0, 5, and 7*/
         position_of_quality: (intervals) => {
             let result = []
@@ -2393,11 +2485,16 @@ class Scale {
 
         },
 
-        /** <pre>Calculates the attraction between note1 to note2 according to Lerdahl's formula in TPS
+        /** <p>Calculates the attraction between note1 to note2 according to Lerdahl's formula in TPS</p>
          * @param {Number} note1 - The first PC
          * @param {Number} note2 - The second PC
          * @returns {Number} The value of attraction between note1 and note2
-         * @memberOf Scale#get*/
+         * @memberOf Scale#get
+         *
+         * @example
+         * let edo = new EDO(12) //define tuning
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //major scale
+         * scale.get.lerdahl_attraction(1,0) //returns 4*/
         lerdahl_attraction: (note1,note2) => {
             if(note1==note2) return 0
             note1 = {pitch:note1}
@@ -2430,14 +2527,13 @@ class Scale {
             return (note2.anchoring/note1.anchoring)*(1/dist)
         },
 
-        /** <pre>Returns a graphic vector showing the tendencies of each note in the scale
+        /** <p>Returns a graphic vector showing the tendencies of each note in the scale</p>
          * @returns {Array<String>} The attraction vector
          * @see Scale.get.lerdahl_attraction()
          * @example
          * let edo = new EDO(12) //define tuning
          * let scale = edo.scale([0,2,4,5,7,9,11]) //major scale
-         * scale.get.lerdahl_attraction_vector()
-         * //returns [*,<>,*,<>,*,<<,>>]
+         * scale.get.lerdahl_attraction_vector() //returns [*,<>,*,<>,*,<<,>>]
          * @memberOf Scale#get*/
         lerdahl_attraction_vector: () =>{
 
@@ -2457,7 +2553,7 @@ class Scale {
 
         },
 
-        /** <pre>Returns a list of unique step sizes that appear in the scale
+        /** <p>Returns a list of unique step sizes that appear in the scale.</p>
          * @returns {Array<Number>} The step sizes
          * @example
          * let edo = new EDO(12) //define tuning
@@ -2476,7 +2572,7 @@ class Scale {
 
         },
 
-        /** <pre>Returns the smallest multiplier between the sizes of steps
+        /** <p>Returns the smallest multiplier between the sizes of steps</p>
          * @returns {Number} The step sizes
          * @example
          * let edo = new EDO(12) //define tuning
@@ -2497,7 +2593,7 @@ class Scale {
             return size
         },
 
-        /** <pre>Returns the Rothenberg Propriety value for this scale
+        /** <p>Returns the Rothenberg Propriety value for this scale</p>
          * @param {Boolean} [cache=false] - When true, the result will be cached for future retrieval.
          * @returns {('strictly proper'|'proper'|'improper')} The step sizes
          * @example
@@ -2538,7 +2634,7 @@ class Scale {
             return result
         },
 
-        /** <pre>Returns the Levenshtein distance of the scale to another scale
+        /** <p>Returns the Levenshtein distance of the scale to another scale</p>
          * @param {Array<Number>} t - Some collection of pitches to perferm the comparison with
          * @param {Boolean} [ratio_calc=false] - When true, the function computes the
          levenshtein distance ratio of similarity between two strings
@@ -2546,12 +2642,10 @@ class Scale {
          * @example
          * let edo = new EDO(12) //define tuning
          * let scale = edo.scale([0,2,4,7,9]) //a major pentatonic scale
-         * scale.get.levenshtein([0,2,4,5,7,9,11])
-         * //returns 1
+         * scale.get.levenshtein([0,2,4,5,7,9,11] //returns 1
          *
          * @example
-         * scale.get.levenshtein([0,2,4,5,7,9,11],true)
-         * //returns 0.9230769230769231
+         * scale.get.levenshtein([0,2,4,5,7,9,11],true) //returns 0.9230769230769231
          * @memberOf Scale#get*/
         levenshtein: (t,ratio_calc=false) => {
             /*Returns the Levenshtein distance of the scale to another scale*/
@@ -2607,18 +2701,19 @@ class Scale {
             }
         },
 
-        /** <pre>Same as {@link EDO.get.shortest_path()} but for diatonic cases.
-         * Instead of thinking in "intervals" it thinks in steps and scale degrees.
+        /** <p>Same as {@link EDO.get.shortest_path()} but for diatonic cases.</p>
+         * <p>Instead of thinking in "intervals" it thinks in steps and scale degrees.
          so in the context of C major, moving from E to G is a move of size 3 (scale degrees),
          and from C to E is also 3 (scale degrees) even though in one case it's a minor third and in
-         the other its a Major third.
+         the other its a Major third.</p>
 
-         In this function the starting point is scale_degree 1</pre>
+         <p>In this function the starting point is scale_degree 1</p>
 
          * @param {Number} destination_scale_degree
          * @param {Number} up_steps
          * @param {Number} down_steps
-         * @memberOf Scale#get*/
+         * @memberOf Scale#get
+         * */
         shortest_path: (destination_scale_degree,up_steps=1,down_steps=-1) => {
             /*same as EDO.shortest_path only for diatonic cases
             Instead of thinking in "intervals" it thinks in steps and scale degrees.
@@ -2635,11 +2730,16 @@ class Scale {
         },
 
 
-        /** <pre>Returns the scale's inversion</pre>
+        /** <p>Returns the scale's inversion</p>
 
          * @param {Boolean} [cache=false] - When true, the result will be cached for future retrieval
          * @returns {Array<Number>} the inverted pitches
-         * @memberOf Scale#get*/
+         * @memberOf Scale#get
+         *
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //major scale
+         * scale.get.inversion() //returns [0, 2, 4, 6, 7, 9, 11]*/
         inversion: (cache=false) => {
             /*Inverts the intervals of the scale*/
             if(this.catalog['inverted']) return this.catalog['inverted']
@@ -2650,11 +2750,16 @@ class Scale {
             return scale
         },
 
-        /** <pre>Returns the scale's pitches in prime form</pre>
+        /** <p>Returns the scale's pitches in prime form</p>
 
          * @param {Boolean} [cache=false] - When true, the result will be cached for future retrieval
          * @returns {Array<Number>} The pitches in prime form
-         * @memberOf Scale#get*/
+         * @memberOf Scale#get
+         *
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //major scale
+         * scale.get.prime_form() //returns [0, 1, 3, 5, 6, 8, 10]*/
         prime_form: (cache=false) => {
             /*Returns the scale in prime form*/
             if(this.catalog['prime form']) return this.catalog['prime form']
@@ -2679,11 +2784,16 @@ class Scale {
             return result
         },
 
-        /** <pre>Returns the scale's pitches in normal order</pre>
+        /** <p>Returns the scale's pitches in normal order</p>
 
          * @param {Boolean} [cache=false] - When true, the result will be cached for future retrieval
          * @returns {Array<Number>} The pitches in normal order
-         * @memberOf Scale#get*/
+         * @memberOf Scale#get
+         *
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //major scale
+         * scale.get.normal_order() //returns [0, 1, 3, 5, 6, 8, 10] */
         normal_order:  (cache=false) => {
             /*
             Returns the scale in normal order
@@ -2701,10 +2811,15 @@ class Scale {
 
         },
 
-        /** <pre>Returns the scale's pitches transposed by a certain amount</pre>
+        /** <p>Returns the scale's pitches transposed by a certain amount</p>
          * @param {Number} amount - The amount by which to transpose the pitches
          * @returns {Array<Number>} The transposed pitches
-         * @memberOf Scale#get*/
+         * @memberOf Scale#get
+         *
+         * @example
+         * let edo = new EDO(12) //define tuning
+         * let scale = edo.scale([0,2,4,7,9]) //a major pentatonic scale
+         * scale.get.transposition(5) //returns [ 5, 7, 9, 0, 2 ]*/
         transposition: (amount) => {
             return this.parent.get.transposition(this.pitches,amount)
         }
@@ -2751,18 +2866,27 @@ class Scale {
      * @namespace*/
     is = {
         /**
-         * Returns True if the scale is in normal order and False if it isn't
+         * <p>Returns True if the scale is in normal order and False if it isn't</p>
          * @returns {Boolean}
          * @memberOf Scale#is
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //major
+         * scale.is.normal_order() //returns false
          * */
         normal_order: () => {
             return this.parent.is.same(this.pitches,this.get.normal_order())
         },
 
-        /**Checks if the scale (as a whole!) is one of the scales given in a list of scales (or in one of their modes)
-         * @param {Array<Array<Number>>} scales - a collection of scales (or necklaces)
+        /**<p>Checks if the scale (as a whole!) is one of the scales given in a list of scales (or in one of their modes)</p>
+         * @param {Array<Array<Number>>} scales - a collection of scales (more accurately, necklaces)
          * @returns {Boolean}
-         * @memberOf Scale#is */
+         * @memberOf Scale#is
+         *
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //major
+         * scale.is.one_of([[0,2,3,5,7,9,10],[0,1,2,3,4,5,6,7,8,9]]) //returns true*/
         one_of: (scales) => {
             /**/
             let scale = this.pitches
@@ -2779,6 +2903,11 @@ class Scale {
          * @returns {Boolean}
          * @memberOf Scale#is
          * @see Scale#is.one_of
+         *
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //major
+         * scale.is.mode_of([0,2,3,5,7,9,10]) //returns true
          * */
 
         mode_of: (scale) => {
@@ -2787,18 +2916,28 @@ class Scale {
         },
 
         /**
-         * Returns True if the scale is in prime form and False if it isn't.
+         * <p>Returns True if the scale is in prime form and False if it isn't.</p>
          * @returns {Boolean}
          * @memberOf Scale#is
+         *
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //major
+         * scale.is.prime_form() //returns false
          * */
         prime_form: () => {
             return this.parent.is.same(this.pitches,this.get.prime_form())
         },
 
-        /**Returns True if the scale is invertible and False if it isn't
+        /**<p>Returns true if the scale is invertible and false if it isn't</p>
          * @param {Boolean} [cache=false] - when true, the result will be cached for future retrieval
          * @returns {Boolean}
-         * @memberOf Scale#is */
+         * @memberOf Scale#is
+         *
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //major
+         * scale.is.invertible() //returns false*/
         invertible: (cache=false) => {
             if(this.catalog['invertible']) return this.catalog['invertible']
 
@@ -2811,8 +2950,17 @@ class Scale {
         },
 
 
+        /**<p>Returns true if the scale is a subset of one of multiple scales provided</p>
+         * @param {Array<Number>|Array<Array<Number>>} scales - another scale, or a collection of scales
+         * @returns {Boolean}
+         * @memberOf Scale#is
+         *
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //major
+         * scale.is.subset([[0,2,4,5],[7,9,11]]) //returns false*/
         subset: (scales) => {
-            /*returns True if the scale is a subset of one of multiple scales provided*/
+
             const is_subset_of_one = function (scale1,scale2) {
                 for(let note of scale1) {
                     if(scale2.indexOf(note)==-1) return false
@@ -2852,10 +3000,16 @@ class Scale {
      * @namespace*/
     export = {
         /**Generates a scala file with the current tuning of the scale
-         * @param {String} [dir=true] - The directory to which the file will be saved
          * @param {String} [filename] - When not provided, the file name will be the name of the scale
-         * @memberOf Scale#export */
-        scala: (dir="scala/",filename) => {
+         * @param {String} [dir=true] - The directory to which the file will be saved
+         * @memberOf Scale#export
+         *
+         * @example
+         * let edo = new EDO(17) //define context
+         * let scale = edo.scale([0,1,4,5,7,13,16]) //some scale in 17-EDO
+         * scale.export.scala("my_tuning.scl") //outputs /scala/my_tuning.scl
+         */
+        scala: (filename,dir="scala/",) => {
             let scale_name = this.get.name()
             filename = filename || scale_name + ".scl"
             let file = "! " + filename + "\n"

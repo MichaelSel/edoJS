@@ -1,15 +1,24 @@
 {
-  "name": "edo-js",
-  "version": "1.0.0",
-  "description": "",
+  "name": "edo",
+  "version": "0.1.0",
+  "description": "A set of functions for manipulating musical pitches within a given EDO",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["music","music theory","musicology","set theory","microtonal","equal divisions of the octave"],
+  "author": "Michael Seltenreich <seltenmusic@gmail.com> (http://www.michaelseltenreich.com/)",
   "license": "ISC",
   "devDependencies": {
     "tui-jsdoc-template": "^1.2.2"
-  }
+  },
+  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MichaelSel/edoJS.git"
+  },
+  "bugs": {
+    "url": "https://github.com/MichaelSel/edoJS/issues"
+  },
+  "homepage": "https://github.com/MichaelSel/edoJS#readme"
 }
