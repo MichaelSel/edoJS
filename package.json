@@ -1,6 +1,6 @@
 {
-  "name": "edo",
-  "version": "0.1.0",
+  "name": "edo.js",
+  "version": "1.0.0",
   "description": "A set of functions for manipulating musical pitches within a given EDO",
   "main": "index.js",
   "scripts": {

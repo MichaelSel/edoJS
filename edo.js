@@ -1,4 +1,67 @@
-const fs = require('fs');
+/**
+ * @author Michael Seltenreich <seltenmusic@gmail.com>
+ * @version 1.0.0
+ * @license
+ * <pre>Copyright 2020 Michael Seltenreich
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.</pre>*/
+
+
+
+let save_file
+try {
+    /**
+     * Handles file saving when run server-side
+     * @ignore
+     * */
+    const fs = require('fs')
+    /**
+     * @ignore*/
+    save_file = function (name,dir,contents) {
+        fs.writeFile(dir+name, contents, function(err) {
+            if(err) {
+                return console.log(err);
+            }
+        });
+
+    }
+
+} catch (e) {
+    /**
+     * Handles file saving when run client-side
+     * @ignore
+     * */
+    save_file = function(name, dir,contents) {
+        const mime_type = "text/plain";
+
+        const blob = new Blob([contents], {type: mime_type});
+
+        const dlink = document.createElement('a');
+        dlink.download = name;
+        dlink.href = window.URL.createObjectURL(blob);
+        dlink.onclick = function(e) {
+            // revokeObjectURL needs a delay to work properly
+            setTimeout(() => {
+                window.URL.revokeObjectURL(this.href);
+            }, 1500);
+        };
+
+        dlink.click();
+        dlink.remove();
+    }
+
+}
+
 
 class FixedContentNecklace {
     constructor(number_list) {
@@ -197,7 +260,8 @@ const combinations = (set, k) => {
     return combs
 }
 
-/** Class representing some EDO tuning system. */
+/** Class representing some EDO tuning system.*/
+
 class EDO {
 
     /**
@@ -3020,11 +3084,7 @@ class Scale {
                 file+= String(pitch) + "\n"
             }
             file+="2/1"
-            fs.writeFile(dir + filename, file, function(err) {
-                if(err) {
-                    return console.log(err);
-                }
-            });
+            save_file(filename,dir,file)
         }
     }
 
@@ -3070,11 +3130,20 @@ class Scale {
 
 }
 
-
-module.exports = {
-    EDO:EDO,
-    Scale:Scale
+/**
+ * For server side*/
+try {
+    module.exports = {
+        EDO:EDO,
+        Scale:Scale
+    }
 }
+/**
+ * For client-side*/
+catch (e) {
+    1+1
+}
+
 
 
 
