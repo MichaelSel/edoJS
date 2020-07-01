@@ -17,9 +17,10 @@
  * limitations under the License.</pre>*/
 
 
+const environment = (typeof window === 'undefined')? "server" : "browser"
 
 let save_file
-try {
+if(environment=='server') {
     /**
      * Handles file saving when run server-side
      * @ignore
@@ -36,7 +37,7 @@ try {
 
     }
 
-} catch (e) {
+} else {
     /**
      * Handles file saving when run client-side
      * @ignore
@@ -1506,7 +1507,7 @@ class EDO {
         }
     }
 
-    /**A collection of functions that converts an input into other equivalent representations
+    /**A collection of functions that convert an input into other equivalent representations
      * @namespace EDO#convert*/
     convert = {
         /** Gets a melody as pitches and returns the melody as intervals
@@ -1757,6 +1758,126 @@ class EDO {
                 intervals.push(midi[i+1]-midi[i])
             }
             return intervals
+        }
+    }
+
+    /**A collection of functions that make visual representations
+     * @namespace EDO#show*/
+    show = {
+        /**
+         * Makes a fractal tree with branches diverging by given intervals
+         *
+         * @param  {HTMLElement} container - a DOM element in which the tree will be shown.
+         * @param  {Number} [length=200] - The length (or height) or the tree's "trunk".
+         * @param  {Number} [angle_span=90] - the angle between branches.
+         * @param  {Array<Number>} [mode=[0,2,4,5,7,9,11]] - If provided, the tree will conform to that mode.
+         * @param  {Array<Number>} [intervals=[-1,1]] - If mode is provided, each interval represents the number of scale degrees away from the current node. If mode is not provided, the intervals represent PCs away from the current node.
+         * @param  {Number} [iterations=5] - The number of sub-branches on the tree
+         * @param  {Number} [length_mul=0.7] - The factor by which every new sub-branch's length is to its parent.
+         *
+         *
+         * @example
+         * <script src="edo.js"></script>
+         * <script src="raphael.min.js"></script>
+         * <div id="container" style="width:900px;height:600px; margin:0 auto;"></div>
+         * <script>
+         *  let edo = new EDO()
+         *  edo.show.interval_fractal_tree(container)
+         * </script>
+         * @see /demos/fractal_tree.html
+         * @memberOf EDO#show*/
+        interval_fractal_tree : (container_id,length = 200,angle_span=90,mode=[0,2,4,5,7,9,11],intervals=[-1,1], iterations=5,length_mul=0.7) => {
+            const self = this
+            const container = document.getElementById(container_id)
+            container.innerHTML = ""
+            const edo = this.edo
+            let width = container.offsetWidth
+            let height = container.offsetWidth
+            const paper = new Raphael(container, width, height);
+            const point_on_circle = function (center = [0,0], radius = 50, angle = 90) {
+                /*Finding the x,y coordinates on circle, based on given angle*/
+
+                //center of circle, angle in degree and radius of circle
+                angle = angle * Math.PI/180
+                let x = Math.floor(center[0] + (radius * Math.cos(angle)))
+                let y = Math.floor(center[1] + (radius * Math.sin(angle)))
+
+                return [x,y]
+            }
+
+            const normalize = (num, in_min, in_max, out_min, out_max) => {
+                return (num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+            }
+            class Branch {
+                constructor(length=300,angle=0,x=0,y=0,circle_r = 20,angle_span=90,length_mul=0.70,iterations=5,intervals=[-1,1],starting_pitch=0,mode=null) {
+                    if(mode) this.diatonic = true
+                    else this.diatonic=false
+
+                    this.mode = mode
+                    this.iterations=iterations
+                    this.length_mul = length_mul
+                    this.angle_span=angle_span
+                    this.length = length
+                    this.angle = angle
+                    this.circle_r = circle_r
+                    this.circle_o = point_on_circle([x,y],length-(circle_r),angle-90)
+                    this.start = [x, y]
+                    this.line_center = point_on_circle(this.start, (this.length - (this.circle_r * 2))/2, this.angle-90)
+                    this.line_end = point_on_circle(this.start, this.length - (this.circle_r * 2), this.angle-90)
+                    this.end = point_on_circle([x,y],length,angle-90)
+                    this.sub_branches=intervals.length
+                    this.intervals = intervals
+                    this.starting_pitch = starting_pitch
+                }
+
+                draw_branch () {
+                    let start = this.start
+                    let end = this.line_end
+                    paper.path('M'+start.join(',') + 'L' + end.join(',')).attr('stroke','white')
+                    let c_center = this.circle_o
+                    let hue = Math.floor(normalize(this.starting_pitch,0,edo - 1,0,360))
+                    let rgb = Raphael.hsl2rgb(hue,100,50)
+                    paper.circle(c_center[0],c_center[1],this.circle_r).attr('fill',rgb)
+                    this.text = paper.text(c_center[0],c_center[1],this.starting_pitch)
+                        .attr('fill','blue')
+                        .attr('font-size',25)
+
+                    if(this.iterations>0) {
+                        let angle_span = Math.floor(this.angle_span/2)-this.angle_span
+                        let angle_add = this.angle_span/(this.sub_branches-1)
+                        let new_length = this.length*this.length_mul
+                        for(let i=0;i<this.sub_branches;i++) {
+                            let starting_pitch = 100
+                            if(this.diatonic) {
+                                let index = this.mode.indexOf(this.starting_pitch)
+                                starting_pitch = this.mode[self.mod((index + this.intervals[i]),this.mode.length)]
+                            } else {
+                                starting_pitch = mod((this.starting_pitch+this.intervals[i]),edo)
+                            }
+                            let new_angle = this.angle + angle_span+(i*angle_add)
+                            let new_x = this.end[0]
+                            let new_y = this.end[1]
+                            let new_branch = new Branch(new_length, new_angle,new_x,new_y,this.circle_r, this.angle_span, this.length_mul,  this.iterations-1,  this.intervals,  starting_pitch,this.mode)
+                            new_branch.draw_branch()
+
+                        }
+                    }
+                }
+            }
+            paper.clear()
+            let background = paper.rect(0,0,width,height).attr('fill','000')
+            let tree = new Branch(length=length,
+                0,
+                Math.floor(width/2),
+                height,
+                20,
+                angle_span,
+                length_mul,
+                iterations,
+                intervals,
+                0,
+                mode)
+            tree.draw_branch()
         }
     }
 

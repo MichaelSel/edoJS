@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <script src="raphael.min.js"></script>
+    <script src="scripts/raphael.min.js"></script>
     <script src="edo.js"></script>
 </head>
 <body>
@@ -13,16 +13,16 @@
 <script src="contour_plotter.js"></script>
 <script>
     let edo = new EDO(12)
-    // perms = edo.get.permutations([1,2,3])
-    // perms.sort((a,b)=>b[0]-a[0] || b[b.length-1]-a[a.length-1])
-    // for(let perm of perms) {
-    //     contour('container', 250, perm)
-    // }
+    perms = edo.get.permutations([1,2,3,4])
+    perms.sort((a,b)=>b[0]-a[0] || b[b.length-1]-a[a.length-1])
+    for(let perm of perms) {
+        contour('container', 250, perm)
+    }
 
 
 
 
-    contour('container', 250, [5,12,9,11,4,0,7,2])
+    // contour('container', 250, [5,12,9,11,4,0,7,2])
     // contour('container', 250, [0,2,1])
     // contour('container', 250, [0,2,1])
     // contour('container', 250, [0,1,2])
