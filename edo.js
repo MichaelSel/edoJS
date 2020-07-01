@@ -272,7 +272,9 @@ class EDO {
      *  <li> [EDO.convert]{@link EDO#convert} is a set of functions used to change between equivalent representations within the tuning context.</li>
      *  <li> [EDO.count]{@link EDO#count} is a set of functions used to count stuff.</li>
      *  <li> [EDO.get]{@link EDO#get} is a set of functions used to manipulate and generate stuff.</li>
-     *  <li> [EDO.is]{@link EDO#is} is a set of functions used for boolean truth statements.</li></ul>
+     *  <li> [EDO.is]{@link EDO#is} is a set of functions used for boolean truth statements.</li>
+     *  <li> [EDO.show]{@link EDO#show} is a set of functions used for visualization.</li>
+     *  </ul>
      * @param {number} edo - The number of equal divisions of the octave.
      * @example
      * //Basic usage:
@@ -358,7 +360,6 @@ class EDO {
             return common_tones
         },
     }
-
 
     /**A collection of functions that return a boolean
      * @namespace EDO#is*/
@@ -1761,12 +1762,13 @@ class EDO {
         }
     }
 
-    /**A collection of functions that make visual representations
-     * @namespace EDO#show*/
+    /**<p>A collection of functions that make visual representations</p>
+     * <p>Note: EDO.show can only be used client-side</p>
+     * @namespace EDO#show
+     * */
     show = {
         /**
          * Makes a fractal tree with branches diverging by given intervals
-         *
          * @param  {String} container_id - The ID of a DOM element in which the tree will be shown.
          * @param  {Number} [length=200] - The length (or height) or the tree's "trunk".
          * @param  {Number} [angle_span=90] - the angle between branches.
@@ -1774,8 +1776,7 @@ class EDO {
          * @param  {Array<Number>} [intervals=[-1,1]] - If mode is provided, each interval represents the number of scale degrees away from the current node. If mode is not provided, the intervals represent PCs away from the current node.
          * @param  {Number} [iterations=5] - The number of sub-branches on the tree
          * @param  {Number} [length_mul=0.7] - The factor by which every new sub-branch's length is to its parent.
-         *
-         *
+
          * @example
          * <script src="edo.js"></script>
          * <script src="raphael.min.js"></script>
@@ -1784,8 +1785,10 @@ class EDO {
          *  let edo = new EDO()
          *  edo.show.interval_fractal_tree(container_id)
          * </script>
+
+
          * @see /demos/fractal_tree.html
-         * @memberOf EDO#show*/
+         */
         interval_fractal_tree : (container_id,length = 200,angle_span=90,mode=[0,2,4,5,7,9,11],intervals=[-1,1], iterations=5,length_mul=0.7) => {
             const self = this
             const container = document.getElementById(container_id)
@@ -1887,7 +1890,7 @@ class EDO {
          * @param  {String} container_id - The ID of a DOM element in which the contour will be shown.
          * @param  {Array<Number>} pitches - The melody.
          * @param  {Boolean} [replace=false] - When false, any time the function is called a new contour will be appended to the object. When true, it will replace the contents of the container.
-         * @param  {Number,Array<Number,Number>} [size] - Size (in px) of the plot. When no values are passed, the plot will take the size of the container. If 1 value is passed, it will be used for both dimensions. Otherwise pass data as [width,height].
+         * @param  {Number|Array<Number,Number>} [size] - Size (in px) of the plot. When no values are passed, the plot will take the size of the container. If 1 value is passed, it will be used for both dimensions. Otherwise pass data as [width,height].
          *
          * @example
          * <script src="edo.js"></script>
@@ -1895,17 +1898,16 @@ class EDO {
          * <div id="container" style="width:900px;height:600px; margin:0 auto;"></div>
          * <script>
          *  let edo = new EDO()
-         *  edo.show.contour(container_id,[1,3,2,5,4])
+         *  edo.show.contour('container', [1,3,2,4],false,150)
          * </script>
          * @see /demos/contour_plotter.html
-         * @memberOf EDO#show*/
+         */
         contour : (container_id,pitches , replace=false, size) => {
             let container = document.getElementById(container_id)
             let width, height
             if(!size) {
                 width = container.offsetWidth
                 height = container.offsetHeight
-                console.log(width,height)
             } else {
                 if(Array.isArray(size)) {
                     width = size[0]
@@ -1925,8 +1927,6 @@ class EDO {
 
             if(replace) container.innerHTML = ""
             container.appendChild(div)
-            // let width = container.offsetWidth
-            // let height = container.offsetWidth
             const paper = new Raphael(div, width, height);
             let background = paper.rect(0, 0, width, height).attr('fill', '000').attr('stroke','white')
 
@@ -1952,14 +1952,247 @@ class EDO {
             let path = paper.path(path_str).attr('stroke','red').attr('stroke-width',2)
             circle_set.attr('fill','white')
             circle_set.toFront()
+        },
+
+        /**
+         * Graphs a given necklace in a container.
+         *
+         * @param  {String} container_id - The ID of a DOM element in which the contour will be shown.
+         * @param  {Array<Number>|Array<Array<Number>>} pitches - The necklace. This can also be an array containing multiple necklaces.
+         * @param  {Boolean} [replace=false] - When true, the contents of the container will be replaced by the function. When false, it will be appended.
+         * @param  {Number|Array<Number,Number>} [radius] - Radius (in px) of the ring. When no values are passed, the ring will take the size of the container.
+         * @param  {Boolean} [as_numbers=true] - When true, the nodes will be marked with numbers, when false they will be marked with note letters (only in 12-EDO)
+         *
+         * @example
+         * <script src="edo.js"></script>
+         * <script src="raphael.min.js"></script>
+         * <div id="container" style="width:900px;height:600px; margin:0 auto;"></div>
+         * <script>
+         *  let edo = new EDO()
+         *  edo.show.necklace('container', [0,2,4,5,7,9,11])
+         * </script>
+         * @see /demos/necklace.html
+         */
+        necklace : (container_id, pitches = [0,2,4,5,7,9,11],replace=true,radius =600,as_numbers=true) => {
+            if(!radius) {
+                radius = Math.min(container.offsetWidth,container.offsetHeight)
+            }
+            let container = document.getElementById(container_id)
+            if(replace) container.innerHTML = ""
+
+            const self = this
+            const use_letter = !as_numbers
+
+            const make_necklace = (container_id, pitches ,replace,radius) => {
+                let height=radius
+                let width=radius
+
+                let div = document.createElement('div')
+                div.style.width =width+"px";
+                div.style.height =height+"px";
+                div.style.display="inline"
+                let div_id = div.setAttribute("id", "paper_" + Date.now());
+                let container = document.getElementById(container_id)
+
+                if(replace) container.innerHTML = ""
+                container.appendChild(div)
+                const paper = new Raphael(div, width, height);
+                let background = paper.rect(0,0,width,height).attr('fill','000')
+
+                const scale = (num, in_min, in_max, out_min, out_max) => {
+                    return (num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+                }
+
+                class Necklace {
+                    constructor(radius=paper.height/2-(height/10),cx=paper.width/2,cy=paper.height/2,edo=12,pitches = [0,2,4,5,7,9,11],parent) {
+                        //general parameters
+                        this.cx = cx
+                        this.cy = cy
+                        this.radius = radius
+                        this.edo = edo
+                        this.pitches = pitches
+
+                        //ring (will store the ring object)
+                        this.ring
+
+                        //nodes
+                        this.nodes = []
+
+                        //strings
+                        this.strings = []
+
+                        this.update(pitches)
+                    }
+
+                    update (pitches) {
+                        this.pitches=pitches
+                        this.draw_all()
+                    }
+                    draw_all (){
+                        this.draw_ring()
+                        this.draw_nodes()
+                        this.draw_strings()
+
+                        for(let node of this.nodes) {
+                            node.drawing.toFront()
+                            node.text.toFront()
+                        }
+
+
+                    }
+                    draw_ring () {
+                        //if already exists, remove the old one
+                        if(this.ring) {
+                            this.ring.remove()
+                            this.ring=undefined
+                        }
+
+                        //draw the ring
+                        this.ring = paper.circle(this.cx,this.cy,this.radius).attr('stroke','red')
+                            .attr('stroke-width',3)
+                            .attr("text",'HELLO!!')
+                    }
+                    draw_nodes () {
+                        let pitches = this.pitches
+
+                        //remove nodes
+                        for(let node of this.nodes) {
+                            node.drawing.remove()
+                            node.text.remove()
+                        }
+                        this.nodes = []
+                        let radius = Math.min((this.radius*2*Math.PI / this.edo)/2-5,15)
+                        //node parameters
+                        for(let note=0;note<this.edo;note++) {
+                            let angle = (note * (360 / this.edo)) - 90
+                            let rad_angle = angle * Math.PI / 180
+                            let cx = Math.floor(this.cx + (this.radius * Math.cos(rad_angle)))
+                            let cy = Math.floor(this.cy + (this.radius * Math.sin(rad_angle)))
+                            let node = new Node(radius,cx,cy,note,pitches.indexOf(note)!=-1)
+                            this.nodes.push(node)
+                        }
+
+
+                        for(let node of this.nodes) {
+                            node.draw()
+                        }
+                    }
+
+                    draw_strings () {
+                        //remove strings
+                        for(let string of this.strings) {
+                            string.drawing.remove()
+                        }
+                        this.strings = []
 
 
 
+                        for(let i=0;i<this.nodes.length-1;i++) {
+                            if(!this.nodes[i].visible) continue //if this node is not visible, skip it
+                            for(let j=i+1;j<this.nodes.length;j++) {
+                                if(!this.nodes[j].visible) continue //if this node is not visible, skip it
+                                // strings.push([i,j]) //the pitches for which the strings are connected
+                                let n1 = this.nodes[i]
+                                let n2 = this.nodes[j]
+                                this.strings.push(new Str(n1.cx,n1.cy,n2.cx,n2.cy))
+                            }
+                        }
+
+                        for(let string of this.strings) {
+                            string.draw()
+                        }
+                    }
+                }
+
+                class Node {
+                    constructor(radius=height/20,cx=paper.width/2,cy=paper.height/2,name="",visible=true) {
+                        this.radius = radius
+                        this.cx=cx
+                        this.cy=cy
+                        this.name =name
+                        this.visible = visible
+
+                    }
+
+                    draw () {
+
+
+                        //if already exists, remove the old one
+                        if(this.drawing) {
+                            this.drawing.remove()
+                            this.drawing=undefined
+                        }
+
+                        this.drawing = paper.set()
+
+                        this.circle = paper.circle(this.cx,this.cy,this.radius)
+                            .attr('stroke','red')
+                            .attr('fill','blue')
+                        this.drawing.push(this.circle)
+                        if(use_letter) this.name = self.convert.pc_to_name(this.name)
+                        this.text = paper.text(this.cx,this.cy,this.name)
+                            .attr('fill','white')
+                            .attr('font-size',this.radius)
+
+                        this.drawing.push(this.text)
+
+                        if(this.visible) {
+                            this.drawing.show()
+                        }
+                        else {
+                            this.drawing.hide()
+                        }
+
+
+                    }
+                }
+
+                class Str {
+                    constructor(x1,y1,x2,y2) {
+                        this.x1 = x1
+                        this.y1=y1
+                        this.x2= x2
+                        this.y2 = y2
+                        this.length = Math.sqrt((x2-x1)**2 + (y2-y1)**2)
+                    }
+
+                    draw () {
+                        //if already exists, remove the old one
+                        if(this.drawing) {
+                            this.drawing.remove()
+                            this.drawing=undefined
+                        }
+
+                        let hue = Math.floor(scale(this.length,0,height-100,0,360))
+                        let rgb = Raphael.hsl2rgb(hue,100,50)
+                        this.drawing = paper.path("M" + this.x1+"," + this.y1 +"L" + this.x2 +"," + this.y2)
+                            .attr('stroke',rgb.hex)
+                            .attr('stroke-width',3)
+
+                    }
+
+                }
+
+                let necklace = new Necklace(paper.height/2-(height/10),paper.width/2,paper.height/2,this.edo,pitches)
+
+                return necklace
+            }
+
+
+
+
+            const make_necklaces = function (container_id,necklaces,size=200) {
+                let list = []
+                for (let necklace of necklaces) {
+                    list.push(make_necklace(container_id,necklace,false,size))
+                }
+            }
+            if(Array.isArray(pitches[0])) make_necklaces(container_id,pitches,radius)
+            else make_necklace(container_id,pitches,replace,radius)
 
         }
-
-
     }
+
 
     mod (n, m) {
         return ((n % m) + m) % m;
@@ -2492,9 +2725,10 @@ class Scale {
 
         },
 
-        /** Returns every trichord (normalized to 0) available in this scale
+        /** <p>Returns every trichord (normalized to 0) available in this scale</p>
+         * <p>Note: for a collection of all pitch subsets of length n (rather than 3) use [Scale.get.n_chords()]{@link Scale#get.n_chords}</p>
          * @param  {Boolean} cache - When true, the result will be cached for faster retrieval
-         * @returns {Array<Number>} An array representing the vector
+         * @returns {Array<Number>} An array containing all trichords
          * @memberOf Scale#get
          *
          * @example
@@ -2511,6 +2745,8 @@ class Scale {
          *  [ 0, 2, 5 ]
          * ]
          *
+         * @see Scale#get.tetrachords
+         * @see Scale#get.n_chords
          */
         trichords: (cache=false) => {
             /*
@@ -2520,27 +2756,16 @@ class Scale {
             :return:
             */
             if(this.catalog['trichords']) return this.catalog['trichords']
-            let scale = this.pitches
-            let trichords = []
-            let modes = this.get.modes()
-            modes.forEach((mode) => {
-                let int1 =0
-                for(let int2 = 1;int2<mode.length-1;int2++) {
-                    for(let int3 = int2+1;int3<mode.length;int3++) {
-                        let trichord = [mode[int1],mode[int2],mode[int3]]
-                        trichords.push(this.parent.get.normal_order(trichord))
-                    }
-                }
-            })
-            trichords = this.parent.get.unique_elements(trichords)
+            let trichords = this.get.n_chords(3,cache)
             if(cache) this.catalog['trichords'] = trichords
             return trichords
 
         },
 
-        /** Returns every tetrachord (normalized to 0) available in this scale
+        /** <p>Returns every tetrachord (normalized to 0) available in this scale</p>
+         * <p>Note: for a collection of all pitch subsets of length n (rather than 4) use [Scale.get.n_chords()]{@link Scale#get.n_chords}</p>
          * @param  {Boolean} cache - When true, the result will be cached for faster retrieval
-         * @returns {Array<Number>} An array representing the vector
+         * @returns {Array<Number>} An array containing all tetrachords
          * @memberOf Scale#get
          *
          * @example
@@ -2548,6 +2773,9 @@ class Scale {
          * let scale = edo.scale([0,2,4,7,9]) //pentatonic scale
          * scale.get.tetrachords()
          * //returns [ [ 0, 2, 4, 7 ], [ 0, 3, 5, 7 ], [ 0, 2, 5, 7 ], [ 0, 3, 5, 8 ] ]
+         *
+         * @see Scale#get.trichords
+         * @see Scale#get.n_chords
          */
         tetrachords: (cache=false) => {
             /*
@@ -2558,23 +2786,63 @@ class Scale {
             */
             if(this.catalog['tetrachords']) return this.catalog['tetrachords']
 
-            let scale = this.pitches
-            let tetrachords = []
-            let modes = this.get.modes()
-            modes.forEach((mode) => {
-                let int1 =0
-                for(let int2 = 1;int2<mode.length-2;int2++) {
-                    for(let int3 = int2+1;int3<mode.length-1;int3++) {
-                        for(let int4 = int3+1;int4<mode.length;int4++) {
-                            let tetrachord = [mode[int1],mode[int2],mode[int3],mode[int4]]
-                            tetrachords.push(this.parent.get.normal_order(tetrachord))
-                        }
-                    }
-                }
-            })
-            tetrachords = this.parent.get.unique_elements(tetrachords)
+            let tetrachords = this.get.n_chords(4,cache)
+
             if(cache) this.catalog['tetrachords'] = tetrachords
             return tetrachords
+        },
+
+        /** <p>Returns every n_chord (bichord (<code>n=2</code>), trichord (<code>n=3</code>), tetrachord (<code>n=4</code>), etc.) available in this scale</p>
+         * @param  {Number} n - Number of pitches in every chord
+         * @param  {Boolean} [normalize=true] - When true, the function will return n_chords in normal order. otherwise it will return them as they appear in the scale
+         * @param  {Boolean} [cache=false] - When true, the result will be cached for faster retrieval
+         * @returns {Array<Number>} An array containing all n_chords
+         * @memberOf Scale#get
+         *
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,7,9]) //pentatonic scale
+         * scale.get.n_chords(3) //same as scale.get.trichords()
+         * [
+         *  [ 0, 2, 4 ],
+         *  [ 0, 2, 7 ],
+         *  [ 0, 3, 5 ],
+         *  [ 0, 4, 7 ],
+         *  [ 0, 3, 7 ],
+         *  [ 0, 2, 5 ]
+         * ]
+         *
+         * @see Scale#get.trichords
+         * @see Scale#get.tetrachords
+         */
+        n_chords : (n,normalize=true, cache=false) => {
+            if(this.catalog['n_chords']) {
+                if(Array.isArray(this.catalog['n_chords'][n])) return this.catalog['n_chords'][n]
+            }
+            else this.catalog['n_chords'] = {}
+
+            let all = []
+            let extended = [...this.pitches,...this.pitches.slice(0,n-1)]
+            const run_it =  (i=0,n_chord=[]) => {
+                if(n_chord.length==n) {
+                    if(this.parent.get.unique_elements(n_chord).length==n_chord.length) {
+                        n_chord = n_chord.sort((a,b)=>a-b)
+                        if(normalize) n_chord = this.parent.get.normal_order(n_chord)
+                        all.push(n_chord)
+                    }
+                    return
+                }
+                for (let j = i; j < this.pitches.length+(n-1); j++) {
+
+                    run_it(j+1,[...n_chord,this.pitches[this.parent.mod(j,this.pitches.length)]])
+
+                }
+
+            }
+            run_it()
+            all = this.parent.get.unique_elements(all)
+            if(cache) this.catalog['n_chords'][n] = all
+            return all
         },
 
         /** <p>Returns a list of lists of size "levels" made out of scale degrees with "skip" steps skipped apart.</p>
@@ -3286,6 +3554,126 @@ class Scale {
             }
             file+="2/1"
             save_file(filename,dir,file)
+        }
+    }
+
+    show = {
+        /**
+         * Makes a fractal tree corresponding to the scale with branches diverging by given step sizes
+         * @param  {String} container_id - The ID of a DOM element in which the tree will be shown.
+         * @param  {Number} [length=200] - The length (or height) or the tree's "trunk".
+         * @param  {Number} [angle_span=90] - the angle between branches.
+         * @param  {Array<Number>} [intervals=[-1,1]] - Each interval represents the number of scale degrees away from the current node.
+         * @param  {Number} [iterations=5] - The number of sub-branches on the tree
+         * @param  {Number} [length_mul=0.7] - The factor by which every new sub-branch's length is to its parent.
+
+         * @example
+         * <script src="edo.js"></script>
+         * <script src="raphael.min.js"></script>
+         * <div id="container" style="width:900px;height:600px; margin:0 auto;"></div>
+         * <script>
+         *  let edo = new EDO()
+         *  edo.show.interval_fractal_tree(container_id)
+         * </script>
+
+
+         * @see /demos/fractal_tree.html
+         * @memberOf EDO#show*/
+        interval_fractal_tree : (container_id,length = 200,angle_span=90,intervals=[-1,1], iterations=5,length_mul=0.7) => {
+            this.parent.show.interval_fractal_tree(container_id,length,angle_span,this.pitches,intervals, iterations,length_mul)
+        },
+
+
+        /**
+         * Plots the contour of a given melody.
+         *
+         * @param  {String} container_id - The ID of a DOM element in which the contour will be shown.
+         * @param  {Array<Number>} pitches - The melody.
+         * @param  {Boolean} [replace=false] - When false, any time the function is called a new contour will be appended to the object. When true, it will replace the contents of the container.
+         * @param  {Number|Array<Number,Number>} [size] - Size (in px) of the plot. When no values are passed, the plot will take the size of the container. If 1 value is passed, it will be used for both dimensions. Otherwise pass data as [width,height].
+         *
+         * @example
+         * <script src="edo.js"></script>
+         * <script src="raphael.min.js"></script>
+         * <div id="container" style="width:900px;height:600px; margin:0 auto;"></div>
+         * <script>
+         *  let edo = new EDO()
+         *  edo.show.contour('container', [1,3,2,4],false,150)
+         * </script>
+         * @see /demos/contour_plotter.html
+         * @memberOf EDO#show*/
+        contour : (container_id,pitches , replace=false, size) => {
+            let container = document.getElementById(container_id)
+            let width, height
+            if(!size) {
+                width = container.offsetWidth
+                height = container.offsetHeight
+            } else {
+                if(Array.isArray(size)) {
+                    width = size[0]
+                    height = size[1]
+
+                } else {
+                    width = size
+                    height = size
+                }
+            }
+
+            let div = document.createElement('div')
+            div.style.width = width + "px";
+            div.style.height = height + "px";
+            div.style.display = "inline"
+            let div_id = div.setAttribute("id", "paper_" + Date.now());
+
+            if(replace) container.innerHTML = ""
+            container.appendChild(div)
+            const paper = new Raphael(div, width, height);
+            let background = paper.rect(0, 0, width, height).attr('fill', '000').attr('stroke','white')
+
+            const scale = (num, in_min, in_max, out_min, out_max) => {
+                return (num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+            }
+
+            let max_pitch = Math.max.apply(Math,pitches)
+            let min_pitch = Math.min.apply(Math,pitches)
+            let margin = 15
+            let scaled_pitches = pitches.map((pitch) => Math.floor(scale(pitch,min_pitch,max_pitch,height-margin,margin)))
+            let pos = margin
+            let pos_shift = Math.floor((width-(margin*2))/(pitches.length-1))
+            let path_str = "M"+margin+"," + scaled_pitches[0]
+            let circle_set = paper.set()
+            let circle_r = height/45
+            circle_set.push(paper.circle(margin,scaled_pitches[0],circle_r))
+            for (let i=1;i<scaled_pitches.length;i++) {
+                pos+=pos_shift
+                path_str+="L" + pos +"," + scaled_pitches[i]
+                circle_set.push(paper.circle(pos,scaled_pitches[i],circle_r))
+            }
+            let path = paper.path(path_str).attr('stroke','red').attr('stroke-width',2)
+            circle_set.attr('fill','white')
+            circle_set.toFront()
+        },
+
+        /**
+         * Graphs the scale's necklace
+         *
+         * @param  {String} container_id - The ID of a DOM element in which the contour will be shown.
+         * @param  {Boolean} [replace=false] - When false, any time the function is called a new contour will be appended to the object. When true, it will replace the contents of the container.
+         * @param  {Number|Array<Number,Number>} [radius] - Radius (in px) of the ring. When no values are passed, the ring will take the size of the container.
+         *
+         * @example
+         * <script src="edo.js"></script>
+         * <script src="raphael.min.js"></script>
+         * <div id="container" style="width:900px;height:600px; margin:0 auto;"></div>
+         * <script>
+         *  let edo = new EDO()
+         *  let scale = edo.scale([0,2,4,5,7,9,11])
+         *  scale.show.necklace('container')
+         * </script>
+         * @see /demos/necklace.html
+         * @memberOf Scale#show*/
+        necklace : (container_id, replace=true,radius =600) => {
+            return this.parent.show.necklace(container_id,this.pitches,replace,radius)
         }
     }
 

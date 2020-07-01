@@ -1,7 +1,7 @@
 const JS = function (thing) {
     return JSON.stringify(thing).replace(/"/g,'')
 }
-const EDO = require("./edo")
+const EDO = require("../edo")
 
 let edo = new EDO(12)
 

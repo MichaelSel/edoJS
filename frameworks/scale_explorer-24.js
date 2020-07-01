@@ -1,4 +1,4 @@
-const EDO = require("./edo")
+const EDO = require("../edo")
 edo = new EDO(24)
 
 let scale

@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <script src="scripts/raphael.min.js"></script>
-    <script src="edo.js"></script>
+    <script src="../scripts/raphael.min.js"></script>
+    <script src="../edo.js"></script>
 
 </head>
 <body>
@@ -12,12 +12,11 @@
 
 
 </body>
-<script src="necklace.js"></script>
 <script>
-    let divisions = 12
+    const divisions = 12
     let edo = new EDO(divisions)
     let scale = edo.scale([0,2,4,5,7,9,11])
-    let trichords = scale.get.trichords()
-    make_necklaces("container",200,trichords)
+    edo.show.necklace("container",scale.pitches)
+
 </script>
 </html>

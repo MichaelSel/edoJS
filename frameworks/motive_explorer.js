@@ -1,4 +1,4 @@
-const EDO = require("./edo")
+const EDO = require("../edo")
 
 const unique_in_array = (list) => {
 
