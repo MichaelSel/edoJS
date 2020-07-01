@@ -1767,7 +1767,7 @@ class EDO {
         /**
          * Makes a fractal tree with branches diverging by given intervals
          *
-         * @param  {HTMLElement} container - a DOM element in which the tree will be shown.
+         * @param  {String} container_id - The ID of a DOM element in which the tree will be shown.
          * @param  {Number} [length=200] - The length (or height) or the tree's "trunk".
          * @param  {Number} [angle_span=90] - the angle between branches.
          * @param  {Array<Number>} [mode=[0,2,4,5,7,9,11]] - If provided, the tree will conform to that mode.
@@ -1782,7 +1782,7 @@ class EDO {
          * <div id="container" style="width:900px;height:600px; margin:0 auto;"></div>
          * <script>
          *  let edo = new EDO()
-         *  edo.show.interval_fractal_tree(container)
+         *  edo.show.interval_fractal_tree(container_id)
          * </script>
          * @see /demos/fractal_tree.html
          * @memberOf EDO#show*/
@@ -1878,7 +1878,87 @@ class EDO {
                 0,
                 mode)
             tree.draw_branch()
+        },
+
+
+        /**
+         * Plots the contour of a given melody.
+         *
+         * @param  {String} container_id - The ID of a DOM element in which the contour will be shown.
+         * @param  {Array<Number>} pitches - The melody.
+         * @param  {Boolean} [replace=false] - When false, any time the function is called a new contour will be appended to the object. When true, it will replace the contents of the container.
+         * @param  {Number,Array<Number,Number>} [size] - Size (in px) of the plot. When no values are passed, the plot will take the size of the container. If 1 value is passed, it will be used for both dimensions. Otherwise pass data as [width,height].
+         *
+         * @example
+         * <script src="edo.js"></script>
+         * <script src="raphael.min.js"></script>
+         * <div id="container" style="width:900px;height:600px; margin:0 auto;"></div>
+         * <script>
+         *  let edo = new EDO()
+         *  edo.show.contour(container_id,[1,3,2,5,4])
+         * </script>
+         * @see /demos/contour_plotter.html
+         * @memberOf EDO#show*/
+        contour : (container_id,pitches , replace=false, size) => {
+            let container = document.getElementById(container_id)
+            let width, height
+            if(!size) {
+                width = container.offsetWidth
+                height = container.offsetHeight
+                console.log(width,height)
+            } else {
+                if(Array.isArray(size)) {
+                    width = size[0]
+                    height = size[1]
+
+                } else {
+                    width = size
+                    height = size
+                }
+            }
+
+            let div = document.createElement('div')
+            div.style.width = width + "px";
+            div.style.height = height + "px";
+            div.style.display = "inline"
+            let div_id = div.setAttribute("id", "paper_" + Date.now());
+
+            if(replace) container.innerHTML = ""
+            container.appendChild(div)
+            // let width = container.offsetWidth
+            // let height = container.offsetWidth
+            const paper = new Raphael(div, width, height);
+            let background = paper.rect(0, 0, width, height).attr('fill', '000').attr('stroke','white')
+
+            const scale = (num, in_min, in_max, out_min, out_max) => {
+                return (num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+            }
+
+            let max_pitch = Math.max.apply(Math,pitches)
+            let min_pitch = Math.min.apply(Math,pitches)
+            let margin = 15
+            let scaled_pitches = pitches.map((pitch) => Math.floor(scale(pitch,min_pitch,max_pitch,height-margin,margin)))
+            let pos = margin
+            let pos_shift = Math.floor((width-(margin*2))/(pitches.length-1))
+            let path_str = "M"+margin+"," + scaled_pitches[0]
+            let circle_set = paper.set()
+            let circle_r = height/45
+            circle_set.push(paper.circle(margin,scaled_pitches[0],circle_r))
+            for (let i=1;i<scaled_pitches.length;i++) {
+                pos+=pos_shift
+                path_str+="L" + pos +"," + scaled_pitches[i]
+                circle_set.push(paper.circle(pos,scaled_pitches[i],circle_r))
+            }
+            let path = paper.path(path_str).attr('stroke','red').attr('stroke-width',2)
+            circle_set.attr('fill','white')
+            circle_set.toFront()
+
+
+
+
         }
+
+
     }
 
     mod (n, m) {
