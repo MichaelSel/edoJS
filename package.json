@@ -21,7 +21,8 @@
   },
   "dependencies": {
     "clean-jsdoc-theme": "^2.2.11",
-    "swagger-jsdoc": "^4.0.0"
+    "swagger-jsdoc": "^4.0.0",
+
   },
   "repository": {
     "type": "git",

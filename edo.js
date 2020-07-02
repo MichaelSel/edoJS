@@ -797,6 +797,19 @@ class EDO {
             return i_scale
         },
 
+        /** Returns the retrograde of a given set of pitches (their reversed order)
+         *
+         * @param  {Array<Number>} scale - a collection of pitches (not necessarily PCs)
+         * @return {Array<Number>} The reversed input
+         * @memberOf EDO#get
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * edo.get.retrograde([0,2,4,5,7,9,11])
+         * //returns [11,9,7,5,4,2,0]*/
+        retrograde: (pitches) => {
+            return pitches.reverse()
+        },
+
         /** <p>Returns a lattice from the pitches in the scale</p>
 
          * @param {Number} [hor=3] - the gap between numbers horizontally
@@ -2215,6 +2228,8 @@ class EDO {
         return ((n % m) + m) % m;
     }
 
+
+
 }
 
 /** <p>Class representing a set of pitch classes within an EDO system</p>
@@ -2222,8 +2237,8 @@ class EDO {
 class Scale {
     /**
      * <p>Creates a set of pitch classes within the context of the edo system.</p>
-     * <p>Unlike the [EDO Class]{@link EDO}, this class constains methods which are more directed at manipulating a set of pitch classes (regardless of their octave).
-     * At the center of this class stand 5 collections (see "Namespaces" below) of functions.</p>
+     * <p>Unlike the [EDO Class]{@link EDO}, this class mostly contains methods which are more directed at manipulating a set of pitch classes (regardless of their octave) or for methods which necessitate the context of a scale (like sequences).
+     * At the center of this class stand 6 collections (see "Namespaces" below) of functions.</p>
      * <ul>
      *  <li> [Scale.to]{@link Scale#to} is a set of functions used to change between equivalent representations of the set.</li>
      *  <li> [Scale.count]{@link Scale#count} is a set of functions used to count stuff.</li>
@@ -2717,6 +2732,28 @@ class Scale {
             transpositions.sort((a,b) =>a[1]-b[1])
             return transpositions
 
+        },
+
+        /** <p>Returns all the PCs of the EDO that the scale does not use.</p>
+         * @param {boolean} [from_0=false] - when true, the output will be normalized to 0.
+         * @returns {Array<Number>}
+         * @memberOf Scale#get
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * let scale = edo.scale([0,2,4,5,7,9,11])
+         * scale.get.complement()
+         * //returns [1, 3, 6, 8, 10]
+         *
+         * scale.get.complement(true)
+         * //returns [0, 2, 5, 7, 9]
+         */
+        complement: (from_0) => {
+            let PCs = Array.from(Array(this.edo).keys())
+            this.pitches.forEach((PC)=>{
+                (PCs.indexOf(PC)!=-1)? PCs.splice(PCs.indexOf(PC),1): true
+            })
+            if(from_0) PCs = this.parent.scale(PCs).pitches
+            return PCs
         },
 
         /** Returns the interval vector of the scale.
