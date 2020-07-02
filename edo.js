@@ -2229,7 +2229,8 @@ class Scale {
      *  <li> [Scale.count]{@link Scale#count} is a set of functions used to count stuff.</li>
      *  <li> [Scale.get]{@link Scale#get} is a set of functions used to manipulate and track, and generate stuff.</li>
      *  <li> [Scale.is]{@link Scale#is} is a set of functions used for boolean truth statements.</li>
-     *  <li> [Scale.export]{@link Scale#export} is a set of functions used to export files.</li></ul>
+     *  <li> [Scale.export]{@link Scale#export} is a set of functions used to export files.</li>
+     *  <li> [Scale.show]{@link Scale#show} is a set of functions used to visualize various things.</li></ul>
      *  <p>
      *      In addition to the namespaces, Scale also has 4 methods that can be chained together:
      * <ul>
