@@ -1,6 +1,6 @@
 # edoJS
 
-A JavaScript library for pitch set interactions in any EDO tuning system.
+A JavaScript library for pitch set manipulation in any EDO tuning system.
 
 ## Usage
 
