@@ -1,8 +1,67 @@
-/**
- * @author Michael Seltenreich <seltenmusic@gmail.com>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>edo.js</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <script src="scripts/search.js"></script>
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.4.5/fuse.min.js"></script> -->
+    <script src="scripts/fuse.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+    <link type="text/css" rel="stylesheet" href="styles/clean-jsdoc-theme.css">
+    
+    
+    
+<svg aria-hidden="true" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="display:none">
+    <defs>
+        <symbol id="copy-icon" viewbox="0 0 488.3 488.3">
+            <g>
+                <path d="M314.25,85.4h-227c-21.3,0-38.6,17.3-38.6,38.6v325.7c0,21.3,17.3,38.6,38.6,38.6h227c21.3,0,38.6-17.3,38.6-38.6V124    C352.75,102.7,335.45,85.4,314.25,85.4z M325.75,449.6c0,6.4-5.2,11.6-11.6,11.6h-227c-6.4,0-11.6-5.2-11.6-11.6V124    c0-6.4,5.2-11.6,11.6-11.6h227c6.4,0,11.6,5.2,11.6,11.6V449.6z"/>
+                <path d="M401.05,0h-227c-21.3,0-38.6,17.3-38.6,38.6c0,7.5,6,13.5,13.5,13.5s13.5-6,13.5-13.5c0-6.4,5.2-11.6,11.6-11.6h227    c6.4,0,11.6,5.2,11.6,11.6v325.7c0,6.4-5.2,11.6-11.6,11.6c-7.5,0-13.5,6-13.5,13.5s6,13.5,13.5,13.5c21.3,0,38.6-17.3,38.6-38.6    V38.6C439.65,17.3,422.35,0,401.05,0z"/>
+            </g>
+        </symbol>
+    </defs>
+</svg>
+
+</head>
+<body>
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html"><div class="text">Home</div></a></h2><div class="search-box"><input type="text" placeholder="Search..." id="search-box" /><div class="search-item-container" id="search-item-container"><ul class="search-item-ul" id="search-item-ul"></ul></div></div><div class="sidebar-list-div"><h3>Classes</h3><ul><li><a href="EDO.html">EDO</a><ul class='methods'><li data-type='method'><a href="EDO.html#scale">scale</a></li></ul></li><li><a href="Scale.html">Scale</a><ul class='methods'><li data-type='method'><a href="Scale.html#invert">invert</a></li><li data-type='method'><a href="Scale.html#mode">mode</a></li><li data-type='method'><a href="Scale.html#normal">normal</a></li><li data-type='method'><a href="Scale.html#prime">prime</a></li></ul></li></ul><h3>Namespaces</h3><ul><li><a href="EDO_convert.html">EDO#convert</a><ul class='methods'><li data-type='method'><a href="EDO_convert.html#.cents_to_ratio">cents_to_ratio</a></li><li data-type='method'><a href="EDO_convert.html#.interval_to_cents">interval_to_cents</a></li><li data-type='method'><a href="EDO_convert.html#.interval_to_ratio">interval_to_ratio</a></li><li data-type='method'><a href="EDO_convert.html#.intervals_to_pitches">intervals_to_pitches</a></li><li data-type='method'><a href="EDO_convert.html#.intervals_to_scale">intervals_to_scale</a></li><li data-type='method'><a href="EDO_convert.html#.midi_to_intervals">midi_to_intervals</a></li><li data-type='method'><a href="EDO_convert.html#.midi_to_name">midi_to_name</a></li><li data-type='method'><a href="EDO_convert.html#.name_to_scale">name_to_scale</a></li><li data-type='method'><a href="EDO_convert.html#.pc_to_name">pc_to_name</a></li><li data-type='method'><a href="EDO_convert.html#.ratio_to_cents">ratio_to_cents</a></li><li data-type='method'><a href="EDO_convert.html#.ratio_to_interval">ratio_to_interval</a></li><li data-type='method'><a href="EDO_convert.html#.to_steps">to_steps</a></li></ul></li><li><a href="EDO_count.html">EDO#count</a><ul class='methods'><li data-type='method'><a href="EDO_count.html#.common_tones">common_tones</a></li><li data-type='method'><a href="EDO_count.html#.pitches">pitches</a></li></ul></li><li><a href="EDO_get.html">EDO#get</a><ul class='methods'><li data-type='method'><a href="EDO_get.html#.contour">contour</a></li><li data-type='method'><a href="EDO_get.html#.interval_shift">interval_shift</a></li><li data-type='method'><a href="EDO_get.html#.interval_stack">interval_stack</a></li><li data-type='method'><a href="EDO_get.html#.inversion">inversion</a></li><li data-type='method'><a href="EDO_get.html#.lattice">lattice</a></li><li data-type='method'><a href="EDO_get.html#.modes">modes</a></li><li data-type='method'><a href="EDO_get.html#.motives">motives</a></li><li data-type='method'><a href="EDO_get.html#.necklace">necklace</a></li><li data-type='method'><a href="EDO_get.html#.normal_order">normal_order</a></li><li data-type='method'><a href="EDO_get.html#.partitioned_subsets">partitioned_subsets</a></li><li data-type='method'><a href="EDO_get.html#.path_n_steps">path_n_steps</a></li><li data-type='method'><a href="EDO_get.html#.path_on_tree">path_on_tree</a></li><li data-type='method'><a href="EDO_get.html#.permutations">permutations</a></li><li data-type='method'><a href="EDO_get.html#.pitch_distribution">pitch_distribution</a></li><li data-type='method'><a href="EDO_get.html#.random_melody">random_melody</a></li><li data-type='method'><a href="EDO_get.html#.random_melody_from_contour">random_melody_from_contour</a></li><li data-type='method'><a href="EDO_get.html#.ratio_approximation">ratio_approximation</a></li><li data-type='method'><a href="EDO_get.html#.scales">scales</a></li><li data-type='method'><a href="EDO_get.html#.shortest_path">shortest_path</a></li><li data-type='method'><a href="EDO_get.html#.simple_ratios">simple_ratios</a></li><li data-type='method'><a href="EDO_get.html#.subset_indices">subset_indices</a></li><li data-type='method'><a href="EDO_get.html#.subsets">subsets</a></li><li data-type='method'><a href="EDO_get.html#.transposition">transposition</a></li><li data-type='method'><a href="EDO_get.html#.unique_elements">unique_elements</a></li></ul></li><li><a href="EDO_is.html">EDO#is</a><ul class='methods'><li data-type='method'><a href="EDO_is.html#.element_of">element_of</a></li><li data-type='method'><a href="EDO_is.html#.same">same</a></li><li data-type='method'><a href="EDO_is.html#.subset">subset</a></li></ul></li><li><a href="EDO_show.html">EDO#show</a><ul class='methods'><li data-type='method'><a href="EDO_show.html#.contour">contour</a></li><li data-type='method'><a href="EDO_show.html#.interval_fractal_tree">interval_fractal_tree</a></li><li data-type='method'><a href="EDO_show.html#.necklace">necklace</a></li></ul></li><li><a href="Scale_count.html">Scale#count</a><ul class='methods'><li data-type='method'><a href="Scale_count.html#.chord_quality">chord_quality</a></li><li data-type='method'><a href="Scale_count.html#.consecutive_steps">consecutive_steps</a></li><li data-type='method'><a href="Scale_count.html#.imperfections">imperfections</a></li><li data-type='method'><a href="Scale_count.html#.interval">interval</a></li><li data-type='method'><a href="Scale_count.html#.M3s">M3s</a></li><li data-type='method'><a href="Scale_count.html#.m3s">m3s</a></li><li data-type='method'><a href="Scale_count.html#.major_minor_triads">major_minor_triads</a></li><li data-type='method'><a href="Scale_count.html#.modes">modes</a></li><li data-type='method'><a href="Scale_count.html#.P5s">P5s</a></li><li data-type='method'><a href="Scale_count.html#.pitches">pitches</a></li><li data-type='method'><a href="Scale_count.html#.ratio">ratio</a></li><li data-type='method'><a href="Scale_count.html#.rotational_symmetries">rotational_symmetries</a></li><li data-type='method'><a href="Scale_count.html#.simple_ratios">simple_ratios</a></li><li data-type='method'><a href="Scale_count.html#.tetrachords">tetrachords</a></li><li data-type='method'><a href="Scale_count.html#.thirds">thirds</a></li><li data-type='method'><a href="Scale_count.html#.transpositions">transpositions</a></li><li data-type='method'><a href="Scale_count.html#.trichords">trichords</a></li></ul></li><li><a href="Scale_export.html">Scale#export</a><ul class='methods'><li data-type='method'><a href="Scale_export.html#.scala">scala</a></li></ul></li><li><a href="Scale_get.html">Scale#get</a><ul class='methods'><li data-type='method'><a href="Scale_get.html#.common_tone_transpositions">common_tone_transpositions</a></li><li data-type='method'><a href="Scale_get.html#.interval_vector">interval_vector</a></li><li data-type='method'><a href="Scale_get.html#.inversion">inversion</a></li><li data-type='method'><a href="Scale_get.html#.least_step_multiplier">least_step_multiplier</a></li><li data-type='method'><a href="Scale_get.html#.lerdahl_attraction">lerdahl_attraction</a></li><li data-type='method'><a href="Scale_get.html#.lerdahl_attraction_vector">lerdahl_attraction_vector</a></li><li data-type='method'><a href="Scale_get.html#.levenshtein">levenshtein</a></li><li data-type='method'><a href="Scale_get.html#.modes">modes</a></li><li data-type='method'><a href="Scale_get.html#.motives_diatonic">motives_diatonic</a></li><li data-type='method'><a href="Scale_get.html#.n_chords">n_chords</a></li><li data-type='method'><a href="Scale_get.html#.name">name</a></li><li data-type='method'><a href="Scale_get.html#.normal_order">normal_order</a></li><li data-type='method'><a href="Scale_get.html#.permutations">permutations</a></li><li data-type='method'><a href="Scale_get.html#.pitches">pitches</a></li><li data-type='method'><a href="Scale_get.html#.position_of_quality">position_of_quality</a></li><li data-type='method'><a href="Scale_get.html#.prime_form">prime_form</a></li><li data-type='method'><a href="Scale_get.html#.rotations">rotations</a></li><li data-type='method'><a href="Scale_get.html#.rothenberg_propriety">rothenberg_propriety</a></li><li data-type='method'><a href="Scale_get.html#.sequence_transposition">sequence_transposition</a></li><li data-type='method'><a href="Scale_get.html#.shortest_path">shortest_path</a></li><li data-type='method'><a href="Scale_get.html#.stacks">stacks</a></li><li data-type='method'><a href="Scale_get.html#.step_sizes">step_sizes</a></li><li data-type='method'><a href="Scale_get.html#.supersets">supersets</a></li><li data-type='method'><a href="Scale_get.html#.tetrachords">tetrachords</a></li><li data-type='method'><a href="Scale_get.html#.transposition">transposition</a></li><li data-type='method'><a href="Scale_get.html#.trichords">trichords</a></li></ul></li><li><a href="Scale_is.html">Scale#is</a><ul class='methods'><li data-type='method'><a href="Scale_is.html#.in_lower_edos">in_lower_edos</a></li><li data-type='method'><a href="Scale_is.html#.invertible">invertible</a></li><li data-type='method'><a href="Scale_is.html#.mode_of">mode_of</a></li><li data-type='method'><a href="Scale_is.html#.normal_order">normal_order</a></li><li data-type='method'><a href="Scale_is.html#.one_of">one_of</a></li><li data-type='method'><a href="Scale_is.html#.prime_form">prime_form</a></li><li data-type='method'><a href="Scale_is.html#.subset">subset</a></li></ul></li><li><a href="Scale_show.html">Scale#show</a><ul class='methods'><li data-type='method'><a href="Scale_show.html#.interval_fractal_tree">interval_fractal_tree</a></li><li data-type='method'><a href="Scale_show.html#.necklace">necklace</a></li></ul></li><li><a href="Scale_to.html">Scale#to</a><ul class='methods'><li data-type='method'><a href="Scale_to.html#.cents">cents</a></li><li data-type='method'><a href="Scale_to.html#.steps">steps</a></li></ul></li></ul><h3><a href="global.html">Global</a></h3><ul><li><a href="global.html#environment">environment</a></li></ul></div>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">edo.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @author Michael Seltenreich &lt;seltenmusic@gmail.com>
  * @version 1.0.0
  * @license
- * <pre>Copyright 2020 Michael Seltenreich
+ * &lt;pre>Copyright 2020 Michael Seltenreich
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +73,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License.</pre>*/
+ * limitations under the License.&lt;/pre>*/
 
 
 const environment = (typeof window === 'undefined')? "server" : "browser"
@@ -73,8 +132,8 @@ class FixedContentNecklace {
 
         */
         // Force negative numbers to zero
-        for (let i=0;i <number_list.length;i++) {
-            if(number_list[i]<0) number_list[i]=0
+        for (let i=0;i &lt;number_list.length;i++) {
+            if(number_list[i]&lt;0) number_list[i]=0
         }
         this.n_init = number_list
         this.N = number_list.reduce((t,n)=> n+t)
@@ -112,8 +171,8 @@ class FixedContentNecklace {
 
         */
         let found_first_nonzero = false
-        for (let letter=0;letter<this.k;letter++) {
-            if  (!found_first_nonzero &&  this.occurrence[letter] > 0) {
+        for (let letter=0;letter&lt;this.k;letter++) {
+            if  (!found_first_nonzero &amp;&amp;  this.occurrence[letter] > 0) {
                 found_first_nonzero = true
                 this.occurrence[letter] -= 1
                 this.word[0] = letter
@@ -164,7 +223,7 @@ class FixedContentNecklace {
             }
         }
         else {
-            for(let letter = this.word[t-p-1];letter<this.k;letter++) {
+            for(let letter = this.word[t-p-1];letter&lt;this.k;letter++) {
                 if(this.occurrence[letter]>0) {
                     this.word[t-1]=letter
                     this.occurrence[letter] -=1
@@ -233,11 +292,11 @@ class FixedContentNecklace {
         this.alphabet.splice(index,0,letter)
     }
     __get_letter (index) {
-        return (index<0)?-1: this.alphabet[index]
+        return (index&lt;0)?-1: this.alphabet[index]
     }
 }
 const combinations = (set, k) => {
-    if (k > set.length || k <= 0) {
+    if (k > set.length || k &lt;= 0) {
         return []
     }
 
@@ -251,9 +310,9 @@ const combinations = (set, k) => {
 
     let combs = [], tail_combs = []
 
-    for (let i = 0; i <= set.length - k + 1; i++) {
+    for (let i = 0; i &lt;= set.length - k + 1; i++) {
         tail_combs = combinations(set.slice(i + 1), k - 1)
-        for (let j = 0; j < tail_combs.length; j++) {
+        for (let j = 0; j &lt; tail_combs.length; j++) {
             combs.push([set[i], ...tail_combs[j]])
         }
     }
@@ -266,15 +325,15 @@ const combinations = (set, k) => {
 class EDO {
 
     /**
-     * <p>Creates a tuning context and system that exposes powerful functions for manipulating, analyzing, and generating music.</p>
-     * <p>This is the main class of the project. At its center stand 4 collections (see "Namespaces" below) of functions.</p>
-     * <ul>
-     *  <li> [EDO.convert]{@link EDO#convert} is a set of functions used to change between equivalent representations within the tuning context.</li>
-     *  <li> [EDO.count]{@link EDO#count} is a set of functions used to count stuff.</li>
-     *  <li> [EDO.get]{@link EDO#get} is a set of functions used to manipulate and generate stuff.</li>
-     *  <li> [EDO.is]{@link EDO#is} is a set of functions used for boolean truth statements.</li>
-     *  <li> [EDO.show]{@link EDO#show} is a set of functions used for visualization.</li>
-     *  </ul>
+     * &lt;p>Creates a tuning context and system that exposes powerful functions for manipulating, analyzing, and generating music.&lt;/p>
+     * &lt;p>This is the main class of the project. At its center stand 4 collections (see "Namespaces" below) of functions.&lt;/p>
+     * &lt;ul>
+     *  &lt;li> [EDO.convert]{@link EDO#convert} is a set of functions used to change between equivalent representations within the tuning context.&lt;/li>
+     *  &lt;li> [EDO.count]{@link EDO#count} is a set of functions used to count stuff.&lt;/li>
+     *  &lt;li> [EDO.get]{@link EDO#get} is a set of functions used to manipulate and generate stuff.&lt;/li>
+     *  &lt;li> [EDO.is]{@link EDO#is} is a set of functions used for boolean truth statements.&lt;/li>
+     *  &lt;li> [EDO.show]{@link EDO#show} is a set of functions used for visualization.&lt;/li>
+     *  &lt;/ul>
      * @param {number} edo - The number of equal divisions of the octave.
      * @example
      * //Basic usage:
@@ -306,7 +365,7 @@ class EDO {
 
     /**
      * Returns a new Scale Object with given pitches
-     * @param  {Array<Number>} pitches - a collection of pitch classes
+     * @param  {Array&lt;Number>} pitches - a collection of pitch classes
      * @return {Scale}
      */
     scale (pitches) {
@@ -359,10 +418,10 @@ class EDO {
 
         /** Given a list of intervals (or list of lists), returns pitches made with the intervals
          * starting from starting_pitch
-         * @param  {Array<Number>|Array<Array<Number>>} intervals - a list of intervals
+         * @param  {Array&lt;Number>|Array&lt;Array&lt;Number>>} intervals - a list of intervals
          * @param  {Number} [starting_pitch=0]
          * @param  {Boolean} [modulo] if modulo is provided, the pitches will conform to it
-         * @returns {Array<Number>|Array<Array<Number>>} The input as pitches
+         * @returns {Array&lt;Number>|Array&lt;Array&lt;Number>>} The input as pitches
          * @memberOf EDO#convert
          * @example
          * let edo = new EDO(12) // define a tuning system with 12 divisions of the octave
@@ -389,7 +448,7 @@ class EDO {
 
         /** Gets a list of intervals classes. Returns a scale as list of pitch classes.
          *
-         * @param  {Array<Number>} intervals - A list of intervals
+         * @param  {Array&lt;Number>} intervals - A list of intervals
          * @example
          * let edo = new EDO(12) // define a tuning system with 12 divisions of the octave
          * edo.convert.intervals_to_scale([2, 2, 1, 2, 2, 2, 1])
@@ -406,8 +465,8 @@ class EDO {
         },
 
         /** Given a list of midi notes, returns a list of intervals
-         * @param  {Array<Number>} midi - a list of midi pitches
-         * @returns {Array<Number>} The input as intervals
+         * @param  {Array&lt;Number>} midi - a list of midi pitches
+         * @returns {Array&lt;Number>} The input as intervals
          * @memberOf EDO#convert
          * @example
          * let edo = new EDO(12) // define a tuning system with 12 divisions of the octave
@@ -415,20 +474,20 @@ class EDO {
          * //returns [ 4, -7, 4 ]*/
         midi_to_intervals: (midi) => {
             let intervals = []
-            for(let i=0;i<midi.length-1;i++) {
+            for(let i=0;i&lt;midi.length-1;i++) {
                 intervals.push(midi[i+1]-midi[i])
             }
             return intervals
         },
 
         /** Returns the name of the note (including octave) from a midi value
-         * @param  {Array<Number>|Number} note_number - a midi note number or an array of midi note numbers
+         * @param  {Array&lt;Number>|Number} note_number - a midi note number or an array of midi note numbers
          * @param  {Number} offset - an amount by which to shift note_number
          * @example
          * let edo = new EDO(12) // define a tuning system with 12 divisions of the octave
          * edo.convert.midi_to_name([60,62])
          * //returns ["C4","D4"]
-         * @returns {Array<String>|String} The input as note name(s)
+         * @returns {Array&lt;String>|String} The input as note name(s)
          * @memberOf EDO#convert*/
         midi_to_name: (note_number,offset=0) => {
             /*Given a midi note code as an integer, returns its note name and octave disposition (e.g C4 for 60).*/
@@ -523,7 +582,7 @@ class EDO {
          *
          * @param  {Number} ratio - A harmonic ratio
          * @param  {Number} [tolerance=10] - a tolerance (allowed error) in cents
-         * @returns {Array<Number>} Interval classes that fit that ratio
+         * @returns {Array&lt;Number>} Interval classes that fit that ratio
          * @memberOf EDO#convert
          * @example
          * let edo = new EDO(12) // define a tuning system
@@ -537,9 +596,9 @@ class EDO {
         ratio_to_interval:(ratio,tolerance=10) => {
             let intervals = []
             let cents = this.convert.ratio_to_cents(ratio)
-            for (let i = 0; i < this.edo; i++) {
+            for (let i = 0; i &lt; this.edo; i++) {
                 let interval = this.convert.interval_to_cents(i)
-                if (Math.abs(interval - cents) <= tolerance) intervals.push(i)
+                if (Math.abs(interval - cents) &lt;= tolerance) intervals.push(i)
                 else if (intervals.length > 0) break
             }
             return intervals
@@ -547,9 +606,9 @@ class EDO {
 
         /** Gets a melody as pitches and returns the melody as intervals
          *
-         * @param  {Array<number>} lst - a collection of pitches
+         * @param  {Array&lt;number>} lst - a collection of pitches
          * @param  {Boolean} [cache=false] - when true the result is cached for faster future retrieval
-         * @returns {Array<Number>} an array of intervals
+         * @returns {Array&lt;Number>} an array of intervals
          * @memberOf EDO#convert
          * @example
          * let edo = new EDO(12) // define a tuning system
@@ -561,7 +620,7 @@ class EDO {
 
             let s = [...lst]
             let intervals = []
-            for(let i=0;i<s.length-1;i++) {
+            for(let i=0;i&lt;s.length-1;i++) {
                 intervals.push(s[i + 1] - s[i])
             }
             if(cache) this.catalog[String(lst)]['steps'] = intervals
@@ -575,8 +634,8 @@ class EDO {
     count = {
         /**
          * Returns the number of commons tones between two collections of pitches
-         * @param  {Array<Number>} list1 - a collection of pitches (not necessarily pitch classes)
-         * @param  {Array<Number>} list2 - a collection of pitches (not necessarily pitch classes)
+         * @param  {Array&lt;Number>} list1 - a collection of pitches (not necessarily pitch classes)
+         * @param  {Array&lt;Number>} list2 - a collection of pitches (not necessarily pitch classes)
          * @return {Number} The number of common tones between the two lists
          * @memberOf EDO#count
          * @example
@@ -594,12 +653,12 @@ class EDO {
 
         /**
          * Returns the pitch and the number of its occurrences as a tuple for every unique value in pitches
-         * @param  {Array<Number>} pitches - a collection of pitches (not necessarily pitch classes)
+         * @param  {Array&lt;Number>} pitches - a collection of pitches (not necessarily pitch classes)
          * @example
          * let edo = new EDO(12) // define a tuning system
          * edo.count.pitches([0, 3, 3, 2, 4, 3, 4])
          * // returns [[3,3],[4,2], [2,1], [0,1]] (3 appears 3 times, 4 appears 2 times, etc.)
-         * @return {Array<Number>} A pitch, and how many times it appears
+         * @return {Array&lt;Number>} A pitch, and how many times it appears
          * @memberOf EDO#count
          */
         pitches: (pitches) => {
@@ -622,19 +681,19 @@ class EDO {
      * @namespace EDO#get*/
     get = {
 
-        /** <p>Returns a vector describing the contour of the given pitches.</p>
+        /** &lt;p>Returns a vector describing the contour of the given pitches.&lt;/p>
          *
-         * <p>If local is set to true, every cell in the vector will be
+         * &lt;p>If local is set to true, every cell in the vector will be
          * either 1 if note n is higher than n-1, 0 if note n is the same as n-1, and -1 if note n is lower than n-1
-         * For instance <code>[0,0,4,7,4,7,4,0]</code> will in local mode will return <code>[0,1,1,-1,1,-1,-1]</code></p>
+         * For instance &lt;code>[0,0,4,7,4,7,4,0]&lt;/code> will in local mode will return &lt;code>[0,1,1,-1,1,-1,-1]&lt;/code>&lt;/p>
          *
-         * <p>If local is set to false (default), the contour of the line is expressed such that the actual pc class of the
+         * &lt;p>If local is set to false (default), the contour of the line is expressed such that the actual pc class of the
          * note is removed but its relative position in regards to the entire line is kept.
-         * <code>[0,4,7,12,16,7,12,16]</code> (Bach prelude in C) has 5 distinct note heights, so it will return
-         * <code>[0,1,2,3, 4, 2,3, 4]</code> indicating the relative height of each note in the entire phrase</p>
-         * @param  {Array<Number>} pitches - a given array of pitches
+         * &lt;code>[0,4,7,12,16,7,12,16]&lt;/code> (Bach prelude in C) has 5 distinct note heights, so it will return
+         * &lt;code>[0,1,2,3, 4, 2,3, 4]&lt;/code> indicating the relative height of each note in the entire phrase&lt;/p>
+         * @param  {Array&lt;Number>} pitches - a given array of pitches
          * @param  {Boolean} [local=false] - if set to false, function will only return subsets that have consecutive members
-         * @returns {Array<Number>}
+         * @returns {Array&lt;Number>}
          * @memberOf EDO#get
          * @example
          * let edo = new EDO(12) // define a tuning system
@@ -650,7 +709,7 @@ class EDO {
 
             if(local) {
                 let vector = []
-                for (let i = 1; i < pitches.length; i++) {
+                for (let i = 1; i &lt; pitches.length; i++) {
                     if(pitches[i]>pitches[i-1]) vector.push(1)
                     else if(pitches[i]==pitches[i-1]) vector.push(0)
                     else vector.push(-1)
@@ -660,7 +719,7 @@ class EDO {
                 let catalog = {}
                 let unique_pitches = this.get.unique_elements(pitches)
                 unique_pitches = unique_pitches.sort((a,b)=>a-b)
-                for (let i = 0; i < unique_pitches.length; i++) {
+                for (let i = 0; i &lt; unique_pitches.length; i++) {
                     catalog[unique_pitches[i]]=i
                 }
 
@@ -671,7 +730,7 @@ class EDO {
         },
 
         /** Gets a melody represented as intervals, and returns the interval traversed by the end.
-         * @param  {Array<Number>} intervals - Melody represented in intervals
+         * @param  {Array&lt;Number>} intervals - Melody represented in intervals
          * @returns {Number} the interval traversed by the melody
          * @memberOf EDO#get
          * @example
@@ -684,22 +743,22 @@ class EDO {
             return intervals.reduce((t,e)=>t+e)
         },
 
-        /** <p>Makes every stacking combination of intervals from 'intervals' up to 'height' stack_size.</p>
+        /** &lt;p>Makes every stacking combination of intervals from 'intervals' up to 'height' stack_size.&lt;/p>
          *
-         * <p>For instance, given the <code>intervals = [2,3]</code> and <code>stack_size = 3</code>, the function will return a list of lists
-         * such that every list will be of <code>length = 3</code> (<code>stack_size</code>) containing an exhaustive list of every
+         * &lt;p>For instance, given the &lt;code>intervals = [2,3]&lt;/code> and &lt;code>stack_size = 3&lt;/code>, the function will return a list of lists
+         * such that every list will be of &lt;code>length = 3&lt;/code> (&lt;code>stack_size&lt;/code>) containing an exhaustive list of every
          * combination using the intervals 2 and 3 (in this case).
-         * As such, it will return  <code>[[2, 2, 2], [2, 2, 3], [2, 3, 2], [3, 2, 2], [2, 3, 3], [3, 2, 3],
-         * [3, 3, 2], [3, 3, 3]]</code> which represents every combination or 2s and 3s in any order of length 3.</p>
+         * As such, it will return  &lt;code>[[2, 2, 2], [2, 2, 3], [2, 3, 2], [3, 2, 2], [2, 3, 3], [3, 2, 3],
+         * [3, 3, 2], [3, 3, 3]]&lt;/code> which represents every combination or 2s and 3s in any order of length 3.&lt;/p>
          *
-         * <p>if <code>as_pitches = true</code>, instead of returning the list of intervals classes of length 3, it
+         * &lt;p>if &lt;code>as_pitches = true&lt;/code>, instead of returning the list of intervals classes of length 3, it
          * will return a list of pitches starting from 0 (which can go above 11). If set to true the function
-         * will return  <code>[[0, 2, 4, 6], [0, 2, 4, 7], [0, 2, 5, 7], [0, 3, 5, 7], [0, 2, 5, 8], [0, 3, 5, 8],
-         * [0, 3, 6, 8], [0, 3, 6, 9]]</code></p>
-         * @param  {Array<Number>} intervals - the intervals be used
+         * will return  &lt;code>[[0, 2, 4, 6], [0, 2, 4, 7], [0, 2, 5, 7], [0, 3, 5, 7], [0, 2, 5, 8], [0, 3, 5, 8],
+         * [0, 3, 6, 8], [0, 3, 6, 9]]&lt;/code>&lt;/p>
+         * @param  {Array&lt;Number>} intervals - the intervals be used
          * @param  {Number} [stack_size=3] - the size of the stack of pitches.
          * @param  {Boolean} [as_pitches=false] - Indicates whether the returned result represents interval classes or pitches
-         * @return {Array<Number>} a list of interval classes or pitches
+         * @return {Array&lt;Number>} a list of interval classes or pitches
          * @memberOf EDO#get
          * @example
          * let edo = new EDO(12) // create a tuning context
@@ -747,9 +806,9 @@ class EDO {
             let base = intervals.length
             let mapping = {}
             let result = []
-            for(let i=0;i<intervals.length;i++) mapping[i]=intervals[i]
+            for(let i=0;i&lt;intervals.length;i++) mapping[i]=intervals[i]
             let max = base ** stack_size
-            for(let i=0;i<max;i++) {
+            for(let i=0;i&lt;max;i++) {
                 let res = decToBase(i,base)
                 let fill_in = stack_size - res.length
                 fill_in = Array(fill_in).fill(0)
@@ -775,9 +834,9 @@ class EDO {
 
         /** Returns the inversion of a given set of pitches
          *
-         * @param  {Array<Number>} scale - a collection of pitches (not necessarily PCs)
+         * @param  {Array&lt;Number>} scale - a collection of pitches (not necessarily PCs)
          * @param  {Boolean} cache - if true, the result will be cached for faster retrival
-         * @return {Array<Number>} The inverted input
+         * @return {Array&lt;Number>} The inverted input
          * @memberOf EDO#get
          * @example
          * let edo = new EDO(12) // define a tuning system
@@ -797,7 +856,7 @@ class EDO {
             return i_scale
         },
 
-        /** <p>Returns a lattice from the pitches in the scale</p>
+        /** &lt;p>Returns a lattice from the pitches in the scale&lt;/p>
 
          * @param {Number} [hor=3] - the gap between numbers horizontally
          * @param {Number} [ver=4] - the gap between numbers vertically
@@ -824,7 +883,7 @@ class EDO {
             let lattice = ""
             for (let i = this.edo; i >= -this.edo; i-=ver) {
                 let line = ""
-                for (let j = 0; j < this.edo ; j++) {
+                for (let j = 0; j &lt; this.edo ; j++) {
                     let num =this.mod(i+(j*hor),this.edo)
                     let note
                     if(as_notes) note = this.convert.pc_to_name(num)
@@ -837,9 +896,9 @@ class EDO {
         },
 
         /** Returns the normal order of a given set of pitches
-         * @param  {Array<Number>} scale - a collection of PCs
+         * @param  {Array&lt;Number>} scale - a collection of PCs
          * @param  {Boolean} cache - if true, the result will be cached for faster retrieval
-         * @return {Array<Array<Number>>}
+         * @return {Array&lt;Array&lt;Number>>}
          * @memberOf EDO#get
          * @example
          * let edo = new EDO(12) // create a tuning context
@@ -868,7 +927,7 @@ class EDO {
 
             let modes = []
 
-            for(let i=0; i<length;i++) {
+            for(let i=0; i&lt;length;i++) {
                 let shift = this.edo - doubled[i]
                 let mode = doubled.slice(i,i+length)
                 mode = mode.map((el)=>(el+shift)%this.edo)
@@ -881,13 +940,13 @@ class EDO {
         },
 
         /**
-         * <p>Extracts every possible "motive" from a given melody.</p>
-         * <p>A motive can be intervalic (default) such that it looks at the intervals rather than the pitch classes.
-         * The function also keeps track of the number of times each motive appeared.</p>
-         * @param  {Array<Number>} melody - a collection of pitches to find (in order)
+         * &lt;p>Extracts every possible "motive" from a given melody.&lt;/p>
+         * &lt;p>A motive can be intervalic (default) such that it looks at the intervals rather than the pitch classes.
+         * The function also keeps track of the number of times each motive appeared.&lt;/p>
+         * @param  {Array&lt;Number>} melody - a collection of pitches to find (in order)
          * @param  {Boolean} [intervalic=true] - looks at the intervals rather than the pitch classes.
          * @param  {Boolean} [allow_skips=true] - if false, the search will only be done on consecutive items
-         * @return {Array<motives>}
+         * @return {Array&lt;motives>}
          * @memberOf EDO#get
          * @function
          * @example
@@ -914,7 +973,7 @@ class EDO {
 
                 motives = unique_subsets.map((subset)=>{
                     let count = 0
-                    for (let i = 0; i < all_subsets.length; i++) {
+                    for (let i = 0; i &lt; all_subsets.length; i++) {
                         if(this.is.same(subset,all_subsets[i])) count++
                     }
                     return {motive:subset,incidence:count}
@@ -929,8 +988,8 @@ class EDO {
         },
 
         /** Returns all necklaces from a given set of steps
-         * @param  {Array<Number>} lst - a set of intervals
-         * @return {Array<Array<Number>>} Necklaces
+         * @param  {Array&lt;Number>} lst - a set of intervals
+         * @return {Array&lt;Array&lt;Number>>} Necklaces
          * @memberOf EDO#get
          * @example
          * let edo = new EDO(12)
@@ -967,9 +1026,9 @@ class EDO {
         },
 
         /** Returns the normal order of a given set of pitches
-         * @param  {Array<Number>} lst - a collection of PCs
+         * @param  {Array&lt;Number>} lst - a collection of PCs
          * @param  {Boolean} cache - if true, the result will be cached for faster retrival
-         * @return {Array<Number>} The normal order of the input
+         * @return {Array&lt;Number>} The normal order of the input
          * @memberOf EDO#get
          * @example
          * let edo = new EDO(12) //Create a tuning context
@@ -996,7 +1055,7 @@ class EDO {
                 let smallest = edo
                 let filtered_modes = []
                 modes.forEach(mode => {
-                    if(mode[mode.length-1]<smallest) smallest = mode[mode.length-1]
+                    if(mode[mode.length-1]&lt;smallest) smallest = mode[mode.length-1]
                 })
                 modes.forEach(mode => {
                     if(mode[mode.length-1]==smallest) filtered_modes.push(mode)
@@ -1022,14 +1081,14 @@ class EDO {
         },
 
         /**
-         * <p>Gets an array with element-wise possibilities, and returns every subset given these possibilities</p>
-         * <p>For instance, given <code>[4,[7,8],[9,10,11]]</code> the function will return every set starting with 4, with EITHER 7 or 8 in the 2nd position, and EITHER 9, 10, or 11 in the 3rd. </p>
-         * @param  {Array<Number>} arr - element-wise possibilities
+         * &lt;p>Gets an array with element-wise possibilities, and returns every subset given these possibilities&lt;/p>
+         * &lt;p>For instance, given &lt;code>[4,[7,8],[9,10,11]]&lt;/code> the function will return every set starting with 4, with EITHER 7 or 8 in the 2nd position, and EITHER 9, 10, or 11 in the 3rd. &lt;/p>
+         * @param  {Array&lt;Number>} arr - element-wise possibilities
          * @example
          * edo.get.partitioned_subsets([4,[7,8],[10,11]])
          * //returns
          * [ [ 4, 7, 10 ], [ 4, 7, 11 ], [ 4, 8, 10 ], [ 4, 8, 11 ] ]
-         * @return {Array<Array<Number>>}
+         * @return {Array&lt;Array&lt;Number>>}
          * @memberOf EDO#get
          */
         partitioned_subsets: (arr) => {
@@ -1039,10 +1098,10 @@ class EDO {
             let findings = []
             const recur = function (sub) {
 
-                for (let i = 0; i < sub.length; i++) {
+                for (let i = 0; i &lt; sub.length; i++) {
                     if(sub[i].length>1) {
                         sub[i].forEach((el)=> {
-                            if(i<sub.length-1) {
+                            if(i&lt;sub.length-1) {
                                 let thing = [...sub.slice(0,i),[el],...sub.slice(i+1)]
                                 recur(thing)
                             }
@@ -1071,34 +1130,34 @@ class EDO {
          * // returns [3,3,-3]
          * get.path_n_steps(3,[[3],[-3]],3)
          * @param  {Number} destination - the destination note. This is an int that represents some interval away from 0.
-         * @param  {Array<Array<Number>>} motives - a list of motives to be used
+         * @param  {Array&lt;Array&lt;Number>>} motives - a list of motives to be used
          * @param  {Number} n_steps - The exact number of pitches needed
-         * @return {Array<Array<Number>>} An array of all the ways possible.
+         * @return {Array&lt;Array&lt;Number>>} An array of all the ways possible.
          * @memberOf EDO#get*/
         path_n_steps: (destination,motives=[],n_steps=8) => {
             const up_motives = motives.filter((m)=>this.get.interval_shift(m)>0)
-            const down_motives = motives.filter((m)=>this.get.interval_shift(m)<0)
+            const down_motives = motives.filter((m)=>this.get.interval_shift(m)&lt;0)
             const static_motives = motives.filter((m)=>this.get.interval_shift(m)==0)
             let success = []
             const run_it = function (used=[]) {
                 let sum = used.flat().reduce((t,e)=>t+e,0)
                 let length = used.flat().length
-                if(length>n_steps || (length==n_steps && sum!=destination)) return null
-                if(length==n_steps && sum==destination) return used
-                if(sum<destination) {
-                    for(let i=0;i<up_motives.length;i++) {
+                if(length>n_steps || (length==n_steps &amp;&amp; sum!=destination)) return null
+                if(length==n_steps &amp;&amp; sum==destination) return used
+                if(sum&lt;destination) {
+                    for(let i=0;i&lt;up_motives.length;i++) {
                         let result = run_it(used.concat([up_motives[i]]))
 
                         if(result!=null) success.push(result)
                     }
                 }
                 else if(sum>destination) {
-                    for(let i=0;i<down_motives.length;i++) {
+                    for(let i=0;i&lt;down_motives.length;i++) {
                         let result = run_it(used.concat([down_motives[i]]))
                         if(result!=null) success.push(result)
                     }
                 }
-                for(let i=0;i<static_motives.length;i++) {
+                for(let i=0;i&lt;static_motives.length;i++) {
                     let result = run_it(used.concat([static_motives[i]]))
                     if(result!=null) success.push(result)
                 }
@@ -1109,29 +1168,29 @@ class EDO {
             return this.get.unique_elements(success)
         },
 
-        /** <p>Returns the path taken (as pitches) after climbing up a interval "fractal" tree.</p>
+        /** &lt;p>Returns the path taken (as pitches) after climbing up a interval "fractal" tree.&lt;/p>
          *
-         * <p>In an interval tree where each branch adds (or subtracts) an interval recursively.
+         * &lt;p>In an interval tree where each branch adds (or subtracts) an interval recursively.
          * For instance, such a tree could have 2 interval branches. One "on the left" adding -3 to the current
          * pitch, and the one "on the right" adding +2 to the current pitch.
          * If you climbed this tree using some path, for instance "left, left, right, left, right, right", you
-         * will in essence move <code>[-3, -3, +2, -3, +2, +2]</code> such that if you start with pitch class 0 you get:
-         * <code>[0, -3, -6, -4, -7, -5, -3]</code> which if we ignore octave (i.e. indicate pitch classes) we get: <code>[0, 9, 6, 8, 5, 7, 9]</code>.</p>
+         * will in essence move &lt;code>[-3, -3, +2, -3, +2, +2]&lt;/code> such that if you start with pitch class 0 you get:
+         * &lt;code>[0, -3, -6, -4, -7, -5, -3]&lt;/code> which if we ignore octave (i.e. indicate pitch classes) we get: &lt;code>[0, 9, 6, 8, 5, 7, 9]&lt;/code>.&lt;/p>
          *
          *
-         * @param  {Array<Number>} intervals - the "branches" coming out of each node on the tree. For instance, <code>[3,-3,2]</code>
+         * @param  {Array&lt;Number>} intervals - the "branches" coming out of each node on the tree. For instance, &lt;code>[3,-3,2]&lt;/code>
          * would represent a tree with three branches coming out of each node, the leftmost is +3 the middle one is -3,
          * and the rightmost one is +2.
          *
-         * @param  {Array<Number>} path - the indication of how to traverse the tree. The list contains the indexes of
-         * the branch to be climbed at each iteration. so <code>[0,0,1,1,2]</code> would mean go up the leftmost branch twice,
+         * @param  {Array&lt;Number>} path - the indication of how to traverse the tree. The list contains the indexes of
+         * the branch to be climbed at each iteration. so &lt;code>[0,0,1,1,2]&lt;/code> would mean go up the leftmost branch twice,
          * then go up the middle branch twice, finally go up the rightmost branch once (Note, this example uses
          * three branches, but there could be any number of branches).
          *
          * @param  {Number} [starting_pitch=0] - Indicates the starting pitch of the tree
          * (the pitch to be added to rather than starting at 0).
          *
-         * @return {Array<Number>} the path
+         * @return {Array&lt;Number>} the path
          * @memberOf EDO#get*/
         path_on_tree: (intervals,path,starting_pitch=0) =>{
             let result = [starting_pitch]
@@ -1143,11 +1202,11 @@ class EDO {
 
         /**
          * Gets an array and returns every possible ordering of that array.
-         * @param  {Array<Number>} pitches - (usually) a collection of pitches, but could be used with any type of array
+         * @param  {Array&lt;Number>} pitches - (usually) a collection of pitches, but could be used with any type of array
          * @example
          * edo.get.permutations([0, 2, 3])
          * // [[ 0, 2, 3 ],[ 0, 3, 2 ],[ 2, 0, 3 ],[ 2, 3, 0 ],[ 3, 0, 2 ],[ 3, 2, 0 ]]
-         * @return {Array<Array<Number>>}
+         * @return {Array&lt;Array&lt;Number>>}
          * @memberOf EDO#get
          */
         permutations : (inputArr) => {
@@ -1158,7 +1217,7 @@ class EDO {
                 if (arr.length === 0) {
                     result.push(m)
                 } else {
-                    for (let i = 0; i < arr.length; i++) {
+                    for (let i = 0; i &lt; arr.length; i++) {
                         let curr = arr.slice();
                         let next = curr.splice(i, 1);
                         do_it(curr.slice(), m.concat(next))
@@ -1173,8 +1232,8 @@ class EDO {
 
         /** Returns the distribution (as fractions adding up to 1) of the pitches in a set of pitches
          *
-         * @param  {Array<Number>} pitches - a given array of pitches
-         * @returns {Array<distribution>}
+         * @param  {Array&lt;Number>} pitches - a given array of pitches
+         * @returns {Array&lt;distribution>}
          * @memberOf EDO#get
          * @example
          * let edo = new EDO(12) // create a tuning context
@@ -1202,12 +1261,12 @@ class EDO {
          * and highest note not higher than range[1].
          *
          * @param  {Number} [length=8] - The number of pitches in the melody
-         * @param  {Array<number>} [range=[0, 12]] - the lower and upper limits (inclusive) for the melody
+         * @param  {Array&lt;number>} [range=[0, 12]] - the lower and upper limits (inclusive) for the melody
          * @param  {Number} [repetition_minimal_gap=0] - number of intervening notes before a note can repeat (the same PC across different octave is not considered the same note)
-         * @param  {Array<number>} [mode] - If mode is provided, the pitches returned will be only ones
+         * @param  {Array&lt;number>} [mode] - If mode is provided, the pitches returned will be only ones
          * that appear in the mode provided.
          * @param  {Number} [avoid_leaps_over=5] - The generator will attempt to avoid returning melodies that leap beyond the this IC.
-         * @returns {Array<Number>}
+         * @returns {Array&lt;Number>}
          * @memberOf EDO#get
          * @example
          * let edo = new EDO(12) //Create a tuning context
@@ -1220,16 +1279,16 @@ class EDO {
             let counter = 0
             let melody = []
             let pitch_pool = []
-            for (let i = range[0]; i <= range[1]; i++) {
+            for (let i = range[0]; i &lt;= range[1]; i++) {
                 if(mode) {
                     if(mode.indexOf(this.mod(i,this.edo))==-1) continue
                 }
                 pitch_pool.push(i)
             }
-            while(melody.length<length && counter<1000) {
+            while(melody.length&lt;length &amp;&amp; counter&lt;1000) {
                 counter++
                 let submelody = melody.slice(Math.max(melody.length-repetition_minimal_gap,0),melody.length)
-                // if(!allow_pc_repetition && submelody.length>0) submelody = this.get.normal_order(submelody) //normal order
+                // if(!allow_pc_repetition &amp;&amp; submelody.length>0) submelody = this.get.normal_order(submelody) //normal order
 
                 let allow_pitches = pitch_pool.filter((pitch)=> {
                     if(submelody.indexOf(pitch)==-1) return true
@@ -1239,7 +1298,7 @@ class EDO {
                     let leapless = []
                     do{
                         leapless = allow_pitches.filter((pitch)=> {
-                            if(Math.abs(pitch-melody[melody.length-1])<=avoid_leaps_over) return true
+                            if(Math.abs(pitch-melody[melody.length-1])&lt;=avoid_leaps_over) return true
                             return false
                         })
                         avoid_leaps_over++
@@ -1258,11 +1317,11 @@ class EDO {
         /** Returns an array of (length) (pseudo)random pitches, with lowest note not lower than range[0],
          * and highest note not higher than range[1].
          *
-         * @param  {Array<Number>} contour - The contour. For instance [0,2,1,2,0] = [low high mid high low] but you can have as many "heights" as you'd like.
-         * @param  {Array<number>} [range=[0, 12]] - the lower and upper limits (inclusive) for the melody
-         * @param  {Array<number>} [mode] - If mode is provided, the pitches returned will be only ones
+         * @param  {Array&lt;Number>} contour - The contour. For instance [0,2,1,2,0] = [low high mid high low] but you can have as many "heights" as you'd like.
+         * @param  {Array&lt;number>} [range=[0, 12]] - the lower and upper limits (inclusive) for the melody
+         * @param  {Array&lt;number>} [mode] - If mode is provided, the pitches returned will be only ones
          * that appear in the mode provided.
-         * @returns {Array<Number>}
+         * @returns {Array&lt;Number>}
          * @memberOf EDO#get
          * @example
          * let edo = new EDO(12) //Create a tuning context
@@ -1282,7 +1341,7 @@ class EDO {
             }
             let ord_cont = this.get.unique_elements(contour).sort((a,b)=>a-b)
             let all_pitches = []
-            for (let i = range[0]; i <= range[1]; i++) {
+            for (let i = range[0]; i &lt;= range[1]; i++) {
                 if(mode) {
                     if(mode.indexOf(this.mod(i,this.edo))!=-1) {
                         all_pitches.push(i)
@@ -1331,7 +1390,7 @@ class EDO {
             for(let ratio in ratios) {
                 let side_a = Math.abs(ratios[ratio]['cents']-interval_in_cents)
                 let side_b = Math.abs(interval_in_cents-closest_ratio)
-                if(side_a<side_b) {
+                if(side_a&lt;side_b) {
                     closest_ratio = ratios[ratio]['cents']
                     closest_name = ratio
                     numeric = ratios[ratio]['value']
@@ -1357,17 +1416,17 @@ class EDO {
          *
          * In the case of max_sizes=2, the following scale will be excluded: [0,1,4,5,7,10,11], because it has >2 (3)
          * step sizes. step size=1 between 0 and 1, step size=2 between 5 and 7, and step size = 3 between 1 and 4.
-         * @return {Array<Scale>} all the scales that abide by the criteria given
+         * @return {Array&lt;Scale>} all the scales that abide by the criteria given
          * @memberOf EDO#get*/
         scales:(min_step=1,max_step=4,min_sizes=2,max_sizes=3, EDO = this) => {
 
             //get all unique combinations of size s from set of intervals set
             const calc_comb = (s,set) => {
                 let solutions = []
-                for (let i=0;i<set.length;i++) {
+                for (let i=0;i&lt;set.length;i++) {
                     let n=set[i]
                     let m = Math.floor(s/n) //Max times n fits in s
-                    if(s/n==m && set.length==1) solutions.push(Array(m).fill(n))
+                    if(s/n==m &amp;&amp; set.length==1) solutions.push(Array(m).fill(n))
                     let new_set = [...set]
                     new_set.splice(i,1)
                     if(new_set.length>0) {
@@ -1376,7 +1435,7 @@ class EDO {
                             if(new_sum>0) {
                                 let new_result = calc_comb(new_sum,new_set)
                                 if(new_result.length>0) {
-                                    for(let r=0;r<new_result.length;r++) {
+                                    for(let r=0;r&lt;new_result.length;r++) {
                                         let solution = Array(k).fill(n).concat(new_result[r].flat())
                                         solution.sort((a,b) => a-b)
                                         solutions.push(solution)
@@ -1403,7 +1462,7 @@ class EDO {
             //returns all possible step combination between min_sizes and max_sized from step_sizes
             const get_interval_combinations = function (min_sizes,max_sizes,step_sizes) {
                 let step_combinations = []
-                for (let window_size = min_sizes;window_size<=max_sizes;window_size++) {
+                for (let window_size = min_sizes;window_size&lt;=max_sizes;window_size++) {
                     step_combinations = step_combinations.concat(combinations(step_sizes,window_size))
                 }
                 return step_combinations
@@ -1424,7 +1483,7 @@ class EDO {
             //make all possible necklaces out of interval combinations given in [combos]
             const make_all_necklaces = function (combos) {
                 let all_necklaces = []
-                for (let i=0;i<combos.length;i++) {
+                for (let i=0;i&lt;combos.length;i++) {
                     let combo = combos[i]
                     let necklaces = EDO.get.necklace(combo)
                     all_necklaces = all_necklaces.concat(necklaces)
@@ -1457,22 +1516,22 @@ class EDO {
 
         },
 
-        /** <p>Finds the required operation to get to a destination note using given intervals</p>
+        /** &lt;p>Finds the required operation to get to a destination note using given intervals&lt;/p>
          *
-         * <p>Finds the shortest path towards a given note (destination) by starting on note 0 and moving using the
+         * &lt;p>Finds the shortest path towards a given note (destination) by starting on note 0 and moving using the
          * intervals provided.
-         * For instance, for <code>destination = -4</code> and <code>intervals = [-7,3]</code> (reaching -4, by only moving up by minor 3rds (3) and down by perfect
-         * 5ths (-7)), the function will return <code>[3,3,3,3,3,3,-7,-7]</code> which is the shortest way to get from 0
-         * to -4 using only these intervals.</p>
+         * For instance, for &lt;code>destination = -4&lt;/code> and &lt;code>intervals = [-7,3]&lt;/code> (reaching -4, by only moving up by minor 3rds (3) and down by perfect
+         * 5ths (-7)), the function will return &lt;code>[3,3,3,3,3,3,-7,-7]&lt;/code> which is the shortest way to get from 0
+         * to -4 using only these intervals.&lt;/p>
          *
-         * <p>Note: the order of the intervals is mutable and can be jumbled up at will without harming the
+         * &lt;p>Note: the order of the intervals is mutable and can be jumbled up at will without harming the
          * result. In the example given, as long as there are six 3s and two -7s. the sum will be -4. So
-         * there is potential for permutations.</p>
+         * there is potential for permutations.&lt;/p>
          *
          *
          * @param  {Number} destination - the destination note. This is an int that represents some interval away from 0.
-         * @param  {Array<Number> | Number} intervals - the interval classes to be used (usually at least one positive interval to move up and one negative to move down)
-         * @return {Array<Array<Number>>} an sorted array of the intervals needed to reach the destination starting from 0.
+         * @param  {Array&lt;Number> | Number} intervals - the interval classes to be used (usually at least one positive interval to move up and one negative to move down)
+         * @return {Array&lt;Array&lt;Number>>} an sorted array of the intervals needed to reach the destination starting from 0.
          * @memberOf EDO#get
          * @example
          * //The quickest way to get to E (from 0) moving up with P5s and down with m3s
@@ -1506,23 +1565,23 @@ class EDO {
             let down_interval = []
             for (let int of intervals) {
                 if(int>0) up_interval.push(int)
-                else if(int<0) down_interval.push(int)
+                else if(int&lt;0) down_interval.push(int)
             }
 
             let paths = []
             const shortest_path_array = function (destination,up_interval=[3,4],down_interval=[-1,-2], used = [],life_span=10) {
-                if(life_span<0) return null
+                if(life_span&lt;0) return null
 
                 let sum = used.reduce((a,b)=>a+b,0)
-                if(sum==destination && (paths.length==0 || paths.length>used.length)) {
+                if(sum==destination &amp;&amp; (paths.length==0 || paths.length>used.length)) {
                     paths=[...used]
                     return
                 }
-                else if (sum==destination && (paths.length!=0 || paths.length<=used.length)) {
+                else if (sum==destination &amp;&amp; (paths.length!=0 || paths.length&lt;=used.length)) {
                     return
                 }
 
-                if(sum<destination) {
+                if(sum&lt;destination) {
                     for(let num of up_interval) {
                         shortest_path_array(destination,up_interval,down_interval,used.concat([num]),life_span-1)
                     }
@@ -1552,9 +1611,9 @@ class EDO {
             let primes = this.get.primes_in_range(limit)
             console.log(primes)
             let ratios = {}
-            for(let i=2;i<limit+1;i++) {
-                for(let j=1;j<i;j++) {
-                    if(((primes.indexOf(i)<0) && (primes.indexOf(j)<0)) || (i%2==0 && j%2==0) || (i%j==0 && j>2)) continue
+            for(let i=2;i&lt;limit+1;i++) {
+                for(let j=1;j&lt;i;j++) {
+                    if(((primes.indexOf(i)&lt;0) &amp;&amp; (primes.indexOf(j)&lt;0)) || (i%2==0 &amp;&amp; j%2==0) || (i%j==0 &amp;&amp; j>2)) continue
                     ratios[String(i) + '/' + String(j)] = {cents: this.convert.ratio_to_cents(i/j), value:i/j}
                 }
             }
@@ -1563,13 +1622,13 @@ class EDO {
 
         /**
          * Gets a subset to find and returns the indices from a given array (arr) that form that subset
-         * @param  {Array<Number>} find - a collection of pitches to find (in order)
-         * @param  {Array<Number>} arr - a bigger collection where we search
+         * @param  {Array&lt;Number>} find - a collection of pitches to find (in order)
+         * @param  {Array&lt;Number>} arr - a bigger collection where we search
          * @param  {Boolean} [allow_skips=true] - if false, the search will only be done on consecutive items
          * @example
          * // returns [[ 0, 2, 5 ], [ 0, 2, 6 ],[ 0, 4, 5 ], [ 0, 4, 6 ],[ 1, 2, 5 ], [ 1, 2, 6 ],[ 1, 4, 5 ], [ 1, 4, 6 ],[ 3, 4, 5 ], [ 3, 4, 6 ]]
          * get.subset_indices([0, 2, 3], [0, 0, 2, 0, 2, 3, 3])
-         * @return {Array<Array<Number>>}
+         * @return {Array&lt;Array&lt;Number>>}
          * @memberOf EDO#get
          */
         subset_indices: (find, arr,allow_skips=true) => {
@@ -1578,7 +1637,7 @@ class EDO {
             const run_it_with_skips = function (find,arr,path=[],ind=0) {
                 if(find.length==0) return path
                 let find_this = find[0]
-                for (let i = ind; i < arr.length; i++) {
+                for (let i = ind; i &lt; arr.length; i++) {
                     if(arr[i]==find_this) {
                         let res = run_it_with_skips(find.slice(1),arr,[...path,i],i+1)
                         if(res) paths.push(res)
@@ -1588,9 +1647,9 @@ class EDO {
 
             const run_it_no_skips = function (find,arr) {
                 loop1:
-                    for (let i = 0; i < arr.length - (find.length-1); i++) {
+                    for (let i = 0; i &lt; arr.length - (find.length-1); i++) {
                         loop2:
-                            for (let j = 0; j < find.length; j++) {
+                            for (let j = 0; j &lt; find.length; j++) {
                                 if(find[j]!=arr[i+j]) continue loop1
                                 if(j==find.length-1) {
                                     let arr = new Array(find.length).fill(0)
@@ -1609,7 +1668,7 @@ class EDO {
         },
 
         /** Returns all the subsets (in order) from a given array of pitches.
-         * @param  {Array<Number>} pitches - a given array of pitches
+         * @param  {Array&lt;Number>} pitches - a given array of pitches
          * @param  {Boolean} allow_skips - if set to false, function will only return subsets that have consecutive members
          * @example
          * //returns [[0], [2], [3], [0, 2], [0, 3], [2, 3], [0, 2, 3]]
@@ -1617,7 +1676,7 @@ class EDO {
          * @example
          * //returns [[0], [2], [3], [0, 2], [2, 3], [0, 2, 3]]
          * edo.get.subsets([0,2,3],false)
-         * @returns {Array<Array<Number>>}
+         * @returns {Array&lt;Array&lt;Number>>}
          * @memberOf EDO#get
          */
         subsets: (pitches,allow_skips=true) => {
@@ -1630,8 +1689,8 @@ class EDO {
                 )
             } else {
                 let subsets = []
-                for (let window = 1; window < pitches.length+1; window++) {
-                    for (let i = 0; i < pitches.length - window+1; i++) {
+                for (let window = 1; window &lt; pitches.length+1; window++) {
+                    for (let i = 0; i &lt; pitches.length - window+1; i++) {
                         subsets.push(pitches.slice(i,i+window))
                     }
                 }
@@ -1644,10 +1703,10 @@ class EDO {
 
         /** Transposes the input by a given amount
          *
-         * @param  {Array<Number>} pitches - a given array of pitches
+         * @param  {Array&lt;Number>} pitches - a given array of pitches
          * @param  {Number} [amount=0] - the interval by which to transpose
          * @param  {Boolean} [as_PC=true] - if true, the intervals returns will conform to a single octave
-         * @returns {Array<Number>}
+         * @returns {Array&lt;Number>}
          * @memberOf EDO#get
          * @example
          * let edo = new EDO(12) //Create a tuning context
@@ -1662,8 +1721,8 @@ class EDO {
 
         /** Gets an array that may have duplications and returns the array without duplications
          *
-         * @param  {Array<number|Array<Number>>} list - an array with duplications
-         * @returns {Array<Number>} an array without duplications
+         * @param  {Array&lt;number|Array&lt;Number>>} list - an array with duplications
+         * @returns {Array&lt;Number>} an array without duplications
          * @memberOf EDO#get
          * @example
          * let edo = new EDO(12) //Create a tuning context
@@ -1680,9 +1739,9 @@ class EDO {
 
         primes_in_range: (upper=17,lower=2) => {
             let primes = []
-            for(let num=lower;num<=upper;num++) {
+            for(let num=lower;num&lt;=upper;num++) {
                 if(num>1) {
-                    for(let i=2;i<num;i++) {
+                    for(let i=2;i&lt;num;i++) {
                         if(num%i==0) break
                         else primes.push(num)
                     }
@@ -1692,7 +1751,7 @@ class EDO {
         },
         divisors : (n) => {
             let divisors = []
-            for (let i=2;i<Math.ceil(n/2);i++) {
+            for (let i=2;i&lt;Math.ceil(n/2);i++) {
                 if(n%parseInt(i)==0) divisors.push(i)
             }
             return divisors
@@ -1705,8 +1764,8 @@ class EDO {
 
         /**
          * Returns True if arr is an element in an array of arrays (bigger_arr)
-         * @param  {Array<Number>} arr - a collection of pitches (not necessarily pitch classes)
-         * @param  {Array<Array<Number>>} bigger_arr - an array of arrays containing a collection of pitches (not necessarily pitch classes)
+         * @param  {Array&lt;Number>} arr - a collection of pitches (not necessarily pitch classes)
+         * @param  {Array&lt;Array&lt;Number>>} bigger_arr - an array of arrays containing a collection of pitches (not necessarily pitch classes)
          * @return {Boolean}
          * @memberOf EDO#is
          * @example
@@ -1727,8 +1786,8 @@ class EDO {
 
         /**
          * Returns True if arr1 equals arr2 in contents and in order.
-         * @param  {Array<Number>} arr1 - a collection of pitches (not necessarily pitch classes)
-         * @param  {Array<Number>} arr2 - a collection of pitches (not necessarily pitch classes)
+         * @param  {Array&lt;Number>} arr1 - a collection of pitches (not necessarily pitch classes)
+         * @param  {Array&lt;Number>} arr2 - a collection of pitches (not necessarily pitch classes)
          * @return {Boolean}
          * @memberOf EDO#is
          * @example
@@ -1750,8 +1809,8 @@ class EDO {
 
         /**
          * Returns true if some collection of pitches (thing) is a subset of another collection of pitches (thing2)
-         * @param  {Array<Number>} thing - a collection of pitches (not necessarily pitch classes)
-         * @param  {Array<Number>} thing2 - a collection of pitches (not necessarily pitch classes)
+         * @param  {Array&lt;Number>} thing - a collection of pitches (not necessarily pitch classes)
+         * @param  {Array&lt;Number>} thing2 - a collection of pitches (not necessarily pitch classes)
          * @return {Boolean}
          * @memberOf EDO#is
          * @example
@@ -1772,32 +1831,32 @@ class EDO {
         }
     }
 
-    /**<p>A collection of functions that make visual representations</p>
-     * <p>Note: EDO.show can only be used client-side</p>
+    /**&lt;p>A collection of functions that make visual representations&lt;/p>
+     * &lt;p>Note: EDO.show can only be used client-side&lt;/p>
      * @namespace EDO#show
      * */
     show = {
 
         /**
-         * <p>Plots the contour of a given melody.</p>
-         * <img src = "img/4n_contours.png">
+         * &lt;p>Plots the contour of a given melody.&lt;/p>
+         * &lt;img src = "img/4n_contours.png">
          * @param  {String} container_id - The ID of a DOM element in which the contour will be shown.
-         * @param  {Array<Number>} pitches - The melody.
+         * @param  {Array&lt;Number>} pitches - The melody.
          * @param  {Boolean} [replace=false] - When false, any time the function is called a new contour will be appended to the object. When true, it will replace the contents of the container.
-         * @param  {Number|Array<Number,Number>} [size] - Size (in px) of the plot. When no values are passed, the plot will take the size of the container. If 1 value is passed, it will be used for both dimensions. Otherwise pass data as [width,height].
+         * @param  {Number|Array&lt;Number,Number>} [size] - Size (in px) of the plot. When no values are passed, the plot will take the size of the container. If 1 value is passed, it will be used for both dimensions. Otherwise pass data as [width,height].
          *
          * @example
-         * <script src="edo.js"></script>
-         * <script src="raphael.min.js"></script>
-         * <div id="container" style="width:900px;height:600px; margin:0 auto;"></div>
-         * <script>
+         * &lt;script src="edo.js">&lt;/script>
+         * &lt;script src="raphael.min.js">&lt;/script>
+         * &lt;div id="container" style="width:900px;height:600px; margin:0 auto;">&lt;/div>
+         * &lt;script>
          * let edo = new EDO(12)
          * perms = edo.get.permutations([1,2,3,4])
          * perms.sort((a,b)=>b[0]-a[0] || b[b.length-1]-a[a.length-1])
          * for(let perm of perms) {
          *      edo.show.contour('container', perm,false,150)
          *  }
-         * </script>
+         * &lt;/script>
          * @see /demos/contour_plotter.html
          * @memberOf EDO#show
          */
@@ -1843,7 +1902,7 @@ class EDO {
             let circle_set = paper.set()
             let circle_r = height/45
             circle_set.push(paper.circle(margin,scaled_pitches[0],circle_r))
-            for (let i=1;i<scaled_pitches.length;i++) {
+            for (let i=1;i&lt;scaled_pitches.length;i++) {
                 pos+=pos_shift
                 path_str+="L" + pos +"," + scaled_pitches[i]
                 circle_set.push(paper.circle(pos,scaled_pitches[i],circle_r))
@@ -1859,19 +1918,19 @@ class EDO {
          * @param  {String} container_id - The ID of a DOM element in which the tree will be shown.
          * @param  {Number} [length=200] - The length (or height) or the tree's "trunk".
          * @param  {Number} [angle_span=90] - the angle between branches.
-         * @param  {Array<Number>} [mode=[0,2,4,5,7,9,11]] - If provided, the tree will conform to that mode.
-         * @param  {Array<Number>} [intervals=[-1,1]] - If mode is provided, each interval represents the number of scale degrees away from the current node. If mode is not provided, the intervals represent PCs away from the current node.
+         * @param  {Array&lt;Number>} [mode=[0,2,4,5,7,9,11]] - If provided, the tree will conform to that mode.
+         * @param  {Array&lt;Number>} [intervals=[-1,1]] - If mode is provided, each interval represents the number of scale degrees away from the current node. If mode is not provided, the intervals represent PCs away from the current node.
          * @param  {Number} [iterations=5] - The number of sub-branches on the tree
          * @param  {Number} [length_mul=0.7] - The factor by which every new sub-branch's length is to its parent.
 
          * @example
-         * <script src="edo.js"></script>
-         * <script src="raphael.min.js"></script>
-         * <div id="container" style="width:900px;height:600px; margin:0 auto;"></div>
-         * <script>
+         * &lt;script src="edo.js">&lt;/script>
+         * &lt;script src="raphael.min.js">&lt;/script>
+         * &lt;div id="container" style="width:900px;height:600px; margin:0 auto;">&lt;/div>
+         * &lt;script>
          *  let edo = new EDO()
          *  edo.show.interval_fractal_tree(container_id)
-         * </script>
+         * &lt;/script>
 
 
          * @see /demos/fractal_tree.html
@@ -1937,7 +1996,7 @@ class EDO {
                         let angle_span = Math.floor(this.angle_span/2)-this.angle_span
                         let angle_add = this.angle_span/(this.sub_branches-1)
                         let new_length = this.length*this.length_mul
-                        for(let i=0;i<this.sub_branches;i++) {
+                        for(let i=0;i&lt;this.sub_branches;i++) {
                             let starting_pitch = 100
                             if(this.diatonic) {
                                 let index = this.mode.indexOf(this.starting_pitch)
@@ -1975,19 +2034,19 @@ class EDO {
          * Graphs a given necklace in a container.
          *
          * @param  {String} container_id - The ID of a DOM element in which the contour will be shown.
-         * @param  {Array<Number>|Array<Array<Number>>} pitches - The necklace. This can also be an array containing multiple necklaces.
+         * @param  {Array&lt;Number>|Array&lt;Array&lt;Number>>} pitches - The necklace. This can also be an array containing multiple necklaces.
          * @param  {Boolean} [replace=false] - When true, the contents of the container will be replaced by the function. When false, it will be appended.
-         * @param  {Number|Array<Number,Number>} [radius] - Radius (in px) of the ring. When no values are passed, the ring will take the size of the container.
+         * @param  {Number|Array&lt;Number,Number>} [radius] - Radius (in px) of the ring. When no values are passed, the ring will take the size of the container.
          * @param  {Boolean} [as_numbers=true] - When true, the nodes will be marked with numbers, when false they will be marked with note letters (only in 12-EDO)
          *
          * @example
-         * <script src="edo.js"></script>
-         * <script src="raphael.min.js"></script>
-         * <div id="container" style="width:900px;height:600px; margin:0 auto;"></div>
-         * <script>
+         * &lt;script src="edo.js">&lt;/script>
+         * &lt;script src="raphael.min.js">&lt;/script>
+         * &lt;div id="container" style="width:900px;height:600px; margin:0 auto;">&lt;/div>
+         * &lt;script>
          *  let edo = new EDO()
          *  edo.show.necklace('container', [0,2,4,5,7,9,11])
-         * </script>
+         * &lt;/script>
          * @see /demos/necklace.html
          * @memberOf EDO#show
          */
@@ -2081,7 +2140,7 @@ class EDO {
                         this.nodes = []
                         let radius = Math.min((this.radius*2*Math.PI / this.edo)/2-5,15)
                         //node parameters
-                        for(let note=0;note<this.edo;note++) {
+                        for(let note=0;note&lt;this.edo;note++) {
                             let angle = (note * (360 / this.edo)) - 90
                             let rad_angle = angle * Math.PI / 180
                             let cx = Math.floor(this.cx + (this.radius * Math.cos(rad_angle)))
@@ -2105,9 +2164,9 @@ class EDO {
 
 
 
-                        for(let i=0;i<this.nodes.length-1;i++) {
+                        for(let i=0;i&lt;this.nodes.length-1;i++) {
                             if(!this.nodes[i].visible) continue //if this node is not visible, skip it
-                            for(let j=i+1;j<this.nodes.length;j++) {
+                            for(let j=i+1;j&lt;this.nodes.length;j++) {
                                 if(!this.nodes[j].visible) continue //if this node is not visible, skip it
                                 // strings.push([i,j]) //the pitches for which the strings are connected
                                 let n1 = this.nodes[i]
@@ -2217,29 +2276,29 @@ class EDO {
 
 }
 
-/** <p>Class representing a set of pitch classes within an EDO system</p>
- * <p>(This class should have been called "Set" but because Set is a reserved work in JavaScript (as in most languages), "Scale" was selected as a compromise).</p> */
+/** &lt;p>Class representing a set of pitch classes within an EDO system&lt;/p>
+ * &lt;p>(This class should have been called "Set" but because Set is a reserved work in JavaScript (as in most languages), "Scale" was selected as a compromise).&lt;/p> */
 class Scale {
     /**
-     * <p>Creates a set of pitch classes within the context of the edo system.</p>
-     * <p>Unlike the [EDO Class]{@link EDO}, this class constains methods which are more directed at manipulating a set of pitch classes (regardless of their octave).
-     * At the center of this class stand 5 collections (see "Namespaces" below) of functions.</p>
-     * <ul>
-     *  <li> [Scale.to]{@link Scale#to} is a set of functions used to change between equivalent representations of the set.</li>
-     *  <li> [Scale.count]{@link Scale#count} is a set of functions used to count stuff.</li>
-     *  <li> [Scale.get]{@link Scale#get} is a set of functions used to manipulate and track, and generate stuff.</li>
-     *  <li> [Scale.is]{@link Scale#is} is a set of functions used for boolean truth statements.</li>
-     *  <li> [Scale.export]{@link Scale#export} is a set of functions used to export files.</li></ul>
-     *  <p>
+     * &lt;p>Creates a set of pitch classes within the context of the edo system.&lt;/p>
+     * &lt;p>Unlike the [EDO Class]{@link EDO}, this class constains methods which are more directed at manipulating a set of pitch classes (regardless of their octave).
+     * At the center of this class stand 5 collections (see "Namespaces" below) of functions.&lt;/p>
+     * &lt;ul>
+     *  &lt;li> [Scale.to]{@link Scale#to} is a set of functions used to change between equivalent representations of the set.&lt;/li>
+     *  &lt;li> [Scale.count]{@link Scale#count} is a set of functions used to count stuff.&lt;/li>
+     *  &lt;li> [Scale.get]{@link Scale#get} is a set of functions used to manipulate and track, and generate stuff.&lt;/li>
+     *  &lt;li> [Scale.is]{@link Scale#is} is a set of functions used for boolean truth statements.&lt;/li>
+     *  &lt;li> [Scale.export]{@link Scale#export} is a set of functions used to export files.&lt;/li>&lt;/ul>
+     *  &lt;p>
      *      In addition to the namespaces, Scale also has 4 methods that can be chained together:
-     * <ul>
-     *  <li> [Scale.invert()]{@link Scale#invert} returns the inversion of the original Scale object as a new Scale object.</li>
-     *  <li> [Scale.mode(n)]{@link Scale#mode} returns the nth mode of the original Scale object as a new Scale object.</li>
-     *  <li> [Scale.normal()]{@link Scale#normal} returns the normal order of the original Scale object as a new Scale object.</li>
-     *  <li> [Scale.prime()]{@link Scale#prime} returns the prime form of the original Scale object as a new Scale object.</li>
-     *  </ul>
-     *  </p>
-     * @param {Array<number>} pitches - The pitch classes of the set.
+     * &lt;ul>
+     *  &lt;li> [Scale.invert()]{@link Scale#invert} returns the inversion of the original Scale object as a new Scale object.&lt;/li>
+     *  &lt;li> [Scale.mode(n)]{@link Scale#mode} returns the nth mode of the original Scale object as a new Scale object.&lt;/li>
+     *  &lt;li> [Scale.normal()]{@link Scale#normal} returns the normal order of the original Scale object as a new Scale object.&lt;/li>
+     *  &lt;li> [Scale.prime()]{@link Scale#prime} returns the prime form of the original Scale object as a new Scale object.&lt;/li>
+     *  &lt;/ul>
+     *  &lt;/p>
+     * @param {Array&lt;number>} pitches - The pitch classes of the set.
      * @param {EDO} parent - and EDO context
      *
      * @example
@@ -2288,9 +2347,9 @@ class Scale {
     count = {
 
         /**
-         * <p>Returns the number of times a certain chord (or interval) quality (specified in PCs above the root) exists in the scale.</p>
-         * <p>E.g. <code>scale.count.chord_quality([4, 7, 11])</code> counts the number of times a major 7th (if in 12 TET) appears in a scale</p>
-         * @param {Array<Number|Array<Number>>} intervals - intervals above 0
+         * &lt;p>Returns the number of times a certain chord (or interval) quality (specified in PCs above the root) exists in the scale.&lt;/p>
+         * &lt;p>E.g. &lt;code>scale.count.chord_quality([4, 7, 11])&lt;/code> counts the number of times a major 7th (if in 12 TET) appears in a scale&lt;/p>
+         * @param {Array&lt;Number|Array&lt;Number>>} intervals - intervals above 0
          * @return {Number}
          * @example
          * let edo = new EDO(12) //Create a tuning context
@@ -2379,8 +2438,8 @@ class Scale {
             let imperfections = 0
             let valid_intervals = []
             let p5 = this.parent.convert.ratio_to_cents(3/2)
-            for(let i=1;i<this.edo;i++) {
-                if(Math.abs(this.parent.convert.interval_to_cents(i)-p5)<=tolerance) valid_intervals.push(i)
+            for(let i=1;i&lt;this.edo;i++) {
+                if(Math.abs(this.parent.convert.interval_to_cents(i)-p5)&lt;=tolerance) valid_intervals.push(i)
                 else if(valid_intervals.length>0) break
             }
             let octavescale = scale.map((note) => note+this.edo)
@@ -2400,9 +2459,9 @@ class Scale {
         },
 
         /**
-         * <p>Returns the number of intervals of size IC in the scale.</p>
-         * <p>When an array is passed, the function returns total amount of intervals found from the array.</p>
-         * @param {Number | Array<Number>} interval - some interval class.
+         * &lt;p>Returns the number of intervals of size IC in the scale.&lt;/p>
+         * &lt;p>When an array is passed, the function returns total amount of intervals found from the array.&lt;/p>
+         * @param {Number | Array&lt;Number>} interval - some interval class.
          * @return {Number}
          * @memberOf Scale#count
          *
@@ -2430,9 +2489,9 @@ class Scale {
         },
 
         /**
-         * <p>Returns the number of Major Thirds (with a tolerance of 20 cents) in the scale.</p>
+         * &lt;p>Returns the number of Major Thirds (with a tolerance of 20 cents) in the scale.&lt;/p>
          *
-         * <p>(To count other intervals or set a different tolerance use [Scale.count.ratio()]{@link Scale#count.ratio})</p>
+         * &lt;p>(To count other intervals or set a different tolerance use [Scale.count.ratio()]{@link Scale#count.ratio})&lt;/p>
          * @return {Number}
          * @memberOf Scale#count
          * @see Scale#count.ratio
@@ -2446,9 +2505,9 @@ class Scale {
         },
 
         /**
-         * <p>Returns the number of Minor Thirds (with a tolerance of 20 cents) in the scale.</p>
+         * &lt;p>Returns the number of Minor Thirds (with a tolerance of 20 cents) in the scale.&lt;/p>
          *
-         * <p>(To count other intervals or set a different tolerance use [Scale.count.ratio()]{@link Scale#count.ratio})</p>
+         * &lt;p>(To count other intervals or set a different tolerance use [Scale.count.ratio()]{@link Scale#count.ratio})&lt;/p>
          * @return {Number}
          * @memberOf Scale#count
          * @see Scale#count.ratio
@@ -2462,9 +2521,9 @@ class Scale {
         },
 
         /**
-         * <p>Returns the number of major and minor (sounding) triads in the scale.</p>
+         * &lt;p>Returns the number of major and minor (sounding) triads in the scale.&lt;/p>
          *
-         * <p>For other chord qualities use a combination of [Scale.count.chord_quality()]{@link Scale#count.chord_quality} and [EDO.convert.ratio_to_interval()]{@link EDO#convert.ratio_to_interval}</p>
+         * &lt;p>For other chord qualities use a combination of [Scale.count.chord_quality()]{@link Scale#count.chord_quality} and [EDO.convert.ratio_to_interval()]{@link EDO#convert.ratio_to_interval}&lt;/p>
          * @return {Number}
          * @memberOf Scale#count
          *
@@ -2482,7 +2541,7 @@ class Scale {
         },
 
         /**
-         * <p>Returns the number of unique modes in the scale.</p>
+         * &lt;p>Returns the number of unique modes in the scale.&lt;/p>
          * @return {Number}
          * @memberOf Scale#count
          * @example
@@ -2498,9 +2557,9 @@ class Scale {
         },
 
         /**
-         * <p>Returns the number of Perfect Fifths (with a tolerance of 5 cents) in the scale.</p>
+         * &lt;p>Returns the number of Perfect Fifths (with a tolerance of 5 cents) in the scale.&lt;/p>
          *
-         * <p>(To count other intervals or set a different tolerance use @Scale.count.ratio())</p>
+         * &lt;p>(To count other intervals or set a different tolerance use @Scale.count.ratio())&lt;/p>
          * @return {Number}
          * @memberOf Scale#count
          * @example
@@ -2513,7 +2572,7 @@ class Scale {
         },
 
         /**
-         * <p>Returns the number of pitches in the scale (its cardinality).</p>
+         * &lt;p>Returns the number of pitches in the scale (its cardinality).&lt;/p>
          * @return {Number}
          * @memberOf Scale#count
          * @example
@@ -2538,7 +2597,7 @@ class Scale {
         },
 
         /**
-         * <p>Returns the number of rotational symmetries in the scale.</p>
+         * &lt;p>Returns the number of rotational symmetries in the scale.&lt;/p>
          * @return {Number}
          * @memberOf Scale#count
          *
@@ -2574,7 +2633,7 @@ class Scale {
         },
 
         /**
-         * <p>Returns the number of unique tetrachords available in the scale.</p>
+         * &lt;p>Returns the number of unique tetrachords available in the scale.&lt;/p>
          * @return {Number}
          * @function
          * @memberOf Scale#count
@@ -2588,9 +2647,9 @@ class Scale {
         },
 
         /**
-         * <p>Returns the number of Major and Minor Thirds (with a tolerance of 20 cents) in the scale</p>.
+         * &lt;p>Returns the number of Major and Minor Thirds (with a tolerance of 20 cents) in the scale&lt;/p>.
          *
-         * <p>(To count other intervals or set a different tolerance use [Scale.count.ratio()]{@link Scale#count.ratio})</p>
+         * &lt;p>(To count other intervals or set a different tolerance use [Scale.count.ratio()]{@link Scale#count.ratio})&lt;/p>
          * @return {Number}
          * @see Scale#count.ratio
          * @memberOf Scale#count
@@ -2613,7 +2672,7 @@ class Scale {
             if(this.catalog['# transpositions']) return this.catalog['# transpositions']
             let scale = this.pitches
             let scales = [scale]
-            for(let i=0;i<this.parent.edo;i++) {
+            for(let i=0;i&lt;this.parent.edo;i++) {
                 let t_scale = []
                 scale.forEach((note) => {
                     t_scale.push((note+i+1) % this.edo)
@@ -2629,7 +2688,7 @@ class Scale {
         },
 
         /**
-         * <p>Returns the number of unique trichords available in the scale.</p>
+         * &lt;p>Returns the number of unique trichords available in the scale.&lt;/p>
          * @return {Number}
          * @function
          * @memberOf Scale#count
@@ -2679,7 +2738,7 @@ class Scale {
         /** Returns all the transpositions of the scale that share a common tone with the original scale
          * As well the the number of notes altered to get from the original scale to the new scale as a "Tuple"
          * @param  {Boolean} normalize - when true, all of the transpositions will be constructed by altering the original scale
-         * @returns {Array<Array<Number>,Number>} An array containing all of the stacks
+         * @returns {Array&lt;Array&lt;Number>,Number>} An array containing all of the stacks
          * @memberOf Scale#get
          * @example
          * let edo = new EDO(12) //define context
@@ -2720,7 +2779,7 @@ class Scale {
 
         /** Returns the interval vector of the scale.
          * @param  {Boolean} cache - When true, the result will be cached for faster retrieval
-         * @returns {Array<Number>} An array representing the vector
+         * @returns {Array&lt;Number>} An array representing the vector
          * @memberOf Scale#get
          *
          * @example
@@ -2733,18 +2792,18 @@ class Scale {
             let scale = this.pitches
             let vector = []
             let intervals = {}
-            for(let i=0;i<this.edo-1;i++) {
+            for(let i=0;i&lt;this.edo-1;i++) {
                 intervals[i+1] = 0
             }
             let length = scale.length
             let doublescale = scale.concat(scale)
             scale.forEach((note,i)=> {
-                for(let j=0; j<length-1;j++) {
+                for(let j=0; j&lt;length-1;j++) {
                     let interval = (doublescale[i+j+1]-doublescale[i]) % this.edo
                     intervals[interval] +=1
                 }
             })
-            for(let i=0;i<Math.floor(this.edo/2);i++) {
+            for(let i=0;i&lt;Math.floor(this.edo/2);i++) {
                 vector.push(intervals[i+1])
             }
             if(cache) this.catalog['interval vector'] =vector
@@ -2754,10 +2813,10 @@ class Scale {
 
         },
 
-        /** <p>Returns the scale's inversion</p>
+        /** &lt;p>Returns the scale's inversion&lt;/p>
 
          * @param {Boolean} [cache=false] - When true, the result will be cached for future retrieval
-         * @returns {Array<Number>} the inverted pitches
+         * @returns {Array&lt;Number>} the inverted pitches
          * @memberOf Scale#get
          *
          * @example
@@ -2774,7 +2833,7 @@ class Scale {
             return scale
         },
 
-        /** <p>Returns the smallest multiplier between the sizes of steps</p>
+        /** &lt;p>Returns the smallest multiplier between the sizes of steps&lt;/p>
          * @returns {Number} The step sizes
          * @example
          * let edo = new EDO(12) //define tuning
@@ -2789,13 +2848,13 @@ class Scale {
             let steps= this.get.step_sizes()
             if(steps.length==1) return 1
             let size = this.edo
-            for(let i=0;i<steps.length-1;i++) {
-                if(steps[i+1]/steps[i]<size) size = steps[i+1]/steps[i]
+            for(let i=0;i&lt;steps.length-1;i++) {
+                if(steps[i+1]/steps[i]&lt;size) size = steps[i+1]/steps[i]
             }
             return size
         },
 
-        /** <p>Calculates the attraction between note1 to note2 according to Lerdahl's formula in TPS</p>
+        /** &lt;p>Calculates the attraction between note1 to note2 according to Lerdahl's formula in TPS&lt;/p>
          * @param {Number} note1 - The first PC
          * @param {Number} note2 - The second PC
          * @returns {Number} The value of attraction between note1 and note2
@@ -2837,34 +2896,34 @@ class Scale {
             return (note2.anchoring/note1.anchoring)*(1/dist)
         },
 
-        /** <p>Returns a graphic vector showing the tendencies of each note in the scale</p>
-         * @returns {Array<String>} The attraction vector
+        /** &lt;p>Returns a graphic vector showing the tendencies of each note in the scale&lt;/p>
+         * @returns {Array&lt;String>} The attraction vector
          * @see Scale.get.lerdahl_attraction()
          * @example
          * let edo = new EDO(12) //define tuning
          * let scale = edo.scale([0,2,4,5,7,9,11]) //major scale
-         * scale.get.lerdahl_attraction_vector() //returns [*,<>,*,<>,*,<<,>>]
+         * scale.get.lerdahl_attraction_vector() //returns [*,&lt;>,*,&lt;>,*,&lt;&lt;,>>]
          * @memberOf Scale#get*/
         lerdahl_attraction_vector: () =>{
 
             let vector = []
-            for (let i=0; i<this.pitches.length;i++) {
+            for (let i=0; i&lt;this.pitches.length;i++) {
                 let note = this.pitches[i]
                 let ln = this.pitches[this.parent.mod(i-1,this.pitches.length)]
                 let un = this.pitches[this.parent.mod(i+1,this.pitches.length)]
                 ln = this.get.lerdahl_attraction(note,ln)
                 un = this.get.lerdahl_attraction(note,un)
-                if(ln<1 && un<1) vector.push('*')
-                else if(ln<1 && un>=1) vector.push('>>')
-                else if(ln>=1 && un<1) vector.push('<<')
-                else if(ln>=1 && un>=1) vector.push('<>')
+                if(ln&lt;1 &amp;&amp; un&lt;1) vector.push('*')
+                else if(ln&lt;1 &amp;&amp; un>=1) vector.push('>>')
+                else if(ln>=1 &amp;&amp; un&lt;1) vector.push('&lt;&lt;')
+                else if(ln>=1 &amp;&amp; un>=1) vector.push('&lt;>')
             }
             return vector
 
         },
 
-        /** <p>Returns the Levenshtein distance of the scale to another scale</p>
-         * @param {Array<Number>} t - Some collection of pitches to perferm the comparison with
+        /** &lt;p>Returns the Levenshtein distance of the scale to another scale&lt;/p>
+         * @param {Array&lt;Number>} t - Some collection of pitches to perferm the comparison with
          * @param {Boolean} [ratio_calc=false] - When true, the function computes the
          levenshtein distance ratio of similarity between two strings
          * @returns {Number}
@@ -2898,8 +2957,8 @@ class Scale {
             let col
             let row
             //Populate matrix of zeros with the indices of each character of both strings
-            for(let i=1;i<rows;i++) {
-                for(let k=1;k<cols;k++) {
+            for(let i=1;i&lt;rows;i++) {
+                for(let k=1;k&lt;cols;k++) {
 
                     distance[i][0] = i
                     distance[0][k] = k
@@ -2908,8 +2967,8 @@ class Scale {
 
             // Iterate over the matrix to compute the cost of deletions,insertions and/or substitutions
             let cost = 0
-            for(col=1; col<cols;col++) {
-                for(row=1;row<rows;row++) {
+            for(col=1; col&lt;cols;col++) {
+                for(row=1;row&lt;rows;row++) {
                     if(s[row-1] == t[col-1]) cost=0 //If the characters are the same in the two strings in a given position [i,j] then the cost is 0
                     else {
                         // In order to align the results with those of the Python Levenshtein package, if we choose to calculate the ratio
@@ -2932,7 +2991,7 @@ class Scale {
 
         /** Returns all the various modes (normalized to 0, that include all pitches) available from this scale
          * @param  {Boolean} cache - When true, the result will be cached for faster retrieval
-         * @returns {Array<Array<Number>>} An array of the different modes
+         * @returns {Array&lt;Array&lt;Number>>} An array of the different modes
          * @memberOf Scale#get
          *
          * @see EDO#get.modes
@@ -2959,13 +3018,13 @@ class Scale {
         },
 
         /**
-         * <p>Same as [EDO.get.motives()]{@link EDO#get.motives} only instead of considering pitches as pitch classes, it looks at them as scale degrees.</p>
-         * <p>As such, in the scale <code>[0,2,4,5,7,9,11]</code>, <code>[0,2,4]</code> and <code>[2,4,5]</code> are considered the same motive
-         * This is because while the former has steps of size <code>[2,2]</code> and the latter <code>[2,1]</code> they both represent moving
-         * 2 scale degrees up step wise in the scale <code>[1,1]</code>.</p>
-         * @param  {Array<Number>} melody - a collection of pitches to find (in order)
+         * &lt;p>Same as [EDO.get.motives()]{@link EDO#get.motives} only instead of considering pitches as pitch classes, it looks at them as scale degrees.&lt;/p>
+         * &lt;p>As such, in the scale &lt;code>[0,2,4,5,7,9,11]&lt;/code>, &lt;code>[0,2,4]&lt;/code> and &lt;code>[2,4,5]&lt;/code> are considered the same motive
+         * This is because while the former has steps of size &lt;code>[2,2]&lt;/code> and the latter &lt;code>[2,1]&lt;/code> they both represent moving
+         * 2 scale degrees up step wise in the scale &lt;code>[1,1]&lt;/code>.&lt;/p>
+         * @param  {Array&lt;Number>} melody - a collection of pitches to find (in order)
          * @param  {Boolean} [allow_skips=true] - if false, the search will only be done on consecutive items
-         * @return {Array<motive>}
+         * @return {Array&lt;motive>}
          * @memberOf Scale#get
          * @see {@link EDO#get.motives}
          * @example
@@ -2994,11 +3053,11 @@ class Scale {
 
         },
 
-        /** <p>Returns every n_chord (bichord (<code>n=2</code>), trichord (<code>n=3</code>), tetrachord (<code>n=4</code>), etc.) available in this scale</p>
+        /** &lt;p>Returns every n_chord (bichord (&lt;code>n=2&lt;/code>), trichord (&lt;code>n=3&lt;/code>), tetrachord (&lt;code>n=4&lt;/code>), etc.) available in this scale&lt;/p>
          * @param  {Number} n - Number of pitches in every chord
          * @param  {Boolean} [normalize=true] - When true, the function will return n_chords in normal order. otherwise it will return them as they appear in the scale
          * @param  {Boolean} [cache=false] - When true, the result will be cached for faster retrieval
-         * @returns {Array<Number>} An array containing all n_chords
+         * @returns {Array&lt;Number>} An array containing all n_chords
          * @memberOf Scale#get
          *
          * @example
@@ -3034,7 +3093,7 @@ class Scale {
                     }
                     return
                 }
-                for (let j = i; j < this.pitches.length+(n-1); j++) {
+                for (let j = i; j &lt; this.pitches.length+(n-1); j++) {
 
                     run_it(j+1,[...n_chord,this.pitches[this.parent.mod(j,this.pitches.length)]])
 
@@ -3048,12 +3107,12 @@ class Scale {
         },
 
         /**
-         * <p>The name of the scale in the form EDO-Code, EDO being the number of divisions of the octave in the current
-         * system, and code being the binary value of the scale (see example below).</p>
-         * <p>For simplicity consider a system with 4 divisions. Such a system has 4 possible pitches: <code>[0,1,2,3]</code>.<br>
+         * &lt;p>The name of the scale in the form EDO-Code, EDO being the number of divisions of the octave in the current
+         * system, and code being the binary value of the scale (see example below).&lt;/p>
+         * &lt;p>For simplicity consider a system with 4 divisions. Such a system has 4 possible pitches: &lt;code>[0,1,2,3]&lt;/code>.&lt;br>
          *     The scale vector is a binary representation of the PCs used in the scale in reversed order. So the scale
-         *     [0,2] would have a representation of: <code>[0,1,0,1]</code><br>
-         *         As such, the name for this scale will be 4-5</p>
+         *     [0,2] would have a representation of: &lt;code>[0,1,0,1]&lt;/code>&lt;br>
+         *         As such, the name for this scale will be 4-5&lt;/p>
          * @memberOf Scale#get
          * */
         name: () => {
@@ -3068,10 +3127,10 @@ class Scale {
 
         },
 
-        /** <p>Returns the scale's pitches in normal order</p>
+        /** &lt;p>Returns the scale's pitches in normal order&lt;/p>
 
          * @param {Boolean} [cache=false] - When true, the result will be cached for future retrieval
-         * @returns {Array<Number>} The pitches in normal order
+         * @returns {Array&lt;Number>} The pitches in normal order
          * @memberOf Scale#get
          *
          * @example
@@ -3095,10 +3154,10 @@ class Scale {
 
         },
 
-        /** <p>Returns every ordering (permutation) of notes in the scale</p>
+        /** &lt;p>Returns every ordering (permutation) of notes in the scale&lt;/p>
          *
-         * <p>Uses [EDO.get.permutations()]{@link EDO#get.permutations}</p>
-         * @returns {Array<Array<Number>>} The permutations of the scale
+         * &lt;p>Uses [EDO.get.permutations()]{@link EDO#get.permutations}&lt;/p>
+         * @returns {Array&lt;Array&lt;Number>>} The permutations of the scale
          * @memberOf Scale#get
          * @see EDO#get.permutations
          *
@@ -3121,17 +3180,17 @@ class Scale {
         },
 
         /** Returns the scale's pitches as pitch classes
-         * @returns {Array<Number>} The scale's pitches as PCs
+         * @returns {Array&lt;Number>} The scale's pitches as PCs
          * @memberOf Scale#get
          */
         pitches: () => {
             return this.pitches
         },
 
-        /** <p>Gets a list of intervals above a root, and returns all the positions in the scale where this
-         chord quality can be created</p>
+        /** &lt;p>Gets a list of intervals above a root, and returns all the positions in the scale where this
+         chord quality can be created&lt;/p>
          *
-         * @returns {Array<Number>} The PCs on which the quality can be built
+         * @returns {Array&lt;Number>} The PCs on which the quality can be built
          * @memberOf Scale#get
          * @example
          * let edo = new EDO(12) //define context
@@ -3152,10 +3211,10 @@ class Scale {
 
         },
 
-        /** <p>Returns the scale's pitches in prime form</p>
+        /** &lt;p>Returns the scale's pitches in prime form&lt;/p>
 
          * @param {Boolean} [cache=false] - When true, the result will be cached for future retrieval
-         * @returns {Array<Number>} The pitches in prime form
+         * @returns {Array&lt;Number>} The pitches in prime form
          * @memberOf Scale#get
          *
          * @example
@@ -3171,8 +3230,8 @@ class Scale {
             let scale_steps = norm_ord.to.steps()
             let i_scale_steps = i_norm_ord.to.steps()
             let result = norm_ord.pitches
-            for(let i=0;i<scale_steps.length;i++) {
-                if(scale_steps[i]<i_scale_steps[i]) {
+            for(let i=0;i&lt;scale_steps.length;i++) {
+                if(scale_steps[i]&lt;i_scale_steps[i]) {
                     result=norm_ord.pitches
                     break
                 }
@@ -3186,10 +3245,10 @@ class Scale {
             return result
         },
 
-        /** <p>Returns all of the rotations of the scale (not normalized to 0).</p>
+        /** &lt;p>Returns all of the rotations of the scale (not normalized to 0).&lt;/p>
          *
-         * <p>To get the rotations normalized to zero (the modes) use [Scale.get.modes()]{@link Scale#get.modes}</p>
-         * @returns {Array<Array<Number>>} The rotations of the scale
+         * &lt;p>To get the rotations normalized to zero (the modes) use [Scale.get.modes()]{@link Scale#get.modes}&lt;/p>
+         * @returns {Array&lt;Array&lt;Number>>} The rotations of the scale
          * @memberOf Scale#get
          * @example
          * let edo = new EDO(12) //define context
@@ -3206,7 +3265,7 @@ class Scale {
             return rotations
         },
 
-        /** <p>Returns the Rothenberg Propriety value for this scale</p>
+        /** &lt;p>Returns the Rothenberg Propriety value for this scale&lt;/p>
          * @param {Boolean} [cache=false] - When true, the result will be cached for future retrieval.
          * @returns {('strictly proper'|'proper'|'improper')} The step sizes
          * @example
@@ -3225,7 +3284,7 @@ class Scale {
             steps.forEach((step) => {
                 let double_intervals = intervals.concat(intervals)
                 let interval_classes = []
-                for(let i=0;i<intervals.length;i++) {
+                for(let i=0;i&lt;intervals.length;i++) {
                     let sli = double_intervals.slice(i,i+step)
                     sli = sli.reduce((t,e) => t+e)
                     interval_classes.push(sli)
@@ -3234,9 +3293,9 @@ class Scale {
             })
             let strictly_proper = true
             let proper = true
-            for(let i=1;i<map.length;i++) {
-                if (map[i]['min'] <= map[i - 1]['max']) strictly_proper = false
-                if (map[i]['min'] < map[i - 1]['max']) proper = false
+            for(let i=1;i&lt;map.length;i++) {
+                if (map[i]['min'] &lt;= map[i - 1]['max']) strictly_proper = false
+                if (map[i]['min'] &lt; map[i - 1]['max']) proper = false
             }
 
             let result = ""
@@ -3247,10 +3306,10 @@ class Scale {
             return result
         },
 
-        /** <p>Transposes a melody within the scale by a given number of scale degrees</p>
-         * @param {Array<Number>} seq - The original melody / sequence to be "transposed"
+        /** &lt;p>Transposes a melody within the scale by a given number of scale degrees&lt;/p>
+         * @param {Array&lt;Number>} seq - The original melody / sequence to be "transposed"
          * @param {Number} transposition - The number of scale degrees (up or down) by which to shift the melody.
-         * @returns {Array<Number>} The transposed pitches
+         * @returns {Array&lt;Number>} The transposed pitches
          * @memberOf Scale#get
          *
          * @example
@@ -3272,13 +3331,13 @@ class Scale {
             return new_seq
         },
 
-        /** <p>Same as {@link EDO.get.shortest_path()} but for diatonic cases.</p>
-         * <p>Instead of thinking in "intervals" it thinks in steps and scale degrees.
+        /** &lt;p>Same as {@link EDO.get.shortest_path()} but for diatonic cases.&lt;/p>
+         * &lt;p>Instead of thinking in "intervals" it thinks in steps and scale degrees.
          so in the context of C major, moving from E to G is a move of size 3 (scale degrees),
          and from C to E is also 3 (scale degrees) even though in one case it's a minor third and in
-         the other its a Major third.</p>
+         the other its a Major third.&lt;/p>
 
-         <p>In this function the starting point is scale_degree 1</p>
+         &lt;p>In this function the starting point is scale_degree 1&lt;/p>
 
          * @param {Number} destination_scale_degree
          * @param {Number} up_steps
@@ -3300,10 +3359,10 @@ class Scale {
 
         },
 
-        /** <p>Returns a list of lists of size "levels" made out of scale degrees with "skip" steps skipped apart.</p>
+        /** &lt;p>Returns a list of lists of size "levels" made out of scale degrees with "skip" steps skipped apart.&lt;/p>
          * @param  {Number} levels - The number of levels to the stack
          * @param  {Number} skip - The number of scale steps to skip between each level on the stack
-         * @returns {Array<Array<Number>>} An array containing all of the stacks
+         * @returns {Array&lt;Array&lt;Number>>} An array containing all of the stacks
          * @memberOf Scale#get
          * @example
          * [0,2,4,5,7,9,11] in 12-TET Scale.get.stacks(3,1)
@@ -3331,7 +3390,7 @@ class Scale {
             let stacks = []
             modes.forEach((mode) => {
                 let notes = []
-                for (let i=0;i<diapason;i+=skip+1) {
+                for (let i=0;i&lt;diapason;i+=skip+1) {
                     notes.push(mode[i%mode.length])
                 }
                 let temp = new Set(notes)
@@ -3341,8 +3400,8 @@ class Scale {
             return stacks
         },
 
-        /** <p>Returns a list of unique step sizes that appear in the scale.</p>
-         * @returns {Array<Number>} The step sizes
+        /** &lt;p>Returns a list of unique step sizes that appear in the scale.&lt;/p>
+         * @returns {Array&lt;Number>} The step sizes
          * @example
          * let edo = new EDO(12) //define tuning
          * let scale = edo.scale([0,2,4,5,7,9,11]) //major scale
@@ -3361,8 +3420,8 @@ class Scale {
         },
 
         /** Returns the sets that the scale is contained in from a given list of sets
-         * @param  {Array<Array<Number>>} scales - a list of scales
-         * @returns {Array<Array<Number>>} the scales that contain the Scale object
+         * @param  {Array&lt;Array&lt;Number>>} scales - a list of scales
+         * @returns {Array&lt;Array&lt;Number>>} the scales that contain the Scale object
          * @memberOf Scale#get
          * @example
          * let edo = new EDO(12) //define context
@@ -3381,10 +3440,10 @@ class Scale {
             return sets
         },
 
-        /** <p>Returns every tetrachord (normalized to 0) available in this scale</p>
-         * <p>Note: for a collection of all pitch subsets of length n (rather than 4) use [Scale.get.n_chords()]{@link Scale#get.n_chords}</p>
+        /** &lt;p>Returns every tetrachord (normalized to 0) available in this scale&lt;/p>
+         * &lt;p>Note: for a collection of all pitch subsets of length n (rather than 4) use [Scale.get.n_chords()]{@link Scale#get.n_chords}&lt;/p>
          * @param  {Boolean} cache - When true, the result will be cached for faster retrieval
-         * @returns {Array<Number>} An array containing all tetrachords
+         * @returns {Array&lt;Number>} An array containing all tetrachords
          * @memberOf Scale#get
          *
          * @example
@@ -3411,9 +3470,9 @@ class Scale {
             return tetrachords
         },
 
-        /** <p>Returns the scale's pitches transposed by a certain amount</p>
+        /** &lt;p>Returns the scale's pitches transposed by a certain amount&lt;/p>
          * @param {Number} amount - The amount by which to transpose the pitches
-         * @returns {Array<Number>} The transposed pitches
+         * @returns {Array&lt;Number>} The transposed pitches
          * @memberOf Scale#get
          *
          * @example
@@ -3424,10 +3483,10 @@ class Scale {
             return this.parent.get.transposition(this.pitches,amount)
         },
 
-        /** <p>Returns every trichord (normalized to 0) available in this scale</p>
-         * <p>Note: for a collection of all pitch subsets of length n (rather than 3) use [Scale.get.n_chords()]{@link Scale#get.n_chords}</p>
+        /** &lt;p>Returns every trichord (normalized to 0) available in this scale&lt;/p>
+         * &lt;p>Note: for a collection of all pitch subsets of length n (rather than 3) use [Scale.get.n_chords()]{@link Scale#get.n_chords}&lt;/p>
          * @param  {Boolean} cache - When true, the result will be cached for faster retrieval
-         * @returns {Array<Number>} An array containing all trichords
+         * @returns {Array&lt;Number>} An array containing all trichords
          * @memberOf Scale#get
          *
          * @example
@@ -3466,8 +3525,8 @@ class Scale {
      * @namespace*/
     is = {
 
-        /**<p>Returns a list of (lower-order) EDOs if the scale can be represented in them.</p>
-         <p>For instance 12-EDO <code>[0,3,6,9]</code> also exists in in 4-EDO as <code>[0,1,2,3]</code>. Therefore the function will return <code>[4]</code></p>
+        /**&lt;p>Returns a list of (lower-order) EDOs if the scale can be represented in them.&lt;/p>
+         &lt;p>For instance 12-EDO &lt;code>[0,3,6,9]&lt;/code> also exists in in 4-EDO as &lt;code>[0,1,2,3]&lt;/code>. Therefore the function will return &lt;code>[4]&lt;/code>&lt;/p>
          * @param {Boolean} cache - When true, the result will be cached for faster retrieval in subsequent calls.
          * @returns {Boolean}
          * @memberOf Scale#is
@@ -3496,7 +3555,7 @@ class Scale {
 
         },
 
-        /**<p>Returns true if the scale is invertible and false if it isn't</p>
+        /**&lt;p>Returns true if the scale is invertible and false if it isn't&lt;/p>
          * @param {Boolean} [cache=false] - when true, the result will be cached for future retrieval
          * @returns {Boolean}
          * @memberOf Scale#is
@@ -3516,10 +3575,10 @@ class Scale {
             return result
         },
 
-        /**<p>Checks if the scale is a mode / rotation of another scale</p>
+        /**&lt;p>Checks if the scale is a mode / rotation of another scale&lt;/p>
          *
-         * <p>To check again multiple scale see [Scale.is.one_of]{@link Scale#is.one_of}</p>
-         * @param {Array<Number>} scales - a collection of scales (or necklaces)
+         * &lt;p>To check again multiple scale see [Scale.is.one_of]{@link Scale#is.one_of}&lt;/p>
+         * @param {Array&lt;Number>} scales - a collection of scales (or necklaces)
          * @returns {Boolean}
          * @memberOf Scale#is
          * @see Scale#is.one_of
@@ -3535,7 +3594,7 @@ class Scale {
         },
 
         /**
-         * <p>Returns True if the scale is in normal order and False if it isn't</p>
+         * &lt;p>Returns True if the scale is in normal order and False if it isn't&lt;/p>
          * @returns {Boolean}
          * @memberOf Scale#is
          * @example
@@ -3547,8 +3606,8 @@ class Scale {
             return this.parent.is.same(this.pitches,this.get.normal_order())
         },
 
-        /**<p>Checks if the scale (as a whole!) is one of the scales given in a list of scales (or in one of their modes)</p>
-         * @param {Array<Array<Number>>} scales - a collection of scales (more accurately, necklaces)
+        /**&lt;p>Checks if the scale (as a whole!) is one of the scales given in a list of scales (or in one of their modes)&lt;/p>
+         * @param {Array&lt;Array&lt;Number>>} scales - a collection of scales (more accurately, necklaces)
          * @returns {Boolean}
          * @memberOf Scale#is
          *
@@ -3566,7 +3625,7 @@ class Scale {
         },
 
         /**
-         * <p>Returns True if the scale is in prime form and False if it isn't.</p>
+         * &lt;p>Returns True if the scale is in prime form and False if it isn't.&lt;/p>
          * @returns {Boolean}
          * @memberOf Scale#is
          *
@@ -3579,8 +3638,8 @@ class Scale {
             return this.parent.is.same(this.pitches,this.get.prime_form())
         },
 
-        /**<p>Returns true if the scale is a subset of one of multiple scales provided</p>
-         * @param {Array<Number>|Array<Array<Number>>} scales - another scale, or a collection of scales
+        /**&lt;p>Returns true if the scale is a subset of one of multiple scales provided&lt;/p>
+         * @param {Array&lt;Number>|Array&lt;Array&lt;Number>>} scales - another scale, or a collection of scales
          * @returns {Boolean}
          * @memberOf Scale#is
          *
@@ -3611,7 +3670,7 @@ class Scale {
 
         /**
          * Returns the scale's representation in cents [0,100,300, etc.]
-         * @returns {Array<Number>}
+         * @returns {Array&lt;Number>}
          * @memberOf Scale#to
          * @example
          * let edo = new EDO(12) //define context
@@ -3625,7 +3684,7 @@ class Scale {
         /**
          * Instead of PCs, this returns the scale represented by intervals (steps between notes)
          * @param {Boolean} [cache=false] - when true, the result is cached for future retrieval
-         * @returns {Array<Number>}
+         * @returns {Array&lt;Number>}
          * @memberOf Scale#to
          * @example
          * let edo = new EDO(12) //define context
@@ -3642,29 +3701,29 @@ class Scale {
         }
     }
 
-    /**<p>A collection of functions that make visual representations</p>
-     * <p>Note: Scale.show can only be used client-side</p>
+    /**&lt;p>A collection of functions that make visual representations&lt;/p>
+     * &lt;p>Note: Scale.show can only be used client-side&lt;/p>
      * @namespace Scale#show
      * */
     show = {
         /**
-         * <p>Makes a fractal tree corresponding to the scale with branches diverging by given step sizes.</p>
-         * <img src='img/fractal_tree.png'>
+         * &lt;p>Makes a fractal tree corresponding to the scale with branches diverging by given step sizes.&lt;/p>
+         * &lt;img src='img/fractal_tree.png'>
          * @param  {String} container_id - The ID of a DOM element in which the tree will be shown.
          * @param  {Number} [length=200] - The length (or height) or the tree's "trunk".
          * @param  {Number} [angle_span=90] - the angle between branches.
-         * @param  {Array<Number>} [intervals=[-1,1]] - Each interval represents the number of scale degrees away from the current node.
+         * @param  {Array&lt;Number>} [intervals=[-1,1]] - Each interval represents the number of scale degrees away from the current node.
          * @param  {Number} [iterations=5] - The number of sub-branches on the tree
          * @param  {Number} [length_mul=0.7] - The factor by which every new sub-branch's length is to its parent.
 
          * @example
-         * <script src="edo.js"></script>
-         * <script src="raphael.min.js"></script>
-         * <div id="container" style="width:900px;height:600px; margin:0 auto;"></div>
-         * <script>
+         * &lt;script src="edo.js">&lt;/script>
+         * &lt;script src="raphael.min.js">&lt;/script>
+         * &lt;div id="container" style="width:900px;height:600px; margin:0 auto;">&lt;/div>
+         * &lt;script>
          *  let edo = new EDO()
          *  edo.show.interval_fractal_tree(container_id)
-         * </script>
+         * &lt;/script>
 
 
          * @see /demos/fractal_tree.html
@@ -3674,21 +3733,21 @@ class Scale {
         },
 
         /**
-         * <p>Graphs the scale's necklace.</p>
-         ** <img src='img/scale_necklace.png'>
+         * &lt;p>Graphs the scale's necklace.&lt;/p>
+         ** &lt;img src='img/scale_necklace.png'>
          * @param  {String} container_id - The ID of a DOM element in which the contour will be shown.
          * @param  {Boolean} [replace=false] - When false, any time the function is called a new contour will be appended to the object. When true, it will replace the contents of the container.
-         * @param  {Number|Array<Number,Number>} [radius] - Radius (in px) of the ring. When no values are passed, the ring will take the size of the container.
+         * @param  {Number|Array&lt;Number,Number>} [radius] - Radius (in px) of the ring. When no values are passed, the ring will take the size of the container.
          *
          * @example
-         * <script src="edo.js"></script>
-         * <script src="raphael.min.js"></script>
-         * <div id="container" style="width:900px;height:600px; margin:0 auto;"></div>
-         * <script>
+         * &lt;script src="edo.js">&lt;/script>
+         * &lt;script src="raphael.min.js">&lt;/script>
+         * &lt;div id="container" style="width:900px;height:600px; margin:0 auto;">&lt;/div>
+         * &lt;script>
          *  let edo = new EDO()
          *  let scale = edo.scale([0,2,4,5,7,9,11])
          *  scale.show.necklace('container')
-         * </script>
+         * &lt;/script>
          * @see /demos/necklace.html
          * @memberOf Scale#show*/
         necklace : (container_id, replace=true,radius =600) => {
@@ -3756,3 +3815,29 @@ catch (e) {
 
 
 
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+  
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+<script>
+var list = [{"link":"<a href=\"EDO.html\">EDO</a>"},{"title":"EDO#scale","link":"<a href=\"EDO.html#scale\">EDO &rtrif; scale</a>"},{"link":"<a href=\"Scale.html\">Scale</a>"},{"title":"Scale#invert","link":"<a href=\"Scale.html#invert\">Scale &rtrif; invert</a>"},{"title":"Scale#mode","link":"<a href=\"Scale.html#mode\">Scale &rtrif; mode</a>"},{"title":"Scale#normal","link":"<a href=\"Scale.html#normal\">Scale &rtrif; normal</a>"},{"title":"Scale#prime","link":"<a href=\"Scale.html#prime\">Scale &rtrif; prime</a>"},{"link":"<a href=\"EDO_convert.html\">convert</a>"},{"title":"EDO#convert.cents_to_ratio","link":"<a href=\"EDO_convert.html#.cents_to_ratio\">EDO &rtrif; convert.cents_to_ratio</a>"},{"title":"EDO#convert.interval_to_cents","link":"<a href=\"EDO_convert.html#.interval_to_cents\">EDO &rtrif; convert.interval_to_cents</a>"},{"title":"EDO#convert.interval_to_ratio","link":"<a href=\"EDO_convert.html#.interval_to_ratio\">EDO &rtrif; convert.interval_to_ratio</a>"},{"title":"EDO#convert.intervals_to_pitches","link":"<a href=\"EDO_convert.html#.intervals_to_pitches\">EDO &rtrif; convert.intervals_to_pitches</a>"},{"title":"EDO#convert.intervals_to_scale","link":"<a href=\"EDO_convert.html#.intervals_to_scale\">EDO &rtrif; convert.intervals_to_scale</a>"},{"title":"EDO#convert.midi_to_intervals","link":"<a href=\"EDO_convert.html#.midi_to_intervals\">EDO &rtrif; convert.midi_to_intervals</a>"},{"title":"EDO#convert.midi_to_name","link":"<a href=\"EDO_convert.html#.midi_to_name\">EDO &rtrif; convert.midi_to_name</a>"},{"title":"EDO#convert.name_to_scale","link":"<a href=\"EDO_convert.html#.name_to_scale\">EDO &rtrif; convert.name_to_scale</a>"},{"title":"EDO#convert.pc_to_name","link":"<a href=\"EDO_convert.html#.pc_to_name\">EDO &rtrif; convert.pc_to_name</a>"},{"title":"EDO#convert.ratio_to_cents","link":"<a href=\"EDO_convert.html#.ratio_to_cents\">EDO &rtrif; convert.ratio_to_cents</a>"},{"title":"EDO#convert.ratio_to_interval","link":"<a href=\"EDO_convert.html#.ratio_to_interval\">EDO &rtrif; convert.ratio_to_interval</a>"},{"title":"EDO#convert.to_steps","link":"<a href=\"EDO_convert.html#.to_steps\">EDO &rtrif; convert.to_steps</a>"},{"link":"<a href=\"EDO_count.html\">count</a>"},{"title":"EDO#count.common_tones","link":"<a href=\"EDO_count.html#.common_tones\">EDO &rtrif; count.common_tones</a>"},{"title":"EDO#count.pitches","link":"<a href=\"EDO_count.html#.pitches\">EDO &rtrif; count.pitches</a>"},{"link":"<a href=\"EDO_get.html\">get</a>"},{"title":"EDO#get.contour","link":"<a href=\"EDO_get.html#.contour\">EDO &rtrif; get.contour</a>"},{"title":"EDO#get.interval_shift","link":"<a href=\"EDO_get.html#.interval_shift\">EDO &rtrif; get.interval_shift</a>"},{"title":"EDO#get.interval_stack","link":"<a href=\"EDO_get.html#.interval_stack\">EDO &rtrif; get.interval_stack</a>"},{"title":"EDO#get.inversion","link":"<a href=\"EDO_get.html#.inversion\">EDO &rtrif; get.inversion</a>"},{"title":"EDO#get.lattice","link":"<a href=\"EDO_get.html#.lattice\">EDO &rtrif; get.lattice</a>"},{"title":"EDO#get.modes","link":"<a href=\"EDO_get.html#.modes\">EDO &rtrif; get.modes</a>"},{"title":"EDO#get.motives","link":"<a href=\"EDO_get.html#.motives\">EDO &rtrif; get.motives</a>"},{"title":"EDO#get.necklace","link":"<a href=\"EDO_get.html#.necklace\">EDO &rtrif; get.necklace</a>"},{"title":"EDO#get.normal_order","link":"<a href=\"EDO_get.html#.normal_order\">EDO &rtrif; get.normal_order</a>"},{"title":"EDO#get.partitioned_subsets","link":"<a href=\"EDO_get.html#.partitioned_subsets\">EDO &rtrif; get.partitioned_subsets</a>"},{"title":"EDO#get.path_n_steps","link":"<a href=\"EDO_get.html#.path_n_steps\">EDO &rtrif; get.path_n_steps</a>"},{"title":"EDO#get.path_on_tree","link":"<a href=\"EDO_get.html#.path_on_tree\">EDO &rtrif; get.path_on_tree</a>"},{"title":"EDO#get.permutations","link":"<a href=\"EDO_get.html#.permutations\">EDO &rtrif; get.permutations</a>"},{"title":"EDO#get.pitch_distribution","link":"<a href=\"EDO_get.html#.pitch_distribution\">EDO &rtrif; get.pitch_distribution</a>"},{"title":"EDO#get.random_melody","link":"<a href=\"EDO_get.html#.random_melody\">EDO &rtrif; get.random_melody</a>"},{"title":"EDO#get.random_melody_from_contour","link":"<a href=\"EDO_get.html#.random_melody_from_contour\">EDO &rtrif; get.random_melody_from_contour</a>"},{"title":"EDO#get.ratio_approximation","link":"<a href=\"EDO_get.html#.ratio_approximation\">EDO &rtrif; get.ratio_approximation</a>"},{"title":"EDO#get.scales","link":"<a href=\"EDO_get.html#.scales\">EDO &rtrif; get.scales</a>"},{"title":"EDO#get.shortest_path","link":"<a href=\"EDO_get.html#.shortest_path\">EDO &rtrif; get.shortest_path</a>"},{"title":"EDO#get.simple_ratios","link":"<a href=\"EDO_get.html#.simple_ratios\">EDO &rtrif; get.simple_ratios</a>"},{"title":"EDO#get.subset_indices","link":"<a href=\"EDO_get.html#.subset_indices\">EDO &rtrif; get.subset_indices</a>"},{"title":"EDO#get.subsets","link":"<a href=\"EDO_get.html#.subsets\">EDO &rtrif; get.subsets</a>"},{"title":"EDO#get.transposition","link":"<a href=\"EDO_get.html#.transposition\">EDO &rtrif; get.transposition</a>"},{"title":"EDO#get.unique_elements","link":"<a href=\"EDO_get.html#.unique_elements\">EDO &rtrif; get.unique_elements</a>"},{"link":"<a href=\"EDO_is.html\">is</a>"},{"title":"EDO#is.element_of","link":"<a href=\"EDO_is.html#.element_of\">EDO &rtrif; is.element_of</a>"},{"title":"EDO#is.same","link":"<a href=\"EDO_is.html#.same\">EDO &rtrif; is.same</a>"},{"title":"EDO#is.subset","link":"<a href=\"EDO_is.html#.subset\">EDO &rtrif; is.subset</a>"},{"link":"<a href=\"EDO_show.html\">show</a>"},{"title":"EDO#show.contour","link":"<a href=\"EDO_show.html#.contour\">EDO &rtrif; show.contour</a>"},{"title":"EDO#show.interval_fractal_tree","link":"<a href=\"EDO_show.html#.interval_fractal_tree\">EDO &rtrif; show.interval_fractal_tree</a>"},{"title":"EDO#show.necklace","link":"<a href=\"EDO_show.html#.necklace\">EDO &rtrif; show.necklace</a>"},{"link":"<a href=\"Scale_count.html\">count</a>"},{"title":"Scale#count.chord_quality","link":"<a href=\"Scale_count.html#.chord_quality\">Scale &rtrif; count.chord_quality</a>"},{"title":"Scale#count.consecutive_steps","link":"<a href=\"Scale_count.html#.consecutive_steps\">Scale &rtrif; count.consecutive_steps</a>"},{"title":"Scale#count.imperfections","link":"<a href=\"Scale_count.html#.imperfections\">Scale &rtrif; count.imperfections</a>"},{"title":"Scale#count.interval","link":"<a href=\"Scale_count.html#.interval\">Scale &rtrif; count.interval</a>"},{"title":"Scale#count.M3s","link":"<a href=\"Scale_count.html#.M3s\">Scale &rtrif; count.M3s</a>"},{"title":"Scale#count.m3s","link":"<a href=\"Scale_count.html#.m3s\">Scale &rtrif; count.m3s</a>"},{"title":"Scale#count.major_minor_triads","link":"<a href=\"Scale_count.html#.major_minor_triads\">Scale &rtrif; count.major_minor_triads</a>"},{"title":"Scale#count.modes","link":"<a href=\"Scale_count.html#.modes\">Scale &rtrif; count.modes</a>"},{"title":"Scale#count.P5s","link":"<a href=\"Scale_count.html#.P5s\">Scale &rtrif; count.P5s</a>"},{"title":"Scale#count.pitches","link":"<a href=\"Scale_count.html#.pitches\">Scale &rtrif; count.pitches</a>"},{"title":"Scale#count.ratio","link":"<a href=\"Scale_count.html#.ratio\">Scale &rtrif; count.ratio</a>"},{"title":"Scale#count.rotational_symmetries","link":"<a href=\"Scale_count.html#.rotational_symmetries\">Scale &rtrif; count.rotational_symmetries</a>"},{"title":"Scale#count.simple_ratios","link":"<a href=\"Scale_count.html#.simple_ratios\">Scale &rtrif; count.simple_ratios</a>"},{"title":"Scale#count.tetrachords","link":"<a href=\"Scale_count.html#.tetrachords\">Scale &rtrif; count.tetrachords</a>"},{"title":"Scale#count.thirds","link":"<a href=\"Scale_count.html#.thirds\">Scale &rtrif; count.thirds</a>"},{"title":"Scale#count.transpositions","link":"<a href=\"Scale_count.html#.transpositions\">Scale &rtrif; count.transpositions</a>"},{"title":"Scale#count.trichords","link":"<a href=\"Scale_count.html#.trichords\">Scale &rtrif; count.trichords</a>"},{"link":"<a href=\"Scale_export.html\">export</a>"},{"title":"Scale#export.scala","link":"<a href=\"Scale_export.html#.scala\">Scale &rtrif; export.scala</a>"},{"link":"<a href=\"Scale_get.html\">get</a>"},{"title":"Scale#get.common_tone_transpositions","link":"<a href=\"Scale_get.html#.common_tone_transpositions\">Scale &rtrif; get.common_tone_transpositions</a>"},{"title":"Scale#get.interval_vector","link":"<a href=\"Scale_get.html#.interval_vector\">Scale &rtrif; get.interval_vector</a>"},{"title":"Scale#get.inversion","link":"<a href=\"Scale_get.html#.inversion\">Scale &rtrif; get.inversion</a>"},{"title":"Scale#get.least_step_multiplier","link":"<a href=\"Scale_get.html#.least_step_multiplier\">Scale &rtrif; get.least_step_multiplier</a>"},{"title":"Scale#get.lerdahl_attraction","link":"<a href=\"Scale_get.html#.lerdahl_attraction\">Scale &rtrif; get.lerdahl_attraction</a>"},{"title":"Scale#get.lerdahl_attraction_vector","link":"<a href=\"Scale_get.html#.lerdahl_attraction_vector\">Scale &rtrif; get.lerdahl_attraction_vector</a>"},{"title":"Scale#get.levenshtein","link":"<a href=\"Scale_get.html#.levenshtein\">Scale &rtrif; get.levenshtein</a>"},{"title":"Scale#get.modes","link":"<a href=\"Scale_get.html#.modes\">Scale &rtrif; get.modes</a>"},{"title":"Scale#get.motives_diatonic","link":"<a href=\"Scale_get.html#.motives_diatonic\">Scale &rtrif; get.motives_diatonic</a>"},{"title":"Scale#get.n_chords","link":"<a href=\"Scale_get.html#.n_chords\">Scale &rtrif; get.n_chords</a>"},{"title":"Scale#get.name","link":"<a href=\"Scale_get.html#.name\">Scale &rtrif; get.name</a>"},{"title":"Scale#get.normal_order","link":"<a href=\"Scale_get.html#.normal_order\">Scale &rtrif; get.normal_order</a>"},{"title":"Scale#get.permutations","link":"<a href=\"Scale_get.html#.permutations\">Scale &rtrif; get.permutations</a>"},{"title":"Scale#get.pitches","link":"<a href=\"Scale_get.html#.pitches\">Scale &rtrif; get.pitches</a>"},{"title":"Scale#get.position_of_quality","link":"<a href=\"Scale_get.html#.position_of_quality\">Scale &rtrif; get.position_of_quality</a>"},{"title":"Scale#get.prime_form","link":"<a href=\"Scale_get.html#.prime_form\">Scale &rtrif; get.prime_form</a>"},{"title":"Scale#get.rotations","link":"<a href=\"Scale_get.html#.rotations\">Scale &rtrif; get.rotations</a>"},{"title":"Scale#get.rothenberg_propriety","link":"<a href=\"Scale_get.html#.rothenberg_propriety\">Scale &rtrif; get.rothenberg_propriety</a>"},{"title":"Scale#get.sequence_transposition","link":"<a href=\"Scale_get.html#.sequence_transposition\">Scale &rtrif; get.sequence_transposition</a>"},{"title":"Scale#get.shortest_path","link":"<a href=\"Scale_get.html#.shortest_path\">Scale &rtrif; get.shortest_path</a>"},{"title":"Scale#get.stacks","link":"<a href=\"Scale_get.html#.stacks\">Scale &rtrif; get.stacks</a>"},{"title":"Scale#get.step_sizes","link":"<a href=\"Scale_get.html#.step_sizes\">Scale &rtrif; get.step_sizes</a>"},{"title":"Scale#get.supersets","link":"<a href=\"Scale_get.html#.supersets\">Scale &rtrif; get.supersets</a>"},{"title":"Scale#get.tetrachords","link":"<a href=\"Scale_get.html#.tetrachords\">Scale &rtrif; get.tetrachords</a>"},{"title":"Scale#get.transposition","link":"<a href=\"Scale_get.html#.transposition\">Scale &rtrif; get.transposition</a>"},{"title":"Scale#get.trichords","link":"<a href=\"Scale_get.html#.trichords\">Scale &rtrif; get.trichords</a>"},{"link":"<a href=\"Scale_is.html\">is</a>"},{"title":"Scale#is.in_lower_edos","link":"<a href=\"Scale_is.html#.in_lower_edos\">Scale &rtrif; is.in_lower_edos</a>"},{"title":"Scale#is.invertible","link":"<a href=\"Scale_is.html#.invertible\">Scale &rtrif; is.invertible</a>"},{"title":"Scale#is.mode_of","link":"<a href=\"Scale_is.html#.mode_of\">Scale &rtrif; is.mode_of</a>"},{"title":"Scale#is.normal_order","link":"<a href=\"Scale_is.html#.normal_order\">Scale &rtrif; is.normal_order</a>"},{"title":"Scale#is.one_of","link":"<a href=\"Scale_is.html#.one_of\">Scale &rtrif; is.one_of</a>"},{"title":"Scale#is.prime_form","link":"<a href=\"Scale_is.html#.prime_form\">Scale &rtrif; is.prime_form</a>"},{"title":"Scale#is.subset","link":"<a href=\"Scale_is.html#.subset\">Scale &rtrif; is.subset</a>"},{"link":"<a href=\"Scale_show.html\">show</a>"},{"title":"Scale#show.interval_fractal_tree","link":"<a href=\"Scale_show.html#.interval_fractal_tree\">Scale &rtrif; show.interval_fractal_tree</a>"},{"title":"Scale#show.necklace","link":"<a href=\"Scale_show.html#.necklace\">Scale &rtrif; show.necklace</a>"},{"link":"<a href=\"Scale_to.html\">to</a>"},{"title":"Scale#to.cents","link":"<a href=\"Scale_to.html#.cents\">Scale &rtrif; to.cents</a>"},{"title":"Scale#to.steps","link":"<a href=\"Scale_to.html#.steps\">Scale &rtrif; to.steps</a>"},{"title":"environment","link":"<a href=\"global.html#environment\">Global &rtrif; environment</a>"}];
+setupSearch(list)
+</script>
+
+ 
+<script type="text/javascript" src="scripts/misc.js"></script>
+</body>
+</html>

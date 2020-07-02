@@ -6,13 +6,23 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["music","music theory","musicology","set theory","microtonal","equal divisions of the octave"],
+  "keywords": [
+    "music",
+    "music theory",
+    "musicology",
+    "set theory",
+    "microtonal",
+    "equal divisions of the octave"
+  ],
   "author": "Michael Seltenreich <seltenmusic@gmail.com> (http://www.michaelseltenreich.com/)",
   "license": "ISC",
   "devDependencies": {
     "tui-jsdoc-template": "^1.2.2"
   },
-  "dependencies": {},
+  "dependencies": {
+    "clean-jsdoc-theme": "^2.2.11",
+    "swagger-jsdoc": "^4.0.0"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/MichaelSel/edoJS.git"

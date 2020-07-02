@@ -1,8 +1,46 @@
+//{
+//  "opts": {
+//    "template": "node_modules/tui-jsdoc-template",
+//    "encoding": "utf8",
+//    "destination": "./docs/",
+//    "recurse": true
+//  }
+//}
+
 {
+  "source": {
+    "include": ["package.json", "README.md"],
+    "includePattern": ".js$",
+    "excludePattern": "(node_modules/|docs)"
+  },
+
+  "plugins": [
+    "plugins/markdown"
+  ],
+
   "opts": {
-    "template": "node_modules/tui-jsdoc-template",
     "encoding": "utf8",
-    "destination": "./out/",
-    "recurse": true
-  }
+    "readme": "./README.md",
+    "destination": "docs/",
+    "recurse": true,
+    "verbose": true,
+    "template": "./node_modules/clean-jsdoc-theme"
+  },
+  "menu": [
+    {
+      "title": "Website", //You have to give title otherwise you get error.
+      "link": "https://ankdev.me/clean-jsdoc-theme/index.html", // You have to give link otherwise you get error.
+      // Below properties are optional.
+      "target": "_blank",
+      "class": "some-class",
+      "id": "some-id"
+    },
+    {
+      "title": "Github",
+      "link": "https://github.com/ankitskvmdam/clean-jsdoc-theme/",
+      "target": "_blank",
+      "class": "some-class",
+      "id": "some-id"
+    }
+  ]
 }
