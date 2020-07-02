@@ -1266,7 +1266,7 @@ class EDO {
          * @memberOf EDO#get
          * @example
          * let edo = new EDO(12) //Create a tuning context
-         * edo.get.random_melody_on_contour([0,3,1,3,2],[0,12],[0,2,4,5,7,9,11]); //returns e.g. [ 2, 11, 7, 11, 9 ]
+         * edo.get.random_melody_from_contour([0,3,1,3,2],[0,12],[0,2,4,5,7,9,11]); //returns e.g. [ 2, 11, 7, 11, 9 ]
          */
         random_melody_from_contour: (contour,range=[0,12],mode) => {
             const restart = () => {
