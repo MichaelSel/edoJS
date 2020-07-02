@@ -37,3 +37,7 @@ edo.is.subset([2,4],[1,2,3,4,5]) //returns true (the set [2,4] IS a subset of [1
 
 ## License
 [GNU AGPLv3](https://choosealicense.com/licenses/agpl-3.0/)
+
+## Full Documentation
+[Documentation](https://michaelsel.github.io/edoJS/)
+
