@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <title>show</title>
+    <title>import</title>
 
     <script src="edo.js/1.1.0/scripts/prettify/prettify.js"></script>
     <script src="edo.js/1.1.0/scripts/prettify/lang-css.js"></script>
@@ -47,7 +47,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">show</h1>
+    <h1 class="page-title">import</h1>
     
 
     
@@ -63,9 +63,9 @@
         
         <h2>
         
-            <span class="ancestors"><a href="Scale.html">Scale</a>#</span>
+            <span class="ancestors"><a href="EDO.html">EDO</a>#</span>
         
-        show
+        import
         
         </h2>
         
@@ -78,8 +78,7 @@
     <div class="container-overview">
     
         
-            <div class="description"><p>A collection of functions that make visual representations</p>
-<p>Note: Scale.show can only be used client-side</p></div>
+            <div class="description"><p>A collection of functions that import files into the framework</p></div>
         
 
         
@@ -107,15 +106,14 @@
 
     
 
-    <h4 class="name" id=".interval_fractal_tree"><span class="type-signature">(static) </span>interval_fractal_tree<span class="signature">(container_id, length<span class="signature-attributes">opt</span>, angle_span<span class="signature-attributes">opt</span>, intervals<span class="signature-attributes">opt</span>, iterations<span class="signature-attributes">opt</span>, length_mul<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id=".midi"><span class="type-signature">(static) </span>midi<span class="signature">(file_path)</span><span class="type-signature"> &rarr; {JSON}</span></h4>
 
     
 
 
 
     <div class="description">
-        <p>Makes a fractal tree corresponding to the scale with branches diverging by given step sizes.</p>
-<img src='img/fractal_tree.png'>
+        <p>Imports a midi file</p>
     </div>
 
 
@@ -140,11 +138,7 @@
         <th>Type</th>
 
         
-        <th>Attributes</th>
-        
 
-        
-        <th>Default</th>
         
 
         <th class="last">Description</th>
@@ -156,7 +150,7 @@
 
         <tr>
             
-                <td class="name"><code>container_id</code></td>
+                <td class="name"><code>file_path</code></td>
             
 
             <td class="type">
@@ -169,217 +163,10 @@
             </td>
 
             
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
 
             
-                <td class="default">
-                
-                </td>
-            
 
-            <td class="description last"><p>The ID of a DOM element in which the tree will be shown.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>length</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Number</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    200
-                
-                </td>
-            
-
-            <td class="description last"><p>The length (or height) or the tree's &quot;trunk&quot;.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>angle_span</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Number</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    90
-                
-                </td>
-            
-
-            <td class="description last"><p>the angle between branches.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>intervals</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Array.&lt;Number></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    [-1,1]
-                
-                </td>
-            
-
-            <td class="description last"><p>Each interval represents the number of scale degrees away from the current node.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>iterations</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Number</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    5
-                
-                </td>
-            
-
-            <td class="description last"><p>The number of sub-branches on the tree</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>length_mul</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Number</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    0.7
-                
-                </td>
-            
-
-            <td class="description last"><p>The factor by which every new sub-branch's length is to its parent.</p></td>
+            <td class="description last"><p>The path of the file</p></td>
         </tr>
 
     
@@ -422,22 +209,13 @@
         <div class="details-item-container">
             <dt class="tag-source">Source:</dt>
             <dd class="tag-source"><ul class="dummy"><li>
-                <a href="edo.js.html">edo.js</a>, <a href="edo.js.html#line3820">line 3820</a>
+                <a href="edo.js.html">edo.js</a>, <a href="edo.js.html#line1815">line 1815</a>
             </li></ul></dd>
         </div>
     
 
     
 
-    
-        <div class="details-item-container">
-            <dt class="tag-see">See:</dt>
-            <dd class="tag-see">
-                <ul>
-                    <li>/demos/fractal_tree.html</li>
-                </ul>
-            </dd>
-        </div>
     
 
     
@@ -455,20 +233,31 @@
 
 
 
-
-
-    <div class="method-member-container flex flex-col w-100 overflow-auto mt-20">
-        <strong>Example</strong>
+    <div class="method-member-container mt-20">
+    <strong>Returns:</strong>
         
-    <pre class="prettyprint"><code>&lt;script src="edo.js">&lt;/script>
-&lt;script src="raphael.min.js">&lt;/script>
-&lt;div id="container" style="width:900px;height:600px; margin:0 auto;">&lt;/div>
-&lt;script>
- let edo = new EDO()
- edo.show.interval_fractal_tree(container_id)
-&lt;/script></code></pre>
+            
+<div class="param-desc">
+    <p>the midi file as JSON</p>
+</div>
 
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">JSON</span>
+
+
+    </dd>
+</dl>
+ 
     </div>
+
+
 
 
         
@@ -476,15 +265,14 @@
 
     
 
-    <h4 class="name" id=".necklace"><span class="type-signature">(static) </span>necklace<span class="signature">(container_id, replace<span class="signature-attributes">opt</span>, radius<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id=".xml_raw"><span class="type-signature">(static) </span>xml_raw<span class="signature">(file_path)</span><span class="type-signature"> &rarr; {JSON}</span></h4>
 
     
 
 
 
     <div class="description">
-        <p>Graphs the scale's necklace.</p>
-* <img src='img/scale_necklace.png'>
+        <p>Imports a music xml file and loads it as a JSON.</p>
     </div>
 
 
@@ -509,11 +297,7 @@
         <th>Type</th>
 
         
-        <th>Attributes</th>
-        
 
-        
-        <th>Default</th>
         
 
         <th class="last">Description</th>
@@ -525,7 +309,7 @@
 
         <tr>
             
-                <td class="name"><code>container_id</code></td>
+                <td class="name"><code>file_path</code></td>
             
 
             <td class="type">
@@ -538,101 +322,10 @@
             </td>
 
             
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
 
             
-                <td class="default">
-                
-                </td>
-            
 
-            <td class="description last"><p>The ID of a DOM element in which the contour will be shown.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>replace</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Boolean</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    false
-                
-                </td>
-            
-
-            <td class="description last"><p>When false, any time the function is called a new contour will be appended to the object. When true, it will replace the contents of the container.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>radius</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Number</span>
-|
-
-<span class="param-type">Array.&lt;Number, Number></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last"><p>Radius (in px) of the ring. When no values are passed, the ring will take the size of the container.</p></td>
+            <td class="description last"><p>The path of the file</p></td>
         </tr>
 
     
@@ -675,22 +368,13 @@
         <div class="details-item-container">
             <dt class="tag-source">Source:</dt>
             <dd class="tag-source"><ul class="dummy"><li>
-                <a href="edo.js.html">edo.js</a>, <a href="edo.js.html#line3842">line 3842</a>
+                <a href="edo.js.html">edo.js</a>, <a href="edo.js.html#line1799">line 1799</a>
             </li></ul></dd>
         </div>
     
 
     
 
-    
-        <div class="details-item-container">
-            <dt class="tag-see">See:</dt>
-            <dd class="tag-see">
-                <ul>
-                    <li>/demos/necklace.html</li>
-                </ul>
-            </dd>
-        </div>
     
 
     
@@ -708,21 +392,27 @@
 
 
 
-
-
-    <div class="method-member-container flex flex-col w-100 overflow-auto mt-20">
-        <strong>Example</strong>
+    <div class="method-member-container mt-20">
+    <strong>Returns:</strong>
         
-    <pre class="prettyprint"><code>&lt;script src="edo.js">&lt;/script>
-&lt;script src="raphael.min.js">&lt;/script>
-&lt;div id="container" style="width:900px;height:600px; margin:0 auto;">&lt;/div>
-&lt;script>
- let edo = new EDO()
- let scale = edo.scale([0,2,4,5,7,9,11])
- scale.show.necklace('container')
-&lt;/script></code></pre>
+            
 
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">JSON</span>
+
+
+    </dd>
+</dl>
+ 
     </div>
+
+
 
 
         

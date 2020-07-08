@@ -17,16 +17,21 @@
  * limitations under the License.</pre>*/
 
 
+
 const environment = (typeof window === 'undefined')? "server" : "browser"
+
+let fs, parseXML, midiParser
+if(environment=='server') {
+    fs = require('fs')
+    parseXML = require('xml2js').parseString;
+    midiParser  = require('midi-parser-js');
+
+}
+
 
 let save_file
 if(environment=='server') {
-    /**
-     * Handles file saving when run server-side
-     * @ignore
-     * */
-    const fs = require('fs')
-    /**
+     /**
      * @ignore*/
     save_file = function (name,dir,contents) {
         fs.writeFile(dir+name, contents, function(err) {
@@ -62,6 +67,45 @@ if(environment=='server') {
     }
 
 }
+
+let load_file
+if(environment=='server') {
+    /**
+     * Handles file loading when run server-side
+     * @ignore
+     * */
+    /**
+     * @ignore*/
+    load_file = function (file) {
+        return fs.readFileSync(file,
+            // {encoding:'utf8', flag:'r'}
+            );
+
+    }
+
+} else {
+
+    /**
+     * Handles file saving when run client-side
+     * @ignore
+     * */
+    load_file = function(name, dir,contents) {
+        var fileSelector = document.createElement('input');
+        fileSelector.setAttribute('type', 'file');
+
+        var selectDialogueLink = document.createElement('a');
+        selectDialogueLink.setAttribute('href', '');
+        selectDialogueLink.innerText = "Select File";
+
+        selectDialogueLink.onclick = function () {
+            fileSelector.click();
+            return false;
+        }
+        selectDialogueLink.click()
+    }
+
+}
+
 
 
 class FixedContentNecklace {
@@ -618,6 +662,8 @@ class EDO {
 
     }
 
+
+
     /**A collection of functions manipulates an input
      * @namespace EDO#get*/
     get = {
@@ -847,6 +893,33 @@ class EDO {
                 lattice+=line+"\n\n"
             }
             return lattice
+        },
+
+        /** <p>Returns a "likely" root from a collection of pitches</p>
+         *  <p>Given a set of pitches, the algorithm returns the pitch that contains the other pitches in lower positions in its overtone series.<br>
+         *      E.g. If we consider C-E-G <code>(0,4,7)</code>, E and G appear as overtones of C at lower positions than C and G appear as overtones of E, and C and E as overtones of G.</p>
+         *      <p>Note: a root can be highly dependent on context, therefore this algorithm at its current state cannot provide a decisive answer.</p>
+         * @param  {Array<Number>} pitches - a collection of pitch classes
+         * @param  {Array<Number>} [limit=19] - The overtone limit by which PCs are approximated
+         * @return {Number} The pitch-class of the likely root.
+         * @memberOf EDO#get
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * edo.get.likely_root([0,5,9])
+         * //returns 5*/
+        likely_root: (pitches,limit=17) => {
+            pitches=this.get.unique_elements(pitches).sort((a,b)=>a-b)
+            let catalog = {}
+            let ratios = this.get.modes(pitches)
+                .map((mode) =>
+                    mode.filter((interval)=> interval!=0)
+                        .map((interval)=> this.get.ratio_approximation(interval,limit).octave)
+                        .reduce((a,e)=>a+e)
+                )
+
+            let min = Math.min.apply(Array,ratios)
+            let pos = ratios.indexOf(min)
+            return pitches[pos]
         },
 
         /** Returns the normal order of a given set of pitches
@@ -1350,7 +1423,10 @@ class EDO {
                     numeric = ratios[ratio]['value']
                 }
             }
-            return {ratio: closest_name, cents_offset: interval_in_cents-closest_ratio, decimal: numeric}
+            let num_den = closest_name.split('/')
+            let numerator = num_den[0]
+            let denominator = num_den[1]
+            return {ratio: closest_name, cents_offset: interval_in_cents-closest_ratio, decimal: numeric,octave:Math.log2(parseInt(denominator)),log_position:Math.log2(numeric)}
         },
 
         /** Generates all possible necklaces (unique scales without their modes) based on input parameters.
@@ -1563,7 +1639,6 @@ class EDO {
          */
         simple_ratios: (limit=17,cache=false) => {
             let primes = this.get.primes_in_range(limit)
-            console.log(primes)
             let ratios = {}
             for(let i=2;i<limit+1;i++) {
                 for(let j=1;j<i;j++) {
@@ -1710,6 +1785,41 @@ class EDO {
             }
             return divisors
         }
+    }
+
+    /**A collection of functions that import files into the framework
+     * @namespace EDO#import*/
+    import = {
+        /** <p>Imports a music xml file and loads it as a JSON.</p>
+         *
+         * @param  {String} file_path - The path of the file
+         * @returns {JSON}
+         * @memberOf EDO#import
+         */
+        xml_raw: (file_path) => {
+            if(environment!='server') return alert ("This is currently supported only on server-side")
+
+            var xml = load_file(file_path)
+            let parsed
+            parseXML(xml, function (err, result) {
+                parsed=result
+            });
+            return parsed
+        },
+        /** <p>Imports a midi file</p>
+         *
+         * @param  {String} file_path - The path of the file
+         * @returns {JSON} the midi file as JSON
+         * @memberOf EDO#import
+         */
+        midi: (file_path) => {
+            if(environment!='server') return alert ("This is currently supported only on server-side")
+            let midi = load_file(file_path)
+            midi = midiParser.parse(midi);
+            return midi
+        },
+
+
     }
 
     /**A collection of functions that return a boolean
