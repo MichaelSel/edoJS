@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <title>EDO</title>
+    <title>export</title>
 
     <script src="edo.js/1.1.1/scripts/prettify/prettify.js"></script>
     <script src="edo.js/1.1.1/scripts/prettify/lang-css.js"></script>
@@ -47,7 +47,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">EDO</h1>
+    <h1 class="page-title">export</h1>
     
 
     
@@ -63,13 +63,12 @@
         
         <h2>
         
-        EDO
+            <span class="ancestors"><a href="EDO.html">EDO</a>#</span>
+        
+        export
         
         </h2>
         
-        
-            <div class="class-description"><p>Class representing some EDO tuning system.</p></div>
-            <hr/>
         
     
 </header>
@@ -79,27 +78,43 @@
     <div class="container-overview">
     
         
+            <div class="description"><p>A collection of functions that exports various file formats</p></div>
+        
+
+        
+        
+    
+    </div>
 
     
-        <h2>Constructor</h2>
+
     
 
-    <h4 class="name" id="EDO"><span class="type-signature"></span>new EDO<span class="signature">(edo)</span><span class="type-signature"></span></h4>
+    
+
+     
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    <h4 class="name" id=".graphic"><span class="type-signature">(static) </span>graphic<span class="signature">(container_id)</span><span class="type-signature"></span></h4>
 
     
 
 
 
     <div class="description">
-        <p>Creates a tuning context and system that exposes powerful functions for manipulating, analyzing, and generating music.</p>
-<p>This is the main class of the project. At its center stand 4 collections (see "Namespaces" below) of functions.</p>
-<ul>
- <li> <a href="EDO_convert.html">EDO.convert</a> is a set of functions used to change between equivalent representations within the tuning context.</li>
- <li> <a href="EDO_count.html">EDO.count</a> is a set of functions used to count stuff.</li>
- <li> <a href="EDO_get.html">EDO.get</a> is a set of functions used to manipulate and generate stuff.</li>
- <li> <a href="EDO_is.html">EDO.is</a> is a set of functions used for boolean truth statements.</li>
- <li> <a href="EDO_show.html">EDO.show</a> is a set of functions used for visualization.</li>
- </ul>
+        <p>Downloads / saves a png file with the contents of a container</p>
+<p>Note: all of the graphics made with this library create SVG elements, so just pass the same ID that you used to create the graphic in the first place</p>
     </div>
 
 
@@ -126,8 +141,6 @@
         
 
         
-        <th>Default</th>
-        
 
         <th class="last">Description</th>
     </tr>
@@ -138,13 +151,13 @@
 
         <tr>
             
-                <td class="name"><code>edo</code></td>
+                <td class="name"><code>container_id</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">number</span>
+<span class="param-type">String</span>
 
 
             
@@ -153,14 +166,8 @@
             
 
             
-                <td class="default">
-                
-                    12
-                
-                </td>
-            
 
-            <td class="description last"><p>The number of equal divisions of the octave.</p></td>
+            <td class="description last"><p>The ID of a container that has one or more SVG elements in it.</p></td>
         </tr>
 
     
@@ -203,7 +210,7 @@
         <div class="details-item-container">
             <dt class="tag-source">Source:</dt>
             <dd class="tag-source"><ul class="dummy"><li>
-                <a href="edo.js.html">edo.js</a>, <a href="edo.js.html#line340">line 340</a>
+                <a href="edo.js.html">edo.js</a>, <a href="edo.js.html#line687">line 687</a>
             </li></ul></dd>
         </div>
     
@@ -232,221 +239,19 @@
     <div class="method-member-container flex flex-col w-100 overflow-auto mt-20">
         <strong>Example</strong>
         
-    <pre class="prettyprint"><code>//Basic usage:
-let edo = new EDO(12) //create a new EDO context with 12 divisions.
+    <pre class="prettyprint"><code>&lt;script src="edo.js">&lt;/script>
+&lt;script src="raphael.min.js">&lt;/script>
+&lt;div id="container" style="width:900px;height:600px; margin:0 auto;">&lt;/div>
+&lt;script>
+ let edo = new EDO()
+ //Create a necklace graphic
+ edo.show.necklace('container', [0,2,4,5,7,9,11])
 
-//once the object has been created, you can access its functions.
-edo.get.inversion([0,2,4,5,7,9,11]) //inverts the pitches
-//returns [0, 2,  4, 6, 7, 9, 11]
-
-edo.convert.ratio_to_interval(3/2)
-//returns [7]
-
-edo.count.pitches([0, 3, 3, 2, 4, 3, 4])
-//returns [[3,3],[4,2], [2,1], [0,1]] (3 appears 3 times, 4 appears 2 times, etc.)
-
-edo.is.subset([2,4],[1,2,3,4,5])
-//returns true (the set [2,4] IS a subset of [1,2,3,4,5])</code></pre>
+ //Save the graphic
+ edo.export.graphic('container') //downloads the necklace
+&lt;/script></code></pre>
 
     </div>
-
-
-    
-    </div>
-
-    
-
-    
-
-    
-
-     
-
-    
-        <h3 class="subsection-title">Namespaces</h3>
-
-        <dl>
-            <dt><a href="EDO_convert.html">convert</a></dt>
-            <dd></dd>
-        
-            <dt><a href="EDO_count.html">count</a></dt>
-            <dd></dd>
-        
-            <dt><a href="EDO_export.html">export</a></dt>
-            <dd></dd>
-        
-            <dt><a href="EDO_get.html">get</a></dt>
-            <dd></dd>
-        
-            <dt><a href="EDO_import.html">import</a></dt>
-            <dd></dd>
-        
-            <dt><a href="EDO_is.html">is</a></dt>
-            <dd></dd>
-        
-            <dt><a href="EDO_show.html">show</a></dt>
-            <dd></dd>
-        </dl>
-    
-
-    
-
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        
-            
-
-    
-
-    <h4 class="name" id="scale"><span class="type-signature"></span>scale<span class="signature">(pitches)</span><span class="type-signature"> &rarr; {<a href="Scale.html">Scale</a>}</span></h4>
-
-    
-
-
-
-    <div class="description">
-        <p>Returns a new Scale Object with given pitches</p>
-    </div>
-
-
-
-
-
-
-
-
-
-    <div class="method-member-container flex flex-col w-100 overflow-auto mt-20">
-        <strong>Parameters:</strong>
-        
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>pitches</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Array.&lt;Number></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>a collection of pitch classes</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    </div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-        <div class="details-item-container">
-            <dt class="tag-source">Source:</dt>
-            <dd class="tag-source"><ul class="dummy"><li>
-                <a href="edo.js.html">edo.js</a>, <a href="edo.js.html#line356">line 356</a>
-            </li></ul></dd>
-        </div>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <div class="method-member-container mt-20">
-    <strong>Returns:</strong>
-        
-            
-
-
-<dl class="param-type">
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="Scale.html">Scale</a></span>
-
-
-    </dd>
-</dl>
- 
-    </div>
-
-
 
 
         

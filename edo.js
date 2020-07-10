@@ -662,7 +662,77 @@ class EDO {
 
     }
 
+    /**A collection of functions that exports various file formats
+     * @namespace*/
+    export = {
+        /**
+         * <p>Downloads / saves a png file with the contents of a container</p>
+         * <p>Note: all of the graphics made with this library create SVG elements, so just pass the same ID that you used to create the graphic in the first place</p>
+         *
+         * @param  {String} container_id - The ID of a container that has one or more SVG elements in it.
+         * @memberOf EDO#export
+         * @example
+         * <script src="edo.js"></script>
+         * <script src="raphael.min.js"></script>
+         * <div id="container" style="width:900px;height:600px; margin:0 auto;"></div>
+         * <script>
+         *  let edo = new EDO()
+         *  //Create a necklace graphic
+         *  edo.show.necklace('container', [0,2,4,5,7,9,11])
+         *
+         *  //Save the graphic
+         *  edo.export.graphic('container') //downloads the necklace
+         * </script>
+         */
+        graphic: (container_id) => {
+            if(environment=="server") return console.log("This is only support when run on client-side")
 
+            const triggerDownload = function (imgURI) {
+                let evt = new MouseEvent('click', {
+                    view: window,
+                    bubbles: false,
+                    cancelable: true
+                });
+
+                let a = document.createElement('a');
+                a.setAttribute('download', container_id + '.png');
+                a.setAttribute('href', imgURI);
+                a.setAttribute('target', '_blank');
+
+                a.dispatchEvent(evt);
+            }
+
+
+            let el = document.getElementById(container_id)
+            let svgs = el.getElementsByTagName('svg')
+
+            for (let svg of svgs) {
+                let bBox = svg.getBBox();
+                let width = bBox.width
+                let height = bBox.height
+                let canvas = document.createElement('canvas');
+                canvas.width = width
+                canvas.height = height
+                let ctx = canvas.getContext('2d');
+                let data = (new XMLSerializer()).serializeToString(svg);
+                let DOMURL = window.URL || window.webkitURL || window;
+                let img = new Image();
+                let svgBlob = new Blob([data], {type: 'image/svg+xml;charset=utf-8'});
+                let url = DOMURL.createObjectURL(svgBlob);
+                img.onload = function () {
+                    ctx.drawImage(img, 0, 0);
+                    DOMURL.revokeObjectURL(url);
+
+                    var imgURI = canvas
+                        .toDataURL('image/png')
+                        .replace('image/png', 'image/octet-stream');
+                    triggerDownload(imgURI);
+                };
+
+                img.src = url;
+            }
+        }
+    }
 
     /**A collection of functions manipulates an input
      * @namespace EDO#get*/
