@@ -6,18 +6,18 @@
     
     <title>get</title>
 
-    <script src="edo.js/1.1.1/scripts/prettify/prettify.js"></script>
-    <script src="edo.js/1.1.1/scripts/prettify/lang-css.js"></script>
-    <script src="edo.js/1.1.1/scripts/search.js"></script>
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <script src="scripts/search.js"></script>
     <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.4.5/fuse.min.js"></script> -->
-    <script src="edo.js/1.1.1/scripts/fuse.js"></script>
+    <script src="scripts/fuse.js"></script>
     <!--[if lt IE 9]>
       <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-    <link type="text/css" rel="stylesheet" href="edo.js/1.1.1/styles/ionicons.min.css">
-    <link type="text/css" rel="stylesheet" href="edo.js/1.1.1/styles/prettify-tomorrow.css">
-    <link type="text/css" rel="stylesheet" href="edo.js/1.1.1/styles/jsdoc-default.css">
-    <link type="text/css" rel="stylesheet" href="edo.js/1.1.1/styles/clean-jsdoc-theme.css">
+    <link type="text/css" rel="stylesheet" href="styles/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+    <link type="text/css" rel="stylesheet" href="styles/clean-jsdoc-theme.css">
     
     
     
@@ -320,13 +320,9 @@ note is removed but its relative position in regards to the entire line is kept.
     <div class="method-member-container flex flex-col w-100 overflow-auto mt-20">
         <strong>Examples</strong>
         
-    <pre class="prettyprint"><code>let edo = new EDO(12) // define a tuning system
-edo.get.contour([0,4,7,12,16,7,12,16])
-//returns [0, 1, 2, 3, 4, 2, 3, 4]</code></pre>
+    <pre class="prettyprint"><code>let edo = new EDO(12) // define a tuning systemedo.get.contour([0,4,7,12,16,7,12,16])//returns [0, 1, 2, 3, 4, 2, 3, 4]</code></pre>
 
-    <pre class="prettyprint"><code>let edo = new EDO(12) // define a tuning system
-edo.get.contour([0,4,7,12,16,7,12,16],true)
-//returns [1, 1, 1, 1,-1, 1, 1]</code></pre>
+    <pre class="prettyprint"><code>let edo = new EDO(12) // define a tuning systemedo.get.contour([0,4,7,12,16,7,12,16],true)//returns [1, 1, 1, 1,-1, 1, 1]</code></pre>
 
     </div>
 
@@ -492,9 +488,7 @@ edo.get.contour([0,4,7,12,16,7,12,16],true)
     <div class="method-member-container flex flex-col w-100 overflow-auto mt-20">
         <strong>Example</strong>
         
-    <pre class="prettyprint"><code>let edo = new EDO(12) // define a tuning system
-edo.get.interval_shift([2,-3,4,-1])
-//returns 2 (moving up 2, then down 3, then up 4, then down 1 will get you +2 above where you started)</code></pre>
+    <pre class="prettyprint"><code>let edo = new EDO(12) // define a tuning systemedo.get.interval_shift([2,-3,4,-1])//returns 2 (moving up 2, then down 3, then up 4, then down 1 will get you +2 above where you started)</code></pre>
 
     </div>
 
@@ -763,32 +757,9 @@ will return  <code>[[0, 2, 4, 6], [0, 2, 4, 7], [0, 2, 5, 7], [0, 3, 5, 7], [0, 
     <div class="method-member-container flex flex-col w-100 overflow-auto mt-20">
         <strong>Examples</strong>
         
-    <pre class="prettyprint"><code>let edo = new EDO(12) // create a tuning context
-edo.get.interval_stack([3,2],3)
-//returns
-     [
-      [ 2, 2, 2 ],
-      [ 3, 2, 2 ],
-      [ 2, 3, 2 ],
-      [ 2, 2, 3 ],
-      [ 3, 3, 2 ],
-      [ 3, 2, 3 ],
-      [ 2, 3, 3 ],
-      [ 3, 3, 3 ]
-     ]</code></pre>
+    <pre class="prettyprint"><code>let edo = new EDO(12) // create a tuning contextedo.get.interval_stack([3,2],3)//returns     [      [ 2, 2, 2 ],      [ 3, 2, 2 ],      [ 2, 3, 2 ],      [ 2, 2, 3 ],      [ 3, 3, 2 ],      [ 3, 2, 3 ],      [ 2, 3, 3 ],      [ 3, 3, 3 ]     ]</code></pre>
 
-    <pre class="prettyprint"><code>edo.get.interval_stack([3,2],3,true)
-//returns
-[
- [ 0, 2, 4, 6 ],
- [ 0, 3, 5, 7 ],
- [ 0, 2, 5, 7 ],
- [ 0, 2, 4, 7 ],
- [ 0, 3, 6, 8 ],
- [ 0, 3, 5, 8 ],
- [ 0, 2, 5, 8 ],
- [ 0, 3, 6, 9 ]
-]</code></pre>
+    <pre class="prettyprint"><code>edo.get.interval_stack([3,2],3,true)//returns[ [ 0, 2, 4, 6 ], [ 0, 3, 5, 7 ], [ 0, 2, 5, 7 ], [ 0, 2, 4, 7 ], [ 0, 3, 6, 8 ], [ 0, 3, 5, 8 ], [ 0, 2, 5, 8 ], [ 0, 3, 6, 9 ]]</code></pre>
 
     </div>
 
@@ -977,9 +948,7 @@ edo.get.interval_stack([3,2],3)
     <div class="method-member-container flex flex-col w-100 overflow-auto mt-20">
         <strong>Example</strong>
         
-    <pre class="prettyprint"><code>let edo = new EDO(12) // define a tuning system
-edo.get.inversion([0,2,4,5,7,9,11])
-//returns [0, 2,  4, 6, 7, 9, 11]</code></pre>
+    <pre class="prettyprint"><code>let edo = new EDO(12) // define a tuning systemedo.get.inversion([0,2,4,5,7,9,11])//returns [0, 2,  4, 6, 7, 9, 11]</code></pre>
 
     </div>
 
@@ -1219,9 +1188,7 @@ edo.get.inversion([0,2,4,5,7,9,11])
     <div class="method-member-container flex flex-col w-100 overflow-auto mt-20">
         <strong>Example</strong>
         
-    <pre class="prettyprint"><code>let edo = new EDO(12) //define tuning
-edo.get.lattice()
-//returns
+    <pre class="prettyprint"><code>let edo = new EDO(12) //define tuningedo.get.lattice()//returns
          //0  3  6  9  0  3  6  9  0  3  6  9
          //
          //8  11 2  5  8  11 2  5  8  11 2  5
@@ -1458,9 +1425,7 @@ edo.get.lattice()
     <div class="method-member-container flex flex-col w-100 overflow-auto mt-20">
         <strong>Example</strong>
         
-    <pre class="prettyprint"><code>let edo = new EDO(12) // define a tuning system
-edo.get.likely_root([0,5,9])
-//returns 5</code></pre>
+    <pre class="prettyprint"><code>let edo = new EDO(12) // define a tuning systemedo.get.likely_root([0,5,9])//returns 5</code></pre>
 
     </div>
 
@@ -1645,18 +1610,7 @@ edo.get.likely_root([0,5,9])
     <div class="method-member-container flex flex-col w-100 overflow-auto mt-20">
         <strong>Example</strong>
         
-    <pre class="prettyprint"><code>let edo = new EDO(12) // create a tuning context
-edo.get.modes([0,2,4,5,7,9,11]) //Major scale
-//returns
-[
- [0,2,4,5,7,9,11], //Ionian
- [0,2,3,5,7,9,10], //Dorian
- [0,1,3,5,7,8,10], //Phrigian
- [0,2,4,6,7,9,11], //Lydian
- [0,2,4,5,7,9,10], //Mixolydian
- [0,2,3,5,7,8,10], //Aeolian
- [0,1,3,5,6,8,10]  //Locrian
-]</code></pre>
+    <pre class="prettyprint"><code>let edo = new EDO(12) // create a tuning contextedo.get.modes([0,2,4,5,7,9,11]) //Major scale//returns[ [0,2,4,5,7,9,11], //Ionian [0,2,3,5,7,9,10], //Dorian [0,1,3,5,7,8,10], //Phrigian [0,2,4,6,7,9,11], //Lydian [0,2,4,5,7,9,10], //Mixolydian [0,2,3,5,7,8,10], //Aeolian [0,1,3,5,6,8,10]  //Locrian]</code></pre>
 
     </div>
 
@@ -1914,14 +1868,7 @@ The function also keeps track of the number of times each motive appeared.</p>
     <div class="method-member-container flex flex-col w-100 overflow-auto mt-20">
         <strong>Example</strong>
         
-    <pre class="prettyprint"><code>let edo = new EDO(12) // define a tuning system
-edo.get.motives([7,6,7,6,7,2,5,3,0]).slice(0,4) //get first 3 motives
-//returns
-[
-  { motive: [ -1, 1 ], incidence: 2 }, //going a half-step down, then up appears twice
-  { motive: [ -1 ], incidence: 2 }, //going a half-step down appears twice
-  { motive: [ 1 ], incidence: 2 } //going a half-step up appears twice
-]</code></pre>
+    <pre class="prettyprint"><code>let edo = new EDO(12) // define a tuning systemedo.get.motives([7,6,7,6,7,2,5,3,0]).slice(0,4) //get first 3 motives//returns[  { motive: [ -1, 1 ], incidence: 2 }, //going a half-step down, then up appears twice  { motive: [ -1 ], incidence: 2 }, //going a half-step down appears twice  { motive: [ 1 ], incidence: 2 } //going a half-step up appears twice]</code></pre>
 
     </div>
 
@@ -2096,14 +2043,7 @@ edo.get.motives([7,6,7,6,7,2,5,3,0]).slice(0,4) //get first 3 motives
     <div class="method-member-container flex flex-col w-100 overflow-auto mt-20">
         <strong>Example</strong>
         
-    <pre class="prettyprint"><code>let edo = new EDO(12)
-edo.get.necklace([2,2,1,2,2,2,1])
-//returns
-[ //These are the 3 unique orderings of the intervals in the input
- [2, 2, 2, 1, 2, 2, 1], //any other combination would be some rotation of
- [2, 2, 2, 2, 1, 2, 1], //one of these
- [2, 2, 2, 2, 2, 1, 1]
-]</code></pre>
+    <pre class="prettyprint"><code>let edo = new EDO(12)edo.get.necklace([2,2,1,2,2,2,1])//returns[ //These are the 3 unique orderings of the intervals in the input [2, 2, 2, 1, 2, 2, 1], //any other combination would be some rotation of [2, 2, 2, 2, 1, 2, 1], //one of these [2, 2, 2, 2, 2, 1, 1]]</code></pre>
 
     </div>
 
@@ -2292,9 +2232,7 @@ edo.get.necklace([2,2,1,2,2,2,1])
     <div class="method-member-container flex flex-col w-100 overflow-auto mt-20">
         <strong>Example</strong>
         
-    <pre class="prettyprint"><code>let edo = new EDO(12) //Create a tuning context
-edo.get.normal_order([0,2,4,5,7,9,11])
-//returns [0, 1, 2, 3, 5, 6, 8, 10]</code></pre>
+    <pre class="prettyprint"><code>let edo = new EDO(12) //Create a tuning contextedo.get.normal_order([0,2,4,5,7,9,11])//returns [0, 1, 2, 3, 5, 6, 8, 10]</code></pre>
 
     </div>
 
@@ -2457,9 +2395,7 @@ edo.get.normal_order([0,2,4,5,7,9,11])
     <div class="method-member-container flex flex-col w-100 overflow-auto mt-20">
         <strong>Example</strong>
         
-    <pre class="prettyprint"><code>edo.get.partitioned_subsets([4,[7,8],[10,11]])
-//returns
-[ [ 4, 7, 10 ], [ 4, 7, 11 ], [ 4, 8, 10 ], [ 4, 8, 11 ] ]</code></pre>
+    <pre class="prettyprint"><code>edo.get.partitioned_subsets([4,[7,8],[10,11]])//returns[ [ 4, 7, 10 ], [ 4, 7, 11 ], [ 4, 8, 10 ], [ 4, 8, 11 ] ]</code></pre>
 
     </div>
 
@@ -2671,8 +2607,7 @@ edo.get.normal_order([0,2,4,5,7,9,11])
     <div class="method-member-container flex flex-col w-100 overflow-auto mt-20">
         <strong>Example</strong>
         
-    <pre class="prettyprint"><code>// returns [3,3,-3]
-get.path_n_steps(3,[[3],[-3]],3)</code></pre>
+    <pre class="prettyprint"><code>// returns [3,3,-3]get.path_n_steps(3,[[3],[-3]],3)</code></pre>
 
     </div>
 
@@ -3095,8 +3030,7 @@ three branches, but there could be any number of branches).</p></td>
     <div class="method-member-container flex flex-col w-100 overflow-auto mt-20">
         <strong>Example</strong>
         
-    <pre class="prettyprint"><code>edo.get.permutations([0, 2, 3])
-// [[ 0, 2, 3 ],[ 0, 3, 2 ],[ 2, 0, 3 ],[ 2, 3, 0 ],[ 3, 0, 2 ],[ 3, 2, 0 ]]</code></pre>
+    <pre class="prettyprint"><code>edo.get.permutations([0, 2, 3])// [[ 0, 2, 3 ],[ 0, 3, 2 ],[ 2, 0, 3 ],[ 2, 3, 0 ],[ 3, 0, 2 ],[ 3, 2, 0 ]]</code></pre>
 
     </div>
 
@@ -3258,18 +3192,7 @@ three branches, but there could be any number of branches).</p></td>
     <div class="method-member-container flex flex-col w-100 overflow-auto mt-20">
         <strong>Example</strong>
         
-    <pre class="prettyprint"><code>let edo = new EDO(12) // create a tuning context
-edo.get.pitch_distribution([8,7,7,8,7,7,8,7,7,15,15,14,12,12,10,8,8,7,5,5]) //Mozart Sym. 40
-//returns
-[
- { note: 7, rate: 0.35 },
- { note: 8, rate: 0.25 },
- { note: 15, rate: 0.1 },
- { note: 12, rate: 0.1 },
- { note: 5, rate: 0.1 },
- { note: 14, rate: 0.05 },
- { note: 10, rate: 0.05 }
-]</code></pre>
+    <pre class="prettyprint"><code>let edo = new EDO(12) // create a tuning contextedo.get.pitch_distribution([8,7,7,8,7,7,8,7,7,15,15,14,12,12,10,8,8,7,5,5]) //Mozart Sym. 40//returns[ { note: 7, rate: 0.35 }, { note: 8, rate: 0.25 }, { note: 15, rate: 0.1 }, { note: 12, rate: 0.1 }, { note: 5, rate: 0.1 }, { note: 14, rate: 0.05 }, { note: 10, rate: 0.05 }]</code></pre>
 
     </div>
 
@@ -3607,11 +3530,7 @@ that appear in the mode provided.</p></td>
     <div class="method-member-container flex flex-col w-100 overflow-auto mt-20">
         <strong>Example</strong>
         
-    <pre class="prettyprint"><code>let edo = new EDO(12) //Create a tuning context
-edo.get.random_melody(4,[-3,2]) //returns e.g. [ -3, 0, 2, -2 ]
-edo.get.random_melody(4, [-3, 2],1) //returns e.g. [ 1, -3, 2, -3 ]
-edo.get.random_melody(6, [0, 17], 6,[0, 2, 4, 5, 7, 9, 11]) // returns e.g. [ 16, 12, 14, 7, 11, 5 ]
-edo.get.random_melody(6, [0, 17], 3,[0, 2, 4, 5, 7, 9, 11],3) // returns e.g. [ 14, 16, 12, 9, 11, 14 ]</code></pre>
+    <pre class="prettyprint"><code>let edo = new EDO(12) //Create a tuning contextedo.get.random_melody(4,[-3,2]) //returns e.g. [ -3, 0, 2, -2 ]edo.get.random_melody(4, [-3, 2],1) //returns e.g. [ 1, -3, 2, -3 ]edo.get.random_melody(6, [0, 17], 6,[0, 2, 4, 5, 7, 9, 11]) // returns e.g. [ 16, 12, 14, 7, 11, 5 ]edo.get.random_melody(6, [0, 17], 3,[0, 2, 4, 5, 7, 9, 11],3) // returns e.g. [ 14, 16, 12, 9, 11, 14 ]</code></pre>
 
     </div>
 
@@ -3867,8 +3786,7 @@ that appear in the mode provided.</p></td>
     <div class="method-member-container flex flex-col w-100 overflow-auto mt-20">
         <strong>Example</strong>
         
-    <pre class="prettyprint"><code>let edo = new EDO(12) //Create a tuning context
-edo.get.random_melody_from_contour([0,3,1,3,2],[0,12],[0,2,4,5,7,9,11]); //returns e.g. [ 2, 11, 7, 11, 9 ]</code></pre>
+    <pre class="prettyprint"><code>let edo = new EDO(12) //Create a tuning contextedo.get.random_melody_from_contour([0,3,1,3,2],[0,12],[0,2,4,5,7,9,11]); //returns e.g. [ 2, 11, 7, 11, 9 ]</code></pre>
 
     </div>
 
@@ -4142,13 +4060,7 @@ edo.get.random_melody_from_contour([0,3,1,3,2],[0,12],[0,2,4,5,7,9,11]); //retur
     <div class="method-member-container flex flex-col w-100 overflow-auto mt-20">
         <strong>Example</strong>
         
-    <pre class="prettyprint"><code>let edo = new EDO(12) // create a tuning context
-edo.get.ratio_approximation(7)
-//returns { ratio: '3/2', cents_offset: -1.955000865387433, decimal: 1.5 }
-
-let edo = new EDO(17) // Notice this is 17 divisions
-console.log(edo.get.ratio_approximation(3))
-//returns {ratio: '17/15', cents_offset: -4.921988887832043, decimal: 1.1333333333333333}</code></pre>
+    <pre class="prettyprint"><code>let edo = new EDO(12) // create a tuning contextedo.get.ratio_approximation(7)//returns { ratio: '3/2', cents_offset: -1.955000865387433, decimal: 1.5 }let edo = new EDO(17) // Notice this is 17 divisionsconsole.log(edo.get.ratio_approximation(3))//returns {ratio: '17/15', cents_offset: -4.921988887832043, decimal: 1.1333333333333333}</code></pre>
 
     </div>
 
@@ -4314,9 +4226,7 @@ console.log(edo.get.ratio_approximation(3))
     <div class="method-member-container flex flex-col w-100 overflow-auto mt-20">
         <strong>Example</strong>
         
-    <pre class="prettyprint"><code>let edo = new EDO(12) // define a tuning system
-edo.get.retrograde([0,2,4,5,7,9,11])
-//returns [11,9,7,5,4,2,0]</code></pre>
+    <pre class="prettyprint"><code>let edo = new EDO(12) // define a tuning systemedo.get.retrograde([0,2,4,5,7,9,11])//returns [11,9,7,5,4,2,0]</code></pre>
 
     </div>
 
@@ -4732,29 +4642,7 @@ there is potential for permutations.</p>
     <div class="method-member-container flex flex-col w-100 overflow-auto mt-20">
         <strong>Example</strong>
         
-    <pre class="prettyprint"><code>//The quickest way to get to E (from 0) moving up with P5s and down with m3s
-let path = edo.get.shortest_path(7,[5,-3]) // returns [ -3, 5, 5 ]
-let all = edo.get.permutations(path) //all permutation of the result
-//returns
-[
- [ -3, 5, 5 ],
- [ -3, 5, 5 ],
- [ 5, -3, 5 ],
- [ 5, 5, -3 ],
- [ 5, -3, 5 ],
- [ 5, 5, -3 ]
-]
-all = all.map((path)=>edo.convert.intervals_to_pitches(path)) //convert the intervals into pitches
-let as_pitches = all.map((path)=>edo.convert.midi_to_name(path,60)) //convert the pitches into pitch names
-//returns
-[
- [ 'C4', 'A3', 'D4', 'G4' ],
- [ 'C4', 'A3', 'D4', 'G4' ],
- [ 'C4', 'F4', 'D4', 'G4' ],
- [ 'C4', 'F4', 'Bb4', 'G4' ],
- [ 'C4', 'F4', 'D4', 'G4' ],
- [ 'C4', 'F4', 'Bb4', 'G4' ]
-]</code></pre>
+    <pre class="prettyprint"><code>//The quickest way to get to E (from 0) moving up with P5s and down with m3slet path = edo.get.shortest_path(7,[5,-3]) // returns [ -3, 5, 5 ]let all = edo.get.permutations(path) //all permutation of the result//returns[ [ -3, 5, 5 ], [ -3, 5, 5 ], [ 5, -3, 5 ], [ 5, 5, -3 ], [ 5, -3, 5 ], [ 5, 5, -3 ]]all = all.map((path)=>edo.convert.intervals_to_pitches(path)) //convert the intervals into pitcheslet as_pitches = all.map((path)=>edo.convert.midi_to_name(path,60)) //convert the pitches into pitch names//returns[ [ 'C4', 'A3', 'D4', 'G4' ], [ 'C4', 'A3', 'D4', 'G4' ], [ 'C4', 'F4', 'D4', 'G4' ], [ 'C4', 'F4', 'Bb4', 'G4' ], [ 'C4', 'F4', 'D4', 'G4' ], [ 'C4', 'F4', 'Bb4', 'G4' ]]</code></pre>
 
     </div>
 
@@ -5216,8 +5104,7 @@ let as_pitches = all.map((path)=>edo.convert.midi_to_name(path,60)) //convert th
     <div class="method-member-container flex flex-col w-100 overflow-auto mt-20">
         <strong>Example</strong>
         
-    <pre class="prettyprint"><code>// returns [[ 0, 2, 5 ], [ 0, 2, 6 ],[ 0, 4, 5 ], [ 0, 4, 6 ],[ 1, 2, 5 ], [ 1, 2, 6 ],[ 1, 4, 5 ], [ 1, 4, 6 ],[ 3, 4, 5 ], [ 3, 4, 6 ]]
-get.subset_indices([0, 2, 3], [0, 0, 2, 0, 2, 3, 3])</code></pre>
+    <pre class="prettyprint"><code>// returns [[ 0, 2, 5 ], [ 0, 2, 6 ],[ 0, 4, 5 ], [ 0, 4, 6 ],[ 1, 2, 5 ], [ 1, 2, 6 ],[ 1, 4, 5 ], [ 1, 4, 6 ],[ 3, 4, 5 ], [ 3, 4, 6 ]]get.subset_indices([0, 2, 3], [0, 0, 2, 0, 2, 3, 3])</code></pre>
 
     </div>
 
@@ -5402,11 +5289,9 @@ get.subset_indices([0, 2, 3], [0, 0, 2, 0, 2, 3, 3])</code></pre>
     <div class="method-member-container flex flex-col w-100 overflow-auto mt-20">
         <strong>Examples</strong>
         
-    <pre class="prettyprint"><code>//returns [[0], [2], [3], [0, 2], [0, 3], [2, 3], [0, 2, 3]]
-get.subsets([0,2,3],true)</code></pre>
+    <pre class="prettyprint"><code>//returns [[0], [2], [3], [0, 2], [0, 3], [2, 3], [0, 2, 3]]get.subsets([0,2,3],true)</code></pre>
 
-    <pre class="prettyprint"><code>//returns [[0], [2], [3], [0, 2], [2, 3], [0, 2, 3]]
-edo.get.subsets([0,2,3],false)</code></pre>
+    <pre class="prettyprint"><code>//returns [[0], [2], [3], [0, 2], [2, 3], [0, 2, 3]]edo.get.subsets([0,2,3],false)</code></pre>
 
     </div>
 
@@ -5662,9 +5547,7 @@ edo.get.subsets([0,2,3],false)</code></pre>
     <div class="method-member-container flex flex-col w-100 overflow-auto mt-20">
         <strong>Example</strong>
         
-    <pre class="prettyprint"><code>let edo = new EDO(12) //Create a tuning context
-edo.get.transposition([0,2,4,5,7,9,11],7)
-//returns [7, 9, 11, 0, 2, 4,  6]</code></pre>
+    <pre class="prettyprint"><code>let edo = new EDO(12) //Create a tuning contextedo.get.transposition([0,2,4,5,7,9,11],7)//returns [7, 9, 11, 0, 2, 4,  6]</code></pre>
 
     </div>
 
@@ -5830,9 +5713,7 @@ edo.get.transposition([0,2,4,5,7,9,11],7)
     <div class="method-member-container flex flex-col w-100 overflow-auto mt-20">
         <strong>Example</strong>
         
-    <pre class="prettyprint"><code>let edo = new EDO(12) //Create a tuning context
-edo.get.unique_elements([1,[2,3],2,[2,3],2]) //notice that it accepts nested elements as well
-//returns [ 1, [ 2, 3 ], 2 ]</code></pre>
+    <pre class="prettyprint"><code>let edo = new EDO(12) //Create a tuning contextedo.get.unique_elements([1,[2,3],2,[2,3],2]) //notice that it accepts nested elements as well//returns [ 1, [ 2, 3 ], 2 ]</code></pre>
 
     </div>
 
@@ -5859,13 +5740,13 @@ edo.get.unique_elements([1,[2,3],2,[2,3],2]) //notice that it accepts nested ele
 </footer>
 
 <script>prettyPrint();</script>
-<script src="edo.js/1.1.1/scripts/linenumber.js"></script>
+<script src="scripts/linenumber.js"></script>
 <script>
 var list = [{"link":"<a href=\"EDO.html\">EDO</a>"},{"title":"EDO#scale","link":"<a href=\"EDO.html#scale\">EDO &rtrif; scale</a>"},{"link":"<a href=\"Scale.html\">Scale</a>"},{"title":"Scale#invert","link":"<a href=\"Scale.html#invert\">Scale &rtrif; invert</a>"},{"title":"Scale#mode","link":"<a href=\"Scale.html#mode\">Scale &rtrif; mode</a>"},{"title":"Scale#normal","link":"<a href=\"Scale.html#normal\">Scale &rtrif; normal</a>"},{"title":"Scale#prime","link":"<a href=\"Scale.html#prime\">Scale &rtrif; prime</a>"},{"link":"<a href=\"EDO_convert.html\">convert</a>"},{"title":"EDO#convert.cents_to_ratio","link":"<a href=\"EDO_convert.html#.cents_to_ratio\">EDO &rtrif; convert.cents_to_ratio</a>"},{"title":"EDO#convert.interval_to_cents","link":"<a href=\"EDO_convert.html#.interval_to_cents\">EDO &rtrif; convert.interval_to_cents</a>"},{"title":"EDO#convert.interval_to_ratio","link":"<a href=\"EDO_convert.html#.interval_to_ratio\">EDO &rtrif; convert.interval_to_ratio</a>"},{"title":"EDO#convert.intervals_to_pitches","link":"<a href=\"EDO_convert.html#.intervals_to_pitches\">EDO &rtrif; convert.intervals_to_pitches</a>"},{"title":"EDO#convert.intervals_to_scale","link":"<a href=\"EDO_convert.html#.intervals_to_scale\">EDO &rtrif; convert.intervals_to_scale</a>"},{"title":"EDO#convert.midi_to_intervals","link":"<a href=\"EDO_convert.html#.midi_to_intervals\">EDO &rtrif; convert.midi_to_intervals</a>"},{"title":"EDO#convert.midi_to_name","link":"<a href=\"EDO_convert.html#.midi_to_name\">EDO &rtrif; convert.midi_to_name</a>"},{"title":"EDO#convert.name_to_scale","link":"<a href=\"EDO_convert.html#.name_to_scale\">EDO &rtrif; convert.name_to_scale</a>"},{"title":"EDO#convert.pc_to_name","link":"<a href=\"EDO_convert.html#.pc_to_name\">EDO &rtrif; convert.pc_to_name</a>"},{"title":"EDO#convert.ratio_to_cents","link":"<a href=\"EDO_convert.html#.ratio_to_cents\">EDO &rtrif; convert.ratio_to_cents</a>"},{"title":"EDO#convert.ratio_to_interval","link":"<a href=\"EDO_convert.html#.ratio_to_interval\">EDO &rtrif; convert.ratio_to_interval</a>"},{"title":"EDO#convert.to_steps","link":"<a href=\"EDO_convert.html#.to_steps\">EDO &rtrif; convert.to_steps</a>"},{"link":"<a href=\"EDO_count.html\">count</a>"},{"title":"EDO#count.common_tones","link":"<a href=\"EDO_count.html#.common_tones\">EDO &rtrif; count.common_tones</a>"},{"title":"EDO#count.pitches","link":"<a href=\"EDO_count.html#.pitches\">EDO &rtrif; count.pitches</a>"},{"link":"<a href=\"EDO_export.html\">export</a>"},{"title":"EDO#export.graphic","link":"<a href=\"EDO_export.html#.graphic\">EDO &rtrif; export.graphic</a>"},{"link":"<a href=\"EDO_get.html\">get</a>"},{"title":"EDO#get.contour","link":"<a href=\"EDO_get.html#.contour\">EDO &rtrif; get.contour</a>"},{"title":"EDO#get.interval_shift","link":"<a href=\"EDO_get.html#.interval_shift\">EDO &rtrif; get.interval_shift</a>"},{"title":"EDO#get.interval_stack","link":"<a href=\"EDO_get.html#.interval_stack\">EDO &rtrif; get.interval_stack</a>"},{"title":"EDO#get.inversion","link":"<a href=\"EDO_get.html#.inversion\">EDO &rtrif; get.inversion</a>"},{"title":"EDO#get.lattice","link":"<a href=\"EDO_get.html#.lattice\">EDO &rtrif; get.lattice</a>"},{"title":"EDO#get.likely_root","link":"<a href=\"EDO_get.html#.likely_root\">EDO &rtrif; get.likely_root</a>"},{"title":"EDO#get.modes","link":"<a href=\"EDO_get.html#.modes\">EDO &rtrif; get.modes</a>"},{"title":"EDO#get.motives","link":"<a href=\"EDO_get.html#.motives\">EDO &rtrif; get.motives</a>"},{"title":"EDO#get.necklace","link":"<a href=\"EDO_get.html#.necklace\">EDO &rtrif; get.necklace</a>"},{"title":"EDO#get.normal_order","link":"<a href=\"EDO_get.html#.normal_order\">EDO &rtrif; get.normal_order</a>"},{"title":"EDO#get.partitioned_subsets","link":"<a href=\"EDO_get.html#.partitioned_subsets\">EDO &rtrif; get.partitioned_subsets</a>"},{"title":"EDO#get.path_n_steps","link":"<a href=\"EDO_get.html#.path_n_steps\">EDO &rtrif; get.path_n_steps</a>"},{"title":"EDO#get.path_on_tree","link":"<a href=\"EDO_get.html#.path_on_tree\">EDO &rtrif; get.path_on_tree</a>"},{"title":"EDO#get.permutations","link":"<a href=\"EDO_get.html#.permutations\">EDO &rtrif; get.permutations</a>"},{"title":"EDO#get.pitch_distribution","link":"<a href=\"EDO_get.html#.pitch_distribution\">EDO &rtrif; get.pitch_distribution</a>"},{"title":"EDO#get.random_melody","link":"<a href=\"EDO_get.html#.random_melody\">EDO &rtrif; get.random_melody</a>"},{"title":"EDO#get.random_melody_from_contour","link":"<a href=\"EDO_get.html#.random_melody_from_contour\">EDO &rtrif; get.random_melody_from_contour</a>"},{"title":"EDO#get.ratio_approximation","link":"<a href=\"EDO_get.html#.ratio_approximation\">EDO &rtrif; get.ratio_approximation</a>"},{"title":"EDO#get.retrograde","link":"<a href=\"EDO_get.html#.retrograde\">EDO &rtrif; get.retrograde</a>"},{"title":"EDO#get.scales","link":"<a href=\"EDO_get.html#.scales\">EDO &rtrif; get.scales</a>"},{"title":"EDO#get.shortest_path","link":"<a href=\"EDO_get.html#.shortest_path\">EDO &rtrif; get.shortest_path</a>"},{"title":"EDO#get.simple_ratios","link":"<a href=\"EDO_get.html#.simple_ratios\">EDO &rtrif; get.simple_ratios</a>"},{"title":"EDO#get.subset_indices","link":"<a href=\"EDO_get.html#.subset_indices\">EDO &rtrif; get.subset_indices</a>"},{"title":"EDO#get.subsets","link":"<a href=\"EDO_get.html#.subsets\">EDO &rtrif; get.subsets</a>"},{"title":"EDO#get.transposition","link":"<a href=\"EDO_get.html#.transposition\">EDO &rtrif; get.transposition</a>"},{"title":"EDO#get.unique_elements","link":"<a href=\"EDO_get.html#.unique_elements\">EDO &rtrif; get.unique_elements</a>"},{"link":"<a href=\"EDO_import.html\">import</a>"},{"title":"EDO#import.midi","link":"<a href=\"EDO_import.html#.midi\">EDO &rtrif; import.midi</a>"},{"title":"EDO#import.xml_raw","link":"<a href=\"EDO_import.html#.xml_raw\">EDO &rtrif; import.xml_raw</a>"},{"link":"<a href=\"EDO_is.html\">is</a>"},{"title":"EDO#is.element_of","link":"<a href=\"EDO_is.html#.element_of\">EDO &rtrif; is.element_of</a>"},{"title":"EDO#is.same","link":"<a href=\"EDO_is.html#.same\">EDO &rtrif; is.same</a>"},{"title":"EDO#is.subset","link":"<a href=\"EDO_is.html#.subset\">EDO &rtrif; is.subset</a>"},{"link":"<a href=\"EDO_show.html\">show</a>"},{"title":"EDO#show.contour","link":"<a href=\"EDO_show.html#.contour\">EDO &rtrif; show.contour</a>"},{"title":"EDO#show.interval_fractal_tree","link":"<a href=\"EDO_show.html#.interval_fractal_tree\">EDO &rtrif; show.interval_fractal_tree</a>"},{"title":"EDO#show.necklace","link":"<a href=\"EDO_show.html#.necklace\">EDO &rtrif; show.necklace</a>"},{"link":"<a href=\"Scale_count.html\">count</a>"},{"title":"Scale#count.chord_quality","link":"<a href=\"Scale_count.html#.chord_quality\">Scale &rtrif; count.chord_quality</a>"},{"title":"Scale#count.consecutive_steps","link":"<a href=\"Scale_count.html#.consecutive_steps\">Scale &rtrif; count.consecutive_steps</a>"},{"title":"Scale#count.imperfections","link":"<a href=\"Scale_count.html#.imperfections\">Scale &rtrif; count.imperfections</a>"},{"title":"Scale#count.interval","link":"<a href=\"Scale_count.html#.interval\">Scale &rtrif; count.interval</a>"},{"title":"Scale#count.M3s","link":"<a href=\"Scale_count.html#.M3s\">Scale &rtrif; count.M3s</a>"},{"title":"Scale#count.m3s","link":"<a href=\"Scale_count.html#.m3s\">Scale &rtrif; count.m3s</a>"},{"title":"Scale#count.major_minor_triads","link":"<a href=\"Scale_count.html#.major_minor_triads\">Scale &rtrif; count.major_minor_triads</a>"},{"title":"Scale#count.modes","link":"<a href=\"Scale_count.html#.modes\">Scale &rtrif; count.modes</a>"},{"title":"Scale#count.P5s","link":"<a href=\"Scale_count.html#.P5s\">Scale &rtrif; count.P5s</a>"},{"title":"Scale#count.pitches","link":"<a href=\"Scale_count.html#.pitches\">Scale &rtrif; count.pitches</a>"},{"title":"Scale#count.ratio","link":"<a href=\"Scale_count.html#.ratio\">Scale &rtrif; count.ratio</a>"},{"title":"Scale#count.rotational_symmetries","link":"<a href=\"Scale_count.html#.rotational_symmetries\">Scale &rtrif; count.rotational_symmetries</a>"},{"title":"Scale#count.simple_ratios","link":"<a href=\"Scale_count.html#.simple_ratios\">Scale &rtrif; count.simple_ratios</a>"},{"title":"Scale#count.tetrachords","link":"<a href=\"Scale_count.html#.tetrachords\">Scale &rtrif; count.tetrachords</a>"},{"title":"Scale#count.thirds","link":"<a href=\"Scale_count.html#.thirds\">Scale &rtrif; count.thirds</a>"},{"title":"Scale#count.transpositions","link":"<a href=\"Scale_count.html#.transpositions\">Scale &rtrif; count.transpositions</a>"},{"title":"Scale#count.trichords","link":"<a href=\"Scale_count.html#.trichords\">Scale &rtrif; count.trichords</a>"},{"link":"<a href=\"Scale_export.html\">export</a>"},{"title":"Scale#export.scala","link":"<a href=\"Scale_export.html#.scala\">Scale &rtrif; export.scala</a>"},{"link":"<a href=\"Scale_get.html\">get</a>"},{"title":"Scale#get.common_tone_transpositions","link":"<a href=\"Scale_get.html#.common_tone_transpositions\">Scale &rtrif; get.common_tone_transpositions</a>"},{"title":"Scale#get.complement","link":"<a href=\"Scale_get.html#.complement\">Scale &rtrif; get.complement</a>"},{"title":"Scale#get.interval_vector","link":"<a href=\"Scale_get.html#.interval_vector\">Scale &rtrif; get.interval_vector</a>"},{"title":"Scale#get.inversion","link":"<a href=\"Scale_get.html#.inversion\">Scale &rtrif; get.inversion</a>"},{"title":"Scale#get.least_step_multiplier","link":"<a href=\"Scale_get.html#.least_step_multiplier\">Scale &rtrif; get.least_step_multiplier</a>"},{"title":"Scale#get.lerdahl_attraction","link":"<a href=\"Scale_get.html#.lerdahl_attraction\">Scale &rtrif; get.lerdahl_attraction</a>"},{"title":"Scale#get.lerdahl_attraction_vector","link":"<a href=\"Scale_get.html#.lerdahl_attraction_vector\">Scale &rtrif; get.lerdahl_attraction_vector</a>"},{"title":"Scale#get.levenshtein","link":"<a href=\"Scale_get.html#.levenshtein\">Scale &rtrif; get.levenshtein</a>"},{"title":"Scale#get.modes","link":"<a href=\"Scale_get.html#.modes\">Scale &rtrif; get.modes</a>"},{"title":"Scale#get.motives_diatonic","link":"<a href=\"Scale_get.html#.motives_diatonic\">Scale &rtrif; get.motives_diatonic</a>"},{"title":"Scale#get.n_chords","link":"<a href=\"Scale_get.html#.n_chords\">Scale &rtrif; get.n_chords</a>"},{"title":"Scale#get.name","link":"<a href=\"Scale_get.html#.name\">Scale &rtrif; get.name</a>"},{"title":"Scale#get.normal_order","link":"<a href=\"Scale_get.html#.normal_order\">Scale &rtrif; get.normal_order</a>"},{"title":"Scale#get.permutations","link":"<a href=\"Scale_get.html#.permutations\">Scale &rtrif; get.permutations</a>"},{"title":"Scale#get.pitches","link":"<a href=\"Scale_get.html#.pitches\">Scale &rtrif; get.pitches</a>"},{"title":"Scale#get.position_of_quality","link":"<a href=\"Scale_get.html#.position_of_quality\">Scale &rtrif; get.position_of_quality</a>"},{"title":"Scale#get.prime_form","link":"<a href=\"Scale_get.html#.prime_form\">Scale &rtrif; get.prime_form</a>"},{"title":"Scale#get.rotations","link":"<a href=\"Scale_get.html#.rotations\">Scale &rtrif; get.rotations</a>"},{"title":"Scale#get.rothenberg_propriety","link":"<a href=\"Scale_get.html#.rothenberg_propriety\">Scale &rtrif; get.rothenberg_propriety</a>"},{"title":"Scale#get.sequence_transposition","link":"<a href=\"Scale_get.html#.sequence_transposition\">Scale &rtrif; get.sequence_transposition</a>"},{"title":"Scale#get.shortest_path","link":"<a href=\"Scale_get.html#.shortest_path\">Scale &rtrif; get.shortest_path</a>"},{"title":"Scale#get.stacks","link":"<a href=\"Scale_get.html#.stacks\">Scale &rtrif; get.stacks</a>"},{"title":"Scale#get.step_sizes","link":"<a href=\"Scale_get.html#.step_sizes\">Scale &rtrif; get.step_sizes</a>"},{"title":"Scale#get.supersets","link":"<a href=\"Scale_get.html#.supersets\">Scale &rtrif; get.supersets</a>"},{"title":"Scale#get.tetrachords","link":"<a href=\"Scale_get.html#.tetrachords\">Scale &rtrif; get.tetrachords</a>"},{"title":"Scale#get.transposition","link":"<a href=\"Scale_get.html#.transposition\">Scale &rtrif; get.transposition</a>"},{"title":"Scale#get.trichords","link":"<a href=\"Scale_get.html#.trichords\">Scale &rtrif; get.trichords</a>"},{"link":"<a href=\"Scale_is.html\">is</a>"},{"title":"Scale#is.in_lower_edos","link":"<a href=\"Scale_is.html#.in_lower_edos\">Scale &rtrif; is.in_lower_edos</a>"},{"title":"Scale#is.invertible","link":"<a href=\"Scale_is.html#.invertible\">Scale &rtrif; is.invertible</a>"},{"title":"Scale#is.mode_of","link":"<a href=\"Scale_is.html#.mode_of\">Scale &rtrif; is.mode_of</a>"},{"title":"Scale#is.normal_order","link":"<a href=\"Scale_is.html#.normal_order\">Scale &rtrif; is.normal_order</a>"},{"title":"Scale#is.one_of","link":"<a href=\"Scale_is.html#.one_of\">Scale &rtrif; is.one_of</a>"},{"title":"Scale#is.prime_form","link":"<a href=\"Scale_is.html#.prime_form\">Scale &rtrif; is.prime_form</a>"},{"title":"Scale#is.subset","link":"<a href=\"Scale_is.html#.subset\">Scale &rtrif; is.subset</a>"},{"link":"<a href=\"Scale_show.html\">show</a>"},{"title":"Scale#show.interval_fractal_tree","link":"<a href=\"Scale_show.html#.interval_fractal_tree\">Scale &rtrif; show.interval_fractal_tree</a>"},{"title":"Scale#show.necklace","link":"<a href=\"Scale_show.html#.necklace\">Scale &rtrif; show.necklace</a>"},{"link":"<a href=\"Scale_to.html\">to</a>"},{"title":"Scale#to.cents","link":"<a href=\"Scale_to.html#.cents\">Scale &rtrif; to.cents</a>"},{"title":"Scale#to.steps","link":"<a href=\"Scale_to.html#.steps\">Scale &rtrif; to.steps</a>"},{"title":"environment","link":"<a href=\"global.html#environment\">Global &rtrif; environment</a>"}];
 setupSearch(list)
 </script>
 
  
-<script type="text/javascript" src="edo.js/1.1.1/scripts/misc.js"></script>
+<script type="text/javascript" src="scripts/misc.js"></script>
 </body>
 </html>
