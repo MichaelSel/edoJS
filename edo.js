@@ -310,13 +310,15 @@ class EDO {
 
     /**
      * <p>Creates a tuning context and system that exposes powerful functions for manipulating, analyzing, and generating music.</p>
-     * <p>This is the main class of the project. At its center stand 4 collections (see "Namespaces" below) of functions.</p>
+     * <p>This is the main class of the project. At its center stand 7 collections (see "Namespaces" below) of functions.</p>
      * <ul>
      *  <li> [EDO.convert]{@link EDO#convert} is a set of functions used to change between equivalent representations within the tuning context.</li>
      *  <li> [EDO.count]{@link EDO#count} is a set of functions used to count stuff.</li>
      *  <li> [EDO.get]{@link EDO#get} is a set of functions used to manipulate and generate stuff.</li>
      *  <li> [EDO.is]{@link EDO#is} is a set of functions used for boolean truth statements.</li>
      *  <li> [EDO.show]{@link EDO#show} is a set of functions used for visualization.</li>
+     *  <li> [EDO.import]{@link EDO#import} is a set of functions used for importing other file formats (like midi or musicXML).</li>
+     *  <li> [EDO.export]{@link EDO#export} is a set of functions used for exporting the output to various formats.</li>
      *  </ul>
      * @param {number} edo - The number of equal divisions of the octave.
      * @example
@@ -2486,12 +2488,13 @@ class Scale {
      *  <li> [Scale.export]{@link Scale#export} is a set of functions used to export files.</li>
      *  <li> [Scale.show]{@link Scale#show} is a set of functions used to visualize various things.</li></ul>
      *  <p>
-     *      In addition to the namespaces, Scale also has 4 methods that can be chained together:
+     *      In addition to the namespaces, Scale also has 5 methods that can be chained together:
      * <ul>
      *  <li> [Scale.invert()]{@link Scale#invert} returns the inversion of the original Scale object as a new Scale object.</li>
      *  <li> [Scale.mode(n)]{@link Scale#mode} returns the nth mode of the original Scale object as a new Scale object.</li>
      *  <li> [Scale.normal()]{@link Scale#normal} returns the normal order of the original Scale object as a new Scale object.</li>
      *  <li> [Scale.prime()]{@link Scale#prime} returns the prime form of the original Scale object as a new Scale object.</li>
+     *  <li> [Scale.complement()]{@link Scale#complement} returns the complement of the scale in the current EDO.</li>
      *  </ul>
      *  </p>
      * @param {Array<number>} pitches - The pitch classes of the set.
@@ -2502,7 +2505,7 @@ class Scale {
      * let edo = new EDO(12) //create a new EDO context with 12 divisions.
      * let scale = new Scale([0,2,4,5,7,9,11],edo) //pass the PCs and edo context to the scale
      *
-     * //Basic usage 2 (preffered):
+     * //Basic usage 2 (preferred):
      * let edo = new EDO(12) //create a new EDO context with 12 divisions.
      * let scale = edo.scale([0,2,4,5,7,9,11]) //create an instance of Scale through the EDO.scale method rather than
      *
@@ -4007,6 +4010,15 @@ class Scale {
      * */
     prime () {
         let pitches = this.get.prime_form()
+        return new Scale(pitches,this.parent)
+    }
+
+    /**
+     * Returns a Scale object with pitches corresponding to the complement of the original scale in the current EDO.
+     * @returns {Scale}
+     * */
+    complement () {
+        let pitches = this.get.complement(true)
         return new Scale(pitches,this.parent)
     }
 
