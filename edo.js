@@ -726,7 +726,6 @@ class EDO {
                     var imgURI = canvas
                         .toDataURL('image/png')
                         .replace('image/png', 'image/octet-stream');
-                    console.log(imgURI)
                     triggerDownload(imgURI);
                 };
 
@@ -785,6 +784,65 @@ class EDO {
                 return vector
             }
 
+        },
+
+        /** <p>Returns the complementary interval (needed to complete the octave) for a given an interval class.</p>
+         * @param {Number} interval - Some interval class
+         * @returns {Number}
+         * @memberOf EDO#get
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * edo.get.complementary_interval(3) //returns 9
+         *
+         */
+        complementary_interval: (interval) => {
+            return this.edo-interval
+        },
+
+        /** <p>Returns all the PCs of the EDO that the scale does not use.</p>
+         * @param {boolean} [from_0=false] - when true, the output will be normalized to 0.
+         * @returns {Array<Number>}
+         * @memberOf Scale#get
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * edo.get.complementary_set([0,2,4,5,7,9,11])
+         * //returns [1, 3, 6, 8, 10]
+         *
+         * edo.get.complementary_set([0,2,4,5,7,9,11],true)
+         * //returns [0, 2, 5, 7, 9]
+         */
+        complementary_set: (pitches,from_0) => {
+            let PCs = Array.from(Array(this.edo).keys())
+            pitches.forEach((PC)=>{
+                (PCs.indexOf(PC)!=-1)? PCs.splice(PCs.indexOf(PC),1): true
+            })
+            if(from_0) PCs = this.scale(PCs).pitches
+            return PCs
+        },
+
+        /** <p>Returns every IC that by iteratively adding it to 0, produces all of the pitches of the tuning space.</p>
+         * @see Balzano, G. J. (1980). "The group-theoretic description of 12-fold and microtonal pitch systems." Computer music journal 4(4): 66-84.
+         * @param {Boolean} [with_complement_interval=false] - When true the complementary intervals will be included (e.g. in 12EDO IC>6)
+         * @returns {Array<Number>}
+         * @memberOf EDO#get
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * edo.get.generators()
+         * //returns [1,5]
+         *
+         * edo.get.generators(true)
+         * //returns [[1,11],[5,7]]
+         */
+        generators: (with_complement_interval=false) => {
+            let generators = []
+            for (let i = 1; i < Math.ceil(this.edo/2); i++) {
+
+                let arr = Array.from(Array(this.edo).keys()).map((ind)=>this.mod(ind*i,this.edo))
+                arr = this.get.unique_elements(arr)
+                if(arr.length==this.edo) generators.push(i)
+            }
+            if(with_complement_interval) generators = generators.map((el)=> [el,this.get.complementary_interval(el)])
+            return generators
         },
 
         /** Gets a melody represented as intervals, and returns the interval traversed by the end.
@@ -2929,12 +2987,7 @@ class Scale {
          * //returns [0, 2, 5, 7, 9]
          */
         complement: (from_0) => {
-            let PCs = Array.from(Array(this.edo).keys())
-            this.pitches.forEach((PC)=>{
-                (PCs.indexOf(PC)!=-1)? PCs.splice(PCs.indexOf(PC),1): true
-            })
-            if(from_0) PCs = this.parent.scale(PCs).pitches
-            return PCs
+            return this.parent.get.complementary_set(this.pitches,from_0)
         },
 
         /** Returns the interval vector of the scale.
@@ -3015,6 +3068,7 @@ class Scale {
         },
 
         /** <p>Calculates the attraction between note1 to note2 according to Lerdahl's formula in TPS</p>
+         * @see Lerdahl, F. (2004). Tonal pitch space, Oxford University Press.
          * @param {Number} note1 - The first PC
          * @param {Number} note2 - The second PC
          * @returns {Number} The value of attraction between note1 and note2
@@ -3059,6 +3113,7 @@ class Scale {
         /** <p>Returns a graphic vector showing the tendencies of each note in the scale</p>
          * @returns {Array<String>} The attraction vector
          * @see Scale.get.lerdahl_attraction()
+         * @see Lerdahl, F. (2004). Tonal pitch space, Oxford University Press.
          * @example
          * let edo = new EDO(12) //define tuning
          * let scale = edo.scale([0,2,4,5,7,9,11]) //major scale
@@ -3426,6 +3481,7 @@ class Scale {
         },
 
         /** <p>Returns the Rothenberg Propriety value for this scale</p>
+         * @see Rothenberg, D. (1977). "A model for pattern perception with musical applications part I: Pitch structures as order-preserving maps." Mathematical Systems Theory 11(1): 199-234.
          * @param {Boolean} [cache=false] - When true, the result will be cached for future retrieval.
          * @returns {('strictly proper'|'proper'|'improper')} The step sizes
          * @example
