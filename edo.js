@@ -33,7 +33,7 @@ let save_file
 if(environment=='server') {
      /**
      * @ignore*/
-    save_file = function (name,dir,contents) {
+    save_file = function (name,dir,contents,_unused) {
         fs.writeFile(dir+name, contents, function(err) {
             if(err) {
                 return console.log(err);
@@ -47,8 +47,7 @@ if(environment=='server') {
      * Handles file saving when run client-side
      * @ignore
      * */
-    save_file = function(name, dir,contents) {
-        const mime_type = "text/plain";
+    save_file = function(name, dir,contents,mime_type="text/plain") {
 
         const blob = new Blob([contents], {type: mime_type});
 
@@ -717,7 +716,8 @@ class EDO {
                 let data = (new XMLSerializer()).serializeToString(svg);
                 let DOMURL = window.URL || window.webkitURL || window;
                 let img = new Image();
-                let svgBlob = new Blob([data], {type: 'image/svg+xml;charset=utf-8'});
+                let mime_type = 'image/svg+xml;charset=utf-8'
+                let svgBlob = new Blob([data], {type: mime_type});
                 let url = DOMURL.createObjectURL(svgBlob);
                 img.onload = function () {
                     ctx.drawImage(img, 0, 0);
@@ -726,6 +726,7 @@ class EDO {
                     var imgURI = canvas
                         .toDataURL('image/png')
                         .replace('image/png', 'image/octet-stream');
+                    console.log(imgURI)
                     triggerDownload(imgURI);
                 };
 
