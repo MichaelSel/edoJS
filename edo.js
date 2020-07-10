@@ -3680,7 +3680,7 @@ class Scale {
             */
             if(this.catalog['tetrachords']) return this.catalog['tetrachords']
 
-            let tetrachords = this.get.n_chords(4,cache)
+            let tetrachords = this.get.n_chords(4,true,cache)
 
             if(cache) this.catalog['tetrachords'] = tetrachords
             return tetrachords
@@ -3730,7 +3730,7 @@ class Scale {
             :return:
             */
             if(this.catalog['trichords']) return this.catalog['trichords']
-            let trichords = this.get.n_chords(3,cache)
+            let trichords = this.get.n_chords(3,true,cache)
             if(cache) this.catalog['trichords'] = trichords
             return trichords
 
@@ -3950,7 +3950,7 @@ class Scale {
 
         /**
          * <p>Graphs the scale's necklace.</p>
-         ** <img src='img/scale_necklace.png'>
+         ** <img src='img/Necklace.png'>
          * @param  {String} container_id - The ID of a DOM element in which the contour will be shown.
          * @param  {Boolean} [replace=false] - When false, any time the function is called a new contour will be appended to the object. When true, it will replace the contents of the container.
          * @param  {Number|Array<Number,Number>} [radius] - Radius (in px) of the ring. When no values are passed, the ring will take the size of the container.
