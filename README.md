@@ -26,12 +26,12 @@ edo.get.inversion([0,2,4,5,7,9,11]) //returns [0, 2,  4, 6, 7, 9, 11]
  
 edo.convert.ratio_to_interval(3/2) //returns [7]
  
- 
 edo.count.pitches([0, 3, 3, 2, 4, 3, 4]) //returns [[3,3],[4,2], [2,1], [0,1]] 
 // (3 appears 3 times, 4 appears 2 times, etc.)
  
 edo.is.subset([2,4],[1,2,3,4,5]) //returns true (the set [2,4] IS a subset of [1,2,3,4,5])
 ```
+
 ## Author
 [Michael Seltenreich](http://www.michaelselterneich.com) 
 
@@ -43,4 +43,6 @@ edo.is.subset([2,4],[1,2,3,4,5]) //returns true (the set [2,4] IS a subset of [1
 
 ## Full Documentation
 [Documentation](https://michaelsel.github.io/edoJS/)
+A good place to start: 
+[EDO Class](https://michaelsel.github.io/edoJS/EDO.html)
 
