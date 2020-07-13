@@ -847,6 +847,27 @@ class EDO {
             return generators
         },
 
+        /** <p>Returns the elements that are found in all given sets</p>
+         * @param {...Array<Number>} collections - Any number of arrays containing pitches
+         * @returns {Array<Number>}
+         * @memberOf EDO#get
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * edo.get.intersection([1,2,3,4],[3,4,5,6])
+         * //returns [3,4]
+         *
+         * edo.get.intersection([1,2,3,4],[3,4,5,6],[2,4])
+         * //returns [4]
+         */
+        intersection: (...collections) => {
+            let first =  collections[0]
+            for (let i = 1; i < collections.length; i++) {
+                first = first.filter(value => collections[i].includes(value))
+            }
+            return first
+
+        },
+
         /** Gets a melody represented as intervals, and returns the interval traversed by the end.
          * @param  {Array<Number>} intervals - Melody represented in intervals
          * @returns {Number} the interval traversed by the melody
@@ -949,6 +970,7 @@ class EDO {
             }
             return result
         },
+
 
         /** Returns the inversion of a given set of pitches
          *
@@ -1237,6 +1259,21 @@ class EDO {
             }
             return result
         },
+
+        /** Returns the elements of array1, but not if they are found in array 2
+         * @param  {Array<Number>} array1 - a collection of PCs
+         * @param  {Array<Number>} array2 - a collection of PCs
+         * @param  {Boolean} [normal=false] - when true, the returned set will be in normal order
+         * @return {Array<Number>} All of the elements of array1 that are not in array2
+         * @memberOf EDO#get
+         * @example
+         * let edo = new EDO(12) //Create a tuning context
+         * edo.get.not([0,1,3,4,6,7,9,10],[0,4,9])
+         * //returns [1,3,6,7,10]
+         *
+         * edo.get.not([0,1,3,4,6,7,9,10],[0,4,9],true)
+         * //returns [0,2,5,6,9]*/
+        not: (array1,array2,normal=false) => {},
 
         /**
          * <p>Gets an array with element-wise possibilities, and returns every subset given these possibilities</p>
@@ -1877,6 +1914,21 @@ class EDO {
             pitches = pitches.map((pitch) => pitch+amount)
             if (as_PC) pitches=pitches.map((pitch)=>this.mod(pitch,this.edo))
             return pitches
+        },
+
+        /** Returns the union of two sets
+         *
+         * @param  {...Array<Number>} collections - Any number of arrays of pitches.
+         * @returns {Array<Number>}
+         * @memberOf EDO#get
+         * @example
+         * let edo = new EDO(12) //Create a tuning context
+         * edo.get.union([0,1,2],[3,4,5],[6])
+         * //returns [0,1,2,3,4,5]
+         */
+        union: (...collections) => {
+            let union = []
+            return union.concat(...collections)
         },
 
         /** Gets an array that may have duplications and returns the array without duplications
@@ -3738,6 +3790,7 @@ class Scale {
             return trichords
 
         },
+
     }
 
     /**A collection of functions that returns a Boolean about various features regarding the scale

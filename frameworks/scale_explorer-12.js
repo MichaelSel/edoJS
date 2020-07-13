@@ -60,6 +60,7 @@ scale = edo.scale([0, 1, 2, 4, 6, 8, 10]).mode(4)
 // scale = edo.scale([0, 2, 4, 6, 8, 11])
 // scale = edo.scale([0, 2, 3, 6, 7, 11]) // this may be the mode of another
 // scale = edo.scale([0, 2, 3, 6, 8, 11]) // this may be the mode of another
+// scale = edo.scale([0, 2, 4, 6, 8, 11]) // this may be the mode of another
 // scale = edo.scale([0, 3, 6, 7, 8, 11])
 
 

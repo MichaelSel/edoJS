@@ -1,4 +1,4 @@
-const EDO = require("../edo")
+const EDO = require("../edo").EDO
 
 const unique_in_array = (list) => {
 
@@ -48,4 +48,5 @@ for(let i=0;i<12;i++) {
     })
 
 }
+
 
