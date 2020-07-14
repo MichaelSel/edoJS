@@ -37,8 +37,8 @@ const subsets_of_modes_of_LT_that_arent = function (scales,edo) {
         //turn each into a scale object
         sub_scales = sub_scales.map((pitches)=>scale.parent.scale(pitches))
 
-        //remove all scales with 3 pitches or less
-        sub_scales = sub_scales.filter((scale)=>scale.count.pitches()>3)
+        // //remove all scales with 3 pitches or less
+        // sub_scales = sub_scales.filter((scale)=>scale.count.pitches()>3)
 
         //remove all scales that are modes of limited transposition themselves
         sub_scales = sub_scales.filter((scale)=>scale.count.transpositions()==scale.edo)
@@ -88,8 +88,8 @@ const all_modes_of_LT = function (scales,edo) {
         //turn each into a scale object
         sub_scales = sub_scales.map((pitches)=>scale.parent.scale(pitches))
 
-        //remove all scales with 3 pitches or less
-        sub_scales = sub_scales.filter((scale)=>scale.count.pitches()>3)
+        // //remove all scales with 3 pitches or less
+        // sub_scales = sub_scales.filter((scale)=>scale.count.pitches()>3)
 
         //remove all scales that are NOT modes of limited transposition themselves
         sub_scales = sub_scales.filter((scale)=>scale.count.transpositions()!=scale.edo)
