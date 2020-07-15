@@ -2569,7 +2569,6 @@ class EDO {
          * @param  {Array<Array<Number>>} necklaces - The necklaces to be drawn
          * @param  {Boolean} [replace=false] - When true, the contents of the container will be replaced by the function. When false, it will be appended.
          * @param  {Number} [radius = 600] - Radius (in px) of the ring.
-         * @param  {Number} [necklace_gap = 35] - The number of pixels between necklaces
          *
          * @example
          * <script src="edo.js"></script>
@@ -2586,7 +2585,7 @@ class EDO {
          * @see /demos/necklace.html
          * @memberOf EDO#show
          */
-        nested_necklaces: (container_id, necklaces ,replace=true,radius =600,necklace_gap=35) => {
+        nested_necklaces: (container_id, necklaces ,replace=true,radius =600) => {
             let parent = this
             let height=radius
             let width=radius
@@ -2599,7 +2598,7 @@ class EDO {
             let container = document.getElementById(container_id)
 
             let new_necklace_radius = height/2-(height/20)
-            let necklace_radius_offset = Math.min(necklace_gap,new_necklace_radius/(num_of_necklaces))
+            let necklace_radius_offset = Math.min(new_necklace_radius/(num_of_necklaces))
 
             if(replace) container.innerHTML = ""
             container.appendChild(div)
@@ -2629,7 +2628,8 @@ class EDO {
                         node.text.remove()
                     }
                     this.nodes = []
-                    let node_radius = Math.min((paper.height*Math.PI / (this.edo*4))/2-5,paper.height*Math.PI/(num_of_necklaces*num_of_necklaces*2))
+                    let node_radius = Math.min((paper.height*Math.PI / (this.edo*4))/2-5,paper.height*Math.PI/(num_of_necklaces*num_of_necklaces*2),(paper.height*Math.PI / (this.edo*num_of_necklaces))/2-5)
+                    node_radius = Math.max(node_radius,5)
                     //node parameters
                     for(let note of this.pitches) {
                         let angle = (note * (360 / this.edo)) - 90
@@ -2729,7 +2729,7 @@ class EDO {
                     let rgb = Raphael.hsl2rgb(hue,100,50)
                     this.drawing = paper.path("M" + this.x1+"," + this.y1 +"L" + this.x2 +"," + this.y2)
                         .attr('stroke',rgb.hex)
-                        .attr('stroke-width',3)
+                        .attr('stroke-width',1)
 
                 }
 

@@ -55,8 +55,50 @@
         return scales
 
     }
+    const subsets_of_modes_of_LT_that_arent = function (scales,edo) {
 
-    scales = all_modes_of_LT(scales,edo)
+        //Get all the modes of limited transposition
+        scales = scales.filter((scale)=>scale.count.transpositions()<scale.edo)
+
+        //remove the chromatic scale
+        scales = scales.filter((scale)=>scale.get.step_sizes().length>1 || scale.get.step_sizes()[0]!=1) //if the only step size is [1] it's the chromatic scale
+
+        // //remove scales that are subsets of other scales
+        // scales = scales.filter((scale,ind,all)=> {
+        //     let temp_all = [...all]
+        //     temp_all.splice(ind,1) //remove current scale from list
+        //     return !scale.is.subset(temp_all.map((scale)=>scale.pitches))
+        // })
+
+        scales = scales.map((scale)=>{
+            //Get all subsets of each mode of limited transposition
+            let sub_scales = scale.parent.get.subsets(scale.pitches)
+
+            //normalize all subsets to 0 and store their PCs
+            sub_scales=sub_scales.map((pitches)=>scale.parent.scale(pitches).normal().pitches)
+
+            //remove duplications
+            sub_scales = scale.parent.get.unique_elements(sub_scales)
+
+            //remove single notes
+            sub_scales = sub_scales.filter((scale)=>scale.length>1)
+
+            //turn each into a scale object
+            sub_scales = sub_scales.map((pitches)=>scale.parent.scale(pitches))
+
+            // //remove all scales with 3 pitches or less
+            // sub_scales = sub_scales.filter((scale)=>scale.count.pitches()>3)
+
+            //remove all scales that are modes of limited transposition themselves
+            sub_scales = sub_scales.filter((scale)=>scale.count.transpositions()==scale.edo)
+
+            return {mode:scale.pitches, subsets: sub_scales}
+        })
+
+        return scales
+
+    }
+    scales = subsets_of_modes_of_LT_that_arent(scales,edo)
 
     scales.sort((a,b)=>a.mode.length-b.mode.length)
     for(let scale of scales) {
@@ -73,10 +115,9 @@
             positions = edo.get.unique_elements(positions)
             return positions
         })
-        subsets = subsets.flat()
+        subsets = edo.get.unique_elements(subsets.flat())
         let necklaces = [scale.mode,...subsets]
-        console.log(subsets)
-        edo.show.nested_necklaces("container",necklaces,false,2400,30)
+        edo.show.nested_necklaces("container",necklaces,false,1800)
 
     }
 

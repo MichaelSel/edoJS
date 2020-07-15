@@ -2629,6 +2629,7 @@ class EDO {
                     }
                     this.nodes = []
                     let node_radius = Math.min((paper.height*Math.PI / (this.edo*4))/2-5,paper.height*Math.PI/(num_of_necklaces*num_of_necklaces*2),(paper.height*Math.PI / (this.edo*num_of_necklaces))/2-5)
+                    node_radius = Math.max(node_radius,5)
                     //node parameters
                     for(let note of this.pitches) {
                         let angle = (note * (360 / this.edo)) - 90
@@ -2728,7 +2729,7 @@ class EDO {
                     let rgb = Raphael.hsl2rgb(hue,100,50)
                     this.drawing = paper.path("M" + this.x1+"," + this.y1 +"L" + this.x2 +"," + this.y2)
                         .attr('stroke',rgb.hex)
-                        .attr('stroke-width',3)
+                        .attr('stroke-width',1)
 
                 }
 
