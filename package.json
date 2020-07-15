@@ -22,6 +22,7 @@
     "swagger-jsdoc": "^4.0.0"
   },
   "dependencies": {
+    "csv-parser": "^2.3.3",
     "midi-parser-js": "^4.0.4",
     "xml2js": "^0.4.23"
   },

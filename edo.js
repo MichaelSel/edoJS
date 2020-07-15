@@ -3290,11 +3290,11 @@ class Scale {
             for(let i=0;i<this.edo-1;i++) {
                 intervals[i+1] = 0
             }
-            let length = scale.length
+            let length = this.count.pitches()
             let doublescale = scale.concat(scale)
             scale.forEach((note,i)=> {
                 for(let j=0; j<length-1;j++) {
-                    let interval = (doublescale[i+j+1]-doublescale[i]) % this.edo
+                    let interval = this.parent.mod((doublescale[i+j+1]-doublescale[i]),this.edo)
                     intervals[interval] +=1
                 }
             })
@@ -4152,8 +4152,9 @@ class Scale {
             return this.parent.is.same(this.pitches,this.get.prime_form())
         },
 
-        /**<p>Returns true if the scale is a subset of one of multiple scales provided</p>
+        /**<p>Returns true if the scale is a subset of one of multiple scales provided.</p>
          * @param {Array<Number>|Array<Array<Number>>} scales - another scale, or a collection of scales
+         * @param {Boolean} [include_modes=true] - When true, the function will return true also when the scale is a subset of one of the modes of the scales in question. When false, the scale must appear verbatim to return true
          * @returns {Boolean}
          * @memberOf Scale#is
          *
@@ -4170,12 +4171,14 @@ class Scale {
                 return true
             }
             if(!Array.isArray(scales[0])) scales=[scales]
+            scales = scales.map((scale)=>{
+                return this.parent.scale(scale).get.modes()
+            }).flat()
             for (let scale of scales) {
                 if(is_subset_of_one(this.pitches,scale)) return true
             }
             return false
         },
-
     }
 
     /**A collection of functions that convert data from one representation to another
