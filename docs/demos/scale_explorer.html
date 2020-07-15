@@ -42,6 +42,11 @@
             <h3>Scale</h3>
             <div id="necklace_container"></div>
         </div>
+        <div id="transpositions">
+            <h3>Common-tone Transpositions</h3>
+            <div id="transposition_container"></div>
+        </div>
+
         <div id="trichords_necklaces">
             <h3>Trichords</h3>
             <div id="trichord_container"></div>
@@ -105,6 +110,9 @@
 
         let stacks4 = scale.get.stacks(4,2)
         edo.show.necklace('4th_stacks_container',stacks4,true,150)
+
+        let common_tones = scale.get.common_tone_transpositions().map((trans)=>trans[0])
+        edo.show.nested_necklaces("transposition_container",common_tones,true,600)
 
         $(".transposition_count").html(scale.count.transpositions())
         $('.count_imperfections').html(scale.count.imperfections())

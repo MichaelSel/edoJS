@@ -114,5 +114,5 @@ const all_modes_of_LT = function (scales,edo) {
 
 }
 
-scales = subsets_of_modes_of_LT_that_arent(scales,edo)
+scales = all_modes_of_LT(scales,edo)
 

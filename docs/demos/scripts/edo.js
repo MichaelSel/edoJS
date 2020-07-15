@@ -310,13 +310,15 @@ class EDO {
 
     /**
      * <p>Creates a tuning context and system that exposes powerful functions for manipulating, analyzing, and generating music.</p>
-     * <p>This is the main class of the project. At its center stand 4 collections (see "Namespaces" below) of functions.</p>
+     * <p>This is the main class of the project. At its center stand 7 collections (see "Namespaces" below) of functions.</p>
      * <ul>
      *  <li> [EDO.convert]{@link EDO#convert} is a set of functions used to change between equivalent representations within the tuning context.</li>
      *  <li> [EDO.count]{@link EDO#count} is a set of functions used to count stuff.</li>
      *  <li> [EDO.get]{@link EDO#get} is a set of functions used to manipulate and generate stuff.</li>
      *  <li> [EDO.is]{@link EDO#is} is a set of functions used for boolean truth statements.</li>
      *  <li> [EDO.show]{@link EDO#show} is a set of functions used for visualization.</li>
+     *  <li> [EDO.import]{@link EDO#import} is a set of functions used for importing other file formats (like midi or musicXML).</li>
+     *  <li> [EDO.export]{@link EDO#export} is a set of functions used for exporting the output to various formats.</li>
      *  </ul>
      * @param {number} edo - The number of equal divisions of the octave.
      * @example
@@ -680,10 +682,10 @@ class EDO {
          *  edo.show.necklace('container', [0,2,4,5,7,9,11])
          *
          *  //Save the graphic
-         *  edo.export.graphic('container') //downloads the necklace
+         *  edo.export.png('container') //downloads the necklace
          * </script>
          */
-        graphic: (container_id) => {
+        png: (container_id) => {
             if(environment=="server") return console.log("This is only support when run on client-side")
 
             const triggerDownload = function (imgURI) {
@@ -731,7 +733,25 @@ class EDO {
 
                 img.src = url;
             }
+        },
+
+
+        svg: (container_id) => {
+            if(environment=="server") return console.log("This is only support when run on client-side")
+            let el = document.getElementById(container_id)
+            let svgs = el.getElementsByTagName('svg')
+            for (let svg of svgs) {
+                let svgString ="<?xml version=\"1.0\" encoding=\"utf-8\"?>" + svg.outerHTML
+                console.log(svgString)
+                let a = document.createElement('a');
+                a.download = container_id + '.svg';
+                a.type = 'image/svg+xml';
+                let blob = new Blob([svgString], {"type": "image/svg+xml"});
+                a.href = (window.URL || webkitURL).createObjectURL(blob);
+                a.click();
+            }
         }
+
     }
 
     /**A collection of functions manipulates an input
@@ -845,6 +865,27 @@ class EDO {
             return generators
         },
 
+        /** <p>Returns the elements that are found in all given sets</p>
+         * @param {...Array<Number>} collections - Any number of arrays containing pitches
+         * @returns {Array<Number>}
+         * @memberOf EDO#get
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * edo.get.intersection([1,2,3,4],[3,4,5,6])
+         * //returns [3,4]
+         *
+         * edo.get.intersection([1,2,3,4],[3,4,5,6],[2,4])
+         * //returns [4]
+         */
+        intersection: (...collections) => {
+            let first =  collections[0]
+            for (let i = 1; i < collections.length; i++) {
+                first = first.filter(value => collections[i].includes(value))
+            }
+            return first
+
+        },
+
         /** Gets a melody represented as intervals, and returns the interval traversed by the end.
          * @param  {Array<Number>} intervals - Melody represented in intervals
          * @returns {Number} the interval traversed by the melody
@@ -947,6 +988,7 @@ class EDO {
             }
             return result
         },
+
 
         /** Returns the inversion of a given set of pitches
          *
@@ -1191,6 +1233,7 @@ class EDO {
          * edo.get.normal_order([0,2,4,5,7,9,11])
          * //returns [0, 1, 2, 3, 5, 6, 8, 10]*/
         normal_order: (lst,cache=false) => {
+            if(lst.length==0) return []
             let edo = this.edo
             if(!this.catalog[String(lst)]) this.catalog[String(lst)] = {}
             if(this.catalog[String(lst)]['normal_order']) return this.catalog[String(lst)]['normal_order']
@@ -1234,6 +1277,30 @@ class EDO {
                 this.catalog[String(lst)]['normal_order'] = result
             }
             return result
+        },
+
+        /** Returns the elements of array1, but not if they are found in array 2
+         * @param  {Array<Number>} array1 - a collection of PCs
+         * @param  {Array<Number>} array2 - a collection of PCs
+         * @param  {Boolean} [normal=false] - when true, the returned set will be in normal order
+         * @return {Array<Number>} All of the elements of array1 that are not in array2
+         * @memberOf EDO#get
+         * @example
+         * let edo = new EDO(12) //Create a tuning context
+         * edo.get.not([0,1,3,4,6,7,9,10],[0,4,9])
+         * //returns [1,3,6,7,10]
+         *
+         * edo.get.not([0,1,3,4,6,7,9,10],[0,4,9],true)
+         * //returns [0,2,5,6,9]*/
+        not: (array1,array2,normal=false) => {
+            let copy = [...array1]
+            array2.forEach((note)=> {
+                var index = copy.indexOf(note);
+                if(index!=-1) copy.splice(index, 1);
+            })
+            if(normal) copy = this.get.normal_order(copy)
+
+            return copy
         },
 
         /**
@@ -1877,6 +1944,21 @@ class EDO {
             return pitches
         },
 
+        /** Returns the union of two sets
+         *
+         * @param  {...Array<Number>} collections - Any number of arrays of pitches.
+         * @returns {Array<Number>}
+         * @memberOf EDO#get
+         * @example
+         * let edo = new EDO(12) //Create a tuning context
+         * edo.get.union([0,1,2],[3,4,5],[6])
+         * //returns [0,1,2,3,4,5]
+         */
+        union: (...collections) => {
+            let union = []
+            return union.concat(...collections)
+        },
+
         /** Gets an array that may have duplications and returns the array without duplications
          *
          * @param  {Array<number|Array<Number>>} list - an array with duplications
@@ -2032,7 +2114,7 @@ class EDO {
 
         /**
          * <p>Plots the contour of a given melody.</p>
-         * <img src = "img/4n_contours.png">
+         * <img src = "img/contour.png">
          * @param  {String} container_id - The ID of a DOM element in which the contour will be shown.
          * @param  {Array<Number>} pitches - The melody.
          * @param  {Boolean} [replace=false] - When false, any time the function is called a new contour will be appended to the object. When true, it will replace the contents of the container.
@@ -2108,6 +2190,7 @@ class EDO {
 
         /**
          * Makes a fractal tree with branches diverging by given intervals
+         * <img src = "img/fractal_tree.png">
          * @param  {String} container_id - The ID of a DOM element in which the tree will be shown.
          * @param  {Number} [length=200] - The length (or height) or the tree's "trunk".
          * @param  {Number} [angle_span=90] - the angle between branches.
@@ -2225,12 +2308,14 @@ class EDO {
 
         /**
          * Graphs a given necklace in a container.
-         *
+         * <img src='img/Necklace.png'>
          * @param  {String} container_id - The ID of a DOM element in which the contour will be shown.
          * @param  {Array<Number>|Array<Array<Number>>} pitches - The necklace. This can also be an array containing multiple necklaces.
          * @param  {Boolean} [replace=false] - When true, the contents of the container will be replaced by the function. When false, it will be appended.
          * @param  {Number|Array<Number,Number>} [radius] - Radius (in px) of the ring. When no values are passed, the ring will take the size of the container.
          * @param  {Boolean} [as_numbers=true] - When true, the nodes will be marked with numbers, when false they will be marked with note letters (only in 12-EDO)
+         * @param  {Boolean} [hide_ring=false] - When true, the outer ring of the necklace will not be shown.
+         * @param  {Boolean} [hide_inner_strings=false] - When true, strings between nodes that aren't adjacent will not be shown
          *
          * @example
          * <script src="edo.js"></script>
@@ -2243,7 +2328,7 @@ class EDO {
          * @see /demos/necklace.html
          * @memberOf EDO#show
          */
-        necklace : (container_id, pitches = [0,2,4,5,7,9,11],replace=true,radius =600,as_numbers=true) => {
+        necklace : (container_id, pitches = [0,2,4,5,7,9,11],replace=true,radius =600,as_numbers=true,hide_ring = false, hide_inner_strings=false) => {
             if(!radius) {
                 radius = Math.min(container.offsetWidth,container.offsetHeight)
             }
@@ -2288,6 +2373,10 @@ class EDO {
                         //nodes
                         this.nodes = []
 
+                        //secondary nodes
+                        this.secondaryN = []
+                        this.secondary_radius = radius
+
                         //strings
                         this.strings = []
 
@@ -2299,8 +2388,10 @@ class EDO {
                         this.draw_all()
                     }
                     draw_all (){
-                        this.draw_ring()
+                        if(!hide_ring) this.draw_ring()
+
                         this.draw_nodes()
+
                         this.draw_strings()
 
                         for(let node of this.nodes) {
@@ -2322,8 +2413,7 @@ class EDO {
                             .attr('stroke-width',3)
                             .attr("text",'HELLO!!')
                     }
-                    draw_nodes () {
-                        let pitches = this.pitches
+                    draw_nodes (radius = this.radius,pitches = this.pitches) {
 
                         //remove nodes
                         for(let node of this.nodes) {
@@ -2331,7 +2421,7 @@ class EDO {
                             node.text.remove()
                         }
                         this.nodes = []
-                        let radius = Math.min((this.radius*2*Math.PI / this.edo)/2-5,15)
+                        radius = Math.min((radius*2*Math.PI / this.edo)/2-5,15)
                         //node parameters
                         for(let note=0;note<this.edo;note++) {
                             let angle = (note * (360 / this.edo)) - 90
@@ -2356,12 +2446,21 @@ class EDO {
                         this.strings = []
 
 
-
+                        let visible_nodes = this.nodes.filter((node)=>node.visible)
                         for(let i=0;i<this.nodes.length-1;i++) {
                             if(!this.nodes[i].visible) continue //if this node is not visible, skip it
                             for(let j=i+1;j<this.nodes.length;j++) {
                                 if(!this.nodes[j].visible) continue //if this node is not visible, skip it
                                 // strings.push([i,j]) //the pitches for which the strings are connected
+                                if(hide_inner_strings) {
+                                    let node1 = visible_nodes.indexOf(this.nodes[i])
+                                    let node2 = visible_nodes.indexOf(this.nodes[j])
+                                    if(node1!=0 || node2!=visible_nodes.length-1) {
+                                        if(Math.abs(node1-node2)>1) continue
+                                    }
+
+
+                                }
                                 let n1 = this.nodes[i]
                                 let n2 = this.nodes[j]
                                 this.strings.push(new Str(n1.cx,n1.cy,n2.cx,n2.cy))
@@ -2460,6 +2559,187 @@ class EDO {
             if(Array.isArray(pitches[0])) make_necklaces(container_id,pitches,radius)
             else make_necklace(container_id,pitches,replace,radius)
 
+        },
+
+        /**
+         * Graphs nested necklaces.
+         * <img src='img/nested_necklaces.png'>
+         *
+         * @param  {String} container_id - The ID of a DOM element in which the contour will be shown.
+         * @param  {Array<Array<Number>>} necklaces - The necklaces to be drawn
+         * @param  {Boolean} [replace=false] - When true, the contents of the container will be replaced by the function. When false, it will be appended.
+         * @param  {Number} [radius = 600] - Radius (in px) of the ring.
+         * @param  {Number} [necklace_gap = 35] - The number of pixels between necklaces
+         *
+         * @example
+         * <script src="edo.js"></script>
+         * <script src="raphael.min.js"></script>
+         * <div id="container" style="width:900px;height:900px; margin:0 auto;"></div>
+         * <script>
+         * const divisions = 12
+         * let edo = new EDO(divisions)
+         * let scale = edo.scale([0,2,4,5,7,9,11])
+         * let necklaces = scale.get.common_tone_transpositions().map((trans)=>trans[0])
+         * edo.show.nested_necklaces("container",necklaces,true,900)
+         * //Graphs all of the common tone transpositions of the major scale
+         * </script>
+         * @see /demos/necklace.html
+         * @memberOf EDO#show
+         */
+        nested_necklaces: (container_id, necklaces ,replace=true,radius =600,necklace_gap=35) => {
+            let parent = this
+            let height=radius
+            let width=radius
+            let num_of_necklaces = necklaces.length
+            let div = document.createElement('div')
+            div.style.width =width+"px";
+            div.style.height =height+"px";
+            div.style.display="inline"
+            let div_id = div.setAttribute("id", "paper_" + Date.now());
+            let container = document.getElementById(container_id)
+
+            let new_necklace_radius = height/2-(height/20)
+            let necklace_radius_offset = Math.min(necklace_gap,new_necklace_radius/(num_of_necklaces))
+
+            if(replace) container.innerHTML = ""
+            container.appendChild(div)
+            const paper = new Raphael(div, width, height);
+            let background = paper.rect(0,0,width,height).attr('fill','000')
+
+            const scale = (num, in_min, in_max, out_min, out_max) => {
+                return (num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+            }
+
+
+            class Necklace {
+                constructor(radius=paper.height/2-(height/10),pitches ) {
+                    this.cx = paper.width/2
+                    this.cy = paper.height/2
+                    this.radius = radius
+                    this.edo = parent.edo
+                    this.pitches = pitches
+                    this.nodes = []
+                    this.strings = []
+                    this.draw_all()
+                }
+                draw_nodes() {
+                    //remove nodes
+                    for(let node of this.nodes) {
+                        node.drawing.remove()
+                        node.text.remove()
+                    }
+                    this.nodes = []
+                    let node_radius = Math.min((paper.height*Math.PI / (this.edo*4))/2-5,paper.height*Math.PI/(num_of_necklaces*num_of_necklaces*2))
+                    //node parameters
+                    for(let note of this.pitches) {
+                        let angle = (note * (360 / this.edo)) - 90
+                        let rad_angle = angle * Math.PI / 180
+                        let cx = Math.floor(this.cx + (this.radius * Math.cos(rad_angle)))
+                        let cy = Math.floor(this.cy + (this.radius * Math.sin(rad_angle)))
+                        let node = new Node(node_radius,cx,cy,note,this.pitches.indexOf(note)!=-1)
+                        this.nodes.push(node)
+                    }
+
+
+                    for(let node of this.nodes) {
+                        node.draw()
+                    }
+
+                }
+                draw_strings() {
+                    //remove strings
+                    for(let string of this.strings) {
+                        string.drawing.remove()
+                    }
+                    this.strings = []
+
+
+                    for (let i = 0; i < this.nodes.length; i++) {
+                        let node1 = this.nodes[i]
+                        let node2 = this.nodes[(i+1)%this.nodes.length]
+                        let str = new Str(node1.cx,node1.cy,node2.cx,node2.cy,this)
+                        this.strings.push(str)
+                    }
+
+                    for(let string of this.strings) {
+                        string.draw()
+                    }
+                }
+                draw_all() {
+                    this.draw_nodes()
+                    this.draw_strings()
+
+                    for(let node of this.nodes) {
+                        node.drawing.toFront()
+                        node.text.toFront()
+                    }
+                }
+
+            }
+
+            class Node {
+                constructor(radius,cx,cy,name) {
+                    this.radius = radius
+                    this.cx=cx
+                    this.cy=cy
+                    this.name =name
+
+                }
+
+                draw () {
+                    //if already exists, remove the old one
+                    if(this.drawing) {
+                        this.drawing.remove()
+                        this.drawing=undefined
+                    }
+
+                    this.drawing = paper.set()
+
+                    this.circle = paper.circle(this.cx,this.cy,this.radius)
+                        .attr('stroke','red')
+                        .attr('fill','blue')
+                    this.drawing.push(this.circle)
+                    this.text = paper.text(this.cx,this.cy,this.name)
+                        .attr('fill','white')
+                        .attr('font-size',this.radius)
+
+                    this.drawing.push(this.text)
+
+                }
+            }
+
+            class Str {
+                constructor(x1,y1,x2,y2,necklace) {
+                    this.x1 = x1
+                    this.y1=y1
+                    this.x2= x2
+                    this.y2 = y2
+                    this.length = Math.sqrt((x2-x1)**2 + (y2-y1)**2)
+                    this.necklace = necklace
+                }
+
+                draw () {
+                    //if already exists, remove the old one
+                    if(this.drawing) {
+                        this.drawing.remove()
+                        this.drawing=undefined
+                    }
+
+                    let hue = Math.floor(scale(this.length,0,this.necklace.radius*2,0,360))
+                    let rgb = Raphael.hsl2rgb(hue,100,50)
+                    this.drawing = paper.path("M" + this.x1+"," + this.y1 +"L" + this.x2 +"," + this.y2)
+                        .attr('stroke',rgb.hex)
+                        .attr('stroke-width',3)
+
+                }
+
+            }
+
+            for(let necklace of necklaces) {
+                new Necklace(new_necklace_radius,necklace)
+                new_necklace_radius-=necklace_radius_offset
+            }
+
         }
     }
 
@@ -2486,12 +2766,13 @@ class Scale {
      *  <li> [Scale.export]{@link Scale#export} is a set of functions used to export files.</li>
      *  <li> [Scale.show]{@link Scale#show} is a set of functions used to visualize various things.</li></ul>
      *  <p>
-     *      In addition to the namespaces, Scale also has 4 methods that can be chained together:
+     *      In addition to the namespaces, Scale also has 5 methods that can be chained together:
      * <ul>
      *  <li> [Scale.invert()]{@link Scale#invert} returns the inversion of the original Scale object as a new Scale object.</li>
      *  <li> [Scale.mode(n)]{@link Scale#mode} returns the nth mode of the original Scale object as a new Scale object.</li>
      *  <li> [Scale.normal()]{@link Scale#normal} returns the normal order of the original Scale object as a new Scale object.</li>
      *  <li> [Scale.prime()]{@link Scale#prime} returns the prime form of the original Scale object as a new Scale object.</li>
+     *  <li> [Scale.complement()]{@link Scale#complement} returns the complement of the scale in the current EDO.</li>
      *  </ul>
      *  </p>
      * @param {Array<number>} pitches - The pitch classes of the set.
@@ -2502,7 +2783,7 @@ class Scale {
      * let edo = new EDO(12) //create a new EDO context with 12 divisions.
      * let scale = new Scale([0,2,4,5,7,9,11],edo) //pass the PCs and edo context to the scale
      *
-     * //Basic usage 2 (preffered):
+     * //Basic usage 2 (preferred):
      * let edo = new EDO(12) //create a new EDO context with 12 divisions.
      * let scale = edo.scale([0,2,4,5,7,9,11]) //create an instance of Scale through the EDO.scale method rather than
      *
@@ -2969,6 +3250,7 @@ class Scale {
                 transpositions.push([transposition,CT])
             }
             transpositions.sort((a,b) =>a[1]-b[1])
+            transpositions = this.parent.get.unique_elements(transpositions)
             return transpositions
 
         },
@@ -3735,6 +4017,22 @@ class Scale {
             return trichords
 
         },
+
+        /** <p>Returns the scale without the pitches in <code>to_remove</code> array</p>
+         * @param  {Array<Number>} to_remove - The pitches to be removed from the original scale
+         * @param  {Boolean} [normal=false] - When true, the returned array will be in normal order.
+         * @returns {Array<Number>} An array containing the original scale with pitches <code>to_remove</code> removed.
+         * @memberOf Scale#get
+         *
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,5,7,9,11])
+         * scale.get.without([5,11]) //returns [0,2,4,7,9]
+         */
+        without: (to_remove,normal=false) => {
+            return this.parent.get.not(this.pitches,to_remove,normal)
+        }
+
     }
 
     /**A collection of functions that returns a Boolean about various features regarding the scale
@@ -4007,6 +4305,15 @@ class Scale {
      * */
     prime () {
         let pitches = this.get.prime_form()
+        return new Scale(pitches,this.parent)
+    }
+
+    /**
+     * Returns a Scale object with pitches corresponding to the complement of the original scale in the current EDO.
+     * @returns {Scale}
+     * */
+    complement () {
+        let pitches = this.get.complement(true)
         return new Scale(pitches,this.parent)
     }
 

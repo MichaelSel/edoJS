@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../../scripts/raphael.min.js"></script>
+    <script src="../../edo.js"></script>
+
+</head>
+<body>
+<div id="container" style="width:100%; margin:0 auto; "></div>
+
+
+</body>
+<script>
+    const divisions = 12
+    let edo = new EDO(divisions)
+
+    let scales = edo.get.scales(1,6,1,4)
+
+    /** Get all modes of limited transpositions and their subsets who are also of limited transposition */
+    const all_modes_of_LT = function (scales,edo) {
+        //Get all the modes of limited transposition
+        scales = scales.filter((scale)=>scale.count.transpositions()<scale.edo)
+
+        //remove the chromatic scale
+        scales = scales.filter((scale)=>scale.get.step_sizes().length>1 || scale.get.step_sizes()[0]!=1) //if the only step size is [1] it's the chromatic scale
+
+        scales = scales.map((scale)=>{
+            //Get all subsets of each mode of limited transposition
+            let sub_scales = scale.parent.get.subsets(scale.pitches)
+
+            //normalize all subsets to 0 and store their PCs
+            sub_scales=sub_scales.map((pitches)=>scale.parent.scale(pitches).normal().pitches)
+
+            //remove duplications
+            sub_scales = scale.parent.get.unique_elements(sub_scales)
+
+            //turn each into a scale object
+            sub_scales = sub_scales.map((pitches)=>scale.parent.scale(pitches))
+
+            // //remove all scales with 3 pitches or less
+            // sub_scales = sub_scales.filter((scale)=>scale.count.pitches()>3)
+
+            //remove all scales that are NOT modes of limited transposition themselves
+            sub_scales = sub_scales.filter((scale)=>scale.count.transpositions()!=scale.edo)
+
+            //remove all subsets that are their own superset
+            sub_scales = sub_scales.filter((sub)=>!edo.is.same(sub,scale))
+
+
+            return {mode:scale.pitches, subsets: sub_scales}
+        })
+
+        return scales
+
+    }
+
+    scales = all_modes_of_LT(scales,edo)
+
+    scales.sort((a,b)=>a.mode.length-b.mode.length)
+    for(let scale of scales) {
+        let subsets = scale.subsets.map((ss)=>ss.pitches).map((ss)=>{
+            let mode = edo.scale(scale.mode)
+            let positions = mode.get.position_of_quality(ss)
+            positions = positions.map((position)=>{
+                let arr = ss.map((note)=>{
+                    return (note+position)%edo.edo
+                })
+                arr = arr.sort((a,b)=>a-b)
+                return arr
+            })
+            positions = edo.get.unique_elements(positions)
+            return positions
+        })
+        subsets = subsets.flat()
+        let necklaces = [scale.mode,...subsets]
+        console.log(subsets)
+        edo.show.nested_necklaces("container",necklaces,false,2400,30)
+
+    }
+
+
+
+</script>
+</html>
