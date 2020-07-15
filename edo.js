@@ -3284,23 +3284,20 @@ class Scale {
          */
         interval_vector: (cache=false) => {
             if(this.catalog['interval vector']) return this.catalog['interval vector']
-            let scale = this.pitches
-            let vector = []
-            let intervals = {}
-            for(let i=0;i<this.edo-1;i++) {
-                intervals[i+1] = 0
-            }
-            let length = this.count.pitches()
-            let doublescale = scale.concat(scale)
-            scale.forEach((note,i)=> {
-                for(let j=0; j<length-1;j++) {
-                    let interval = this.parent.mod((doublescale[i+j+1]-doublescale[i]),this.edo)
-                    intervals[interval] +=1
+
+            let scale_split = Math.floor(this.edo/2)
+            let vector = Array.from(new Array(scale_split).fill(0))
+            let normal = this.get.normal_order()
+            for (let i = 0; i < normal.length-1; i++) {
+                for (let j = i+1; j < normal.length; j++) {
+                    let IC = normal[j]-normal[i]
+                    if(IC>scale_split) IC = this.edo-IC
+                    if(IC==0) IC=scale_split
+                    vector[IC-1]++
                 }
-            })
-            for(let i=0;i<Math.floor(this.edo/2);i++) {
-                vector.push(intervals[i+1])
+
             }
+
             if(cache) this.catalog['interval vector'] =vector
             return vector
 

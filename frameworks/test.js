@@ -16,5 +16,5 @@ scales = scales.filter((scale)=>scale.count.pitches()==5)
 //     console.log(scale.is.invertible())
 // }
 
-let scale = edo.scale([0,1,2,9,10])
+let scale = edo.scale([0,2,4,5,7,9,11])
 console.log(scale.get.interval_vector())
