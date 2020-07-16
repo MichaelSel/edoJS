@@ -98,7 +98,9 @@
         return scales
 
     }
-    scales = subsets_of_modes_of_LT_that_arent(scales,edo)
+
+
+    scales = [...all_modes_of_LT(scales,edo),...subsets_of_modes_of_LT_that_arent(scales,edo)]
 
     scales.sort((a,b)=>a.mode.length-b.mode.length)
     for(let scale of scales) {
@@ -117,7 +119,7 @@
         })
         subsets = edo.get.unique_elements(subsets.flat())
         let necklaces = [scale.mode,...subsets]
-        edo.show.nested_necklaces("container",necklaces,false,1800)
+        edo.show.nested_necklaces("container",necklaces,false,600)
 
     }
 

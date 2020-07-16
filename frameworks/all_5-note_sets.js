@@ -2,11 +2,15 @@ const fs = require('fs');
 const csv = require('csv-parser');
 const EDO = require("../edo").EDO
 
+
 const make_csv = function (scales) {
+    let id=0
     const createCsvWriter = require('csv-writer').createObjectCsvWriter;
     const csvWriter = createCsvWriter({
         path: "5-note-sets.csv",
         header: [
+            {id: 'name', title: 'Name'},
+            {id: 'id', title: 'ID'},
             {id: 'set', title: 'Pitches'},
             {id: 'triads', title: 'Major and Minor triads'},
             {id: 'propriety', title: 'Rothenberg Propriety'},
@@ -29,6 +33,8 @@ const make_csv = function (scales) {
         let interval_vector = scale.get.interval_vector()
         let lerdahl_vector = scale.get.lerdahl_attraction_vector()
         let dat = {
+            name: scale.get.name().split('-')[1],
+            id: id++,
             set: scale.get.pitches(),
             triads: scale.count.major_minor_triads(),
             propriety: scale.get.rothenberg_propriety(),
@@ -52,6 +58,9 @@ const make_csv = function (scales) {
     csvWriter
         .writeRecords(data)
         .then(()=> console.log("CSV file created."));
+
+    fs.writeFileSync('5-note-sets.json', JSON.stringify(data));
+
 }
 
 

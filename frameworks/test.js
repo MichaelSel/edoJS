@@ -1,20 +1,49 @@
+function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 const EDO = require("../edo").EDO
 let divisions = 12
 edo = new EDO(divisions)
 
-// for (let i = 0; i < 10; i++) {
-//     let random_set = edo.get.random_melody(5,[0,11],5,[0,1,2,3,4,5,6,7,8,9,10,11],12)
-//     console.log(random_set)
-//     let melody = edo.get.random_melody(16,[0,12],2,random_set,5)
-//     console.log(JSON.stringify(edo.convert.midi_to_name(melody,60)))
-// }
+let num_of_time_for_each_set = 6
+let num_of_subjects = 1000
 
-let scales = edo.get.scales(1,12,1,12)
-scales = scales.filter((scale)=>scale.count.pitches()==5)
+const make_dist = function () {
+    const make_random_subject_dist = function () {
+        let sub = Array.from(Array(66))
+        sub = sub.map((el,i)=>{return {set:i+1,value:getRandomInt(1,num_of_time_for_each_set)}})
+        return sub
+    }
+    let subs=[]
+    for (let i = 0; i < num_of_subjects; i++) {
+        subs.push(make_random_subject_dist())
+    }
+    let totales = {}
+    subs.forEach((sub)=> {
+        sub.forEach((set)=> {
+            if(totales[set.set]==undefined) totales[set.set]=set.value
+            else totales[set.set]+=set.value
+        })
+    })
 
-// for(let scale of scales) {
-//     console.log(scale.is.invertible())
-// }
+    totales_array = []
 
-let scale = edo.scale([0,2,4,5,7,9,11])
-console.log(scale.get.interval_vector())
+    Object.keys(totales).forEach((key)=> {
+        totales_array.push({set_id: parseInt(key), value: totales[key]/ subs.length})
+    })
+    totales_array = totales_array.sort((a,b)=>a.value-b.value)
+    totales_values = []
+    totales_array.forEach((el)=>{totales_values.push(el.value)})
+    totales_values = edo.get.unique_elements(totales_values)
+    // console.log("Total unique values:",totales_values.length)
+    return totales_values.length
+}
+
+let highest =0
+for (let i = 0; i < 10000; i++) {
+    let result = make_dist()
+    if(result>highest) highest=result
+}
+console.log(highest)
