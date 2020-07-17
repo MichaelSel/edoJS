@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../../scripts/raphael.min.js"></script>
+    <script src="../../edo.js"></script>
+</head>
+<body>
+<div id="container"></div>
+<script>
+    const divisions = 12
+    let edo = new EDO(divisions)
+    edo.show.necklace_fractal("container",[[0,4,7],[0,3,7],[0,2,4]],true,1200)
+
+</script>
+</body>
+</html>

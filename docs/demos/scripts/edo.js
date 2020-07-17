@@ -31,7 +31,7 @@ if(environment=='server') {
 
 let save_file
 if(environment=='server') {
-     /**
+    /**
      * @ignore*/
     save_file = function (name,dir,contents,_unused) {
         fs.writeFile(dir+name, contents, function(err) {
@@ -78,7 +78,7 @@ if(environment=='server') {
     load_file = function (file) {
         return fs.readFileSync(file,
             // {encoding:'utf8', flag:'r'}
-            );
+        );
 
     }
 
@@ -549,6 +549,19 @@ class EDO {
             }
             if(this.edo!=12) return undefined
             return PC[pc]
+        },
+
+        /** Normalizes any input to include PC only (to ignore octave displacement)
+         * @param  {Array<Number>} pitches - any collection of pitches (e.g. a melody)
+         * @returns {Array<Number>} the input as pitch classes
+         * @memberOf EDO#convert
+         * @example
+         * let edo = new EDO(12) // define a tuning system with 12 divisions of the octave
+         * edo.convert.pitches_to_PCs([0,2,12,-2,7])
+         * //returns [0,2,0,10,7]
+         * */
+        pitches_to_PCs: (pitches) => {
+            return pitches.map((pitch)=>this.mod(pitch,this.edo))
         },
 
         /** Returns a value in cents to a given input ratio
@@ -1456,6 +1469,7 @@ class EDO {
         /** Returns the distribution (as fractions adding up to 1) of the pitches in a set of pitches
          *
          * @param  {Array<Number>} pitches - a given array of pitches
+         * @param  {Boolean} as_PC - When true, the distribution tallies notes based on their PC rather than their absolute pitch.
          * @returns {Array<distribution>}
          * @memberOf EDO#get
          * @example
@@ -1471,8 +1485,17 @@ class EDO {
          *  { note: 14, rate: 0.05 },
          *  { note: 10, rate: 0.05 }
          * ]
+         *
+         * edo.get.pitch_distribution([0,12,0,12,7,0])
+         * //returns
+         * [
+         *  { note: 0, rate: 0.8333333333333334 },
+         *  { note: 7, rate: 0.16666666666666666 }
+         * ]
+         *
          */
-        pitch_distribution: (pitches) => {
+        pitch_distribution: (pitches,as_PC=false) => {
+            if(as_PC) pitches = pitches.map((pitch)=>this.mod(pitch,this.edo))
             let unique = this.get.unique_elements(pitches)
 
             let dist = unique.map((el)=>{return {note:el,rate: pitches.filter(x => x==el).length/pitches.length}})
@@ -2740,7 +2763,198 @@ class EDO {
                 new_necklace_radius-=necklace_radius_offset
             }
 
+        },
+
+        /**
+         * Graphs necklaces on every node of a parent necklace recursively.
+         *
+         * @param  {String} container_id - The ID of a DOM element in which the contour will be shown.
+         * @param  {Array<Array<Number>>} necklaces - The necklaces to be drawn
+         * @param  {Boolean} [replace=false] - When true, the contents of the container will be replaced by the function. When false, it will be appended.
+         * @param  {Number} [radius = 600] - Radius (in px) of the outer most ring.
+         *
+         * @example
+         * <script src="edo.js"></script>
+         * <script src="raphael.min.js"></script>
+         * <div id="container" style="width:900px;height:900px; margin:0 auto;"></div>
+         * <script>
+         * const divisions = 12
+         * let edo = new EDO(divisions)
+         * edo.show.necklace_fractal("container",[[0,4,7],[0,3,7],[0,3,6]],true,900)
+         * </script>
+         * @memberOf EDO#show
+         */
+        necklace_fractal: (container_id,necklaces = [[0,2,4,5,7,9,11],[0,2,4,5,7,9,11]],replace=true,radius=600,radius_multiplier = 0.8) => {
+            let parent = this
+            let height=radius
+            let width=radius
+            let num_of_necklaces = necklaces.length
+            let div = document.createElement('div')
+            div.style.width =width+"px";
+            div.style.height =height+"px";
+            div.style.display="inline"
+            let div_id = div.setAttribute("id", "paper_" + Date.now());
+            let container = document.getElementById(container_id)
+
+            if(replace) container.innerHTML = ""
+            container.appendChild(div)
+            const paper = new Raphael(div, width, height);
+            let background = paper.rect(0,0,width,height).attr('fill','000')
+
+            const scale = (num, in_min, in_max, out_min, out_max) => {
+                return (num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+            }
+
+
+            class Necklace {
+                constructor(radius=paper.height/2-(height/10),pitches,cx =paper.width/2,cy= paper.height/2,starting_pitch=0) {
+                    this.cx = cx
+                    this.cy = cy
+                    this.radius = radius
+                    this.edo = parent.edo
+                    this.pitches = pitches
+                    this.nodes = []
+                    this.strings = []
+                    this.starting_pitch = starting_pitch
+
+                    this.draw_all()
+                }
+                draw_nodes(parent) {
+                    //remove nodes
+                    for(let node of this.nodes) {
+                        node.drawing.remove()
+                        node.text.remove()
+                    }
+                    this.nodes = []
+                    let node_radius = Math.min((paper.height*Math.PI / (this.edo*4))/2-5,paper.height*Math.PI/(num_of_necklaces*num_of_necklaces*2),(paper.height*Math.PI / (this.edo*num_of_necklaces))/2-5)
+                    node_radius = Math.max(node_radius,5)
+                    //node parameters
+                    for(let note of this.pitches) {
+                        let angle = (note * (360 / this.edo)) - 90
+                        let rad_angle = angle * Math.PI / 180
+                        let cx = Math.floor(this.cx + (this.radius * Math.cos(rad_angle)))
+                        let cy = Math.floor(this.cy + (this.radius * Math.sin(rad_angle)))
+                        let node = new Node(Math.min(node_radius,parent.radius/10),cx,cy,(note+parent.starting_pitch)%parent.edo)
+                        this.nodes.push(node)
+                    }
+
+
+                    for(let node of this.nodes) {
+                        node.draw()
+                    }
+
+                }
+                draw_strings() {
+                    //remove strings
+                    for(let string of this.strings) {
+                        string.drawing.remove()
+                    }
+                    this.strings = []
+
+
+                    for (let i = 0; i < this.nodes.length; i++) {
+                        let node1 = this.nodes[i]
+                        let node2 = this.nodes[(i+1)%this.nodes.length]
+                        let str = new Str(node1.cx,node1.cy,node2.cx,node2.cy,this)
+                        this.strings.push(str)
+                    }
+
+                    for(let string of this.strings) {
+                        string.draw()
+                    }
+                }
+                draw_all() {
+                    this.draw_nodes(this)
+                    this.draw_strings()
+
+                    for(let node of this.nodes) {
+                        node.drawing.toFront()
+                        node.text.toFront()
+                    }
+                }
+
+            }
+
+            class Node {
+                constructor(radius,cx,cy,name) {
+                    this.radius = radius
+                    this.cx=cx
+                    this.cy=cy
+                    this.name =name
+
+                }
+
+                draw () {
+                    //if already exists, remove the old one
+                    if(this.drawing) {
+                        this.drawing.remove()
+                        this.drawing=undefined
+                    }
+
+                    this.drawing = paper.set()
+
+                    this.circle = paper.circle(this.cx,this.cy,this.radius)
+                        .attr('stroke','red')
+                        .attr('fill','blue')
+                    this.drawing.push(this.circle)
+                    this.text = paper.text(this.cx,this.cy,this.name)
+                        .attr('fill','white')
+                        .attr('font-size',this.radius)
+
+                    this.drawing.push(this.text)
+
+                }
+            }
+
+            class Str {
+                constructor(x1,y1,x2,y2,necklace) {
+                    this.x1 = x1
+                    this.y1=y1
+                    this.x2= x2
+                    this.y2 = y2
+                    this.length = Math.sqrt((x2-x1)**2 + (y2-y1)**2)
+                    this.necklace = necklace
+                }
+
+                draw () {
+                    //if already exists, remove the old one
+                    if(this.drawing) {
+                        this.drawing.remove()
+                        this.drawing=undefined
+                    }
+
+                    let hue = Math.floor(scale(this.length,0,this.necklace.radius*2,0,360))
+                    let rgb = Raphael.hsl2rgb(hue,100,50)
+                    this.drawing = paper.path("M" + this.x1+"," + this.y1 +"L" + this.x2 +"," + this.y2)
+                        .attr('stroke',rgb.hex)
+                        .attr('stroke-width',1)
+
+                }
+
+            }
+
+            const necklace_nester = function (necklaces,nodes,new_radius=300) {
+                let new_necklaces = [...necklaces]
+                let necklace = new_necklaces.splice(0,1)[0]
+                if(nodes) {
+                    console.log(necklace)
+                    nodes.forEach((node)=> {
+                        let neck = new Necklace(new_radius,necklace,node.cx,node.cy+new_radius,node.name)
+                        if(new_necklaces.length>0) necklace_nester(new_necklaces,neck.nodes,neck.radius*radius_multiplier)
+                    })
+                }
+                else {
+                    let neck = new Necklace(radius=new_radius,necklace,new_radius+50,new_radius+50)
+                    if(new_necklaces.length>0) necklace_nester(new_necklaces,neck.nodes,neck.radius*radius_multiplier)
+                }
+
+
+            }
+
+            necklace_nester(necklaces)
         }
+
+
     }
 
     mod (n, m) {
@@ -3209,7 +3423,7 @@ class Scale {
     }
 
     /**A collection of functions manipulates the scale and returns diverse information about it
-    * @namespace*/
+     * @namespace*/
     get = {
 
         /** Returns all the transpositions of the scale that share a common tone with the original scale
@@ -3284,23 +3498,20 @@ class Scale {
          */
         interval_vector: (cache=false) => {
             if(this.catalog['interval vector']) return this.catalog['interval vector']
-            let scale = this.pitches
-            let vector = []
-            let intervals = {}
-            for(let i=0;i<this.edo-1;i++) {
-                intervals[i+1] = 0
-            }
-            let length = scale.length
-            let doublescale = scale.concat(scale)
-            scale.forEach((note,i)=> {
-                for(let j=0; j<length-1;j++) {
-                    let interval = (doublescale[i+j+1]-doublescale[i]) % this.edo
-                    intervals[interval] +=1
+
+            let scale_split = Math.floor(this.edo/2)
+            let vector = Array.from(new Array(scale_split).fill(0))
+            let normal = this.get.normal_order()
+            for (let i = 0; i < normal.length-1; i++) {
+                for (let j = i+1; j < normal.length; j++) {
+                    let IC = normal[j]-normal[i]
+                    if(IC>scale_split) IC = this.edo-IC
+                    if(IC==0) IC=scale_split
+                    vector[IC-1]++
                 }
-            })
-            for(let i=0;i<Math.floor(this.edo/2);i++) {
-                vector.push(intervals[i+1])
+
             }
+
             if(cache) this.catalog['interval vector'] =vector
             return vector
 
@@ -4152,8 +4363,9 @@ class Scale {
             return this.parent.is.same(this.pitches,this.get.prime_form())
         },
 
-        /**<p>Returns true if the scale is a subset of one of multiple scales provided</p>
+        /**<p>Returns true if the scale is a subset of one of multiple scales provided.</p>
          * @param {Array<Number>|Array<Array<Number>>} scales - another scale, or a collection of scales
+         * @param {Boolean} [include_modes=true] - When true, the function will return true also when the scale is a subset of one of the modes of the scales in question. When false, the scale must appear verbatim to return true
          * @returns {Boolean}
          * @memberOf Scale#is
          *
@@ -4170,12 +4382,14 @@ class Scale {
                 return true
             }
             if(!Array.isArray(scales[0])) scales=[scales]
+            scales = scales.map((scale)=>{
+                return this.parent.scale(scale).get.modes()
+            }).flat()
             for (let scale of scales) {
                 if(is_subset_of_one(this.pitches,scale)) return true
             }
             return false
         },
-
     }
 
     /**A collection of functions that convert data from one representation to another
@@ -4328,8 +4542,8 @@ try {
         Scale:Scale
     }
 }
-/**
- * For client-side*/
+    /**
+     * For client-side*/
 catch (e) {
     1+1
 }
