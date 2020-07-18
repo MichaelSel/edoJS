@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="scripts/raphael.min.js"></script>
+    <script src="scripts/edo.js"></script>
+</head>
+<body>
+<div id="container" style="width:100%; margin:0 auto; "></div>
+
+</body>
+<script>
+    let edo = new EDO(12)
+    perms = edo.get.permutations([1,2,3,4])
+    perms.sort((a,b)=>b[0]-a[0] || b[b.length-1]-a[a.length-1])
+    for(let perm of perms) {
+        edo.show.contour('container', perm,false,150)
+    }
+
+
+
+
+    // contour('container', 250, [5,12,9,11,4,0,7,2])
+    // contour('container', 250, [0,2,1])
+    // contour('container', 250, [0,2,1])
+    // contour('container', 250, [0,1,2])
+    // contour('container', 250, [0,1,2])
+    // contour('container', 250, [0,2,1])
+    // contour('container', 250, [0,1,2])
+
+
+
+</script>
+</html>

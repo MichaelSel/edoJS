@@ -31,7 +31,7 @@ if(environment=='server') {
 
 let save_file
 if(environment=='server') {
-     /**
+    /**
      * @ignore*/
     save_file = function (name,dir,contents,_unused) {
         fs.writeFile(dir+name, contents, function(err) {
@@ -78,7 +78,7 @@ if(environment=='server') {
     load_file = function (file) {
         return fs.readFileSync(file,
             // {encoding:'utf8', flag:'r'}
-            );
+        );
 
     }
 
@@ -304,11 +304,6 @@ const combinations = (set, k) => {
     return combs
 }
 
-
-const rescale = (num, in_min, in_max, out_min, out_max) => {
-    return (num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-}
-
 /** Class representing some EDO tuning system.*/
 
 class EDO {
@@ -363,19 +358,6 @@ class EDO {
         return new Scale(pitches,this)
     }
 
-    make_DOM_svg (container_id,width,height,clean=false) {
-        let div = document.createElement('div')
-        div.style.width =width+"px";
-        div.style.height =height+"px";
-        div.style.display="inline"
-        let div_id = div.setAttribute("id", "paper_" + Date.now());
-        let container = document.getElementById(container_id)
-        if(clean) container.innerHTML = ""
-        container.appendChild(div)
-        const paper = new Raphael(div, width, height);
-        let background = paper.rect(0,0,width,height).attr('fill','000')
-        return {div_id:div_id,div:div,container_id:container_id,container:container,paper:paper,background:background,width:width,height:height,cleaned:clean}
-    }
 
     /**A collection of functions that convert an input into other equivalent representations
      * @namespace EDO#convert*/
@@ -579,7 +561,7 @@ class EDO {
          * //returns [0,2,0,10,7]
          * */
         pitches_to_PCs: (pitches) => {
-          return pitches.map((pitch)=>this.mod(pitch,this.edo))
+            return pitches.map((pitch)=>this.mod(pitch,this.edo))
         },
 
         /** Returns a value in cents to a given input ratio
@@ -2350,203 +2332,256 @@ class EDO {
         /**
          * Graphs a given necklace in a container.
          * <img src='img/Necklace.png'>
-         * @param  {Object} args - An object with the necklace arguments
-         * @param  {Paper} args.paper - A Raphael Paper object on which the necklace will be drawn
-         * @param  {Array<Number>} args.pitches - The pitches of the necklace
-         * @param  {Number} [args.cx] - The center x coordinate of the necklace (in relation to the paper object).
-         * @param  {Number} [args.cy] - The center y coordinate of the necklace (in relation to the paper object).
-         * @param  {Number} [args.radius] - The center y coordinate of the necklace (in relation to the paper object)
-         * @param  {Boolean} [args.ring=true] - When false, the necklace ring will be hidden.
-         * @param  {Boolean} [args.inner_strings=true] - When false, the necklace's inner strings will be hidden.
-         * @param  {Number} [args.PC_at_midnight=0] - The PC starting the necklace at the very top (midnight)
-         * @param  {Number} [args.string_width=1] - The width of the strings of the necklace.
-         * @param  {Number} [args.node_radius] - The radius of each node on the necklace
-         *
+         * @param  {String} container_id - The ID of a DOM element in which the contour will be shown.
+         * @param  {Array<Number>|Array<Array<Number>>} pitches - The necklace. This can also be an array containing multiple necklaces.
+         * @param  {Boolean} [replace=false] - When true, the contents of the container will be replaced by the function. When false, it will be appended.
+         * @param  {Number|Array<Number,Number>} [radius] - Radius (in px) of the ring. When no values are passed, the ring will take the size of the container.
+         * @param  {Boolean} [as_numbers=true] - When true, the nodes will be marked with numbers, when false they will be marked with note letters (only in 12-EDO)
+         * @param  {Boolean} [hide_ring=false] - When true, the outer ring of the necklace will not be shown.
+         * @param  {Boolean} [hide_inner_strings=false] - When true, strings between nodes that aren't adjacent will not be shown
          *
          * @example
          * <script src="edo.js"></script>
          * <script src="raphael.min.js"></script>
          * <div id="container" style="width:900px;height:600px; margin:0 auto;"></div>
          * <script>
-         *  let edo = new EDO(12)
-         *  let paper = edo.make_DOM_svg('container',1200,1200,true).paper
-         *  edo.show.necklace({paper:paper,pitches:[0,2,4,5,7,9,11]})
+         *  let edo = new EDO()
+         *  edo.show.necklace('container', [0,2,4,5,7,9,11])
          * </script>
          * @see /demos/necklace.html
          * @memberOf EDO#show
          */
-        necklace: (args) => {
-            args.cx = args.cx || args.paper.width/2
-            args.cy = args.cy || args.paper.height/2
-            args.radius = args.radius || (args.paper.width/2)-30
-            args.ring = (args.ring==undefined) ? true : args.ring
-            args.inner_strings = (args.inner_strings==undefined) ? true : args.inner_strings
-            args.PC_at_midnight = args.PC_at_midnight || 0
-            args.string_width = args.string_width || 1
-            args.node_radius = args.node_radius || (args.paper.height*Math.PI / (this.edo*4))/2-5
-            const parent = this
-            class Necklace {
-                constructor(parent,args) {
-                    this.cx = args.cx
-                    this.cy=args.cy
-                    this.radius = args.radius
-                    this.pitches = args.pitches
-                    this.PC_at_midnight = args.PC_at_midnight
-                    this.show_ring = args.ring
-                    this.show_inner_strings = args.inner_strings
-                    this.parent = parent
-                    this.edo = parent.edo
-                    this.nodes = []
-                    this.strings = []
-                    this.paper = args.paper
-                    this.node_radius = args.node_radius
-                    this.string_width = args.string_width
-                    this.draw_all()
+        necklace : (container_id, pitches = [0,2,4,5,7,9,11],replace=true,radius =600,as_numbers=true,hide_ring = false, hide_inner_strings=false) => {
+            if(!radius) {
+                radius = Math.min(container.offsetWidth,container.offsetHeight)
+            }
+            let container = document.getElementById(container_id)
+            if(replace) container.innerHTML = ""
 
+            const self = this
+            const use_letter = !as_numbers
 
+            const make_necklace = (container_id, pitches ,replace,radius) => {
+                let height=radius
+                let width=radius
+
+                let div = document.createElement('div')
+                div.style.width =width+"px";
+                div.style.height =height+"px";
+                div.style.display="inline"
+                let div_id = div.setAttribute("id", "paper_" + Date.now());
+                let container = document.getElementById(container_id)
+
+                if(replace) container.innerHTML = ""
+                container.appendChild(div)
+                const paper = new Raphael(div, width, height);
+                let background = paper.rect(0,0,width,height).attr('fill','000')
+
+                const scale = (num, in_min, in_max, out_min, out_max) => {
+                    return (num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
                 }
-                draw_all () {
-                    if(this.show_ring) this.draw_ring()
-                    this.draw_nodes()
-                    this.draw_strings(this.string_width)
-                    for(let node of this.nodes) {
-                        node.drawing.toFront()
-                        node.text.toFront()
-                    }
-                }
-                draw_ring (color='red',stroke_width=3) {
-                    let paper = this.paper
-                    console.log(this)
-                    //if already exists, remove the old one
-                    if(this.ring) {
-                        this.ring.remove()
-                        this.ring=undefined
-                    }
 
-                    //draw the ring
-                    this.ring = paper.circle(this.cx,this.cy,this.radius).attr('stroke',color)
-                        .attr('stroke-width',stroke_width)
-                }
-                draw_nodes() {
-                    //remove nodes
-                    for(let node of this.nodes) {
-                        node.drawing.remove()
-                        node.text.remove()
-                    }
-                    this.nodes = []
-                    let node_radius = this.node_radius
-                    node_radius = Math.max(node_radius,1)
-                    //node parameters
-                    for(let note of this.pitches) {
-                        let angle = (note * (360 / this.edo)) - 90
-                        let rad_angle = angle * Math.PI / 180
-                        let cx = Math.floor(this.cx + (this.radius * Math.cos(rad_angle)))
-                        let cy = Math.floor(this.cy + (this.radius * Math.sin(rad_angle)))
-                        let node = new Node(this,node_radius,cx,cy,(note+this.PC_at_midnight)%this.edo)
-                        this.nodes.push(node)
+                class Necklace {
+                    constructor(radius=paper.height/2-(height/10),cx=paper.width/2,cy=paper.height/2,edo=12,pitches = [0,2,4,5,7,9,11],parent) {
+                        //general parameters
+                        this.cx = cx
+                        this.cy = cy
+                        this.radius = radius
+                        this.edo = edo
+                        this.pitches = pitches
+
+                        //ring (will store the ring object)
+                        this.ring
+
+                        //nodes
+                        this.nodes = []
+
+                        //secondary nodes
+                        this.secondaryN = []
+                        this.secondary_radius = radius
+
+                        //strings
+                        this.strings = []
+
+                        this.update(pitches)
                     }
 
-
-                    for(let node of this.nodes) node.draw()
-
-                }
-                draw_strings(stroke_width=3) {
-                    //remove strings
-                    for(let string of this.strings) {
-                        string.drawing.remove()
+                    update (pitches) {
+                        this.pitches=pitches
+                        this.draw_all()
                     }
-                    this.strings = []
+                    draw_all (){
+                        if(!hide_ring) this.draw_ring()
 
-                    //draw outer strings
-                    for (let i = 0; i < this.nodes.length; i++) {
-                        let node1 = this.nodes[i]
-                        let node2 = this.nodes[(i+1)%this.nodes.length]
-                        let str = new Str(this,node1.cx,node1.cy,node2.cx,node2.cy)
-                        this.strings.push(str)
+                        this.draw_nodes()
+
+                        this.draw_strings()
+
+                        for(let node of this.nodes) {
+                            node.drawing.toFront()
+                            node.text.toFront()
+                        }
+
+
                     }
+                    draw_ring () {
+                        //if already exists, remove the old one
+                        if(this.ring) {
+                            this.ring.remove()
+                            this.ring=undefined
+                        }
 
-                    //draw inner-strings
-                    if(this.show_inner_strings) {
-                        for (let i = 0; i < this.nodes.length-2; i++) {
-                            for (let j = 2; j <this.nodes.length ; j++) {
-                                let node1 = this.nodes[i]
-                                let node2 = this.nodes[j]
-                                let str = new Str(this,node1.cx,node1.cy,node2.cx,node2.cy,stroke_width)
-                                this.strings.push(str)
-                            }
+                        //draw the ring
+                        this.ring = paper.circle(this.cx,this.cy,this.radius).attr('stroke','red')
+                            .attr('stroke-width',3)
+                            .attr("text",'HELLO!!')
+                    }
+                    draw_nodes (radius = this.radius,pitches = this.pitches) {
+
+                        //remove nodes
+                        for(let node of this.nodes) {
+                            node.drawing.remove()
+                            node.text.remove()
+                        }
+                        this.nodes = []
+                        radius = Math.min((radius*2*Math.PI / this.edo)/2-5,15)
+                        //node parameters
+                        for(let note=0;note<this.edo;note++) {
+                            let angle = (note * (360 / this.edo)) - 90
+                            let rad_angle = angle * Math.PI / 180
+                            let cx = Math.floor(this.cx + (this.radius * Math.cos(rad_angle)))
+                            let cy = Math.floor(this.cy + (this.radius * Math.sin(rad_angle)))
+                            let node = new Node(radius,cx,cy,note,pitches.indexOf(note)!=-1)
+                            this.nodes.push(node)
+                        }
+
+
+                        for(let node of this.nodes) {
+                            node.draw()
                         }
                     }
 
+                    draw_strings () {
+                        //remove strings
+                        for(let string of this.strings) {
+                            string.drawing.remove()
+                        }
+                        this.strings = []
 
-                    for(let string of this.strings) {
-                        string.draw()
+
+                        let visible_nodes = this.nodes.filter((node)=>node.visible)
+                        for(let i=0;i<this.nodes.length-1;i++) {
+                            if(!this.nodes[i].visible) continue //if this node is not visible, skip it
+                            for(let j=i+1;j<this.nodes.length;j++) {
+                                if(!this.nodes[j].visible) continue //if this node is not visible, skip it
+                                // strings.push([i,j]) //the pitches for which the strings are connected
+                                if(hide_inner_strings) {
+                                    let node1 = visible_nodes.indexOf(this.nodes[i])
+                                    let node2 = visible_nodes.indexOf(this.nodes[j])
+                                    if(node1!=0 || node2!=visible_nodes.length-1) {
+                                        if(Math.abs(node1-node2)>1) continue
+                                    }
+
+
+                                }
+                                let n1 = this.nodes[i]
+                                let n2 = this.nodes[j]
+                                this.strings.push(new Str(n1.cx,n1.cy,n2.cx,n2.cy))
+                            }
+                        }
+
+                        for(let string of this.strings) {
+                            string.draw()
+                        }
                     }
                 }
-            }
-            class Node {
-                constructor(necklace,radius,cx,cy,name) {
-                    this.necklace = necklace
-                    this.radius = radius
-                    this.cx=cx
-                    this.cy=cy
-                    this.name =name
 
-                }
+                class Node {
+                    constructor(radius=height/20,cx=paper.width/2,cy=paper.height/2,name="",visible=true) {
+                        this.radius = radius
+                        this.cx=cx
+                        this.cy=cy
+                        this.name =name
+                        this.visible = visible
 
-                draw () {
-                    let paper = this.necklace.paper
-                    //if already exists, remove the old one
-                    if(this.drawing) {
-                        this.drawing.remove()
-                        this.drawing=undefined
                     }
 
-                    this.drawing = paper.set()
+                    draw () {
 
-                    this.circle = paper.circle(this.cx,this.cy,this.radius)
-                        .attr('stroke','red')
-                        .attr('fill','blue')
-                    this.drawing.push(this.circle)
-                    this.text = paper.text(this.cx,this.cy,this.name)
-                        .attr('fill','white')
-                        .attr('font-size',this.radius)
 
-                    this.drawing.push(this.text)
+                        //if already exists, remove the old one
+                        if(this.drawing) {
+                            this.drawing.remove()
+                            this.drawing=undefined
+                        }
 
+                        this.drawing = paper.set()
+
+                        this.circle = paper.circle(this.cx,this.cy,this.radius)
+                            .attr('stroke','red')
+                            .attr('fill','blue')
+                        this.drawing.push(this.circle)
+                        if(use_letter) this.name = self.convert.pc_to_name(this.name)
+                        this.text = paper.text(this.cx,this.cy,this.name)
+                            .attr('fill','white')
+                            .attr('font-size',this.radius)
+
+                        this.drawing.push(this.text)
+
+                        if(this.visible) {
+                            this.drawing.show()
+                        }
+                        else {
+                            this.drawing.hide()
+                        }
+
+
+                    }
                 }
-            }
-            class Str {
-                constructor(necklace,x1,y1,x2,y2,stroke_width) {
-                    this.necklace = necklace
-                    this.x1 = x1
-                    this.y1=y1
-                    this.x2= x2
-                    this.y2 = y2
-                    this.length = Math.sqrt((x2-x1)**2 + (y2-y1)**2)
-                    this.stroke_width = stroke_width
 
-                }
-
-                draw () {
-                    let paper = this.necklace.paper
-                    //if already exists, remove the old one
-                    if(this.drawing) {
-                        this.drawing.remove()
-                        this.drawing=undefined
+                class Str {
+                    constructor(x1,y1,x2,y2) {
+                        this.x1 = x1
+                        this.y1=y1
+                        this.x2= x2
+                        this.y2 = y2
+                        this.length = Math.sqrt((x2-x1)**2 + (y2-y1)**2)
                     }
 
-                    let hue = Math.floor(rescale(this.length,0,this.necklace.radius*2,0,360))
-                    let rgb = Raphael.hsl2rgb(hue,100,50)
-                    this.drawing = paper.path("M" + this.x1+"," + this.y1 +"L" + this.x2 +"," + this.y2)
-                        .attr('stroke',rgb.hex)
-                        .attr('stroke-width',this.stroke_width)
+                    draw () {
+                        //if already exists, remove the old one
+                        if(this.drawing) {
+                            this.drawing.remove()
+                            this.drawing=undefined
+                        }
+
+                        let hue = Math.floor(scale(this.length,0,height-100,0,360))
+                        let rgb = Raphael.hsl2rgb(hue,100,50)
+                        this.drawing = paper.path("M" + this.x1+"," + this.y1 +"L" + this.x2 +"," + this.y2)
+                            .attr('stroke',rgb.hex)
+                            .attr('stroke-width',3)
+
+                    }
 
                 }
 
+                let necklace = new Necklace(paper.height/2-(height/10),paper.width/2,paper.height/2,this.edo,pitches)
+
+                return necklace
             }
 
-            let neck = new Necklace(parent,args)
-            return neck
+
+
+
+            const make_necklaces = function (container_id,necklaces,size=200) {
+                let list = []
+                for (let necklace of necklaces) {
+                    list.push(make_necklace(container_id,necklace,false,size))
+                }
+            }
+            if(Array.isArray(pitches[0])) make_necklaces(container_id,pitches,radius)
+            else make_necklace(container_id,pitches,replace,radius)
+
         },
 
         /**
@@ -2577,18 +2612,154 @@ class EDO {
             let parent = this
             let height=radius
             let width=radius
-            let new_necklace_radius = height/2-(height/20)
             let num_of_necklaces = necklaces.length
+            let div = document.createElement('div')
+            div.style.width =width+"px";
+            div.style.height =height+"px";
+            div.style.display="inline"
+            let div_id = div.setAttribute("id", "paper_" + Date.now());
+            let container = document.getElementById(container_id)
+
+            let new_necklace_radius = height/2-(height/20)
             let necklace_radius_offset = Math.min(new_necklace_radius/(num_of_necklaces))
 
-            const SVG = this.make_DOM_svg(container_id,width,height,replace)
-            const paper = SVG.paper
+            if(replace) container.innerHTML = ""
+            container.appendChild(div)
+            const paper = new Raphael(div, width, height);
+            let background = paper.rect(0,0,width,height).attr('fill','000')
 
-            let node_radius = Math.min((paper.height*Math.PI / (this.edo*4))/2-5,paper.height*Math.PI/(num_of_necklaces*num_of_necklaces*2),(paper.height*Math.PI / (this.edo*num_of_necklaces))/2-5)
+            const scale = (num, in_min, in_max, out_min, out_max) => {
+                return (num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+            }
+
+
+            class Necklace {
+                constructor(radius=paper.height/2-(height/10),pitches ) {
+                    this.cx = paper.width/2
+                    this.cy = paper.height/2
+                    this.radius = radius
+                    this.edo = parent.edo
+                    this.pitches = pitches
+                    this.nodes = []
+                    this.strings = []
+                    this.draw_all()
+                }
+                draw_nodes() {
+                    //remove nodes
+                    for(let node of this.nodes) {
+                        node.drawing.remove()
+                        node.text.remove()
+                    }
+                    this.nodes = []
+                    let node_radius = Math.min((paper.height*Math.PI / (this.edo*4))/2-5,paper.height*Math.PI/(num_of_necklaces*num_of_necklaces*2),(paper.height*Math.PI / (this.edo*num_of_necklaces))/2-5)
+                    node_radius = Math.max(node_radius,5)
+                    //node parameters
+                    for(let note of this.pitches) {
+                        let angle = (note * (360 / this.edo)) - 90
+                        let rad_angle = angle * Math.PI / 180
+                        let cx = Math.floor(this.cx + (this.radius * Math.cos(rad_angle)))
+                        let cy = Math.floor(this.cy + (this.radius * Math.sin(rad_angle)))
+                        let node = new Node(node_radius,cx,cy,note,this.pitches.indexOf(note)!=-1)
+                        this.nodes.push(node)
+                    }
+
+
+                    for(let node of this.nodes) {
+                        node.draw()
+                    }
+
+                }
+                draw_strings() {
+                    //remove strings
+                    for(let string of this.strings) {
+                        string.drawing.remove()
+                    }
+                    this.strings = []
+
+
+                    for (let i = 0; i < this.nodes.length; i++) {
+                        let node1 = this.nodes[i]
+                        let node2 = this.nodes[(i+1)%this.nodes.length]
+                        let str = new Str(node1.cx,node1.cy,node2.cx,node2.cy,this)
+                        this.strings.push(str)
+                    }
+
+                    for(let string of this.strings) {
+                        string.draw()
+                    }
+                }
+                draw_all() {
+                    this.draw_nodes()
+                    this.draw_strings()
+
+                    for(let node of this.nodes) {
+                        node.drawing.toFront()
+                        node.text.toFront()
+                    }
+                }
+
+            }
+
+            class Node {
+                constructor(radius,cx,cy,name) {
+                    this.radius = radius
+                    this.cx=cx
+                    this.cy=cy
+                    this.name =name
+
+                }
+
+                draw () {
+                    //if already exists, remove the old one
+                    if(this.drawing) {
+                        this.drawing.remove()
+                        this.drawing=undefined
+                    }
+
+                    this.drawing = paper.set()
+
+                    this.circle = paper.circle(this.cx,this.cy,this.radius)
+                        .attr('stroke','red')
+                        .attr('fill','blue')
+                    this.drawing.push(this.circle)
+                    this.text = paper.text(this.cx,this.cy,this.name)
+                        .attr('fill','white')
+                        .attr('font-size',this.radius)
+
+                    this.drawing.push(this.text)
+
+                }
+            }
+
+            class Str {
+                constructor(x1,y1,x2,y2,necklace) {
+                    this.x1 = x1
+                    this.y1=y1
+                    this.x2= x2
+                    this.y2 = y2
+                    this.length = Math.sqrt((x2-x1)**2 + (y2-y1)**2)
+                    this.necklace = necklace
+                }
+
+                draw () {
+                    //if already exists, remove the old one
+                    if(this.drawing) {
+                        this.drawing.remove()
+                        this.drawing=undefined
+                    }
+
+                    let hue = Math.floor(scale(this.length,0,this.necklace.radius*2,0,360))
+                    let rgb = Raphael.hsl2rgb(hue,100,50)
+                    this.drawing = paper.path("M" + this.x1+"," + this.y1 +"L" + this.x2 +"," + this.y2)
+                        .attr('stroke',rgb.hex)
+                        .attr('stroke-width',1)
+
+                }
+
+            }
 
             for(let necklace of necklaces) {
-                let args = {paper:paper,pitches:necklace,radius:new_necklace_radius,ring:false,inner_strings:false,node_radius:node_radius}
-                this.show.necklace(args)
+                new Necklace(new_necklace_radius,necklace)
                 new_necklace_radius-=necklace_radius_offset
             }
 
@@ -2781,8 +2952,7 @@ class EDO {
             }
 
             necklace_nester(necklaces)
-        },
-
+        }
 
 
     }
@@ -3253,7 +3423,7 @@ class Scale {
     }
 
     /**A collection of functions manipulates the scale and returns diverse information about it
-    * @namespace*/
+     * @namespace*/
     get = {
 
         /** Returns all the transpositions of the scale that share a common tone with the original scale
@@ -4372,8 +4542,8 @@ try {
         Scale:Scale
     }
 }
-/**
- * For client-side*/
+    /**
+     * For client-side*/
 catch (e) {
     1+1
 }

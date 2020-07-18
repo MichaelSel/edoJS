@@ -15,9 +15,11 @@
 <script>
     const divisions = 12
     let edo = new EDO(divisions)
-    let scale = edo.scale([0,2,4,5,7,9,11])
-    let necklaces = scale.get.common_tone_transpositions().map((trans)=>trans[0])
-    edo.show.nested_necklaces("container",necklaces,true,1200,70)
+    let paper = edo.make_DOM_svg('container',1200,1200,true).paper
+    edo.show.necklace({paper:paper,pitches:[0,2,4,5,7,9,11]})
+    // edo.show.necklace(paper,[0,2,4,5,7,9,11],undefined,undefined,550,true,false,0,5)
+
+
 
 </script>
 </html>
