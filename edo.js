@@ -2450,7 +2450,7 @@ class EDO {
                     for(let node of this.nodes) node.draw()
 
                 }
-                draw_strings(stroke_width=3) {
+                draw_strings(stroke_width) {
                     //remove strings
                     for(let string of this.strings) {
                         string.drawing.remove()
@@ -2461,7 +2461,7 @@ class EDO {
                     for (let i = 0; i < this.nodes.length; i++) {
                         let node1 = this.nodes[i]
                         let node2 = this.nodes[(i+1)%this.nodes.length]
-                        let str = new Str(this,node1.cx,node1.cy,node2.cx,node2.cy)
+                        let str = new Str(this,node1.cx,node1.cy,node2.cx,node2.cy,stroke_width)
                         this.strings.push(str)
                     }
 
@@ -2596,11 +2596,19 @@ class EDO {
 
         /**
          * Graphs necklaces on every node of a parent necklace recursively.
-         *
-         * @param  {String} container_id - The ID of a DOM element in which the contour will be shown.
-         * @param  {Array<Array<Number>>} necklaces - The necklaces to be drawn
-         * @param  {Boolean} [replace=false] - When true, the contents of the container will be replaced by the function. When false, it will be appended.
-         * @param  {Number} [radius = 600] - Radius (in px) of the outer most ring.
+         * <img src='img/necklace_fractal.png'>
+         * @param  {Object} args - The arguments of the necklaces
+         * @param  {String} args.container_id - The ID of a DOM element in which the necklaces will be shown.
+         * @param  {Array<Array<Number>>} args.necklaces - The necklaces to be drawn
+         * @param  {Number} [args.canvas_width=900] - The width of the drawable area
+         * @param  {Number} [args.canvas_height=900] - The height of the drawable area
+         * @param  {Number} [args.initial_radius=250] - The radius of the top-level necklace
+         * @param  {Number} [args.radius_multiplier=0.5] - The rate of change in radius size for every new level of necklace.
+         * @param  {Number} [args.offset_x=0] - Initial necklace's x offset from the center
+         * @param  {Number} [args.offset_y=50] - Initial necklace's y offset from the center
+         * @param  {Number} [args.minimum_node_radius=20] - The smallest radius a node can have
+         * @param  {Boolean} [args.ring=true] - When false, the necklace's ring will be hidden
+         * @param  {Boolean} [args.replace=false] - When true, the contents of the container will be replaced by the function. When false, it will be appended.
          *
          * @example
          * <script src="edo.js"></script>
@@ -2609,175 +2617,41 @@ class EDO {
          * <script>
          * const divisions = 12
          * let edo = new EDO(divisions)
-         * edo.show.necklace_fractal("container",[[0,4,7],[0,3,7],[0,3,6]],true,900)
+         * edo.show.necklace_fractal({container_id:'container',necklaces:[[0,3,6],[0,4,8],[0,6]]})
          * </script>
          * @memberOf EDO#show
          */
-        necklace_fractal: (container_id,necklaces = [[0,2,4,5,7,9,11],[0,2,4,5,7,9,11]],replace=true,radius=600,radius_multiplier = 0.8) => {
-            let parent = this
-            let height=radius
-            let width=radius
-            let num_of_necklaces = necklaces.length
-            let div = document.createElement('div')
-            div.style.width =width+"px";
-            div.style.height =height+"px";
-            div.style.display="inline"
-            let div_id = div.setAttribute("id", "paper_" + Date.now());
-            let container = document.getElementById(container_id)
+        necklace_fractal: (args) => {
 
-            if(replace) container.innerHTML = ""
-            container.appendChild(div)
-            const paper = new Raphael(div, width, height);
-            let background = paper.rect(0,0,width,height).attr('fill','000')
+            const container_id = args.container_id
+            const necklaces = args.necklaces
+            const offset_x = args.offset_x
+            const offset_y = args.offset_y || 50
+            const radius_multiplier = args.radius_multiplier || 0.5
+            const initial_radius = args.initial_radius || 250
+            const minimum_node_radius = args.minimum_node_radius || 20
+            const show_ring = (args.ring==undefined) ? true : args.ring
+            const canvas_width = args.canvas_width || 900
+            const canvas_height = args.canvas_height || 900
+            const replace = (args.replace==undefined) ? false :args.replace
 
-            const scale = (num, in_min, in_max, out_min, out_max) => {
-                return (num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-            }
-
-
-            class Necklace {
-                constructor(radius=paper.height/2-(height/10),pitches,cx =paper.width/2,cy= paper.height/2,starting_pitch=0) {
-                    this.cx = cx
-                    this.cy = cy
-                    this.radius = radius
-                    this.edo = parent.edo
-                    this.pitches = pitches
-                    this.nodes = []
-                    this.strings = []
-                    this.starting_pitch = starting_pitch
-
-                    this.draw_all()
-                }
-                draw_nodes(parent) {
-                    //remove nodes
-                    for(let node of this.nodes) {
-                        node.drawing.remove()
-                        node.text.remove()
-                    }
-                    this.nodes = []
-                    let node_radius = Math.min((paper.height*Math.PI / (this.edo*4))/2-5,paper.height*Math.PI/(num_of_necklaces*num_of_necklaces*2),(paper.height*Math.PI / (this.edo*num_of_necklaces))/2-5)
-                    node_radius = Math.max(node_radius,5)
-                    //node parameters
-                    for(let note of this.pitches) {
-                        let angle = (note * (360 / this.edo)) - 90
-                        let rad_angle = angle * Math.PI / 180
-                        let cx = Math.floor(this.cx + (this.radius * Math.cos(rad_angle)))
-                        let cy = Math.floor(this.cy + (this.radius * Math.sin(rad_angle)))
-                        let node = new Node(Math.min(node_radius,parent.radius/10),cx,cy,(note+parent.starting_pitch)%parent.edo)
-                        this.nodes.push(node)
-                    }
-
-
-                    for(let node of this.nodes) {
-                        node.draw()
-                    }
-
-                }
-                draw_strings() {
-                    //remove strings
-                    for(let string of this.strings) {
-                        string.drawing.remove()
-                    }
-                    this.strings = []
-
-
-                    for (let i = 0; i < this.nodes.length; i++) {
-                        let node1 = this.nodes[i]
-                        let node2 = this.nodes[(i+1)%this.nodes.length]
-                        let str = new Str(node1.cx,node1.cy,node2.cx,node2.cy,this)
-                        this.strings.push(str)
-                    }
-
-                    for(let string of this.strings) {
-                        string.draw()
-                    }
-                }
-                draw_all() {
-                    this.draw_nodes(this)
-                    this.draw_strings()
-
-                    for(let node of this.nodes) {
-                        node.drawing.toFront()
-                        node.text.toFront()
-                    }
-                }
-
-            }
-
-            class Node {
-                constructor(radius,cx,cy,name) {
-                    this.radius = radius
-                    this.cx=cx
-                    this.cy=cy
-                    this.name =name
-
-                }
-
-                draw () {
-                    //if already exists, remove the old one
-                    if(this.drawing) {
-                        this.drawing.remove()
-                        this.drawing=undefined
-                    }
-
-                    this.drawing = paper.set()
-
-                    this.circle = paper.circle(this.cx,this.cy,this.radius)
-                        .attr('stroke','red')
-                        .attr('fill','blue')
-                    this.drawing.push(this.circle)
-                    this.text = paper.text(this.cx,this.cy,this.name)
-                        .attr('fill','white')
-                        .attr('font-size',this.radius)
-
-                    this.drawing.push(this.text)
-
-                }
-            }
-
-            class Str {
-                constructor(x1,y1,x2,y2,necklace) {
-                    this.x1 = x1
-                    this.y1=y1
-                    this.x2= x2
-                    this.y2 = y2
-                    this.length = Math.sqrt((x2-x1)**2 + (y2-y1)**2)
-                    this.necklace = necklace
-                }
-
-                draw () {
-                    //if already exists, remove the old one
-                    if(this.drawing) {
-                        this.drawing.remove()
-                        this.drawing=undefined
-                    }
-
-                    let hue = Math.floor(scale(this.length,0,this.necklace.radius*2,0,360))
-                    let rgb = Raphael.hsl2rgb(hue,100,50)
-                    this.drawing = paper.path("M" + this.x1+"," + this.y1 +"L" + this.x2 +"," + this.y2)
-                        .attr('stroke',rgb.hex)
-                        .attr('stroke-width',1)
-
-                }
-
-            }
-
-            const necklace_nester = function (necklaces,nodes,new_radius=300) {
+            const SVG = this.make_DOM_svg(container_id,canvas_width,canvas_height,replace)
+            const paper = SVG.paper
+            const parent = this
+            const necklace_nester = function (necklaces,nodes,new_radius=initial_radius) {
                 let new_necklaces = [...necklaces]
                 let necklace = new_necklaces.splice(0,1)[0]
                 if(nodes) {
-                    console.log(necklace)
                     nodes.forEach((node)=> {
-                        let neck = new Necklace(new_radius,necklace,node.cx,node.cy+new_radius,node.name)
+                        let neck = parent.show.necklace({paper:paper,ring:show_ring,radius:new_radius,pitches:necklace,cx:node.cx,cy:node.cy+new_radius,PC_at_midnight:node.name,node_radius:Math.max(new_radius/8,minimum_node_radius)})
                         if(new_necklaces.length>0) necklace_nester(new_necklaces,neck.nodes,neck.radius*radius_multiplier)
                     })
                 }
                 else {
-                    let neck = new Necklace(radius=new_radius,necklace,new_radius+50,new_radius+50)
+                    let neck = parent.show.necklace({cx:paper.width/2+offset_x,ring:show_ring,paper:paper,radius:new_radius,pitches:necklace,cy:new_radius+offset_y,node_radius:Math.max(new_radius/8,minimum_node_radius)})
+
                     if(new_necklaces.length>0) necklace_nester(new_necklaces,neck.nodes,neck.radius*radius_multiplier)
                 }
-
-
             }
 
             necklace_nester(necklaces)

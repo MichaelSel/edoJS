@@ -13,10 +13,10 @@
 
 </body>
 <script>
-    const divisions = 12
+    const divisions = 67
     let edo = new EDO(divisions)
     let paper = edo.make_DOM_svg('container',1200,1200,true).paper
-    edo.show.necklace({paper:paper,pitches:[0,2,4,5,7,9,11]})
+    edo.show.necklace({paper:paper,pitches:Array.from(Array(divisions).keys()),inner_strings:false,node_radius:15})
     // edo.show.necklace(paper,[0,2,4,5,7,9,11],undefined,undefined,550,true,false,0,5)
 
 

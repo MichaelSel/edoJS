@@ -16,7 +16,8 @@
     const divisions = 12
     let edo = new EDO(divisions)
     let scale = edo.scale([0,2,4,5,7,9,11])
-    edo.show.necklace("container",scale.pitches)
+    let paper = edo.make_DOM_svg('container',1200,1200,true).paper
+    edo.show.necklace({paper:paper,pitches:scale.pitches})
 
 </script>
 </html>

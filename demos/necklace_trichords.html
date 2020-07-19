@@ -17,6 +17,10 @@
     let edo = new EDO(12) //Create a tuning context
     let scale = edo.scale([0,2,4,5,7,9,11]) //define new scale
     let trichords = scale.get.n_chords(3)
-    edo.show.necklace('container',trichords,false,200)
+    for(let trichord of trichords) {
+        let paper = edo.make_DOM_svg('container',200,200,false).paper
+        edo.show.necklace({paper:paper,pitches:trichord,node_radius:15,string_width:3})
+    }
+
 </script>
 </html>
