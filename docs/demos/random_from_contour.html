@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+    <script src="scripts/raphael.min.js"></script>
+    <script src="scripts/edo.js"></script>
+    <title>Scale Explorer</title>
+
+</head>
+<body class="" style="color:white;background-color: black">
+<h1>Scale Explorer</h1>
+<div id="top">
+    <label>Contour (relative values separated by spaces) </label><input id="contour_input" type="text" value="1 2 3 4 5 3 4 5"><br>
+    <label>Range - Lowest possible note: </label>
+    <select id="lowest">
+        <option value="24">C1</option>
+        <option value="25">C#1</option>
+        <option value="26">D1</option>
+        <option value="27">D#1</option>
+        <option value="28">E1</option>
+        <option value="29">F1</option>
+        <option value="30">F#1</option>
+        <option value="31">G1</option>
+        <option value="32">G#1</option>
+        <option value="33">A1</option>
+        <option value="34">A#1</option>
+        <option value="35">B1</option>
+        <option value="36">C2</option>
+        <option value="37">C#2</option>
+        <option value="38">D2</option>
+        <option value="39">D#2</option>
+        <option value="40">E2</option>
+        <option value="41">F2</option>
+        <option value="42">F#2</option>
+        <option value="43">G2</option>
+        <option value="44">G#2</option>
+        <option value="45">A2</option>
+        <option value="46">A#2</option>
+        <option value="47">B2</option>
+        <option value="48">C3</option>
+        <option value="49">C#3</option>
+        <option value="50">D3</option>
+        <option value="51">D#3</option>
+        <option value="52">E3</option>
+        <option value="53">F3</option>
+        <option value="54">F#3</option>
+        <option value="55">G3</option>
+        <option value="56">G#3</option>
+        <option value="57">A3</option>
+        <option value="58">A#3</option>
+        <option value="59">B3</option>
+        <option value="60">C4</option>
+        <option value="61">C#4</option>
+        <option value="62">D4</option>
+        <option value="63">D#4</option>
+        <option value="64">E4</option>
+        <option value="65">F4</option>
+        <option value="66">F#4</option>
+        <option value="67">G4</option>
+        <option value="68">G#4</option>
+        <option value="69">A4</option>
+        <option value="70">A#4</option>
+        <option value="71">B4</option>
+        <option value="72">C5</option>
+    </select><br>
+    <label>Range - Lowest possible note: </label>
+    <select id="highest">
+        <option value="24">C1</option>
+        <option value="25">C#1</option>
+        <option value="26">D1</option>
+        <option value="27">D#1</option>
+        <option value="28">E1</option>
+        <option value="29">F1</option>
+        <option value="30">F#1</option>
+        <option value="31">G1</option>
+        <option value="32">G#1</option>
+        <option value="33">A1</option>
+        <option value="34">A#1</option>
+        <option value="35">B1</option>
+        <option value="36">C2</option>
+        <option value="37">C#2</option>
+        <option value="38">D2</option>
+        <option value="39">D#2</option>
+        <option value="40">E2</option>
+        <option value="41">F2</option>
+        <option value="42">F#2</option>
+        <option value="43">G2</option>
+        <option value="44">G#2</option>
+        <option value="45">A2</option>
+        <option value="46">A#2</option>
+        <option value="47">B2</option>
+        <option value="48">C3</option>
+        <option value="49">C#3</option>
+        <option value="50">D3</option>
+        <option value="51">D#3</option>
+        <option value="52">E3</option>
+        <option value="53">F3</option>
+        <option value="54">F#3</option>
+        <option value="55">G3</option>
+        <option value="56">G#3</option>
+        <option value="57">A3</option>
+        <option value="58">A#3</option>
+        <option value="59">B3</option>
+        <option value="60">C4</option>
+        <option value="61">C#4</option>
+        <option value="62">D4</option>
+        <option value="63">D#4</option>
+        <option value="64">E4</option>
+        <option value="65">F4</option>
+        <option value="66">F#4</option>
+        <option value="67">G4</option>
+        <option value="68">G#4</option>
+        <option value="69">A4</option>
+        <option value="70">A#4</option>
+        <option value="71">B4</option>
+        <option value="72" >C5</option>
+        <option value="73">C#5</option>
+        <option value="74">D5</option>
+        <option value="75">D#5</option>
+        <option value="76">E5</option>
+        <option value="77">F5</option>
+        <option value="78">F#5</option>
+        <option value="79">G5</option>
+        <option value="80">G#5</option>
+        <option value="81">A5</option>
+        <option value="82">A#5</option>
+        <option value="83">B5</option>
+        <option value="84" selected>C6</option>
+    </select><br>
+    <label>Allowed Pitch Classes:</label><input id="scale_input" type="text" value="0 1 2 3 4 5 6 7 8 9 10 11"><br>
+    <input id="explore_button" type="button" value="Generate Melody"><br>
+    <textarea id="melody_area" style="width: 100%">C4 E4 G4 C5 E5 G4 C5 E5
+    </textarea>
+</div>
+<div id="main">
+
+</div>
+<script>
+    let update_page = function () {
+        let edo = new EDO(12)
+        let contour = $('#contour_input').val().split(' ').map((val)=>parseInt(val))
+        let lowest = parseInt($('#lowest').val())
+        let highest = parseInt($('#highest').val())
+        let mode = $('#scale_input').val().split(' ').map((val)=>parseInt(val))
+        let melody = edo.get.random_melody_from_contour(contour,[lowest,highest],mode)
+        $("#melody_area").val(edo.convert.midi_to_name(melody).join(' '))
+
+
+
+    }
+    document.getElementById("explore_button").onclick = function () {
+        update_page()
+    }
+
+</script>
+</body>
+</html>

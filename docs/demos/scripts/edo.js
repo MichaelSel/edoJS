@@ -1619,8 +1619,7 @@ class EDO {
 
             let lexicon = restart()
             let melody = contour.map((note)=>lexicon[note])
-            console.log(melody)
-
+            return melody
 
 
 
