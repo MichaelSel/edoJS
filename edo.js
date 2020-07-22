@@ -373,7 +373,7 @@ class EDO {
         if(clean) container.innerHTML = ""
         container.appendChild(div)
         const paper = new Raphael(div, width, height);
-        let background = paper.rect(0,0,width,height).attr('fill','000')
+        let background = paper.rect(0,0,width,height).attr('fill','#000000')
         return {div_id:div_id,div:div,container_id:container_id,container:container,paper:paper,background:background,width:width,height:height,cleaned:clean}
     }
 
@@ -1935,7 +1935,8 @@ class EDO {
 
         /** Returns all the subsets (in order) from a given array of pitches.
          * @param  {Array<Number>} pitches - a given array of pitches
-         * @param  {Boolean} allow_skips - if set to false, function will only return subsets that have consecutive members
+         * @param  {Boolean} [allow_skips=true] - if set to false, function will only return subsets that have consecutive members
+         * @param  {Boolean} [normal=true] - When true, the returned subsets are converted to normal order
          * @example
          * //returns [[0], [2], [3], [0, 2], [0, 3], [2, 3], [0, 2, 3]]
          * get.subsets([0,2,3],true)
@@ -1945,7 +1946,7 @@ class EDO {
          * @returns {Array<Array<Number>>}
          * @memberOf EDO#get
          */
-        subsets: (pitches,allow_skips=true) => {
+        subsets: (pitches,allow_skips=true, normal=false) => {
             if(allow_skips) {
                 pitches = pitches.reduce(
                     (subsets, value) => subsets.concat(
@@ -1964,6 +1965,10 @@ class EDO {
             }
 
             pitches = pitches.filter((el)=>el.length>0)
+            if(normal) {
+                pitches = pitches.map((subset)=>this.get.normal_order(subset))
+                pitches = this.get.unique_elements(pitches)
+            }
             return pitches
         },
 
@@ -2381,8 +2386,10 @@ class EDO {
             args.radius = args.radius || (args.paper.width/2)-30
             args.ring = (args.ring==undefined) ? true : args.ring
             args.inner_strings = (args.inner_strings==undefined) ? true : args.inner_strings
+            args.outer_strings = (args.outer_strings==undefined) ? true : args.outer_strings
             args.PC_at_midnight = args.PC_at_midnight || 0
             args.string_width = args.string_width || 1
+            args.node_color = args.node_color || "blue"
             args.node_radius = args.node_radius || (args.paper.height*Math.PI / (this.edo*4))/2-5
             const parent = this
             class Necklace {
@@ -2394,11 +2401,13 @@ class EDO {
                     this.PC_at_midnight = args.PC_at_midnight
                     this.show_ring = args.ring
                     this.show_inner_strings = args.inner_strings
+                    this.show_outer_strings = args.outer_strings
                     this.parent = parent
                     this.edo = parent.edo
                     this.nodes = []
                     this.strings = []
                     this.paper = args.paper
+                    this.node_color = args.node_color
                     this.node_radius = args.node_radius
                     this.string_width = args.string_width
                     this.draw_all()
@@ -2416,7 +2425,6 @@ class EDO {
                 }
                 draw_ring (color='red',stroke_width=3) {
                     let paper = this.paper
-                    console.log(this)
                     //if already exists, remove the old one
                     if(this.ring) {
                         this.ring.remove()
@@ -2458,12 +2466,15 @@ class EDO {
                     this.strings = []
 
                     //draw outer strings
-                    for (let i = 0; i < this.nodes.length; i++) {
-                        let node1 = this.nodes[i]
-                        let node2 = this.nodes[(i+1)%this.nodes.length]
-                        let str = new Str(this,node1.cx,node1.cy,node2.cx,node2.cy,stroke_width)
-                        this.strings.push(str)
+                    if(this.show_outer_strings) {
+                        for (let i = 0; i < this.nodes.length; i++) {
+                            let node1 = this.nodes[i]
+                            let node2 = this.nodes[(i+1)%this.nodes.length]
+                            let str = new Str(this,node1.cx,node1.cy,node2.cx,node2.cy,stroke_width)
+                            this.strings.push(str)
+                        }
                     }
+
 
                     //draw inner-strings
                     if(this.show_inner_strings) {
@@ -2505,7 +2516,7 @@ class EDO {
 
                     this.circle = paper.circle(this.cx,this.cy,this.radius)
                         .attr('stroke','red')
-                        .attr('fill','blue')
+                        .attr('fill',this.necklace.node_color)
                     this.drawing.push(this.circle)
                     this.text = paper.text(this.cx,this.cy,this.name)
                         .attr('fill','white')
@@ -2557,6 +2568,7 @@ class EDO {
          * @param  {Array<Array<Number>>} necklaces - The necklaces to be drawn
          * @param  {Boolean} [replace=false] - When true, the contents of the container will be replaced by the function. When false, it will be appended.
          * @param  {Number} [radius = 600] - Radius (in px) of the ring.
+         * @param  {Boolean} [ring = false] - When true, the ring of the scale will be drawn
          *
          * @example
          * <script src="edo.js"></script>
@@ -2573,7 +2585,7 @@ class EDO {
          * @see /demos/necklace.html
          * @memberOf EDO#show
          */
-        nested_necklaces: (container_id, necklaces ,replace=true,radius =600) => {
+        nested_necklaces: (container_id, necklaces ,replace=true,radius =600,ring=false) => {
             let parent = this
             let height=radius
             let width=radius
@@ -2587,7 +2599,7 @@ class EDO {
             let node_radius = Math.min((paper.height*Math.PI / (this.edo*4))/2-5,paper.height*Math.PI/(num_of_necklaces*num_of_necklaces*2),(paper.height*Math.PI / (this.edo*num_of_necklaces))/2-5)
 
             for(let necklace of necklaces) {
-                let args = {paper:paper,pitches:necklace,radius:new_necklace_radius,ring:false,inner_strings:false,node_radius:node_radius}
+                let args = {paper:paper,pitches:necklace,radius:new_necklace_radius,ring:ring,inner_strings:false,node_radius:node_radius}
                 this.show.necklace(args)
                 new_necklace_radius-=necklace_radius_offset
             }

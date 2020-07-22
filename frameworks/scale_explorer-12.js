@@ -1,4 +1,4 @@
-const EDO = require("../edo")
+const EDO = require("../edo").EDO
 edo = new EDO(12)
 
 let scale
@@ -85,6 +85,30 @@ scale = edo.scale([0, 1, 2, 4, 6, 8, 10]).mode(4)
 // scale = edo.scale([0,2,4,5]) //Jins Upper ‘Ajam
 // scale = edo.scale([0,2,4,5,7]) //Jins ‘Ajam
 
+/*
+* Modes of Limited Transposition
+* */
+// scale = edo.scale([ 0, 6 ])
+scale = edo.scale([ 0, 3, 6, 9 ])
+// scale = edo.scale([ 0, 2, 4, 6, 8, 10 ])
+// scale = edo.scale([ 0, 1, 6, 7 ])
+// scale = edo.scale([ 0, 2, 6, 8 ])
+// scale = edo.scale([ 0, 1, 2, 6, 7, 8 ])
+// scale = edo.scale([ 0, 1, 4, 5, 8, 9 ])
+// scale = edo.scale([0, 1, 2, 3, 6, 7, 8, 9])
+// scale = edo.scale([0, 1, 3,  4, 6, 7, 9, 10])
+// scale = edo.scale([0, 1, 2,  4, 6, 7, 8, 10])
+// scale = edo.scale([0, 1, 2,  4, 5, 6, 8, 9, 10])
+// scale = edo.scale([0, 1, 2, 3,  4, 6, 7, 8, 9, 10])
+// scale = edo.scale([ 0, 1, 4, 6, 7, 10 ])
+// scale = edo.scale([ 0, 1, 3, 6, 7, 9 ])
+
+
+
+
+
+
+
 
 
 
@@ -150,4 +174,18 @@ for (let stack of scale.get.stacks(4,2)) {
 
 console.log("\nINTERVAL VECTOR:",scale.get.interval_vector())
 
+console.log('\nSUBSETS THAT ARE <NOT> MOLT')
+let subsets = scale.parent.get.subsets(scale.pitches,true,true)
+subsets = subsets
+    .map((subset)=>edo.scale(subset)) //to scale Object
+    .filter((subset)=>subset.count.transpositions()==12) // Filter MOLT out
+    .map((subset)=>subset.pitches) // get pitches
+    .forEach((subset)=>console.log("Subset:",subset,"Can be constructed on the following PCs:",scale.get.position_of_quality(subset)))
 
+console.log('\nSUBSETS THAT <ARE> MOLT')
+subsets = scale.parent.get.subsets(scale.pitches,true,true)
+subsets = subsets
+    .map((subset)=>edo.scale(subset)) //to scale Object
+    .filter((subset)=>subset.count.transpositions()!=12) // Filter MOLT out
+    .map((subset)=>subset.pitches) // get pitches
+    .forEach((subset)=>console.log("Subset:",subset,"Can be constructed on the following PCs:",scale.get.position_of_quality(subset)))

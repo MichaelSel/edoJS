@@ -114,5 +114,6 @@ const all_modes_of_LT = function (scales,edo) {
 
 }
 
-scales = subsets_of_modes_of_LT_that_arent(scales,edo)
-
+// scales = subsets_of_modes_of_LT_that_arent(scales,edo)
+scales = scales.filter((scale)=>scale.count.transpositions()<12)
+scales.forEach((scale)=>console.log(scale.pitches))

@@ -6,7 +6,11 @@ function getRandomInt(min, max) {
 const EDO = require("../edo").EDO
 let divisions = 12
 edo = new EDO(divisions)
-let scale = edo.scale([0,1,2,3,4,5,6,7,8,9,10,11])
-let tets = scale.get.tetrachords()
-tets = tets.filter((tet)=>(edo.scale(tet).count.consecutive_steps(1)<2)?true:false)
-console.log(tets)
+let scale = edo.scale([0,1,4,6,7,10] )
+let subsets = scale.parent.get.subsets(scale.pitches,true,true)
+subsets = subsets
+    .map((subset)=>edo.scale(subset)) //to scale Object
+    .filter((subset)=>subset.count.transpositions()==12) // Filter MOLT out
+    .map((subset)=>subset.pitches) // get pitches
+    .forEach((subset)=>console.log(subset,scale.get.position_of_quality(subset)))
+
