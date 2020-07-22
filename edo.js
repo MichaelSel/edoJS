@@ -773,7 +773,6 @@ class EDO {
             let svgs = el.getElementsByTagName('svg')
             for (let svg of svgs) {
                 let svgString ="<?xml version=\"1.0\" encoding=\"utf-8\"?>" + svg.outerHTML
-                console.log(svgString)
                 let a = document.createElement('a');
                 a.download = container_id + '.svg';
                 a.type = 'image/svg+xml';
@@ -1619,8 +1618,7 @@ class EDO {
 
             let lexicon = restart()
             let melody = contour.map((note)=>lexicon[note])
-            console.log(melody)
-
+            return melody
 
 
 

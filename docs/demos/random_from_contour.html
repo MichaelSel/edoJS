@@ -149,7 +149,7 @@
         let mode = $('#scale_input').val().split(' ').map((val)=>parseInt(val))
         let melody = edo.get.random_melody_from_contour(contour,[lowest,highest],mode)
         $("#melody_area").val(edo.convert.midi_to_name(melody).join(' '))
-        edo.show.contour('contour_plot',contour,true,[200,50])
+        edo.show.contour('contour_plot',contour,true,[500,150])
 
 
 
@@ -157,7 +157,7 @@
     document.getElementById("explore_button").onclick = function () {
         update_page()
     }
-    edo.show.contour('contour_plot',[1,2,3,4,5,3,4,5],true,[200,50])
+    edo.show.contour('contour_plot',[1,2,3,4,5,3,4,5],true,[500,150])
 </script>
 </body>
 </html>

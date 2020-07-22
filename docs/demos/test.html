@@ -14,9 +14,10 @@
 
 </body>
 <script>
-    let edo = new EDO(12) //Create a tuning context
-    let scale = edo.scale([0,2,4,5,7,9,11]) //define new scale
-    let tetrachords = scale.get.n_chords(4)
-    edo.show.necklace('container',tetrachords,false,200)
+    let divisions = 12
+    edo = new EDO(divisions)
+    let scales = edo.get.scales(1,12,1,12)
+    scales = scales.filter((scale)=>scale.count.pitches()==5).map((scale)=>scale.pitches)
+    edo.show.nested_necklaces('container',scales,true,3000)
 </script>
 </html>
