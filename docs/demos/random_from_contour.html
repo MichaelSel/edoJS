@@ -12,9 +12,9 @@
 
 </head>
 <body class="" style="color:white;background-color: black">
-<h1>Scale Explorer</h1>
+<h1>Random Melody from Contour</h1>
 <div id="top">
-    <label>Contour (relative values separated by spaces) </label><input id="contour_input" type="text" value="1 2 3 4 5 3 4 5"><br>
+    <label>Contour (relative values separated by spaces) </label><input id="contour_input" type="text" value="1 2 3 4 5 3 4 5"><div id="contour_plot" style="display: inline; width: 200px; height:50px"></div><br>
     <label>Range - Lowest possible note: </label>
     <select id="lowest">
         <option value="24">C1</option>
@@ -140,14 +140,16 @@
 
 </div>
 <script>
+    let edo = new EDO(12)
     let update_page = function () {
-        let edo = new EDO(12)
+
         let contour = $('#contour_input').val().split(' ').map((val)=>parseInt(val))
         let lowest = parseInt($('#lowest').val())
         let highest = parseInt($('#highest').val())
         let mode = $('#scale_input').val().split(' ').map((val)=>parseInt(val))
         let melody = edo.get.random_melody_from_contour(contour,[lowest,highest],mode)
         $("#melody_area").val(edo.convert.midi_to_name(melody).join(' '))
+        edo.show.contour('contour_plot',contour,true,[200,50])
 
 
 
@@ -155,7 +157,7 @@
     document.getElementById("explore_button").onclick = function () {
         update_page()
     }
-
+    edo.show.contour('contour_plot',[1,2,3,4,5,3,4,5],true,[200,50])
 </script>
 </body>
 </html>
