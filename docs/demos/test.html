@@ -14,10 +14,13 @@
 
 </body>
 <script>
-    let divisions = 12
-    edo = new EDO(divisions)
-    let scales = edo.get.scales(1,12,1,12)
-    scales = scales.filter((scale)=>scale.count.pitches()==5).map((scale)=>scale.pitches)
-    edo.show.nested_necklaces('container',scales,true,3000)
+    edo12 = new EDO(12)
+    edo14 = new EDO(14)
+    let prom = edo12.scale([0, 2, 4, 6, 9, 10])
+    console.log(prom.count.transpositions())
+    let triton = edo12.scale([0, 1, 4, 6, 7, 10])
+    console.log(triton.count.transpositions())
+    let whoeltone = edo12.scale([0, 1, 4, 6, 7, 10])
+
 </script>
 </html>
