@@ -21,7 +21,7 @@
 <div id="main">
     <div class="row">
         <div class="col">
-            <h4>Scale / Common-tone transpositions</h4>
+            <h4>Scale-degree transpositions</h4>
             <div id="transpositions_necklace"></div>
         </div>
         <div class="col">
@@ -47,15 +47,21 @@
             <div id="stack_necklaces"></div>
         </div>
     </div>
+    <div>
+        <h4>Common-tone Transpositions</h4>
+        <div id="common_tone">
+
+        </div>
+    </div>
 </div>
 <script>
     let update_page = function () {
 
         let edo = new EDO(parseInt($('#edo_input').val()))
         let scale = edo.scale($('#scale_input').val().split(' ').map((el) => parseInt(el)))
-        let transpositions = scale.get.common_tone_transpositions().map((t)=>t[0])
-        edo.show.nested_necklaces('transpositions_necklace',transpositions,true,800,false)
-        let necklace_paper = edo.make_DOM_svg('necklace',800,800,true).paper
+        let transpositions = scale.get.scale_degree_transpositions().map((t)=>t[0])
+        edo.show.nested_necklaces('transpositions_necklace',transpositions,true,700,false)
+        let necklace_paper = edo.make_DOM_svg('necklace',700,700,true).paper
         edo.show.necklace({paper:necklace_paper,pitches:scale.pitches,string_width:3})
 
         let trichords = scale.get.trichords()
@@ -85,9 +91,18 @@
             let positions = scale.get.position_of_quality(stack)
             edo.show.necklace({paper:stack_svg.paper,pitches:positions,string_width:0,node_radius:10,radius:100,ring:true,inner_strings:false,outer_strings:false,node_color:'red'})
             edo.show.necklace({paper:stack_svg.paper,pitches:stack,string_width:3,node_radius:15,radius:70,ring:false})
-
-
         })
+        $("#common_tone").html("")
+        let CTT = scale.get.common_tone_transpositions()
+        for (let i = 0; i < scale.count.pitches(); i++) {
+            let Ts = CTT
+                .filter((e)=>e.common_tone==scale.pitches[i])
+                .sort((a,b)=>b.common_tones-a.common_tones)
+                .map((t)=>t.transposition)
+            $('#common_tone').append("<h5>CT Transpositions on " + scale.pitches[i] + "</h5>")
+            edo.show.nested_necklaces('common_tone',Ts,false,600,false,12)
+
+        }
 
 
 

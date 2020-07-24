@@ -788,6 +788,8 @@ class EDO {
      * @namespace EDO#get*/
     get = {
 
+
+
         /** <p>Returns a vector describing the contour of the given pitches.</p>
          *
          * <p>If local is set to true, every cell in the vector will be
@@ -1057,6 +1059,23 @@ class EDO {
             return pitches.reverse()
         },
 
+        /**
+         * <p>Returns all the rotations (inversions) of an array of pitches</p>
+         * @param  {Array<Number>} pitches - a collection of pitches (not necessarily PCs, not necessarily unique)
+         * @return {Array<Array<Number>>}
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * edo.get.rotations([0,4,7,4])
+         * //returns [ [ 0, 4, 7, 4 ], [ 4, 7, 4, 0 ], [ 7, 4, 0, 4 ], [ 4, 0, 4, 7 ] ]
+         * */
+        rotations: (pitches) => {
+          let rotations = []
+            for (let i = 0; i < pitches.length; i++) {
+                rotations.push([...pitches.slice(i,pitches.length),...pitches.slice(0,i)])
+            }
+            return rotations
+        },
+
         /** <p>Returns a lattice from the pitches in the scale</p>
 
          * @param {Number} [hor=3] - the gap between numbers horizontally
@@ -1121,6 +1140,35 @@ class EDO {
             let min = Math.min.apply(Array,ratios)
             let pos = ratios.indexOf(min)
             return pitches[pos]
+        },
+
+        /**
+         * <p>Returns the disposition of <code>chord2</code> that minimizes movement from <code>chord1</code>.</p>
+         * <p>Note: <code>chord1</code> and <code>chord2</code> must have the same number of pitches</p>
+         * @param  {Array<Number>} chord1 - an origin chord in some disposition
+         * @param  {Array<Number>} chord2 - an destination chord
+         * @returns {Array<Number>}
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * edo.get.minimal_voice_leading([7,0,3],[4,8,11])
+         * //returns [8,11,4]
+         * */
+        minimal_voice_leading: (chord1,chord2) => {
+            let modes = this.get.rotations(chord2)
+            let best_sum = Infinity
+            let best_ind = 0
+            modes.forEach((mode,mode_ind)=> {
+                let total = 0
+                for (let i = 0; i < chord1.length; i++) {
+                    total+=Math.abs(chord1[i]-Math.min(mode[i],this.edo-mode[i]))
+                }
+                if(total<best_sum) {
+                    best_sum = total
+                    best_ind = mode_ind
+                }
+            })
+            return modes[best_ind]
+
         },
 
         /** Returns the normal order of a given set of pitches
@@ -2567,6 +2615,7 @@ class EDO {
          * @param  {Boolean} [replace=false] - When true, the contents of the container will be replaced by the function. When false, it will be appended.
          * @param  {Number} [radius = 600] - Radius (in px) of the ring.
          * @param  {Boolean} [ring = false] - When true, the ring of the scale will be drawn
+         * @param  {Number} [min_node_radius] - When passed, the radius of each node won't be smaller than the value passed
          *
          * @example
          * <script src="edo.js"></script>
@@ -2576,14 +2625,14 @@ class EDO {
          * const divisions = 12
          * let edo = new EDO(divisions)
          * let scale = edo.scale([0,2,4,5,7,9,11])
-         * let necklaces = scale.get.common_tone_transpositions().map((trans)=>trans[0])
+         * let necklaces = scale.get.scale_degree_transpositions().map((trans)=>trans[0])
          * edo.show.nested_necklaces("container",necklaces,true,900)
          * //Graphs all of the common tone transpositions of the major scale
          * </script>
          * @see /demos/necklace.html
          * @memberOf EDO#show
          */
-        nested_necklaces: (container_id, necklaces ,replace=true,radius =600,ring=false) => {
+        nested_necklaces: (container_id, necklaces ,replace=true,radius =600,ring=false,min_node_radius) => {
             let parent = this
             let height=radius
             let width=radius
@@ -2595,6 +2644,7 @@ class EDO {
             const paper = SVG.paper
 
             let node_radius = Math.min((paper.height*Math.PI / (this.edo*4))/2-5,paper.height*Math.PI/(num_of_necklaces*num_of_necklaces*2),(paper.height*Math.PI / (this.edo*num_of_necklaces))/2-5)
+            if(min_node_radius) node_radius = Math.max(node_radius,min_node_radius)
 
             for(let necklace of necklaces) {
                 let args = {paper:paper,pitches:necklace,radius:new_necklace_radius,ring:ring,inner_strings:false,node_radius:node_radius}
@@ -3140,47 +3190,45 @@ class Scale {
     * @namespace*/
     get = {
 
-        /** Returns all the transpositions of the scale that share a common tone with the original scale
+        /** Returns all the transpositions of the scale that are constructed on the scale degrees of the original scale,
          * As well the the number of notes altered to get from the original scale to the new scale as a "Tuple"
-         * @param  {Boolean} normalize - when true, all of the transpositions will be constructed by altering the original scale
+         * @param  {Boolean} [normalize=true] - when true, all of the transpositions will be constructed by altering the original scale
          * @returns {Array<Array<Number>,Number>} An array containing all of the stacks
          * @memberOf Scale#get
          * @example
          * let edo = new EDO(12) //define context
-         * let scale = edo.scale([0,2,4,5,7,9,11]) //major scale
+         * let scale = edo.scale([0,3,7]) //minor triad
          * scale.get.common_tone_transpositions()
          * //returns
          *
          * [
-         *  [ [0, 2, 4, 5, 7, 9, 11], 0 ],
-         *  [ [0, 2, 4, 5, 7, 9, 10], 1 ],
-         *  [ [0, 2, 4, 6, 7, 9, 11], 1 ],
-         *  [ [1, 2, 4, 6, 7, 9, 11], 2 ],
-         *  [ [1, 2, 4, 6, 8, 9, 11], 3 ],
-         *  [ [1, 3, 4, 6, 8, 9, 11], 4 ],
-         *  [ [1, 3, 4, 6, 8, 10, 11], 5 ]
+         *  [ [ 0, 3, 7 ], 0 ],
+         *  [ [ 0, 4, 9 ], 2 ],
+         *  [ [ 0, 5, 8 ], 2 ],
+         *  [ [ 3, 6, 10 ], 2 ],
+         *  [ [ 3, 8, 11 ], 2 ],
+         *  [ [ 2, 7, 10 ], 2 ],
+         *  [ [ 4, 7, 11 ], 2 ]
          * ]
          */
-        common_tone_transpositions: (normalize=true) => {
-
-
-            let transpositions = []
-            let intervals = this.to.steps()
-            intervals=intervals.slice(0,-1) //removing the last step because we don't need the octave completion
-            for (let note of this.pitches) {
-                let transposition = [note]
-                for(let interval of intervals) {
-                    let next_note = this.parent.mod(transposition.slice(-1)[0]+interval,this.edo)
-                    transposition.push(next_note)
-                }
-                if(normalize) transposition.sort((a,b)=>a-b)
-                let CT = this.count.pitches() - this.parent.count.common_tones(this.pitches,transposition)
-                transpositions.push([transposition,CT])
-            }
-            transpositions.sort((a,b) =>a[1]-b[1])
-            transpositions = this.parent.get.unique_elements(transpositions)
-            return transpositions
-
+        common_tone_transpositions: () => {
+            let modes = this.get.modes()
+            let result = []
+            this.pitches.forEach((pitch)=> {
+                modes.forEach((mode,inversion)=> {
+                    let transposition = mode.map((note)=>this.parent.mod(note+pitch,this.edo)).sort((a,b)=>a-b)
+                    let CT = this.parent.count.common_tones(this.pitches,transposition)
+                    result.push({
+                        transposition:transposition,
+                        common_tones: CT,
+                        altered_tones:this.count.pitches()-CT,
+                        common_tone:pitch,
+                        as_scale_degree:inversion+1
+                    })
+                })
+            })
+            result=this.parent.get.unique_elements(result)
+            return result
         },
 
         /** <p>Returns all the PCs of the EDO that the scale does not use.</p>
@@ -3727,6 +3775,49 @@ class Scale {
             else result = "improper"
             if(cache) this.catalog['rothenberg'] = result
             return result
+        },
+
+        /** Returns all the transpositions of the scale that are constructed on the scale degrees of the original scale,
+         * As well the the number of notes altered to get from the original scale to the new scale as a "Tuple"
+         * @param  {Boolean} [normalize=true] - when true, all of the transpositions will be constructed by altering the original scale
+         * @returns {Array<Array<Number>,Number>} An array containing all of the stacks
+         * @memberOf Scale#get
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //major scale
+         * scale.get.scale_degree_transpositions()
+         * //returns
+         *
+         * [
+         *  [ [0, 2, 4, 5, 7, 9, 11], 0 ],
+         *  [ [0, 2, 4, 5, 7, 9, 10], 1 ],
+         *  [ [0, 2, 4, 6, 7, 9, 11], 1 ],
+         *  [ [1, 2, 4, 6, 7, 9, 11], 2 ],
+         *  [ [1, 2, 4, 6, 8, 9, 11], 3 ],
+         *  [ [1, 3, 4, 6, 8, 9, 11], 4 ],
+         *  [ [1, 3, 4, 6, 8, 10, 11], 5 ]
+         * ]
+         */
+        scale_degree_transpositions: (normalize=true) => {
+
+
+            let transpositions = []
+            let intervals = this.to.steps()
+            intervals=intervals.slice(0,-1) //removing the last step because we don't need the octave completion
+            for (let note of this.pitches) {
+                let transposition = [note]
+                for(let interval of intervals) {
+                    let next_note = this.parent.mod(transposition.slice(-1)[0]+interval,this.edo)
+                    transposition.push(next_note)
+                }
+                if(normalize) transposition.sort((a,b)=>a-b)
+                let CT = this.count.pitches() - this.parent.count.common_tones(this.pitches,transposition)
+                transpositions.push([transposition,CT])
+            }
+            transpositions.sort((a,b) =>a[1]-b[1])
+            transpositions = this.parent.get.unique_elements(transpositions)
+            return transpositions
+
         },
 
         /** <p>Transposes a melody within the scale by a given number of scale degrees</p>
