@@ -872,6 +872,41 @@ class EDO {
             return PCs
         },
 
+        /** <p>Expends / contracts the intervals between pitches of a melody.</p>
+         * @param {Array<Number>} melody - The melody to be modified
+         * @param {Number} resize_by - The amount by which the melody will be modified (can be positive/negative/fraction)
+         * @param {String} [method="multiply"] - "add" to add resize by to any interval. "multiply" to multiply the intervals by the value.
+         * @returns {Array<Number>}
+         * @memberOf Scale#get
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * edo.get.resize_melody([0,2,4,5,7,5,4,2,-1,0],2)
+         * //returns [0, 4, 8, 10, 14, 10, 8, 4, -2, 0]
+         *
+         * edo.get.resize_melody([0,2,4,5,7,5,4,2,-1,0],-1)
+         * //[0,-2,-4,-5,-7,-5,-4,-2,1,0]
+         *
+         * edo.get.resize_melody([0,2,4,5,7,5,4,2,-1,0],-1,method='add')
+         * //returns
+         * [0,1,2,2,3,2,2,1,-1,-1]
+         */
+        resize_melody: (melody,resize_by=2,method="multiply") => {
+            let note1 = melody[0]
+            melody = edo.convert.to_steps(melody)
+            if(method=="add") {
+                melody = melody.map((interval)=>{
+                    if(interval>0) return (interval+resize_by>0)?interval+resize_by:0
+                    else if(interval<0) return (interval-resize_by<0)?interval-resize_by:0
+                    else return 0
+                })
+            } else if(method=="multiply") melody = melody.map((interval)=>Math.round(interval*resize_by))
+
+            melody = edo.convert.intervals_to_pitches(melody)
+            return edo.get.transposition(melody,note1,false)
+
+
+        },
+
         /** <p>Returns every IC that by iteratively adding it to 0, produces all of the pitches of the tuning space.</p>
          * @see Balzano, G. J. (1980). "The group-theoretic description of 12-fold and microtonal pitch systems." Computer music journal 4(4): 66-84.
          * @param {Boolean} [with_complement_interval=false] - When true the complementary intervals will be included (e.g. in 12EDO IC>6)
@@ -1639,39 +1674,31 @@ class EDO {
          * edo.get.random_melody_from_contour([0,3,1,3,2],[0,12],[0,2,4,5,7,9,11]); //returns e.g. [ 2, 11, 7, 11, 9 ]
          */
         random_melody_from_contour: (contour,range=[0,12],mode) => {
-            const restart = () => {
-                let lexicon = {}
-                let available_pitches = [...all_pitches]
-                for(let note of ord_cont) {
-                    let ind = Math.floor(Math.random() * (available_pitches.length) ) ;
-                    lexicon[note] = available_pitches[ind]
-                    available_pitches = available_pitches.slice(ind+1,available_pitches.length)
-                    if(available_pitches.length==0) return restart()
-                }
-                return lexicon
-            }
-            let ord_cont = this.get.unique_elements(contour).sort((a,b)=>a-b)
-            let all_pitches = []
+            let available_pitches = []
+            let used_pitches = []
+            let contour_ordered_unique = this.get.unique_elements([...contour]).sort((a,b)=>a-b)
+            let len = contour_ordered_unique.length - used_pitches.length
             for (let i = range[0]; i <= range[1]; i++) {
                 if(mode) {
-                    if(mode.indexOf(this.mod(i,this.edo))!=-1) {
-                        all_pitches.push(i)
-                    }
+                    if(mode.indexOf(this.mod(i,this.edo))!=-1) available_pitches.push(i)
                 } else {
-                    all_pitches.push(i)
+                    available_pitches.push(i)
                 }
-
-
             }
+            while(used_pitches.length<len) {
+                let item_i = Math.floor(Math.random()*available_pitches.length)
+                let item = available_pitches.splice(item_i,1)[0]
+                used_pitches.push(item)
+                len = contour_ordered_unique.length
+            }
+            used_pitches = used_pitches.sort((a,b)=>a-b)
 
-            let lexicon = restart()
-            let melody = contour.map((note)=>lexicon[note])
-            return melody
-
-
-
-
-
+            let lexicon = {}
+            for (let i = 0; i < contour_ordered_unique.length; i++) {
+                lexicon[contour_ordered_unique[i]]=used_pitches[i]
+            }
+            contour = contour.map((el)=>lexicon[el])
+            return contour
         },
 
         /** Returns the closest ratio (within a given limit) for any interval class.

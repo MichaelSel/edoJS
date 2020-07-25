@@ -5,12 +5,8 @@ function getRandomInt(min, max) {
 }
 const EDO = require("../edo").EDO
 edo = new EDO(12)
-let scale = edo.scale([0,3,7])
-let transpositions = scale.get.common_tone_transpositions()
-    .map((t)=>t.transposition)
-transpositions = edo.get.unique_elements(transpositions)
-    .map((t)=>edo.get.minimal_voice_leading(scale.pitches,t))
-console.log(transpositions)
+console.log(edo.get.resize_melody([0,2,4,5,7,5,4,2,-1,0],0.5))
+
 
 
 
