@@ -15,11 +15,14 @@
 <script>
     const divisions = 12
     let edo = new EDO(divisions)
-    let scale = edo.scale([0,1,2,3,4,5,6,7,8,9,10,11])
-    console.log(scale.count.tetrachords())
-    // let paper = edo.make_DOM_svg('container',1200,1200,true).paper
-    // edo.show.necklace({paper:paper,pitches:Array.from(Array(divisions).keys()),inner_strings:false,node_radius:15})
-    // edo.show.necklace(paper,[0,2,4,5,7,9,11],undefined,undefined,550,true,false,0,5)
+    const make_neck = function (args) {
+        let paper = edo.make_DOM_svg('container',600,600).paper
+        args.paper = paper
+        edo.show.necklace(args)
+    }
+
+
+
 
 
 

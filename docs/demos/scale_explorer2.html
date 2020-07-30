@@ -9,6 +9,11 @@
     <script src="scripts/raphael.min.js"></script>
     <script src="scripts/edo.js"></script>
     <title>Scale Explorer</title>
+    <style>
+        .col {
+            border: solid 1px;
+        }
+    </style>
 
 </head>
 <body class="" style="color:white;background-color: black">
@@ -22,11 +27,11 @@
     <div class="row">
         <div class="col">
             <h4>Scale-degree transpositions</h4>
-            <div id="transpositions_necklace"></div>
+            <div id="transpositions_necklace" style="text-align: center"></div>
         </div>
         <div class="col">
             <h4>Necklace</h4>
-            <div id="necklace"></div>
+            <div id="necklace" style="text-align: center"></div>
         </div>
     </div>
     <div class="row">
@@ -34,8 +39,6 @@
             <h4>Trichords</h4>
             <div id="trichord_necklaces"></div>
         </div>
-    </div>
-    <div class="row">
         <div class="col">
             <h4>Tetrachords</h4>
             <div id="tetrachord_necklaces"></div>
@@ -43,15 +46,45 @@
     </div>
     <div class="row">
         <div class="col">
-            <h4>Tiercial Stacks of 4</h4>
-            <div id="stack_necklaces"></div>
+            <h4>Pentachords</h4>
+            <div id="pentachord_necklaces"></div>
+        </div>
+        <div class="col">
+            <h4>Hexachords</h4>
+            <div id="hexachord_necklaces"></div>
         </div>
     </div>
-    <div>
+    <div class="row">
+        <div class="col">
+            <h4>Tiercial Stacks of 3</h4>
+            <div id="stack3_necklaces"></div>
+        </div>
+        <div class="col">
+            <h4>Tiercial Stacks of 4</h4>
+            <div id="stack4_necklaces"></div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <h4>Quartal Stacks of 3</h4>
+            <div id="stack3Q_necklaces"></div>
+        </div>
+        <div class="col">
+            <h4>Quartak Stacks of 4</h4>
+            <div id="stack4Q_necklaces"></div>
+        </div>
+    </div>
+    <div style="max-width: 100%">
         <h4>Common-tone Transpositions</h4>
-        <div id="common_tone">
+        <div id="common_tone" style="text-align: center">
 
         </div>
+    </div>
+    <div style="text-align: center">
+        <h4>Mode Attraction Vectors</h4>
+        <table id="vectors" style="text-align: center;font-size:x-large;margin: 0 auto">
+
+        </table>
     </div>
 </div>
 <script>
@@ -60,12 +93,13 @@
         let edo = new EDO(parseInt($('#edo_input').val()))
         let scale = edo.scale($('#scale_input').val().split(' ').map((el) => parseInt(el)))
         let transpositions = scale.get.scale_degree_transpositions().map((t)=>t[0])
-        edo.show.nested_necklaces('transpositions_necklace',transpositions,true,700,false)
+        edo.show.nested_necklaces('transpositions_necklace',transpositions,true,700,true,15,false)
         let necklace_paper = edo.make_DOM_svg('necklace',700,700,true).paper
         edo.show.necklace({paper:necklace_paper,pitches:scale.pitches,string_width:3})
 
         let trichords = scale.get.trichords()
         $("#trichord_necklaces").html("")
+        trichords = trichords.sort((a,b)=>scale.get.position_of_quality(a).length-scale.get.position_of_quality(b).length)
         trichords.forEach((trichord,i)=>{
             let trichord_svg = edo.make_DOM_svg('trichord_necklaces',300,300)
             let positions = scale.get.position_of_quality(trichord)
@@ -75,34 +109,104 @@
 
         })
 
-        let tetrachord = scale.get.n_chords(4)
+        let tetrachords = scale.get.n_chords(4)
         $("#tetrachord_necklaces").html("")
-        tetrachord.forEach((tetrachord,i)=>{
+        tetrachords = tetrachords.sort((a,b)=>scale.get.position_of_quality(a).length-scale.get.position_of_quality(b).length)
+        tetrachords.forEach((tetrachord,i)=>{
             let tetrachord_svg = edo.make_DOM_svg('tetrachord_necklaces',300,300)
             let positions = scale.get.position_of_quality(tetrachord)
             edo.show.necklace({paper:tetrachord_svg.paper,pitches:positions,string_width:0,node_radius:10,radius:100,ring:true,inner_strings:false,outer_strings:false,node_color:'red'})
             edo.show.necklace({paper:tetrachord_svg.paper,pitches:tetrachord,string_width:3,node_radius:15,radius:70,ring:false})
         })
 
-        let stacks = scale.get.stacks(4,1)
-        $("#stack_necklaces").html("")
-        stacks.forEach((stack,i)=>{
-            let stack_svg = edo.make_DOM_svg('stack_necklaces',300,300)
+        let pentachords = scale.get.n_chords(5)
+        $("#pentachord_necklaces").html("")
+        pentachords = pentachords.sort((a,b)=>scale.get.position_of_quality(a).length-scale.get.position_of_quality(b).length)
+        pentachords.forEach((pentachord,i)=>{
+            let pentachord_svg = edo.make_DOM_svg('pentachord_necklaces',300,300)
+            let positions = scale.get.position_of_quality(pentachord)
+            edo.show.necklace({paper:pentachord_svg.paper,pitches:positions,string_width:0,node_radius:10,radius:100,ring:true,inner_strings:false,outer_strings:false,node_color:'red'})
+            edo.show.necklace({paper:pentachord_svg.paper,pitches:pentachord,string_width:3,node_radius:15,radius:70,ring:false})
+        })
+
+        let hexachords = scale.get.n_chords(6)
+        $("#hexachord_necklaces").html("")
+        hexachords = hexachords.sort((a,b)=>scale.get.position_of_quality(a).length-scale.get.position_of_quality(b).length)
+        hexachords.forEach((hexachord,i)=>{
+            let hexachord_svg = edo.make_DOM_svg('hexachord_necklaces',300,300)
+            let positions = scale.get.position_of_quality(hexachord)
+            edo.show.necklace({paper:hexachord_svg.paper,pitches:positions,string_width:0,node_radius:10,radius:100,ring:true,inner_strings:false,outer_strings:false,node_color:'red'})
+            edo.show.necklace({paper:hexachord_svg.paper,pitches:hexachord,string_width:3,node_radius:15,radius:70,ring:false})
+        })
+
+        let stacks3 = scale.get.stacks(3,1)
+        $("#stack3_necklaces").html("")
+        stacks3 = stacks3.sort((a,b)=>scale.get.position_of_quality(a).length-scale.get.position_of_quality(b).length)
+        stacks3.forEach((stack,i)=>{
+            let stack_svg = edo.make_DOM_svg('stack3_necklaces',300,300)
             let positions = scale.get.position_of_quality(stack)
             edo.show.necklace({paper:stack_svg.paper,pitches:positions,string_width:0,node_radius:10,radius:100,ring:true,inner_strings:false,outer_strings:false,node_color:'red'})
             edo.show.necklace({paper:stack_svg.paper,pitches:stack,string_width:3,node_radius:15,radius:70,ring:false})
         })
+
+        let stacks4 = scale.get.stacks(4,1)
+        $("#stack4_necklaces").html("")
+        stacks4 = stacks4.sort((a,b)=>scale.get.position_of_quality(a).length-scale.get.position_of_quality(b).length)
+        stacks4.forEach((stack,i)=>{
+            let stack_svg = edo.make_DOM_svg('stack4_necklaces',300,300)
+            let positions = scale.get.position_of_quality(stack)
+            edo.show.necklace({paper:stack_svg.paper,pitches:positions,string_width:0,node_radius:10,radius:100,ring:true,inner_strings:false,outer_strings:false,node_color:'red'})
+            edo.show.necklace({paper:stack_svg.paper,pitches:stack,string_width:3,node_radius:15,radius:70,ring:false})
+        })
+
+        let stacks3Q = scale.get.stacks(3,2)
+        $("#stack3Q_necklaces").html("")
+        stacks3Q = stacks3Q.sort((a,b)=>scale.get.position_of_quality(a).length-scale.get.position_of_quality(b).length)
+        stacks3Q.forEach((stack,i)=>{
+            let stack_svg = edo.make_DOM_svg('stack3Q_necklaces',300,300)
+            let positions = scale.get.position_of_quality(stack)
+            edo.show.necklace({paper:stack_svg.paper,pitches:positions,string_width:0,node_radius:10,radius:100,ring:true,inner_strings:false,outer_strings:false,node_color:'red'})
+            edo.show.necklace({paper:stack_svg.paper,pitches:stack,string_width:3,node_radius:15,radius:70,ring:false})
+        })
+
+        let stacks4Q = scale.get.stacks(4,2)
+        $("#stack4Q_necklaces").html("")
+        stacks4Q = stacks4Q.sort((a,b)=>scale.get.position_of_quality(a).length-scale.get.position_of_quality(b).length)
+        stacks4Q.forEach((stack,i)=>{
+            let stack_svg = edo.make_DOM_svg('stack4Q_necklaces',300,300)
+            let positions = scale.get.position_of_quality(stack)
+            edo.show.necklace({paper:stack_svg.paper,pitches:positions,string_width:0,node_radius:10,radius:100,ring:true,inner_strings:false,outer_strings:false,node_color:'red'})
+            edo.show.necklace({paper:stack_svg.paper,pitches:stack,string_width:3,node_radius:15,radius:70,ring:false})
+        })
+
+
         $("#common_tone").html("")
         let CTT = scale.get.common_tone_transpositions()
         for (let i = 0; i < scale.count.pitches(); i++) {
+            let div_id = "CTT" + Date.now()
+            let div = "<div class='' style='display: inline-block;width:750px' id='" + div_id + "'></div>"
             let Ts = CTT
                 .filter((e)=>e.common_tone==scale.pitches[i])
                 .sort((a,b)=>b.common_tones-a.common_tones)
                 .map((t)=>t.transposition)
-            $('#common_tone').append("<h5>CT Transpositions on " + scale.pitches[i] + "</h5>")
-            edo.show.nested_necklaces('common_tone',Ts,false,600,false,12)
+            $("#common_tone").append(div)
+            $('#' + div_id).append("<h5>CT Transpositions on " + scale.pitches[i] + "</h5>")
+            edo.show.nested_necklaces(div_id,Ts,false,750,true,12,false)
 
         }
+        $("#vectors").html("")
+        let modes = scale.get.modes()
+        let rotations = edo.get.rotations(scale.pitches)
+        modes.forEach((mode,mode_ind)=>{
+            let vector = edo.scale(mode).get.lerdahl_attraction_vector()
+            $("#vectors").append("<tr>")
+            mode.forEach((pitch,ind)=>{
+                if(vector[ind]=="*") $("#vectors").append("<td style='width:50px;height:50px'><div style='display:flex;justify-content:center;align-items: center;height:100%;background-color: green;border-radius: 100%'>" + rotations[mode_ind][ind] + "</div></td>")
+                else $("#vectors").append("<td style='width:50px;height:50px'><div style='display:flex;justify-content:center;align-items: center;height:100%;background-color: blue;border-radius: 100%'>" + rotations[mode_ind][ind] + "</div></td>")
+            })
+            $("#vectors").append("</tr>")
+            console.log(mode)
+        })
 
 
 

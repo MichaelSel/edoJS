@@ -4,8 +4,17 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 const EDO = require("../edo").EDO
-edo = new EDO(12)
-console.log(edo.get.resize_melody([0,2,4,5,7,5,4,2,-1,0],0.5))
+let edo = new EDO(12)
+let scales = edo.get.scales()
+scales = scales.filter((scale)=>{
+    return scale.get.position_of_quality([1,4]).length>0
+}).filter((scale)=>scale.count.consecutive_steps(1)<2)
+
+console.log(scales.length)
+scales.forEach((scale)=>{
+    console.log(JSON.stringify(scale.pitches))
+})
+
 
 
 

@@ -1758,7 +1758,7 @@ class EDO {
          * step sizes. step size=1 between 0 and 1, step size=2 between 5 and 7, and step size = 3 between 1 and 4.
          * @return {Array<Scale>} all the scales that abide by the criteria given
          * @memberOf EDO#get*/
-        scales:(min_step=1,max_step=4,min_sizes=2,max_sizes=3, EDO = this) => {
+        scales:(min_step=1,max_step=this.edo-1,min_sizes=1,max_sizes=this.edo, EDO = this) => {
 
             //get all unique combinations of size s from set of intervals set
             const calc_comb = (s,set) => {
@@ -2659,7 +2659,7 @@ class EDO {
          * @see /demos/necklace.html
          * @memberOf EDO#show
          */
-        nested_necklaces: (container_id, necklaces ,replace=true,radius =600,ring=false,min_node_radius) => {
+        nested_necklaces: (container_id, necklaces ,replace=true,radius =600,ring=false,min_node_radius,strings=true) => {
             let parent = this
             let height=radius
             let width=radius
@@ -2674,7 +2674,7 @@ class EDO {
             if(min_node_radius) node_radius = Math.max(node_radius,min_node_radius)
 
             for(let necklace of necklaces) {
-                let args = {paper:paper,pitches:necklace,radius:new_necklace_radius,ring:ring,inner_strings:false,node_radius:node_radius}
+                let args = {paper:paper,pitches:necklace,radius:new_necklace_radius,ring:ring,inner_strings:false,node_radius:node_radius,outer_strings:strings}
                 this.show.necklace(args)
                 new_necklace_radius-=necklace_radius_offset
             }
@@ -3603,6 +3603,29 @@ class Scale {
             return all
         },
 
+
+        /** <p>Return every quality available in the scale for a combination of <code>n</code> scale degrees.</p>
+         * @param  {Number} n - Number of pitches in every chord
+         * @returns {Array<steps_quality_obj>}
+         * @memberOf Scale#get
+         * @see Scale#get.steps_to_qualities
+         */
+        n_chords_diatonic : (n) => {
+            let t_edo = new EDO(this.count.pitches())
+            let t_scale = t_edo.scale(Array.from(Array(this.count.pitches()).keys()))
+            let combinations = t_scale.get.n_chords(n)
+            let modes = this.get.modes()
+            let n_chords = combinations.map((combo)=> {
+                let steps = this.parent.convert.to_steps(combo)
+                return this.get.steps_to_qualities(steps)
+            })
+            n_chords = n_chords.map((chord)=>{
+                chord.combos = chord.combos.sort((a,b)=>a.positions.length-b.positions.length)
+                return chord
+            })
+            return n_chords
+        },
+
         /**
          * <p>The name of the scale in the form EDO-Code, EDO being the number of divisions of the octave in the current
          * system, and code being the binary value of the scale (see example below).</p>
@@ -3958,6 +3981,45 @@ class Scale {
             return lst
 
 
+        },
+
+        /**
+         * @typedef {Object} quality_position_obj
+         * @property {Array<Number>} quality - Some chord quality
+         * @property {Array<Number>} positions - The positions where this quality is available
+         */
+
+        /**
+         * @typedef {Object} steps_quality_obj
+         * @property {Array<Number>} steps - The given steps
+         * @property {Array<quality_position_obj>} combos - An array of qualities and their positions
+         */
+
+        /** <p>from a given array of steps taken, returns all of the available qualities and their positions</p>
+         * @param {Array<Number>} steps - steps in the scale in the form of [1,1,2,1..] (1=one step, 2= two steps, etc)
+         * @returns {quality_position_obj} The step sizes
+         * @example
+         * let edo = new EDO(12) //define tuning
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //major scale
+         * scale.get.steps_to_qualities([1,1]) //two successive steps
+         * //returns
+         *  {
+         *      "steps":[1,1],
+         *      "combos":[
+         *          {"quality":[0,2,4],"positions":[0,5,7]},
+         *          {"quality":[0,2,3],"positions":[2,9]},
+         *          {"quality":[0,1,3],"positions":[4,11]}
+         *          ]
+         *  }
+         * @memberOf Scale#get*/
+        steps_to_qualities: (steps) => {
+            let modes = this.get.modes()
+            steps = this.parent.convert.intervals_to_pitches(steps)
+            let combos = modes.map((mode)=>steps.map((scale_degree)=>mode[scale_degree]))
+            combos = combos.map((el)=>this.parent.get.normal_order(el))
+            combos = this.parent.get.unique_elements(combos)
+            combos = combos.map((cmb)=>{return {quality:cmb,positions:this.get.position_of_quality(cmb)}})
+            return {steps:this.parent.convert.to_steps(steps),combos:combos}
         },
 
         /** Returns the sets that the scale is contained in from a given list of sets
