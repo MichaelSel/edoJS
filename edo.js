@@ -803,8 +803,6 @@ class EDO {
      * @namespace EDO#get*/
     get = {
 
-
-
         /** <p>Returns a vector describing the contour of the given pitches.</p>
          *
          * <p>If local is set to true, every cell in the vector will be
@@ -1070,7 +1068,6 @@ class EDO {
             }
             return result
         },
-
 
         /** Returns the inversion of a given set of pitches
          *
@@ -1415,12 +1412,12 @@ class EDO {
          * @memberOf EDO#get
          * @example
          * let edo = new EDO(12) //Create a tuning context
-         * edo.get.not([0,1,3,4,6,7,9,10],[0,4,9])
+         * edo.get.without([0,1,3,4,6,7,9,10],[0,4,9])
          * //returns [1,3,6,7,10]
          *
-         * edo.get.not([0,1,3,4,6,7,9,10],[0,4,9],true)
+         * edo.get.without([0,1,3,4,6,7,9,10],[0,4,9],true)
          * //returns [0,2,5,6,9]*/
-        not: (array1,array2,normal=false) => {
+        without: (array1,array2,normal=false) => {
             let copy = [...array1]
             array2.forEach((note)=> {
                 var index = copy.indexOf(note);
@@ -4203,7 +4200,7 @@ class Scale {
          * scale.get.without([5,11]) //returns [0,2,4,7,9]
          */
         without: (to_remove,normal=false) => {
-            return this.parent.get.not(this.pitches,to_remove,normal)
+            return this.parent.get.without(this.pitches,to_remove,normal)
         },
 
 
