@@ -14,14 +14,11 @@ All 7-NOTE SCALES (with no 2 consecutive semitones):
 */
 
 // scale = edo.scale([0,1,3,4,6,7,9]) //Subset of octatonic *** //Mode 3 is nice
-// scale = edo.scale([0,1,3,4,6,7,10]) //Subset of octatonic *** //Modes 1, 3, and 6 are nice
 // scale = edo.scale([0,1,3,4,6,8,9]) //Harmonic Minor (on 1), 6 & 9 are nice too
-// scale = edo.scale([0,1,3,5,6,8,10]) //Diatonic
 // scale = edo.scale([0,1,3,4,6,8,10]) //***Melodic Minor (on 1). 0, 3 (phrygian #6), 6 (lydian b7), 8 (mixolydian b6), 10 (locrian #2)
-// scale = edo.scale([0,1,3,4,7,8,10]) //"Harmonic Major" (on 8). 1 & 3 are interesting.
-
-
-
+// scale = edo.scale([0,1,3,5,6,8,9]) //"Harmonic Major" (on 8). 1 & 3 are interesting.
+// scale = edo.scale([0,1,3,5,6,8,10]) //Diatonic
+// scale = edo.scale([0,2,3,5,6,8,9]) //Subset of octatonic *** //Modes 1, 3, and 6 are nice
 
 
 /*
@@ -67,32 +64,35 @@ Other 7-NOTE SCALES of interest:
 /*
 All 6-NOTE SCALES (with no 2 consecutive semitones):
 */
-// scale = edo.scale([ 0, 1, 3, 4, 6, 7 ]) //Contains big gap, feels disproportional
-// scale = edo.scale([ 0, 1, 3, 4, 6, 8 ]) //Contains big gap, feels disproportional
-// scale = edo.scale([ 0, 1, 3, 4, 6, 9 ]) //Contains big gap, feels disproportional
-// scale = edo.scale([ 0, 1, 3, 4, 6, 10 ]) //Contains big gap, feels disproportional
-// scale = edo.scale([ 0, 1, 3, 4, 7, 8 ]) //mode 0 is interesting
-// scale = edo.scale([ 0, 1, 3, 4, 7, 9 ]) //modes 1, 3 are interesting
-// scale = edo.scale([ 0, 1, 3, 4, 7, 10 ]) // modes 0, 1, 7 are interesting
-// scale = edo.scale([ 0, 1, 3, 4, 8, 10 ]) //Contains big gap, feels disproportional
-// scale = edo.scale([ 0, 1, 3, 4, 8, 9 ]) //modes 1, 8 are interesting
-// scale = edo.scale([ 0, 1, 3, 5, 6, 8 ]) //Contains big gap, feels disproportional
-// scale = edo.scale([ 0, 1, 3, 5, 6, 9 ]) //Modes 0, 3, & 5 are interesting. Can build both a fully diminished AND and augmented triad
-// scale = edo.scale([ 0, 1, 3, 5, 6, 10 ]) //boring
-// scale = edo.scale([ 0, 1, 3, 5, 7, 8 ]) //boring
-// scale = edo.scale([ 0, 1, 3, 5, 7, 9 ]) // Modes 0, 1, & 5 are interesting!
-// scale = edo.scale([ 0, 1, 3, 5, 7, 10 ]) //10 is okay
-// scale = edo.scale([ 0, 1, 3, 5, 8, 9 ]) // Modes 1, 8, & 9 are interesting.
-// scale = edo.scale([ 0, 1, 3, 5, 8, 10 ]) //boring, but has a 6-tone "pentatonic" quality
-// scale = edo.scale([ 0, 1, 3, 6, 7, 9 ]) //MOLT, worth exploring
-// scale = edo.scale([ 0, 1, 3, 6, 7, 10 ]) //boring
-// scale = edo.scale([ 0, 1, 3, 6, 8, 9 ]) //Modes 1, & 8 are interesting.
-// scale = edo.scale([ 0, 1, 3, 6, 8, 10 ]) //Nice modes, all are bright and diatonicy
-// scale = edo.scale([ 0, 1, 4, 5, 8, 9 ]) //MOLT, both modes worth exploring.
-// scale = edo.scale([ 0, 1, 4, 5, 8, 10 ]) //Mode 10 is interesting.
-// scale = edo.scale([ 0, 1, 4, 6, 7, 10 ]) //MOLT, all modes worth exploring.
-// scale = edo.scale([ 0, 1, 4, 6, 8, 10 ]) //Modes 1, 2, 8, and 10 are interesting!
-// scale = edo.scale([ 0, 2, 4, 6, 8, 10 ]) //Whole Tones
+
+scale = edo.scale([0,1,3,4,6,7]) //Contains big gap, feels disproportional
+scale = edo.scale([0,1,3,4,6,8]) //Contains big gap, feels disproportional
+scale = edo.scale([0,1,3,4,6,9]) //Contains big gap, feels disproportional
+scale = edo.scale([0,1,3,4,7,8]) //Interesting
+scale = edo.scale([0,1,3,4,7,9]) //Interesting
+scale = edo.scale([0,1,3,5,6,8]) //Contains big gap, feels disproportional
+scale = edo.scale([0,1,3,5,6,9]) //Interesting
+scale = edo.scale([0,1,3,5,7,8]) //boring
+scale = edo.scale([0,1,3,5,7,9]) // Interesting
+scale = edo.scale([0,1,3,6,7,9]) //MOLT, worth exploring
+scale = edo.scale([0,1,4,5,7,8]) //Interesting
+scale = edo.scale([0,1,4,5,7,9]) // Interesting
+scale = edo.scale([0,1,4,5,8,9]) //Interesting
+scale = edo.scale([0,1,4,6,7,9]) //boring
+scale = edo.scale([0,2,3,5,6,8]) //Contains big gap, feels disproportional
+scale = edo.scale([0,2,3,5,6,9]) // Interesting
+scale = edo.scale([0,2,3,5,7,8]) //boring
+scale = edo.scale([0,2,3,5,7,9]) //Okay
+scale = edo.scale([0,2,3,6,7,9]) //Interesting
+scale = edo.scale([0,2,3,6,8,9]) //MOLT, all modes worth exploring.
+scale = edo.scale([0,2,4,5,7,8]) //Contains big gap, feels disproportional
+scale = edo.scale([0,2,4,5,7,9]) //boring, but has a 6-tone "pentatonic" quality
+scale = edo.scale([0,2,4,5,8,9]) //Interesting
+scale = edo.scale([0,2,4,6,7,9]) //Nice modes, all are bright and diatonicy
+scale = edo.scale([0,2,4,6,8,9]) //Interesting
+scale = edo.scale([0,2,4,6,8,10]) //Whole Tones
+
+
 
 
 
@@ -119,44 +119,46 @@ Other 6-NOTE SCALES of interest:
 All 5-NOTE SCALES (with no 2 consecutive semitones):
 */
 
-// scale = edo.scale([ 0, 1, 3, 4, 6 ])
-// scale = edo.scale([ 0, 1, 3, 4, 7 ])
-// scale = edo.scale([ 0, 1, 3, 4, 8 ])
-// scale = edo.scale([ 0, 1, 3, 4, 9 ])
-// scale = edo.scale([ 0, 1, 3, 4, 10 ])
-// scale = edo.scale([ 0, 1, 3, 5, 6 ])
-// scale = edo.scale([ 0, 1, 3, 5, 7 ])
-// scale = edo.scale([ 0, 1, 3, 5, 8 ])
-// scale = edo.scale([ 0, 1, 3, 5, 9 ])
-// scale = edo.scale([ 0, 1, 3, 5, 10 ])
-// scale = edo.scale([ 0, 1, 3, 6, 7 ])
-// scale = edo.scale([ 0, 1, 3, 6, 8 ])
-// scale = edo.scale([ 0, 1, 3, 6, 9 ])
-// scale = edo.scale([ 0, 1, 3, 6, 10 ])
-// scale = edo.scale([ 0, 1, 3, 7, 8 ])
-// scale = edo.scale([ 0, 1, 3, 7, 9 ])
-// scale = edo.scale([ 0, 1, 3, 7, 10 ])
-// scale = edo.scale([ 0, 1, 3, 8, 9 ])
-// scale = edo.scale([ 0, 1, 3, 8, 10 ])
-// scale = edo.scale([ 0, 1, 4, 5, 8 ])
-// scale = edo.scale([ 0, 1, 4, 5, 9 ])
-// scale = edo.scale([ 0, 1, 4, 5, 10 ])
-// scale = edo.scale([ 0, 1, 4, 6, 9 ])
-// scale = edo.scale([ 0, 1, 4, 6, 7 ])
-// scale = edo.scale([ 0, 1, 4, 6, 8 ])
-// scale = edo.scale([ 0, 1, 4, 6, 10 ])
-// scale = edo.scale([ 0, 1, 4, 7, 8 ])
-// scale = edo.scale([ 0, 1, 4, 7, 9 ])
-// scale = edo.scale([ 0, 1, 4, 7, 10 ])
-// scale = edo.scale([ 0, 1, 4, 8, 10 ])
-// scale = edo.scale([ 0, 1, 5, 6, 10 ])
-// scale = edo.scale([ 0, 1, 5, 7, 9 ])
-// scale = edo.scale([ 0, 1, 5, 7, 10 ])
-// scale = edo.scale([ 0, 1, 5, 8, 10 ])
-// scale = edo.scale([ 0, 1, 6, 8, 10 ])
-// scale = edo.scale([ 0, 2, 4, 6, 8 ])
-// scale = edo.scale([ 0, 2, 4, 6, 9 ])
-// scale = edo.scale([ 0, 2, 4, 7, 9 ])
+// scale = edo.scale([0,1,3,4,6])
+// scale = edo.scale([0,1,3,4,7])
+// scale = edo.scale([0,1,3,4,8])
+// scale = edo.scale([0,1,3,5,6])
+// scale = edo.scale([0,1,3,5,7])
+// scale = edo.scale([0,1,3,5,8])
+// scale = edo.scale([0,1,3,6,7])
+// scale = edo.scale([0,1,3,6,8])
+// scale = edo.scale([0,1,3,6,9])
+// scale = edo.scale([0,1,4,5,7])
+// scale = edo.scale([0,1,4,5,8])
+// scale = edo.scale([0,1,4,6,7])
+// scale = edo.scale([0,1,4,6,8])
+// scale = edo.scale([0,1,4,6,9])
+// scale = edo.scale([0,1,4,7,8])
+// scale = edo.scale([0,1,5,6,8])
+// scale = edo.scale([0,2,3,5,6])
+// scale = edo.scale([0,2,3,5,7])
+// scale = edo.scale([0,2,3,5,8])
+// scale = edo.scale([0,2,3,6,7])
+// scale = edo.scale([0,2,3,6,8])
+// scale = edo.scale([0,2,3,6,9])
+// scale = edo.scale([0,2,3,7,8])
+// scale = edo.scale([0,2,4,5,7])
+// scale = edo.scale([0,2,4,5,8])
+// scale = edo.scale([0,2,4,6,7])
+// scale = edo.scale([0,2,4,6,8])
+// scale = edo.scale([0,2,4,6,9])
+// scale = edo.scale([0,2,4,7,8])
+// scale = edo.scale([0,2,4,7,9])
+// scale = edo.scale([0,2,5,6,8])
+// scale = edo.scale([0,2,5,6,9])
+// scale = edo.scale([0,2,5,7,8])
+// scale = edo.scale([0,3,4,6,7])
+// scale = edo.scale([0,3,4,6,8])
+// scale = edo.scale([0,3,4,7,8])
+// scale = edo.scale([0,3,5,6,8])
+// scale = edo.scale([0,3,5,7,8])
+
+
 
 /*
 * All Modes of Limited Transposition
