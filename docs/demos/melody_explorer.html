@@ -21,7 +21,7 @@
 <div id="main" style="max-width: 1900px;text-align: center;margin: 0 auto">
     <div class="row">
         <div class="col">
-            <input type="text" placeholder="Melody (separated with spaces. E.g. 4 3 4 3 4 -1 2 0 -3)" style="width:500px" id="melody_input"><br>
+            <label>Melody (separated with spaces. E.g. 0 4 1 3 7 4 10)</label><input type="text"  value="0 4 1 3 7 4 10" style="width:500px" id="melody_input"><br>
         </div>
     </div>
     <div class="row">
@@ -193,11 +193,15 @@
                 <label>Amount of notes to use:</label> <input type="text" size="4" value="8" id="interpolation_notes"><br>
                 <input type="button" value="Traverse" id="traverse_button"><br>
                 <br><label>Within each row, the order is mutable</label><br>
-                <select multiple style="width: 500px;height:250px" id="interpolated_paths"></select>
+                <select size="15" style="width: 500px;height:250px" id="interpolated_paths"></select>
             </div>
         </div>
         <div class="col">
-
+            <h5><-Realization</h5><br>
+            (Make a selection on the left)
+            <div>
+                <select style="width: 500px;height:250px" multiple id="realization_select"></select>
+            </div>
         </div>
 
     </div>
@@ -246,7 +250,7 @@ $("#random_contour_button").click(function () {
 
 $("#traverse_button").click(function () {
     let interval = parseInt($("#interval_traverse").val())
-    let notes = parseInt($("#interpolation_notes").val())
+    let notes = parseInt($("#interpolation_notes").val())-1
     let motives = $("#motive_select").val().map((motive)=>motive.split(',').map((v)=>parseInt(v)))
 
     let options = edo.get.path_n_steps(interval,motives,notes).map((option)=>{
@@ -258,6 +262,15 @@ $("#traverse_button").click(function () {
         $("#interpolated_paths").append("<option value='" + option + "'>" + option + "</option>")
     })
 
+})
+
+$("#interpolated_paths").change(function (el,a) {
+    let path = JSON.parse("[" + $(this).val() + "]")
+    let paths = edo.get.unique_elements(edo.get.permutations(path)).map((path)=>edo.convert.midi_to_name(edo.convert.intervals_to_pitches(path.flat()),60))
+    $("#realization_select").html("")
+    paths.forEach((path)=>{
+        $("#realization_select").append("<option value='" + path + "'>" + path.join('  ') + "</option>")
+    })
 })
 </script>
 </body>
