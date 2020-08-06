@@ -3575,13 +3575,13 @@ class Scale {
          */
         motives_diatonic: (melody, allow_skips=false) => {
             let scale = this.pitches
-            let not_in_scale = melody.filter((note)=>scale.indexOf(this.mod(note,this.edo))==-1)
+            let not_in_scale = melody.filter((note)=>scale.indexOf(this.parent.mod(note,this.edo))==-1)
             if(not_in_scale.length>0) return null
 
-            scale = this.get.unique_elements(scale).sort((a,b)=>a-b)
+            scale = this.parent.get.unique_elements(scale).sort((a,b)=>a-b)
 
             let scale_degrees=melody.map((note)=>scale.indexOf(note)+1)
-            let motives = this.get.motives(scale_degrees,true,allow_skips)
+            let motives = this.parent.get.motives(scale_degrees,true,allow_skips)
             return motives
 
         },

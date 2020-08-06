@@ -23,7 +23,7 @@
     <label>Pitch Classes (separated by spaces)</label><input id="scale_input" type="text" value="0 2 4 5 7 9 11"><br>
     <input id="explore_button" type="button" value="Explore Scale">
 </div>
-<div id="main">
+<div id="main" style="max-width: 1900px;text-align: center;margin: 0 auto">
     <div class="row">
         <div class="col">
             <h4>Scale-degree transpositions</h4>
@@ -80,14 +80,27 @@
 
         </div>
     </div>
-    <div style="text-align: center">
-        <h4>Mode Attraction Vectors</h4>
-        <table id="vectors" style="text-align: center;font-size:x-large;margin: 0 auto">
+    <div class="row">
+        <div class="col" style="text-align: center">
+            <h4>Mode Attraction Vectors</h4>
+            <table id="vectors" style="text-align: center;font-size:x-large;margin: 0 auto">
 
-        </table>
+            </table>
+        </div>
+        <div class="col" style="height: 200px;width:400px;margin: 0 auto">
+            <h5>Interval Vector</h5>
+            <div class="row align-items-end" id="vector_container" style="height: 100%;">
+
+            </div>
+        </div>
     </div>
+
 </div>
 <script>
+    const re_scale = (num, in_min, in_max, out_min, out_max) => {
+        return (num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+    }
+
     let update_page = function () {
 
         let edo = new EDO(parseInt($('#edo_input').val()))
@@ -205,13 +218,15 @@
                 else $("#vectors").append("<td style='width:50px;height:50px'><div style='display:flex;justify-content:center;align-items: center;height:100%;background-color: blue;border-radius: 100%'>" + rotations[mode_ind][ind] + "</div></td>")
             })
             $("#vectors").append("</tr>")
-            console.log(mode)
         })
 
-
-
-
-
+        $("#vector_container").html("")
+        let vector = scale.get.interval_vector()
+        let vec_max = Math.max(...vector)
+        for (let i = 0; i < vector.length; i++) {
+            let height = re_scale(vector[i],0,vec_max,0,100)
+            $("#vector_container").append("<div class='col' style='text-align:center;background-color:blue;margin:5px;height: " + height +"%'>" + (i+1) +" ("  + vector[i] + ")</div>")
+        }
     }
     document.getElementById("explore_button").onclick = function () {
         update_page()

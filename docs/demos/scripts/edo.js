@@ -309,6 +309,10 @@ const rescale = (num, in_min, in_max, out_min, out_max) => {
     return (num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
 
+
+
+
+
 /** Class representing some EDO tuning system.*/
 
 class EDO {
@@ -375,6 +379,17 @@ class EDO {
         const paper = new Raphael(div, width, height);
         let background = paper.rect(0,0,width,height).attr('fill','#000000')
         return {div_id:div_id,div:div,container_id:container_id,container:container,paper:paper,background:background,width:width,height:height,cleaned:clean}
+    }
+
+    sort_scales = (scales) => {
+        scales = scales.sort((a,b)=>{
+            let run = Math.min(a.pitches.length,b.pitches.length)
+            for (let i=0;i<run;i++) {
+                if(a.pitches[i]!=b.pitches[i]) return a.pitches[i]-b.pitches[i]
+                else if(a.pitches[i]==b.pitches[i] && i==run-1) return a.pitches.length-b.pitches.length
+            }
+        })
+        return scales
     }
 
     /**A collection of functions that convert an input into other equivalent representations
@@ -788,8 +803,6 @@ class EDO {
      * @namespace EDO#get*/
     get = {
 
-
-
         /** <p>Returns a vector describing the contour of the given pitches.</p>
          *
          * <p>If local is set to true, every cell in the vector will be
@@ -1055,7 +1068,6 @@ class EDO {
             }
             return result
         },
-
 
         /** Returns the inversion of a given set of pitches
          *
@@ -1400,12 +1412,12 @@ class EDO {
          * @memberOf EDO#get
          * @example
          * let edo = new EDO(12) //Create a tuning context
-         * edo.get.not([0,1,3,4,6,7,9,10],[0,4,9])
+         * edo.get.without([0,1,3,4,6,7,9,10],[0,4,9])
          * //returns [1,3,6,7,10]
          *
-         * edo.get.not([0,1,3,4,6,7,9,10],[0,4,9],true)
+         * edo.get.without([0,1,3,4,6,7,9,10],[0,4,9],true)
          * //returns [0,2,5,6,9]*/
-        not: (array1,array2,normal=false) => {
+        without: (array1,array2,normal=false) => {
             let copy = [...array1]
             array2.forEach((note)=> {
                 var index = copy.indexOf(note);
@@ -1758,7 +1770,7 @@ class EDO {
          * step sizes. step size=1 between 0 and 1, step size=2 between 5 and 7, and step size = 3 between 1 and 4.
          * @return {Array<Scale>} all the scales that abide by the criteria given
          * @memberOf EDO#get*/
-        scales:(min_step=1,max_step=4,min_sizes=2,max_sizes=3, EDO = this) => {
+        scales:(min_step=1,max_step=this.edo-1,min_sizes=1,max_sizes=this.edo, EDO = this) => {
 
             //get all unique combinations of size s from set of intervals set
             const calc_comb = (s,set) => {
@@ -1832,7 +1844,7 @@ class EDO {
 
             }
 
-            const get_all_scales = function (all_necklaces) {
+            const get_all_scales = (all_necklaces) => {
                 let all_scales = []
 
                 all_necklaces.forEach((necklace) => {
@@ -1850,7 +1862,10 @@ class EDO {
 
             let _scales = get_all_scales(all_necklaces)
             let scales = []
-            _scales.forEach((scale) => scales.push(new Scale(scale,this)))
+            _scales.forEach((scale) => scales.push(new Scale(scale,this).normal()))
+            scales = this.sort_scales(scales)
+
+
             return scales
 
 
@@ -1957,6 +1972,27 @@ class EDO {
                 }
             }
             return ratios
+        },
+
+        /** Returns the given pitches, such that they are shifted to start from <code>start_at</code>.
+         * @param  {Array<Number>} pitches - an array of pitches (or PCs)
+         * @param  {Number} start_at - The number to which everything will be shifted
+         * @param  {Boolean} [as_PCs=true] - when false the shift will respect the octave, when true, the array will be returned containing only Pitch Classes
+         * @return {Array<Number>}
+         * @memberOf EDO#get
+         *
+         * @example
+         * let edo = new EDO(12) //Create a tuning context
+         * edo.get.starting_at([1,5,8],0)
+         * //returns [0,4,7] //Everything shifted such that the starting pitch is 0
+         * @example
+         * edo.get.starting_at([5,1,8],2,false)
+         * //returns [2,-2,5] //Everything shifted such that the starting pitch is 2, and octave is respected
+         */
+        starting_at: (pitches,start_at=0,as_PCs=true)=> {
+            let shift_by = (pitches[0]*-1)+start_at
+            let result = pitches.map((pitch)=>(as_PCs)?this.mod(pitch+shift_by,this.edo):pitch+shift_by)
+            return result
         },
 
         /**
@@ -3539,13 +3575,13 @@ class Scale {
          */
         motives_diatonic: (melody, allow_skips=false) => {
             let scale = this.pitches
-            let not_in_scale = melody.filter((note)=>scale.indexOf(this.mod(note,this.edo))==-1)
+            let not_in_scale = melody.filter((note)=>scale.indexOf(this.parent.mod(note,this.edo))==-1)
             if(not_in_scale.length>0) return null
 
-            scale = this.get.unique_elements(scale).sort((a,b)=>a-b)
+            scale = this.parent.get.unique_elements(scale).sort((a,b)=>a-b)
 
             let scale_degrees=melody.map((note)=>scale.indexOf(note)+1)
-            let motives = this.get.motives(scale_degrees,true,allow_skips)
+            let motives = this.parent.get.motives(scale_degrees,true,allow_skips)
             return motives
 
         },
@@ -4086,6 +4122,35 @@ class Scale {
             return this.parent.get.transposition(this.pitches,amount)
         },
 
+        /** <p>Returns the transpositions of the scale that include the given pitches verbatim.</p>
+         * @param {Array<Number>} pitches - The pitches to find
+         * @returns {Array<Object>} - The property 'pitches' includes the pitches of the transposition. The property 'common_tones' tallies how many pitches the original scale and the transposed scale have in common..
+         * @memberOf Scale#get
+         *
+         * @example
+         * let edo = new EDO(12) //define tuning
+         * let scale = edo.scale([0,2,4,5,5,9,11]) //a major scale
+         * scale.get.transpositions_with_pitches(1,4,8)
+         * [
+         *  {pitches: [9,11,1,2,4,6,8], alterations: 4}, //The transposition starting on 9 contains 1,4,8 verbatim. It has 4 tones in common with the original scale.
+         *  {pitches: [4,6,8,9,11,1,3], alterations: 3}, //The transposition starting on 4 ... It has 3 tones in common...
+         *  {pitches: [11,1,3,4,6,8,10], alterations: 2} //The transposition starting on 11 ... It has 2 tones in common...
+         * ]*/
+        transpositions_with_pitches: (pitches) => {
+            let scales = []
+            for (let i = 0; i < this.edo; i++) {
+                let new_scale = this.parent.get.starting_at(this.pitches,i)
+                scales.push({pitches:new_scale,common_tones:this.count.pitches()-this.get.levenshtein([...new_scale].sort((a,b)=>a-b))})
+            }
+            scales = scales.filter((scale)=>{
+                let temp = pitches.map((pitch)=>scale.pitches.indexOf(pitch)!=-1)
+                temp = temp.reduce((a,el)=>a*el,true)
+                return temp
+            })
+            scales = scales.sort((a,b)=>b.common_tones-a.common_tones)
+            return scales
+        },
+
         /** <p>Returns every trichord (normalized to 0) available in this scale</p>
          * <p>Note: for a collection of all pitch subsets of length n (rather than 3) use [Scale.get.n_chords()]{@link Scale#get.n_chords}</p>
          * @param  {Boolean} cache - When true, the result will be cached for faster retrieval
@@ -4135,8 +4200,10 @@ class Scale {
          * scale.get.without([5,11]) //returns [0,2,4,7,9]
          */
         without: (to_remove,normal=false) => {
-            return this.parent.get.not(this.pitches,to_remove,normal)
-        }
+            return this.parent.get.without(this.pitches,to_remove,normal)
+        },
+
+
 
     }
 
