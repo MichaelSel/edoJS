@@ -381,6 +381,19 @@ class EDO {
         return {div_id:div_id,div:div,container_id:container_id,container:container,paper:paper,background:background,width:width,height:height,cleaned:clean}
     }
 
+    shuffle_array (arr_in,in_place = true) {
+        let arr
+        if(in_place) arr = arr_in
+        else arr = [...arr_in]
+        for(let i = arr.length - 1; i > 0; i--){
+            const j = Math.floor(Math.random() * i)
+            const temp = arr[i]
+            arr[i] = arr[j]
+            arr[j] = temp
+        }
+        return arr
+    }
+
     sort_scales = (scales) => {
         scales = scales.sort((a,b)=>{
             let run = Math.min(a.pitches.length,b.pitches.length)
@@ -1384,6 +1397,22 @@ class EDO {
             return necklaces
         },
 
+        ngrams: (melody,n=3) => {
+            let ngrams = {}
+            for(;n>1;n--){
+                for (let i = 0; i < melody.length - (n - 1); i++) {
+                    let key = []
+                    for(let j=i;j<i+(n-1);j++){
+                        key.push(melody[j])
+                    }
+                    key = key.join(' ')
+                    if(Array.isArray(ngrams[key])) ngrams[key].push(melody[i+(n-1)])
+                    else ngrams[key]=[melody[i+(n-1)]]
+                }
+            }
+            return ngrams
+        },
+
         /** Returns the normal order of a given set of pitches
          * @param  {Array<Number>} lst - a collection of PCs
          * @param  {Boolean} cache - if true, the result will be cached for faster retrival
@@ -1747,6 +1776,26 @@ class EDO {
             }
             contour = contour.map((el)=>lexicon[el])
             return contour
+        },
+
+        random_melody_from_ngram: (ngrams,start=[0],length=16)=>{
+            let melody = [...start]
+            let escape = 100+length
+            loop1:
+                while(melody.length<length & escape>0) {
+                    loop2:
+                        for (let i = melody.length; i >0 ; i--) {
+                            let sub = melody.slice(melody.length-i)
+                            let entry = ngrams[sub.join(" ")]
+                            if(Array.isArray(entry)) {
+                                let random_pitch = entry[Math.floor(Math.random() * entry.length)]
+                                melody.push(random_pitch)
+                                break loop2;
+                            }
+                        }
+                    escape--
+                }
+            return melody
         },
 
         /** Returns the closest ratio (within a given limit) for any interval class.

@@ -31,7 +31,7 @@ if(environment=='server') {
 
 let save_file
 if(environment=='server') {
-     /**
+    /**
      * @ignore*/
     save_file = function (name,dir,contents,_unused) {
         fs.writeFile(dir+name, contents, function(err) {
@@ -78,7 +78,7 @@ if(environment=='server') {
     load_file = function (file) {
         return fs.readFileSync(file,
             // {encoding:'utf8', flag:'r'}
-            );
+        );
 
     }
 
@@ -304,19 +304,30 @@ const combinations = (set, k) => {
     return combs
 }
 
+
+const rescale = (num, in_min, in_max, out_min, out_max) => {
+    return (num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
+
+
+
+
+
 /** Class representing some EDO tuning system.*/
 
 class EDO {
 
     /**
      * <p>Creates a tuning context and system that exposes powerful functions for manipulating, analyzing, and generating music.</p>
-     * <p>This is the main class of the project. At its center stand 4 collections (see "Namespaces" below) of functions.</p>
+     * <p>This is the main class of the project. At its center stand 7 collections (see "Namespaces" below) of functions.</p>
      * <ul>
      *  <li> [EDO.convert]{@link EDO#convert} is a set of functions used to change between equivalent representations within the tuning context.</li>
      *  <li> [EDO.count]{@link EDO#count} is a set of functions used to count stuff.</li>
      *  <li> [EDO.get]{@link EDO#get} is a set of functions used to manipulate and generate stuff.</li>
      *  <li> [EDO.is]{@link EDO#is} is a set of functions used for boolean truth statements.</li>
      *  <li> [EDO.show]{@link EDO#show} is a set of functions used for visualization.</li>
+     *  <li> [EDO.import]{@link EDO#import} is a set of functions used for importing other file formats (like midi or musicXML).</li>
+     *  <li> [EDO.export]{@link EDO#export} is a set of functions used for exporting the output to various formats.</li>
      *  </ul>
      * @param {number} edo - The number of equal divisions of the octave.
      * @example
@@ -356,6 +367,43 @@ class EDO {
         return new Scale(pitches,this)
     }
 
+    make_DOM_svg (container_id,width,height,clean=false) {
+        let div = document.createElement('div')
+        div.style.width =width+"px";
+        div.style.height =height+"px";
+        div.style.display="inline"
+        let div_id = div.setAttribute("id", "paper_" + Date.now());
+        let container = document.getElementById(container_id)
+        if(clean) container.innerHTML = ""
+        container.appendChild(div)
+        const paper = new Raphael(div, width, height);
+        let background = paper.rect(0,0,width,height).attr('fill','#000000')
+        return {div_id:div_id,div:div,container_id:container_id,container:container,paper:paper,background:background,width:width,height:height,cleaned:clean}
+    }
+
+    shuffle_array (arr_in,in_place = true) {
+        let arr
+        if(in_place) arr = arr_in
+        else arr = [...arr_in]
+        for(let i = arr.length - 1; i > 0; i--){
+            const j = Math.floor(Math.random() * i)
+            const temp = arr[i]
+            arr[i] = arr[j]
+            arr[j] = temp
+        }
+        return arr
+    }
+
+    sort_scales = (scales) => {
+        scales = scales.sort((a,b)=>{
+            let run = Math.min(a.pitches.length,b.pitches.length)
+            for (let i=0;i<run;i++) {
+                if(a.pitches[i]!=b.pitches[i]) return a.pitches[i]-b.pitches[i]
+                else if(a.pitches[i]==b.pitches[i] && i==run-1) return a.pitches.length-b.pitches.length
+            }
+        })
+        return scales
+    }
 
     /**A collection of functions that convert an input into other equivalent representations
      * @namespace EDO#convert*/
@@ -549,6 +597,19 @@ class EDO {
             return PC[pc]
         },
 
+        /** Normalizes any input to include PC only (to ignore octave displacement)
+         * @param  {Array<Number>} pitches - any collection of pitches (e.g. a melody)
+         * @returns {Array<Number>} the input as pitch classes
+         * @memberOf EDO#convert
+         * @example
+         * let edo = new EDO(12) // define a tuning system with 12 divisions of the octave
+         * edo.convert.pitches_to_PCs([0,2,12,-2,7])
+         * //returns [0,2,0,10,7]
+         * */
+        pitches_to_PCs: (pitches) => {
+            return pitches.map((pitch)=>this.mod(pitch,this.edo))
+        },
+
         /** Returns a value in cents to a given input ratio
          *
          * @param  {Number} ratio - A harmonic ratio
@@ -680,10 +741,10 @@ class EDO {
          *  edo.show.necklace('container', [0,2,4,5,7,9,11])
          *
          *  //Save the graphic
-         *  edo.export.graphic('container') //downloads the necklace
+         *  edo.export.png('container') //downloads the necklace
          * </script>
          */
-        graphic: (container_id) => {
+        png: (container_id) => {
             if(environment=="server") return console.log("This is only support when run on client-side")
 
             const triggerDownload = function (imgURI) {
@@ -731,7 +792,24 @@ class EDO {
 
                 img.src = url;
             }
+        },
+
+
+        svg: (container_id) => {
+            if(environment=="server") return console.log("This is only support when run on client-side")
+            let el = document.getElementById(container_id)
+            let svgs = el.getElementsByTagName('svg')
+            for (let svg of svgs) {
+                let svgString ="<?xml version=\"1.0\" encoding=\"utf-8\"?>" + svg.outerHTML
+                let a = document.createElement('a');
+                a.download = container_id + '.svg';
+                a.type = 'image/svg+xml';
+                let blob = new Blob([svgString], {"type": "image/svg+xml"});
+                a.href = (window.URL || webkitURL).createObjectURL(blob);
+                a.click();
+            }
         }
+
     }
 
     /**A collection of functions manipulates an input
@@ -791,7 +869,7 @@ class EDO {
          * <p>The function extracts every contour  subset appearing in the given melody.
          * The function also keeps track of the number of times each motive appeared.</p>
          * @param  {Array<Number>} melody - a collection of pitches to find (in order)
-         * @param  {Boolean} [allow_skips=true] - if false, the search will only be done on consecutive items
+         * @param  {Boolean} [allow_skips=false] - if false, the search will only be done on consecutive items
          * @return {Array<motives>}
          * @memberOf EDO#get
          * @function
@@ -805,9 +883,20 @@ class EDO {
          *   { motive: [ 1 ], incidence: 2 } //going a half-step up appears twice
          * ]
          */
-        contour_motives: (melody,allow_skips=true) => {
+        contour_motives: (melody,allow_skips=false) => {
             let motives = []
-            let all_subsets = this.get.subsets(melody,allow_skips).map((subset)=>this.convert.to_steps(subset))
+            let all_subsets = this.get.subsets(melody,allow_skips).map((subset)=>this.get.contour(subset)).filter((contour)=>contour.length>1)
+
+            let unique_subsets=this.get.unique_elements(all_subsets)
+            motives = unique_subsets.map((subset)=>{
+                let count = 0
+                for (let i = 0; i < all_subsets.length; i++) {
+                    if(this.is.same(subset,all_subsets[i])) count++
+                }
+                return {motive:subset,incidence:count}
+            })
+            motives = motives.sort((a,b)=> b.incidence-a.incidence || b.motive.length-a.motive.length)
+            return motives
 
         },
 
@@ -845,6 +934,41 @@ class EDO {
             return PCs
         },
 
+        /** <p>Expends / contracts the intervals between pitches of a melody.</p>
+         * @param {Array<Number>} melody - The melody to be modified
+         * @param {Number} resize_by - The amount by which the melody will be modified (can be positive/negative/fraction)
+         * @param {String} [method="multiply"] - "add" to add resize by to any interval. "multiply" to multiply the intervals by the value.
+         * @returns {Array<Number>}
+         * @memberOf Scale#get
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * edo.get.resize_melody([0,2,4,5,7,5,4,2,-1,0],2)
+         * //returns [0, 4, 8, 10, 14, 10, 8, 4, -2, 0]
+         *
+         * edo.get.resize_melody([0,2,4,5,7,5,4,2,-1,0],-1)
+         * //[0,-2,-4,-5,-7,-5,-4,-2,1,0]
+         *
+         * edo.get.resize_melody([0,2,4,5,7,5,4,2,-1,0],-1,method='add')
+         * //returns
+         * [0,1,2,2,3,2,2,1,-1,-1]
+         */
+        resize_melody: (melody,resize_by=2,method="multiply") => {
+            let note1 = melody[0]
+            melody = edo.convert.to_steps(melody)
+            if(method=="add") {
+                melody = melody.map((interval)=>{
+                    if(interval>0) return (interval+resize_by>0)?interval+resize_by:0
+                    else if(interval<0) return (interval-resize_by<0)?interval-resize_by:0
+                    else return 0
+                })
+            } else if(method=="multiply") melody = melody.map((interval)=>Math.round(interval*resize_by))
+
+            melody = edo.convert.intervals_to_pitches(melody)
+            return edo.get.transposition(melody,note1,false)
+
+
+        },
+
         /** <p>Returns every IC that by iteratively adding it to 0, produces all of the pitches of the tuning space.</p>
          * @see Balzano, G. J. (1980). "The group-theoretic description of 12-fold and microtonal pitch systems." Computer music journal 4(4): 66-84.
          * @param {Boolean} [with_complement_interval=false] - When true the complementary intervals will be included (e.g. in 12EDO IC>6)
@@ -868,6 +992,27 @@ class EDO {
             }
             if(with_complement_interval) generators = generators.map((el)=> [el,this.get.complementary_interval(el)])
             return generators
+        },
+
+        /** <p>Returns the elements that are found in all given sets</p>
+         * @param {...Array<Number>} collections - Any number of arrays containing pitches
+         * @returns {Array<Number>}
+         * @memberOf EDO#get
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * edo.get.intersection([1,2,3,4],[3,4,5,6])
+         * //returns [3,4]
+         *
+         * edo.get.intersection([1,2,3,4],[3,4,5,6],[2,4])
+         * //returns [4]
+         */
+        intersection: (...collections) => {
+            let first =  collections[0]
+            for (let i = 1; i < collections.length; i++) {
+                first = first.filter(value => collections[i].includes(value))
+            }
+            return first
+
         },
 
         /** Gets a melody represented as intervals, and returns the interval traversed by the end.
@@ -1010,6 +1155,23 @@ class EDO {
             return pitches.reverse()
         },
 
+        /**
+         * <p>Returns all the rotations (inversions) of an array of pitches</p>
+         * @param  {Array<Number>} pitches - a collection of pitches (not necessarily PCs, not necessarily unique)
+         * @return {Array<Array<Number>>}
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * edo.get.rotations([0,4,7,4])
+         * //returns [ [ 0, 4, 7, 4 ], [ 4, 7, 4, 0 ], [ 7, 4, 0, 4 ], [ 4, 0, 4, 7 ] ]
+         * */
+        rotations: (pitches) => {
+            let rotations = []
+            for (let i = 0; i < pitches.length; i++) {
+                rotations.push([...pitches.slice(i,pitches.length),...pitches.slice(0,i)])
+            }
+            return rotations
+        },
+
         /** <p>Returns a lattice from the pitches in the scale</p>
 
          * @param {Number} [hor=3] - the gap between numbers horizontally
@@ -1074,6 +1236,35 @@ class EDO {
             let min = Math.min.apply(Array,ratios)
             let pos = ratios.indexOf(min)
             return pitches[pos]
+        },
+
+        /**
+         * <p>Returns the disposition of <code>chord2</code> that minimizes movement from <code>chord1</code>.</p>
+         * <p>Note: <code>chord1</code> and <code>chord2</code> must have the same number of pitches</p>
+         * @param  {Array<Number>} chord1 - an origin chord in some disposition
+         * @param  {Array<Number>} chord2 - an destination chord
+         * @returns {Array<Number>}
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * edo.get.minimal_voice_leading([7,0,3],[4,8,11])
+         * //returns [8,11,4]
+         * */
+        minimal_voice_leading: (chord1,chord2) => {
+            let modes = this.get.rotations(chord2)
+            let best_sum = Infinity
+            let best_ind = 0
+            modes.forEach((mode,mode_ind)=> {
+                let total = 0
+                for (let i = 0; i < chord1.length; i++) {
+                    total+=Math.abs(chord1[i]-Math.min(mode[i],this.edo-mode[i]))
+                }
+                if(total<best_sum) {
+                    best_sum = total
+                    best_ind = mode_ind
+                }
+            })
+            return modes[best_ind]
+
         },
 
         /** Returns the normal order of a given set of pitches
@@ -1206,6 +1397,22 @@ class EDO {
             return necklaces
         },
 
+        ngrams: (melody,n=3) => {
+            let ngrams = {}
+            for(;n>1;n--){
+                for (let i = 0; i < melody.length - (n - 1); i++) {
+                    let key = []
+                    for(let j=i;j<i+(n-1);j++){
+                        key.push(melody[j])
+                    }
+                    key = key.join(' ')
+                    if(Array.isArray(ngrams[key])) ngrams[key].push(melody[i+(n-1)])
+                    else ngrams[key]=[melody[i+(n-1)]]
+                }
+            }
+            return ngrams
+        },
+
         /** Returns the normal order of a given set of pitches
          * @param  {Array<Number>} lst - a collection of PCs
          * @param  {Boolean} cache - if true, the result will be cached for faster retrival
@@ -1216,6 +1423,7 @@ class EDO {
          * edo.get.normal_order([0,2,4,5,7,9,11])
          * //returns [0, 1, 2, 3, 5, 6, 8, 10]*/
         normal_order: (lst,cache=false) => {
+            if(lst.length==0) return []
             let edo = this.edo
             if(!this.catalog[String(lst)]) this.catalog[String(lst)] = {}
             if(this.catalog[String(lst)]['normal_order']) return this.catalog[String(lst)]['normal_order']
@@ -1259,6 +1467,30 @@ class EDO {
                 this.catalog[String(lst)]['normal_order'] = result
             }
             return result
+        },
+
+        /** Returns the elements of array1, but not if they are found in array 2
+         * @param  {Array<Number>} array1 - a collection of PCs
+         * @param  {Array<Number>} array2 - a collection of PCs
+         * @param  {Boolean} [normal=false] - when true, the returned set will be in normal order
+         * @return {Array<Number>} All of the elements of array1 that are not in array2
+         * @memberOf EDO#get
+         * @example
+         * let edo = new EDO(12) //Create a tuning context
+         * edo.get.without([0,1,3,4,6,7,9,10],[0,4,9])
+         * //returns [1,3,6,7,10]
+         *
+         * edo.get.without([0,1,3,4,6,7,9,10],[0,4,9],true)
+         * //returns [0,2,5,6,9]*/
+        without: (array1,array2,normal=false) => {
+            let copy = [...array1]
+            array2.forEach((note)=> {
+                var index = copy.indexOf(note);
+                if(index!=-1) copy.splice(index, 1);
+            })
+            if(normal) copy = this.get.normal_order(copy)
+
+            return copy
         },
 
         /**
@@ -1414,6 +1646,7 @@ class EDO {
         /** Returns the distribution (as fractions adding up to 1) of the pitches in a set of pitches
          *
          * @param  {Array<Number>} pitches - a given array of pitches
+         * @param  {Boolean} as_PC - When true, the distribution tallies notes based on their PC rather than their absolute pitch.
          * @returns {Array<distribution>}
          * @memberOf EDO#get
          * @example
@@ -1429,8 +1662,17 @@ class EDO {
          *  { note: 14, rate: 0.05 },
          *  { note: 10, rate: 0.05 }
          * ]
+         *
+         * edo.get.pitch_distribution([0,12,0,12,7,0])
+         * //returns
+         * [
+         *  { note: 0, rate: 0.8333333333333334 },
+         *  { note: 7, rate: 0.16666666666666666 }
+         * ]
+         *
          */
-        pitch_distribution: (pitches) => {
+        pitch_distribution: (pitches,as_PC=false) => {
+            if(as_PC) pitches = pitches.map((pitch)=>this.mod(pitch,this.edo))
             let unique = this.get.unique_elements(pitches)
 
             let dist = unique.map((el)=>{return {note:el,rate: pitches.filter(x => x==el).length/pitches.length}})
@@ -1509,40 +1751,51 @@ class EDO {
          * edo.get.random_melody_from_contour([0,3,1,3,2],[0,12],[0,2,4,5,7,9,11]); //returns e.g. [ 2, 11, 7, 11, 9 ]
          */
         random_melody_from_contour: (contour,range=[0,12],mode) => {
-            const restart = () => {
-                let lexicon = {}
-                let available_pitches = [...all_pitches]
-                for(let note of ord_cont) {
-                    let ind = Math.floor(Math.random() * (available_pitches.length) ) ;
-                    lexicon[note] = available_pitches[ind]
-                    available_pitches = available_pitches.slice(ind+1,available_pitches.length)
-                    if(available_pitches.length==0) return restart()
-                }
-                return lexicon
-            }
-            let ord_cont = this.get.unique_elements(contour).sort((a,b)=>a-b)
-            let all_pitches = []
+            let available_pitches = []
+            let used_pitches = []
+            let contour_ordered_unique = this.get.unique_elements([...contour]).sort((a,b)=>a-b)
+            let len = contour_ordered_unique.length - used_pitches.length
             for (let i = range[0]; i <= range[1]; i++) {
                 if(mode) {
-                    if(mode.indexOf(this.mod(i,this.edo))!=-1) {
-                        all_pitches.push(i)
-                    }
+                    if(mode.indexOf(this.mod(i,this.edo))!=-1) available_pitches.push(i)
                 } else {
-                    all_pitches.push(i)
+                    available_pitches.push(i)
                 }
-
-
             }
+            while(used_pitches.length<len) {
+                let item_i = Math.floor(Math.random()*available_pitches.length)
+                let item = available_pitches.splice(item_i,1)[0]
+                used_pitches.push(item)
+                len = contour_ordered_unique.length
+            }
+            used_pitches = used_pitches.sort((a,b)=>a-b)
 
-            let lexicon = restart()
-            let melody = contour.map((note)=>lexicon[note])
-            console.log(melody)
+            let lexicon = {}
+            for (let i = 0; i < contour_ordered_unique.length; i++) {
+                lexicon[contour_ordered_unique[i]]=used_pitches[i]
+            }
+            contour = contour.map((el)=>lexicon[el])
+            return contour
+        },
 
-
-
-
-
-
+        random_melody_from_ngram: (ngrams,start=[0],length=16)=>{
+            let melody = [...start]
+            let escape = 100+length
+            loop1:
+                while(melody.length<length & escape>0) {
+                    loop2:
+                        for (let i = melody.length; i >0 ; i--) {
+                            let sub = melody.slice(melody.length-i)
+                            let entry = ngrams[sub.join(" ")]
+                            if(Array.isArray(entry)) {
+                                let random_pitch = entry[Math.floor(Math.random() * entry.length)]
+                                melody.push(random_pitch)
+                                break loop2;
+                            }
+                        }
+                    escape--
+                }
+            return melody
         },
 
         /** Returns the closest ratio (within a given limit) for any interval class.
@@ -1602,7 +1855,7 @@ class EDO {
          * step sizes. step size=1 between 0 and 1, step size=2 between 5 and 7, and step size = 3 between 1 and 4.
          * @return {Array<Scale>} all the scales that abide by the criteria given
          * @memberOf EDO#get*/
-        scales:(min_step=1,max_step=4,min_sizes=2,max_sizes=3, EDO = this) => {
+        scales:(min_step=1,max_step=this.edo-1,min_sizes=1,max_sizes=this.edo, EDO = this) => {
 
             //get all unique combinations of size s from set of intervals set
             const calc_comb = (s,set) => {
@@ -1676,7 +1929,7 @@ class EDO {
 
             }
 
-            const get_all_scales = function (all_necklaces) {
+            const get_all_scales = (all_necklaces) => {
                 let all_scales = []
 
                 all_necklaces.forEach((necklace) => {
@@ -1694,7 +1947,10 @@ class EDO {
 
             let _scales = get_all_scales(all_necklaces)
             let scales = []
-            _scales.forEach((scale) => scales.push(new Scale(scale,this)))
+            _scales.forEach((scale) => scales.push(new Scale(scale,this).normal()))
+            scales = this.sort_scales(scales)
+
+
             return scales
 
 
@@ -1803,6 +2059,27 @@ class EDO {
             return ratios
         },
 
+        /** Returns the given pitches, such that they are shifted to start from <code>start_at</code>.
+         * @param  {Array<Number>} pitches - an array of pitches (or PCs)
+         * @param  {Number} start_at - The number to which everything will be shifted
+         * @param  {Boolean} [as_PCs=true] - when false the shift will respect the octave, when true, the array will be returned containing only Pitch Classes
+         * @return {Array<Number>}
+         * @memberOf EDO#get
+         *
+         * @example
+         * let edo = new EDO(12) //Create a tuning context
+         * edo.get.starting_at([1,5,8],0)
+         * //returns [0,4,7] //Everything shifted such that the starting pitch is 0
+         * @example
+         * edo.get.starting_at([5,1,8],2,false)
+         * //returns [2,-2,5] //Everything shifted such that the starting pitch is 2, and octave is respected
+         */
+        starting_at: (pitches,start_at=0,as_PCs=true)=> {
+            let shift_by = (pitches[0]*-1)+start_at
+            let result = pitches.map((pitch)=>(as_PCs)?this.mod(pitch+shift_by,this.edo):pitch+shift_by)
+            return result
+        },
+
         /**
          * Gets a subset to find and returns the indices from a given array (arr) that form that subset
          * @param  {Array<Number>} find - a collection of pitches to find (in order)
@@ -1852,7 +2129,8 @@ class EDO {
 
         /** Returns all the subsets (in order) from a given array of pitches.
          * @param  {Array<Number>} pitches - a given array of pitches
-         * @param  {Boolean} allow_skips - if set to false, function will only return subsets that have consecutive members
+         * @param  {Boolean} [allow_skips=true] - if set to false, function will only return subsets that have consecutive members
+         * @param  {Boolean} [normal=true] - When true, the returned subsets are converted to normal order
          * @example
          * //returns [[0], [2], [3], [0, 2], [0, 3], [2, 3], [0, 2, 3]]
          * get.subsets([0,2,3],true)
@@ -1862,7 +2140,7 @@ class EDO {
          * @returns {Array<Array<Number>>}
          * @memberOf EDO#get
          */
-        subsets: (pitches,allow_skips=true) => {
+        subsets: (pitches,allow_skips=true, normal=false) => {
             if(allow_skips) {
                 pitches = pitches.reduce(
                     (subsets, value) => subsets.concat(
@@ -1881,6 +2159,10 @@ class EDO {
             }
 
             pitches = pitches.filter((el)=>el.length>0)
+            if(normal) {
+                pitches = pitches.map((subset)=>this.get.normal_order(subset))
+                pitches = this.get.unique_elements(pitches)
+            }
             return pitches
         },
 
@@ -1900,6 +2182,21 @@ class EDO {
             pitches = pitches.map((pitch) => pitch+amount)
             if (as_PC) pitches=pitches.map((pitch)=>this.mod(pitch,this.edo))
             return pitches
+        },
+
+        /** Returns the union of two sets
+         *
+         * @param  {...Array<Number>} collections - Any number of arrays of pitches.
+         * @returns {Array<Number>}
+         * @memberOf EDO#get
+         * @example
+         * let edo = new EDO(12) //Create a tuning context
+         * edo.get.union([0,1,2],[3,4,5],[6])
+         * //returns [0,1,2,3,4,5]
+         */
+        union: (...collections) => {
+            let union = []
+            return union.concat(...collections)
         },
 
         /** Gets an array that may have duplications and returns the array without duplications
@@ -2057,7 +2354,7 @@ class EDO {
 
         /**
          * <p>Plots the contour of a given melody.</p>
-         * <img src = "img/4n_contours.png">
+         * <img src = "img/contour.png">
          * @param  {String} container_id - The ID of a DOM element in which the contour will be shown.
          * @param  {Array<Number>} pitches - The melody.
          * @param  {Boolean} [replace=false] - When false, any time the function is called a new contour will be appended to the object. When true, it will replace the contents of the container.
@@ -2133,6 +2430,7 @@ class EDO {
 
         /**
          * Makes a fractal tree with branches diverging by given intervals
+         * <img src = "img/fractal_tree.png">
          * @param  {String} container_id - The ID of a DOM element in which the tree will be shown.
          * @param  {Number} [length=200] - The length (or height) or the tree's "trunk".
          * @param  {Number} [angle_span=90] - the angle between branches.
@@ -2250,242 +2548,325 @@ class EDO {
 
         /**
          * Graphs a given necklace in a container.
+         * <img src='img/Necklace.png'>
+         * @param  {Object} args - An object with the necklace arguments
+         * @param  {Paper} args.paper - A Raphael Paper object on which the necklace will be drawn
+         * @param  {Array<Number>} args.pitches - The pitches of the necklace
+         * @param  {Number} [args.cx] - The center x coordinate of the necklace (in relation to the paper object).
+         * @param  {Number} [args.cy] - The center y coordinate of the necklace (in relation to the paper object).
+         * @param  {Number} [args.radius] - The center y coordinate of the necklace (in relation to the paper object)
+         * @param  {Boolean} [args.ring=true] - When false, the necklace ring will be hidden.
+         * @param  {Boolean} [args.inner_strings=true] - When false, the necklace's inner strings will be hidden.
+         * @param  {Number} [args.PC_at_midnight=0] - The PC starting the necklace at the very top (midnight)
+         * @param  {Number} [args.string_width=1] - The width of the strings of the necklace.
+         * @param  {Number} [args.node_radius] - The radius of each node on the necklace
          *
-         * @param  {String} container_id - The ID of a DOM element in which the contour will be shown.
-         * @param  {Array<Number>|Array<Array<Number>>} pitches - The necklace. This can also be an array containing multiple necklaces.
-         * @param  {Boolean} [replace=false] - When true, the contents of the container will be replaced by the function. When false, it will be appended.
-         * @param  {Number|Array<Number,Number>} [radius] - Radius (in px) of the ring. When no values are passed, the ring will take the size of the container.
-         * @param  {Boolean} [as_numbers=true] - When true, the nodes will be marked with numbers, when false they will be marked with note letters (only in 12-EDO)
          *
          * @example
          * <script src="edo.js"></script>
          * <script src="raphael.min.js"></script>
          * <div id="container" style="width:900px;height:600px; margin:0 auto;"></div>
          * <script>
-         *  let edo = new EDO()
-         *  edo.show.necklace('container', [0,2,4,5,7,9,11])
+         *  let edo = new EDO(12)
+         *  let paper = edo.make_DOM_svg('container',1200,1200,true).paper
+         *  edo.show.necklace({paper:paper,pitches:[0,2,4,5,7,9,11]})
          * </script>
          * @see /demos/necklace.html
          * @memberOf EDO#show
          */
-        necklace : (container_id, pitches = [0,2,4,5,7,9,11],replace=true,radius =600,as_numbers=true) => {
-            if(!radius) {
-                radius = Math.min(container.offsetWidth,container.offsetHeight)
-            }
-            let container = document.getElementById(container_id)
-            if(replace) container.innerHTML = ""
+        necklace: (args) => {
+            args.cx = args.cx || args.paper.width/2
+            args.cy = args.cy || args.paper.height/2
+            args.radius = args.radius || (args.paper.width/2)-30
+            args.ring = (args.ring==undefined) ? true : args.ring
+            args.inner_strings = (args.inner_strings==undefined) ? true : args.inner_strings
+            args.outer_strings = (args.outer_strings==undefined) ? true : args.outer_strings
+            args.PC_at_midnight = args.PC_at_midnight || 0
+            args.string_width = args.string_width || 1
+            args.node_color = args.node_color || "blue"
+            args.node_radius = args.node_radius || (args.paper.height*Math.PI / (this.edo*4))/2-5
+            const parent = this
+            class Necklace {
+                constructor(parent,args) {
+                    this.cx = args.cx
+                    this.cy=args.cy
+                    this.radius = args.radius
+                    this.pitches = args.pitches
+                    this.PC_at_midnight = args.PC_at_midnight
+                    this.show_ring = args.ring
+                    this.show_inner_strings = args.inner_strings
+                    this.show_outer_strings = args.outer_strings
+                    this.parent = parent
+                    this.edo = parent.edo
+                    this.nodes = []
+                    this.strings = []
+                    this.paper = args.paper
+                    this.node_color = args.node_color
+                    this.node_radius = args.node_radius
+                    this.string_width = args.string_width
+                    this.draw_all()
 
-            const self = this
-            const use_letter = !as_numbers
 
-            const make_necklace = (container_id, pitches ,replace,radius) => {
-                let height=radius
-                let width=radius
-
-                let div = document.createElement('div')
-                div.style.width =width+"px";
-                div.style.height =height+"px";
-                div.style.display="inline"
-                let div_id = div.setAttribute("id", "paper_" + Date.now());
-                let container = document.getElementById(container_id)
-
-                if(replace) container.innerHTML = ""
-                container.appendChild(div)
-                const paper = new Raphael(div, width, height);
-                let background = paper.rect(0,0,width,height).attr('fill','000')
-
-                const scale = (num, in_min, in_max, out_min, out_max) => {
-                    return (num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
                 }
-
-                class Necklace {
-                    constructor(radius=paper.height/2-(height/10),cx=paper.width/2,cy=paper.height/2,edo=12,pitches = [0,2,4,5,7,9,11],parent) {
-                        //general parameters
-                        this.cx = cx
-                        this.cy = cy
-                        this.radius = radius
-                        this.edo = edo
-                        this.pitches = pitches
-
-                        //ring (will store the ring object)
-                        this.ring
-
-                        //nodes
-                        this.nodes = []
-
-                        //strings
-                        this.strings = []
-
-                        this.update(pitches)
+                draw_all () {
+                    if(this.show_ring) this.draw_ring()
+                    this.draw_nodes()
+                    this.draw_strings(this.string_width)
+                    for(let node of this.nodes) {
+                        node.drawing.toFront()
+                        node.text.toFront()
+                    }
+                }
+                draw_ring (color='red',stroke_width=3) {
+                    let paper = this.paper
+                    //if already exists, remove the old one
+                    if(this.ring) {
+                        this.ring.remove()
+                        this.ring=undefined
                     }
 
-                    update (pitches) {
-                        this.pitches=pitches
-                        this.draw_all()
+                    //draw the ring
+                    this.ring = paper.circle(this.cx,this.cy,this.radius).attr('stroke',color)
+                        .attr('stroke-width',stroke_width)
+                }
+                draw_nodes() {
+                    //remove nodes
+                    for(let node of this.nodes) {
+                        node.drawing.remove()
+                        node.text.remove()
                     }
-                    draw_all (){
-                        this.draw_ring()
-                        this.draw_nodes()
-                        this.draw_strings()
-
-                        for(let node of this.nodes) {
-                            node.drawing.toFront()
-                            node.text.toFront()
-                        }
-
-
+                    this.nodes = []
+                    let node_radius = this.node_radius
+                    node_radius = Math.max(node_radius,1)
+                    //node parameters
+                    for(let note of this.pitches) {
+                        let angle = (note * (360 / this.edo)) - 90
+                        let rad_angle = angle * Math.PI / 180
+                        let cx = Math.floor(this.cx + (this.radius * Math.cos(rad_angle)))
+                        let cy = Math.floor(this.cy + (this.radius * Math.sin(rad_angle)))
+                        let node = new Node(this,node_radius,cx,cy,(note+this.PC_at_midnight)%this.edo)
+                        this.nodes.push(node)
                     }
-                    draw_ring () {
-                        //if already exists, remove the old one
-                        if(this.ring) {
-                            this.ring.remove()
-                            this.ring=undefined
-                        }
 
-                        //draw the ring
-                        this.ring = paper.circle(this.cx,this.cy,this.radius).attr('stroke','red')
-                            .attr('stroke-width',3)
-                            .attr("text",'HELLO!!')
+
+                    for(let node of this.nodes) node.draw()
+
+                }
+                draw_strings(stroke_width) {
+                    //remove strings
+                    for(let string of this.strings) {
+                        string.drawing.remove()
                     }
-                    draw_nodes () {
-                        let pitches = this.pitches
+                    this.strings = []
 
-                        //remove nodes
-                        for(let node of this.nodes) {
-                            node.drawing.remove()
-                            node.text.remove()
-                        }
-                        this.nodes = []
-                        let radius = Math.min((this.radius*2*Math.PI / this.edo)/2-5,15)
-                        //node parameters
-                        for(let note=0;note<this.edo;note++) {
-                            let angle = (note * (360 / this.edo)) - 90
-                            let rad_angle = angle * Math.PI / 180
-                            let cx = Math.floor(this.cx + (this.radius * Math.cos(rad_angle)))
-                            let cy = Math.floor(this.cy + (this.radius * Math.sin(rad_angle)))
-                            let node = new Node(radius,cx,cy,note,pitches.indexOf(note)!=-1)
-                            this.nodes.push(node)
-                        }
-
-
-                        for(let node of this.nodes) {
-                            node.draw()
+                    //draw outer strings
+                    if(this.show_outer_strings) {
+                        for (let i = 0; i < this.nodes.length; i++) {
+                            let node1 = this.nodes[i]
+                            let node2 = this.nodes[(i+1)%this.nodes.length]
+                            let str = new Str(this,node1.cx,node1.cy,node2.cx,node2.cy,stroke_width)
+                            this.strings.push(str)
                         }
                     }
 
-                    draw_strings () {
-                        //remove strings
-                        for(let string of this.strings) {
-                            string.drawing.remove()
-                        }
-                        this.strings = []
 
-
-
-                        for(let i=0;i<this.nodes.length-1;i++) {
-                            if(!this.nodes[i].visible) continue //if this node is not visible, skip it
-                            for(let j=i+1;j<this.nodes.length;j++) {
-                                if(!this.nodes[j].visible) continue //if this node is not visible, skip it
-                                // strings.push([i,j]) //the pitches for which the strings are connected
-                                let n1 = this.nodes[i]
-                                let n2 = this.nodes[j]
-                                this.strings.push(new Str(n1.cx,n1.cy,n2.cx,n2.cy))
+                    //draw inner-strings
+                    if(this.show_inner_strings) {
+                        for (let i = 0; i < this.nodes.length-2; i++) {
+                            for (let j = 2; j <this.nodes.length ; j++) {
+                                let node1 = this.nodes[i]
+                                let node2 = this.nodes[j]
+                                let str = new Str(this,node1.cx,node1.cy,node2.cx,node2.cy,stroke_width)
+                                this.strings.push(str)
                             }
                         }
-
-                        for(let string of this.strings) {
-                            string.draw()
-                        }
-                    }
-                }
-
-                class Node {
-                    constructor(radius=height/20,cx=paper.width/2,cy=paper.height/2,name="",visible=true) {
-                        this.radius = radius
-                        this.cx=cx
-                        this.cy=cy
-                        this.name =name
-                        this.visible = visible
-
                     }
 
-                    draw () {
 
-
-                        //if already exists, remove the old one
-                        if(this.drawing) {
-                            this.drawing.remove()
-                            this.drawing=undefined
-                        }
-
-                        this.drawing = paper.set()
-
-                        this.circle = paper.circle(this.cx,this.cy,this.radius)
-                            .attr('stroke','red')
-                            .attr('fill','blue')
-                        this.drawing.push(this.circle)
-                        if(use_letter) this.name = self.convert.pc_to_name(this.name)
-                        this.text = paper.text(this.cx,this.cy,this.name)
-                            .attr('fill','white')
-                            .attr('font-size',this.radius)
-
-                        this.drawing.push(this.text)
-
-                        if(this.visible) {
-                            this.drawing.show()
-                        }
-                        else {
-                            this.drawing.hide()
-                        }
-
-
+                    for(let string of this.strings) {
+                        string.draw()
                     }
-                }
-
-                class Str {
-                    constructor(x1,y1,x2,y2) {
-                        this.x1 = x1
-                        this.y1=y1
-                        this.x2= x2
-                        this.y2 = y2
-                        this.length = Math.sqrt((x2-x1)**2 + (y2-y1)**2)
-                    }
-
-                    draw () {
-                        //if already exists, remove the old one
-                        if(this.drawing) {
-                            this.drawing.remove()
-                            this.drawing=undefined
-                        }
-
-                        let hue = Math.floor(scale(this.length,0,height-100,0,360))
-                        let rgb = Raphael.hsl2rgb(hue,100,50)
-                        this.drawing = paper.path("M" + this.x1+"," + this.y1 +"L" + this.x2 +"," + this.y2)
-                            .attr('stroke',rgb.hex)
-                            .attr('stroke-width',3)
-
-                    }
-
-                }
-
-                let necklace = new Necklace(paper.height/2-(height/10),paper.width/2,paper.height/2,this.edo,pitches)
-
-                return necklace
-            }
-
-
-
-
-            const make_necklaces = function (container_id,necklaces,size=200) {
-                let list = []
-                for (let necklace of necklaces) {
-                    list.push(make_necklace(container_id,necklace,false,size))
                 }
             }
-            if(Array.isArray(pitches[0])) make_necklaces(container_id,pitches,radius)
-            else make_necklace(container_id,pitches,replace,radius)
+            class Node {
+                constructor(necklace,radius,cx,cy,name) {
+                    this.necklace = necklace
+                    this.radius = radius
+                    this.cx=cx
+                    this.cy=cy
+                    this.name =name
 
-        }
+                }
+
+                draw () {
+                    let paper = this.necklace.paper
+                    //if already exists, remove the old one
+                    if(this.drawing) {
+                        this.drawing.remove()
+                        this.drawing=undefined
+                    }
+
+                    this.drawing = paper.set()
+
+                    this.circle = paper.circle(this.cx,this.cy,this.radius)
+                        .attr('stroke','red')
+                        .attr('fill',this.necklace.node_color)
+                    this.drawing.push(this.circle)
+                    this.text = paper.text(this.cx,this.cy,this.name)
+                        .attr('fill','white')
+                        .attr('font-size',this.radius)
+
+                    this.drawing.push(this.text)
+
+                }
+            }
+            class Str {
+                constructor(necklace,x1,y1,x2,y2,stroke_width) {
+                    this.necklace = necklace
+                    this.x1 = x1
+                    this.y1=y1
+                    this.x2= x2
+                    this.y2 = y2
+                    this.length = Math.sqrt((x2-x1)**2 + (y2-y1)**2)
+                    this.stroke_width = stroke_width
+
+                }
+
+                draw () {
+                    let paper = this.necklace.paper
+                    //if already exists, remove the old one
+                    if(this.drawing) {
+                        this.drawing.remove()
+                        this.drawing=undefined
+                    }
+
+                    let hue = Math.floor(rescale(this.length,0,this.necklace.radius*2,0,360))
+                    let rgb = Raphael.hsl2rgb(hue,100,50)
+                    this.drawing = paper.path("M" + this.x1+"," + this.y1 +"L" + this.x2 +"," + this.y2)
+                        .attr('stroke',rgb.hex)
+                        .attr('stroke-width',this.stroke_width)
+
+                }
+
+            }
+
+            let neck = new Necklace(parent,args)
+            return neck
+        },
+
+        /**
+         * Graphs nested necklaces.
+         * <img src='img/nested_necklaces.png'>
+         *
+         * @param  {String} container_id - The ID of a DOM element in which the contour will be shown.
+         * @param  {Array<Array<Number>>} necklaces - The necklaces to be drawn
+         * @param  {Boolean} [replace=false] - When true, the contents of the container will be replaced by the function. When false, it will be appended.
+         * @param  {Number} [radius = 600] - Radius (in px) of the ring.
+         * @param  {Boolean} [ring = false] - When true, the ring of the scale will be drawn
+         * @param  {Number} [min_node_radius] - When passed, the radius of each node won't be smaller than the value passed
+         *
+         * @example
+         * <script src="edo.js"></script>
+         * <script src="raphael.min.js"></script>
+         * <div id="container" style="width:900px;height:900px; margin:0 auto;"></div>
+         * <script>
+         * const divisions = 12
+         * let edo = new EDO(divisions)
+         * let scale = edo.scale([0,2,4,5,7,9,11])
+         * let necklaces = scale.get.scale_degree_transpositions().map((trans)=>trans[0])
+         * edo.show.nested_necklaces("container",necklaces,true,900)
+         * //Graphs all of the common tone transpositions of the major scale
+         * </script>
+         * @see /demos/necklace.html
+         * @memberOf EDO#show
+         */
+        nested_necklaces: (container_id, necklaces ,replace=true,radius =600,ring=false,min_node_radius,strings=true) => {
+            let parent = this
+            let height=radius
+            let width=radius
+            let new_necklace_radius = height/2-(height/20)
+            let num_of_necklaces = necklaces.length
+            let necklace_radius_offset = Math.min(new_necklace_radius/(num_of_necklaces))
+
+            const SVG = this.make_DOM_svg(container_id,width,height,replace)
+            const paper = SVG.paper
+
+            let node_radius = Math.min((paper.height*Math.PI / (this.edo*4))/2-5,paper.height*Math.PI/(num_of_necklaces*num_of_necklaces*2),(paper.height*Math.PI / (this.edo*num_of_necklaces))/2-5)
+            if(min_node_radius) node_radius = Math.max(node_radius,min_node_radius)
+
+            for(let necklace of necklaces) {
+                let args = {paper:paper,pitches:necklace,radius:new_necklace_radius,ring:ring,inner_strings:false,node_radius:node_radius,outer_strings:strings}
+                this.show.necklace(args)
+                new_necklace_radius-=necklace_radius_offset
+            }
+
+        },
+
+        /**
+         * Graphs necklaces on every node of a parent necklace recursively.
+         * <img src='img/necklace_fractal.png'>
+         * @param  {Object} args - The arguments of the necklaces
+         * @param  {String} args.container_id - The ID of a DOM element in which the necklaces will be shown.
+         * @param  {Array<Array<Number>>} args.necklaces - The necklaces to be drawn
+         * @param  {Number} [args.canvas_width=900] - The width of the drawable area
+         * @param  {Number} [args.canvas_height=900] - The height of the drawable area
+         * @param  {Number} [args.initial_radius=250] - The radius of the top-level necklace
+         * @param  {Number} [args.radius_multiplier=0.5] - The rate of change in radius size for every new level of necklace.
+         * @param  {Number} [args.offset_x=0] - Initial necklace's x offset from the center
+         * @param  {Number} [args.offset_y=50] - Initial necklace's y offset from the center
+         * @param  {Number} [args.minimum_node_radius=20] - The smallest radius a node can have
+         * @param  {Boolean} [args.ring=true] - When false, the necklace's ring will be hidden
+         * @param  {Boolean} [args.replace=false] - When true, the contents of the container will be replaced by the function. When false, it will be appended.
+         *
+         * @example
+         * <script src="edo.js"></script>
+         * <script src="raphael.min.js"></script>
+         * <div id="container" style="width:900px;height:900px; margin:0 auto;"></div>
+         * <script>
+         * const divisions = 12
+         * let edo = new EDO(divisions)
+         * edo.show.necklace_fractal({container_id:'container',necklaces:[[0,3,6],[0,4,8],[0,6]]})
+         * </script>
+         * @memberOf EDO#show
+         */
+        necklace_fractal: (args) => {
+
+            const container_id = args.container_id
+            const necklaces = args.necklaces
+            const offset_x = args.offset_x
+            const offset_y = args.offset_y || 50
+            const radius_multiplier = args.radius_multiplier || 0.5
+            const initial_radius = args.initial_radius || 250
+            const minimum_node_radius = args.minimum_node_radius || 20
+            const show_ring = (args.ring==undefined) ? true : args.ring
+            const canvas_width = args.canvas_width || 900
+            const canvas_height = args.canvas_height || 900
+            const replace = (args.replace==undefined) ? false :args.replace
+
+            const SVG = this.make_DOM_svg(container_id,canvas_width,canvas_height,replace)
+            const paper = SVG.paper
+            const parent = this
+            const necklace_nester = function (necklaces,nodes,new_radius=initial_radius) {
+                let new_necklaces = [...necklaces]
+                let necklace = new_necklaces.splice(0,1)[0]
+                if(nodes) {
+                    nodes.forEach((node)=> {
+                        let neck = parent.show.necklace({paper:paper,ring:show_ring,radius:new_radius,pitches:necklace,cx:node.cx,cy:node.cy+new_radius,PC_at_midnight:node.name,node_radius:Math.max(new_radius/8,minimum_node_radius)})
+                        if(new_necklaces.length>0) necklace_nester(new_necklaces,neck.nodes,neck.radius*radius_multiplier)
+                    })
+                }
+                else {
+                    let neck = parent.show.necklace({cx:paper.width/2+offset_x,ring:show_ring,paper:paper,radius:new_radius,pitches:necklace,cy:new_radius+offset_y,node_radius:Math.max(new_radius/8,minimum_node_radius)})
+
+                    if(new_necklaces.length>0) necklace_nester(new_necklaces,neck.nodes,neck.radius*radius_multiplier)
+                }
+            }
+
+            necklace_nester(necklaces)
+        },
+
+
+
     }
 
     mod (n, m) {
@@ -2511,12 +2892,13 @@ class Scale {
      *  <li> [Scale.export]{@link Scale#export} is a set of functions used to export files.</li>
      *  <li> [Scale.show]{@link Scale#show} is a set of functions used to visualize various things.</li></ul>
      *  <p>
-     *      In addition to the namespaces, Scale also has 4 methods that can be chained together:
+     *      In addition to the namespaces, Scale also has 5 methods that can be chained together:
      * <ul>
      *  <li> [Scale.invert()]{@link Scale#invert} returns the inversion of the original Scale object as a new Scale object.</li>
      *  <li> [Scale.mode(n)]{@link Scale#mode} returns the nth mode of the original Scale object as a new Scale object.</li>
      *  <li> [Scale.normal()]{@link Scale#normal} returns the normal order of the original Scale object as a new Scale object.</li>
      *  <li> [Scale.prime()]{@link Scale#prime} returns the prime form of the original Scale object as a new Scale object.</li>
+     *  <li> [Scale.complement()]{@link Scale#complement} returns the complement of the scale in the current EDO.</li>
      *  </ul>
      *  </p>
      * @param {Array<number>} pitches - The pitch classes of the set.
@@ -2527,7 +2909,7 @@ class Scale {
      * let edo = new EDO(12) //create a new EDO context with 12 divisions.
      * let scale = new Scale([0,2,4,5,7,9,11],edo) //pass the PCs and edo context to the scale
      *
-     * //Basic usage 2 (preffered):
+     * //Basic usage 2 (preferred):
      * let edo = new EDO(12) //create a new EDO context with 12 divisions.
      * let scale = edo.scale([0,2,4,5,7,9,11]) //create an instance of Scale through the EDO.scale method rather than
      *
@@ -2953,49 +3335,48 @@ class Scale {
     }
 
     /**A collection of functions manipulates the scale and returns diverse information about it
-    * @namespace*/
+     * @namespace*/
     get = {
 
-        /** Returns all the transpositions of the scale that share a common tone with the original scale
+        /** Returns all the transpositions of the scale that are constructed on the scale degrees of the original scale,
          * As well the the number of notes altered to get from the original scale to the new scale as a "Tuple"
-         * @param  {Boolean} normalize - when true, all of the transpositions will be constructed by altering the original scale
+         * @param  {Boolean} [normalize=true] - when true, all of the transpositions will be constructed by altering the original scale
          * @returns {Array<Array<Number>,Number>} An array containing all of the stacks
          * @memberOf Scale#get
          * @example
          * let edo = new EDO(12) //define context
-         * let scale = edo.scale([0,2,4,5,7,9,11]) //major scale
+         * let scale = edo.scale([0,3,7]) //minor triad
          * scale.get.common_tone_transpositions()
          * //returns
          *
          * [
-         *  [ [0, 2, 4, 5, 7, 9, 11], 0 ],
-         *  [ [0, 2, 4, 5, 7, 9, 10], 1 ],
-         *  [ [0, 2, 4, 6, 7, 9, 11], 1 ],
-         *  [ [1, 2, 4, 6, 7, 9, 11], 2 ],
-         *  [ [1, 2, 4, 6, 8, 9, 11], 3 ],
-         *  [ [1, 3, 4, 6, 8, 9, 11], 4 ],
-         *  [ [1, 3, 4, 6, 8, 10, 11], 5 ]
+         *  [ [ 0, 3, 7 ], 0 ],
+         *  [ [ 0, 4, 9 ], 2 ],
+         *  [ [ 0, 5, 8 ], 2 ],
+         *  [ [ 3, 6, 10 ], 2 ],
+         *  [ [ 3, 8, 11 ], 2 ],
+         *  [ [ 2, 7, 10 ], 2 ],
+         *  [ [ 4, 7, 11 ], 2 ]
          * ]
          */
-        common_tone_transpositions: (normalize=true) => {
-
-
-            let transpositions = []
-            let intervals = this.to.steps()
-            intervals=intervals.slice(0,-1) //removing the last step because we don't need the octave completion
-            for (let note of this.pitches) {
-                let transposition = [note]
-                for(let interval of intervals) {
-                    let next_note = this.parent.mod(transposition.slice(-1)[0]+interval,this.edo)
-                    transposition.push(next_note)
-                }
-                if(normalize) transposition.sort((a,b)=>a-b)
-                let CT = this.count.pitches() - this.parent.count.common_tones(this.pitches,transposition)
-                transpositions.push([transposition,CT])
-            }
-            transpositions.sort((a,b) =>a[1]-b[1])
-            return transpositions
-
+        common_tone_transpositions: () => {
+            let modes = this.get.modes()
+            let result = []
+            this.pitches.forEach((pitch)=> {
+                modes.forEach((mode,inversion)=> {
+                    let transposition = mode.map((note)=>this.parent.mod(note+pitch,this.edo)).sort((a,b)=>a-b)
+                    let CT = this.parent.count.common_tones(this.pitches,transposition)
+                    result.push({
+                        transposition:transposition,
+                        common_tones: CT,
+                        altered_tones:this.count.pitches()-CT,
+                        common_tone:pitch,
+                        as_scale_degree:inversion+1
+                    })
+                })
+            })
+            result=this.parent.get.unique_elements(result)
+            return result
         },
 
         /** <p>Returns all the PCs of the EDO that the scale does not use.</p>
@@ -3027,23 +3408,20 @@ class Scale {
          */
         interval_vector: (cache=false) => {
             if(this.catalog['interval vector']) return this.catalog['interval vector']
-            let scale = this.pitches
-            let vector = []
-            let intervals = {}
-            for(let i=0;i<this.edo-1;i++) {
-                intervals[i+1] = 0
-            }
-            let length = scale.length
-            let doublescale = scale.concat(scale)
-            scale.forEach((note,i)=> {
-                for(let j=0; j<length-1;j++) {
-                    let interval = (doublescale[i+j+1]-doublescale[i]) % this.edo
-                    intervals[interval] +=1
+
+            let scale_split = Math.floor(this.edo/2)
+            let vector = Array.from(new Array(scale_split).fill(0))
+            let normal = this.get.normal_order()
+            for (let i = 0; i < normal.length-1; i++) {
+                for (let j = i+1; j < normal.length; j++) {
+                    let IC = normal[j]-normal[i]
+                    if(IC>scale_split) IC = this.edo-IC
+                    if(IC==0) IC=scale_split
+                    vector[IC-1]++
                 }
-            })
-            for(let i=0;i<Math.floor(this.edo/2);i++) {
-                vector.push(intervals[i+1])
+
             }
+
             if(cache) this.catalog['interval vector'] =vector
             return vector
 
@@ -3282,13 +3660,13 @@ class Scale {
          */
         motives_diatonic: (melody, allow_skips=false) => {
             let scale = this.pitches
-            let not_in_scale = melody.filter((note)=>scale.indexOf(this.mod(note,this.edo))==-1)
+            let not_in_scale = melody.filter((note)=>scale.indexOf(this.parent.mod(note,this.edo))==-1)
             if(not_in_scale.length>0) return null
 
-            scale = this.get.unique_elements(scale).sort((a,b)=>a-b)
+            scale = this.parent.get.unique_elements(scale).sort((a,b)=>a-b)
 
             let scale_degrees=melody.map((note)=>scale.indexOf(note)+1)
-            let motives = this.get.motives(scale_degrees,true,allow_skips)
+            let motives = this.parent.get.motives(scale_degrees,true,allow_skips)
             return motives
 
         },
@@ -3344,6 +3722,29 @@ class Scale {
             all = this.parent.get.unique_elements(all)
             if(cache) this.catalog['n_chords'][n] = all
             return all
+        },
+
+
+        /** <p>Return every quality available in the scale for a combination of <code>n</code> scale degrees.</p>
+         * @param  {Number} n - Number of pitches in every chord
+         * @returns {Array<steps_quality_obj>}
+         * @memberOf Scale#get
+         * @see Scale#get.steps_to_qualities
+         */
+        n_chords_diatonic : (n) => {
+            let t_edo = new EDO(this.count.pitches())
+            let t_scale = t_edo.scale(Array.from(Array(this.count.pitches()).keys()))
+            let combinations = t_scale.get.n_chords(n)
+            let modes = this.get.modes()
+            let n_chords = combinations.map((combo)=> {
+                let steps = this.parent.convert.to_steps(combo)
+                return this.get.steps_to_qualities(steps)
+            })
+            n_chords = n_chords.map((chord)=>{
+                chord.combos = chord.combos.sort((a,b)=>a.positions.length-b.positions.length)
+                return chord
+            })
+            return n_chords
         },
 
         /**
@@ -3547,6 +3948,49 @@ class Scale {
             return result
         },
 
+        /** Returns all the transpositions of the scale that are constructed on the scale degrees of the original scale,
+         * As well the the number of notes altered to get from the original scale to the new scale as a "Tuple"
+         * @param  {Boolean} [normalize=true] - when true, all of the transpositions will be constructed by altering the original scale
+         * @returns {Array<Array<Number>,Number>} An array containing all of the stacks
+         * @memberOf Scale#get
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //major scale
+         * scale.get.scale_degree_transpositions()
+         * //returns
+         *
+         * [
+         *  [ [0, 2, 4, 5, 7, 9, 11], 0 ],
+         *  [ [0, 2, 4, 5, 7, 9, 10], 1 ],
+         *  [ [0, 2, 4, 6, 7, 9, 11], 1 ],
+         *  [ [1, 2, 4, 6, 7, 9, 11], 2 ],
+         *  [ [1, 2, 4, 6, 8, 9, 11], 3 ],
+         *  [ [1, 3, 4, 6, 8, 9, 11], 4 ],
+         *  [ [1, 3, 4, 6, 8, 10, 11], 5 ]
+         * ]
+         */
+        scale_degree_transpositions: (normalize=true) => {
+
+
+            let transpositions = []
+            let intervals = this.to.steps()
+            intervals=intervals.slice(0,-1) //removing the last step because we don't need the octave completion
+            for (let note of this.pitches) {
+                let transposition = [note]
+                for(let interval of intervals) {
+                    let next_note = this.parent.mod(transposition.slice(-1)[0]+interval,this.edo)
+                    transposition.push(next_note)
+                }
+                if(normalize) transposition.sort((a,b)=>a-b)
+                let CT = this.count.pitches() - this.parent.count.common_tones(this.pitches,transposition)
+                transpositions.push([transposition,CT])
+            }
+            transpositions.sort((a,b) =>a[1]-b[1])
+            transpositions = this.parent.get.unique_elements(transpositions)
+            return transpositions
+
+        },
+
         /** <p>Transposes a melody within the scale by a given number of scale degrees</p>
          * @param {Array<Number>} seq - The original melody / sequence to be "transposed"
          * @param {Number} transposition - The number of scale degrees (up or down) by which to shift the melody.
@@ -3660,6 +4104,45 @@ class Scale {
 
         },
 
+        /**
+         * @typedef {Object} quality_position_obj
+         * @property {Array<Number>} quality - Some chord quality
+         * @property {Array<Number>} positions - The positions where this quality is available
+         */
+
+        /**
+         * @typedef {Object} steps_quality_obj
+         * @property {Array<Number>} steps - The given steps
+         * @property {Array<quality_position_obj>} combos - An array of qualities and their positions
+         */
+
+        /** <p>from a given array of steps taken, returns all of the available qualities and their positions</p>
+         * @param {Array<Number>} steps - steps in the scale in the form of [1,1,2,1..] (1=one step, 2= two steps, etc)
+         * @returns {quality_position_obj} The step sizes
+         * @example
+         * let edo = new EDO(12) //define tuning
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //major scale
+         * scale.get.steps_to_qualities([1,1]) //two successive steps
+         * //returns
+         *  {
+         *      "steps":[1,1],
+         *      "combos":[
+         *          {"quality":[0,2,4],"positions":[0,5,7]},
+         *          {"quality":[0,2,3],"positions":[2,9]},
+         *          {"quality":[0,1,3],"positions":[4,11]}
+         *          ]
+         *  }
+         * @memberOf Scale#get*/
+        steps_to_qualities: (steps) => {
+            let modes = this.get.modes()
+            steps = this.parent.convert.intervals_to_pitches(steps)
+            let combos = modes.map((mode)=>steps.map((scale_degree)=>mode[scale_degree]))
+            combos = combos.map((el)=>this.parent.get.normal_order(el))
+            combos = this.parent.get.unique_elements(combos)
+            combos = combos.map((cmb)=>{return {quality:cmb,positions:this.get.position_of_quality(cmb)}})
+            return {steps:this.parent.convert.to_steps(steps),combos:combos}
+        },
+
         /** Returns the sets that the scale is contained in from a given list of sets
          * @param  {Array<Array<Number>>} scales - a list of scales
          * @returns {Array<Array<Number>>} the scales that contain the Scale object
@@ -3724,6 +4207,35 @@ class Scale {
             return this.parent.get.transposition(this.pitches,amount)
         },
 
+        /** <p>Returns the transpositions of the scale that include the given pitches verbatim.</p>
+         * @param {Array<Number>} pitches - The pitches to find
+         * @returns {Array<Object>} - The property 'pitches' includes the pitches of the transposition. The property 'common_tones' tallies how many pitches the original scale and the transposed scale have in common..
+         * @memberOf Scale#get
+         *
+         * @example
+         * let edo = new EDO(12) //define tuning
+         * let scale = edo.scale([0,2,4,5,5,9,11]) //a major scale
+         * scale.get.transpositions_with_pitches(1,4,8)
+         * [
+         *  {pitches: [9,11,1,2,4,6,8], alterations: 4}, //The transposition starting on 9 contains 1,4,8 verbatim. It has 4 tones in common with the original scale.
+         *  {pitches: [4,6,8,9,11,1,3], alterations: 3}, //The transposition starting on 4 ... It has 3 tones in common...
+         *  {pitches: [11,1,3,4,6,8,10], alterations: 2} //The transposition starting on 11 ... It has 2 tones in common...
+         * ]*/
+        transpositions_with_pitches: (pitches) => {
+            let scales = []
+            for (let i = 0; i < this.edo; i++) {
+                let new_scale = this.parent.get.starting_at(this.pitches,i)
+                scales.push({pitches:new_scale,common_tones:this.count.pitches()-this.get.levenshtein([...new_scale].sort((a,b)=>a-b))})
+            }
+            scales = scales.filter((scale)=>{
+                let temp = pitches.map((pitch)=>scale.pitches.indexOf(pitch)!=-1)
+                temp = temp.reduce((a,el)=>a*el,true)
+                return temp
+            })
+            scales = scales.sort((a,b)=>b.common_tones-a.common_tones)
+            return scales
+        },
+
         /** <p>Returns every trichord (normalized to 0) available in this scale</p>
          * <p>Note: for a collection of all pitch subsets of length n (rather than 3) use [Scale.get.n_chords()]{@link Scale#get.n_chords}</p>
          * @param  {Boolean} cache - When true, the result will be cached for faster retrieval
@@ -3760,6 +4272,24 @@ class Scale {
             return trichords
 
         },
+
+        /** <p>Returns the scale without the pitches in <code>to_remove</code> array</p>
+         * @param  {Array<Number>} to_remove - The pitches to be removed from the original scale
+         * @param  {Boolean} [normal=false] - When true, the returned array will be in normal order.
+         * @returns {Array<Number>} An array containing the original scale with pitches <code>to_remove</code> removed.
+         * @memberOf Scale#get
+         *
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,5,7,9,11])
+         * scale.get.without([5,11]) //returns [0,2,4,7,9]
+         */
+        without: (to_remove,normal=false) => {
+            return this.parent.get.without(this.pitches,to_remove,normal)
+        },
+
+
+
     }
 
     /**A collection of functions that returns a Boolean about various features regarding the scale
@@ -3879,8 +4409,9 @@ class Scale {
             return this.parent.is.same(this.pitches,this.get.prime_form())
         },
 
-        /**<p>Returns true if the scale is a subset of one of multiple scales provided</p>
+        /**<p>Returns true if the scale is a subset of one of multiple scales provided.</p>
          * @param {Array<Number>|Array<Array<Number>>} scales - another scale, or a collection of scales
+         * @param {Boolean} [include_modes=true] - When true, the function will return true also when the scale is a subset of one of the modes of the scales in question. When false, the scale must appear verbatim to return true
          * @returns {Boolean}
          * @memberOf Scale#is
          *
@@ -3897,12 +4428,14 @@ class Scale {
                 return true
             }
             if(!Array.isArray(scales[0])) scales=[scales]
+            scales = scales.map((scale)=>{
+                return this.parent.scale(scale).get.modes()
+            }).flat()
             for (let scale of scales) {
                 if(is_subset_of_one(this.pitches,scale)) return true
             }
             return false
         },
-
     }
 
     /**A collection of functions that convert data from one representation to another
@@ -4035,6 +4568,15 @@ class Scale {
         return new Scale(pitches,this.parent)
     }
 
+    /**
+     * Returns a Scale object with pitches corresponding to the complement of the original scale in the current EDO.
+     * @returns {Scale}
+     * */
+    complement () {
+        let pitches = this.get.complement(true)
+        return new Scale(pitches,this.parent)
+    }
+
 
 }
 
@@ -4046,8 +4588,8 @@ try {
         Scale:Scale
     }
 }
-/**
- * For client-side*/
+    /**
+     * For client-side*/
 catch (e) {
     1+1
 }

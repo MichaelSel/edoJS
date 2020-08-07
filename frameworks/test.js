@@ -30,8 +30,11 @@ let edo = new EDO(12)
 //
 //
 
-let motives = edo.get.contour_motives([6,5,6,3,6,8,6,1,3],)
-motives.forEach((motive)=>console.log(JSON.stringify(motive)))
+// let motives = edo.get.contour_motives([6,5,6,3,6,8,6,1,3],)
+// motives.forEach((motive)=>console.log(JSON.stringify(motive)))
+
+let ngrams = edo.get.ngrams([4,4,5,7,7,5,4,2,0,0,2,4,4,2,4,4,5,7,7,5,4,2,0,0,2,4,2,0,2,4,0,2,4,5,4,0,2,4,5,4,2,0,2,-5],5)
+console.log(edo.get.random_melody_from_ngram(ngrams,[0]))
 
 
 

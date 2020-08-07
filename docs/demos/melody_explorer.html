@@ -26,6 +26,27 @@
     </div>
     <div class="row">
         <div class="col">
+            <h5>Diatonic Motive Finder</h5><br>
+            <div>
+                <label>Scale Context: </label> <input id="diatonic_motive_scale" type="text" value="0 2 4 5 7 9 11"> or <input id="extract_scale" type="button" value="extract from melody"><br>
+                <select multiple style="width: 500px; height:250px" id="diatonic_motive_select">
+
+                </select><br>
+                <input type="button" value="Find Motives" id="diatonic_motive_button">
+            </div>
+        </div>
+
+        <div class="col">
+            <h5>Contour Motive Finder</h5><br>
+            <div>
+                <select size="15" style="width: 500px;height:250px" id="contour_select"></select><br>
+
+                <input type="button" value="Get Motives" id="contour_button">
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
             <h5>Intervalic Motive Finder</h5><br>
             <div>
 
@@ -36,25 +57,21 @@
             </div>
         </div>
         <div class="col">
-            <h5>Contour</h5><br>
-            <div>
-                <br><br>
-                <div style="width: 500px; height:250px" id="contour_display">
-
-                </div><br>
-                <input type="button" value="Show Contour" id="contour_button">
-            </div>
+            <h5>Contour Plotter (select above)</h5><br>
+            <div id="contour_shower" style="width: 500px;height:250px;background-color:white;margin: 0 auto"></div>
         </div>
+
     </div>
     <div class="row">
         <div class="col">
-            <h5>Diatonic Motive Finder</h5><br>
+            <h5>Motivic Interpolation</h5><br>
             <div>
-                <label>Scale Context: </label> <input id="diatonic_motive_scale" type="text" value="0 2 4 5 7 9 11">
-                <select multiple style="width: 500px; height:250px" id="diatonic_motive_select">
-
-                </select><br>
-                <input type="button" value="Find Motives" id="diatonic_motive_button">
+                <span style="color:red">Select the allowed Intervalic Motives (One box up) using Ctrl/Cmd+Click.</span><br>
+                <label>Interval to be traversed:</label> <input type="text" size="4" value="5" id="interval_traverse"><br>
+                <label>Amount of notes to use:</label> <input type="text" size="4" value="8" id="interpolation_notes"><br>
+                <input type="button" value="Traverse" id="traverse_button"><br>
+                <br><label>Within each row, the order is mutable</label><br>
+                <select size="15" style="width: 500px;height:250px" id="interpolated_paths"></select>
             </div>
         </div>
         <div class="col">
@@ -185,25 +202,25 @@
 
     </div>
     <div class="row">
+
         <div class="col">
-            <h5>Motivic Interpolation</h5><br>
-            <div>
-                <span style="color:red">Select the allowed Intervalic Motives (Two boxes up) using Ctrl/Cmd+Click.</span><br>
-                <label>Interval to be traversed:</label> <input type="text" size="4" value="5" id="interval_traverse"><br>
-                <label>Amount of notes to use:</label> <input type="text" size="4" value="8" id="interpolation_notes"><br>
-                <input type="button" value="Traverse" id="traverse_button"><br>
-                <br><label>Within each row, the order is mutable</label><br>
-                <select size="15" style="width: 500px;height:250px" id="interpolated_paths"></select>
-            </div>
-        </div>
-        <div class="col">
-            <h5><-Realization</h5><br>
+            <h5>Realization</h5><br>
             (Make a selection on the left)
             <div>
                 <select style="width: 500px;height:250px" multiple id="realization_select"></select>
             </div>
         </div>
-
+        <div class="col">
+            <h5>N-Gram based random melody</h5><br>
+            <div>
+                <label>First note/s:</label> <input type="text" id="n_gram_start"><br>
+                <label>Maximal N-Gram:</label> <input type="text" size="1" value="5" id="n_gram_size"><br>
+                <label>Melody Length:</label> <input type="text" size="1" value="16" id="n_gram_length"><br>
+                <input type="button" value="Generate Melody" id="ngram_button"><br><br>
+                Generated melody:<br>
+                <input id="ngram_melody" type="text" contenteditable="false" style="width:500px">
+            </div>
+        </div>
     </div>
 </div>
 
@@ -227,7 +244,7 @@ $('#diatonic_motive_button').click(function () {
     let melody = $('#melody_input').val().trim().split(' ').map((p)=>parseInt(p))
     let scale = $('#diatonic_motive_scale').val().trim().split(' ').map((p)=>parseInt(p))
     scale = edo.scale(scale)
-    let motives = scale.get.motives_diatonic(melody,true)
+    let motives = scale.get.motives_diatonic(melody,false)
     $("#diatonic_motive_select").html("")
     motives.forEach((motive)=>{
         $("#diatonic_motive_select").append("<option value='" + motive.motive + "'>" + motive.motive.join(" ") + " (appears " + motive.incidence + " times)" + "</option>")
@@ -236,14 +253,23 @@ $('#diatonic_motive_button').click(function () {
 })
 $('#contour_button').click(function () {
     let melody = $('#melody_input').val().trim().split(' ')
-    edo.show.contour('contour_display',melody,true,[$('#contour_display').width(),$('#contour_display').height()])
-    let contour = edo.get.contour(melody)
-    $("#contour_input").val(contour.join(' '))
+    let motives = edo.get.contour_motives(melody)
+    // edo.show.contour('contour_display',melody,true,[$('#contour_display').width(),$('#contour_display').height()])
+    // let contour = edo.get.contour(melody)
+    // $("#contour_input").val(contour.join(' '))
+    $("#contour_select").html("")
+    motives.forEach((motive)=>{
+        $("#contour_select").append("<option value='" + motive.motive + "'>" + motive.motive.join(" ") + " (appears " + motive.incidence + " times)" + "</option>")
+    })
 })
 
 $("#random_contour_button").click(function () {
     let contour = $('#contour_input').val().trim().split(' ')
-    let melody = edo.get.random_melody_from_contour(contour,[$('#lowest').val(),$('#highest').val()])
+    let scale = $('#scale_input').val().trim().split(' ')
+        .map((el)=>edo.mod(el,edo.edo))
+        .sort((a,b)=>a-b)
+    scale = edo.get.unique_elements(scale)
+    let melody = edo.get.random_melody_from_contour(contour,[$('#lowest').val(),$('#highest').val()],scale)
     let as_notes = edo.convert.midi_to_name(melody)
     $('#random_melody').val(as_notes.join(" "))
 })
@@ -272,6 +298,29 @@ $("#interpolated_paths").change(function (el,a) {
         $("#realization_select").append("<option value='" + path + "'>" + path.join('  ') + "</option>")
     })
 })
+$("#contour_select").change(function (el,a) {
+    let contour = JSON.parse("[" + $(this).val() + "]")
+    $("#contour_input").val(contour.join(' '))
+
+    edo.show.contour('contour_shower',contour,true,[$('#contour_shower').width(),$('#contour_shower').height()])
+
+})
+$("#extract_scale").click(function () {
+    let melody = $('#melody_input').val().trim().split(' ')
+        .map((el)=>edo.mod(el,edo.edo))
+    .sort((a,b)=>a-b)
+    melody = edo.get.unique_elements(melody)
+    $("#diatonic_motive_scale").val(melody.join(" "))
+})
+$("#ngram_button").click(function () {
+    let melody = $('#melody_input').val().trim().split(' ').map((v)=>parseInt(v))
+    let n = parseInt($("#n_gram_size").val())
+    let ngrams = edo.get.ngrams(melody,n)
+    let start = $("#n_gram_start").val().trim().split(' ').map((v)=>parseInt(v))
+    let length = parseInt($("#n_gram_length").val())
+    $('#ngram_melody').val(edo.convert.midi_to_name(edo.get.random_melody_from_ngram(ngrams,start,length),60).join(" "))
+})
+
 </script>
 </body>
 </html>
