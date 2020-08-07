@@ -851,6 +851,42 @@ class EDO {
 
         },
 
+        /**
+         * <p>Extracts every possible contour motive from a given melody. </p>
+         * <p>The function extracts every contour  subset appearing in the given melody.
+         * The function also keeps track of the number of times each motive appeared.</p>
+         * @param  {Array<Number>} melody - a collection of pitches to find (in order)
+         * @param  {Boolean} [allow_skips=false] - if false, the search will only be done on consecutive items
+         * @return {Array<motives>}
+         * @memberOf EDO#get
+         * @function
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * edo.get.contour_motives([7,6,7,6,7,2,5,3,0]).slice(0,4) //get first 3 motives
+         * //returns
+         * [
+         *   { motive: [ -1, 1 ], incidence: 2 }, //going a half-step down, then up appears twice
+         *   { motive: [ -1 ], incidence: 2 }, //going a half-step down appears twice
+         *   { motive: [ 1 ], incidence: 2 } //going a half-step up appears twice
+         * ]
+         */
+        contour_motives: (melody,allow_skips=false) => {
+            let motives = []
+            let all_subsets = this.get.subsets(melody,allow_skips).map((subset)=>this.get.contour(subset)).filter((contour)=>contour.length>1)
+
+            let unique_subsets=this.get.unique_elements(all_subsets)
+            motives = unique_subsets.map((subset)=>{
+                let count = 0
+                for (let i = 0; i < all_subsets.length; i++) {
+                    if(this.is.same(subset,all_subsets[i])) count++
+                }
+                return {motive:subset,incidence:count}
+            })
+            motives = motives.sort((a,b)=> b.incidence-a.incidence || b.motive.length-a.motive.length)
+            return motives
+
+        },
+
         /** <p>Returns the complementary interval (needed to complete the octave) for a given an interval class.</p>
          * @param {Number} interval - Some interval class
          * @returns {Number}

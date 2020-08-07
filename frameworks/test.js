@@ -18,19 +18,20 @@ let edo = new EDO(12)
 //     }
 //     console.log('\n')
 // })
-let sets
-sets = edo.get.partitioned_subsets([0,[1,2],[3,4],[5,6],7,[8,9],[10,11],0])
-sets = edo.get.partitioned_subsets([0,[1,2],[3,4],7,[8,9],0])
-sets = edo.get.partitioned_subsets([0,[3,4],[5,6],[7,8],[10,11]])
-sets = edo.get.partitioned_subsets([[0],[4,3],[2,3],[8,9],[10,11],7,[3,4]])
+// let sets
+// sets = edo.get.partitioned_subsets([0,[1,2],[3,4],[5,6],7,[8,9],[10,11],0])
+// sets = edo.get.partitioned_subsets([0,[1,2],[3,4],7,[8,9],0])
+// sets = edo.get.partitioned_subsets([0,[3,4],[5,6],[7,8],[10,11]])
+// sets = edo.get.partitioned_subsets([[0],[4,3],[2,3],[8,9],[10,11],7,[3,4]])
+//
+// sets.forEach((set)=>{
+//     console.log(JSON.stringify(set))
+// })
+//
+//
 
-sets.forEach((set)=>{
-    console.log(JSON.stringify(set))
-})
-
-
-
-
+let motives = edo.get.contour_motives([6,5,6,3,6,8,6,1,3],)
+motives.forEach((motive)=>console.log(JSON.stringify(motive)))
 
 
 
