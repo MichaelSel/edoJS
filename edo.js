@@ -1142,36 +1142,6 @@ class EDO {
             return i_scale
         },
 
-        /** Returns the retrograde of a given set of pitches (their reversed order)
-         *
-         * @param  {Array<Number>} scale - a collection of pitches (not necessarily PCs)
-         * @return {Array<Number>} The reversed input
-         * @memberOf EDO#get
-         * @example
-         * let edo = new EDO(12) // define a tuning system
-         * edo.get.retrograde([0,2,4,5,7,9,11])
-         * //returns [11,9,7,5,4,2,0]*/
-        retrograde: (pitches) => {
-            return pitches.reverse()
-        },
-
-        /**
-         * <p>Returns all the rotations (inversions) of an array of pitches</p>
-         * @param  {Array<Number>} pitches - a collection of pitches (not necessarily PCs, not necessarily unique)
-         * @return {Array<Array<Number>>}
-         * @example
-         * let edo = new EDO(12) // define a tuning system
-         * edo.get.rotations([0,4,7,4])
-         * //returns [ [ 0, 4, 7, 4 ], [ 4, 7, 4, 0 ], [ 7, 4, 0, 4 ], [ 4, 0, 4, 7 ] ]
-         * */
-        rotations: (pitches) => {
-          let rotations = []
-            for (let i = 0; i < pitches.length; i++) {
-                rotations.push([...pitches.slice(i,pitches.length),...pitches.slice(0,i)])
-            }
-            return rotations
-        },
-
         /** <p>Returns a lattice from the pitches in the scale</p>
 
          * @param {Number} [hor=3] - the gap between numbers horizontally
@@ -1798,6 +1768,19 @@ class EDO {
             return melody
         },
 
+        random_melody_from_distribution: (dist,length=8)=>{
+            let melody = []
+            dist = dist.sort((a,b)=>a.rate-b.rate)
+            let multiplier = Math.floor(1/dist[0].rate)
+            dist = dist.map((el)=>[...new Array(Math.floor(multiplier*el.rate)).fill(el.note)])
+            dist = dist.flat()
+            while (melody.length<length){
+                let ind = Math.floor(Math.random() * (dist.length) )
+                melody.push(dist[ind])
+            }
+            return melody
+        },
+
         /** Returns the closest ratio (within a given limit) for any interval class.
          * @param  {Number} interval - An interval class
          * @param  {Number} [limit=17] - The harmonic limit
@@ -1834,6 +1817,36 @@ class EDO {
             let numerator = num_den[0]
             let denominator = num_den[1]
             return {ratio: closest_name, cents_offset: interval_in_cents-closest_ratio, decimal: numeric,octave:Math.log2(parseInt(denominator)),log_position:Math.log2(numeric)}
+        },
+
+        /** Returns the retrograde of a given set of pitches (their reversed order)
+         *
+         * @param  {Array<Number>} scale - a collection of pitches (not necessarily PCs)
+         * @return {Array<Number>} The reversed input
+         * @memberOf EDO#get
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * edo.get.retrograde([0,2,4,5,7,9,11])
+         * //returns [11,9,7,5,4,2,0]*/
+        retrograde: (pitches) => {
+            return pitches.reverse()
+        },
+
+        /**
+         * <p>Returns all the rotations (inversions) of an array of pitches</p>
+         * @param  {Array<Number>} pitches - a collection of pitches (not necessarily PCs, not necessarily unique)
+         * @return {Array<Array<Number>>}
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * edo.get.rotations([0,4,7,4])
+         * //returns [ [ 0, 4, 7, 4 ], [ 4, 7, 4, 0 ], [ 7, 4, 0, 4 ], [ 4, 0, 4, 7 ] ]
+         * */
+        rotations: (pitches) => {
+            let rotations = []
+            for (let i = 0; i < pitches.length; i++) {
+                rotations.push([...pitches.slice(i,pitches.length),...pitches.slice(0,i)])
+            }
+            return rotations
         },
 
         /** Generates all possible necklaces (unique scales without their modes) based on input parameters.

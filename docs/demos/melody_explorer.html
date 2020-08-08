@@ -222,6 +222,15 @@
             </div>
         </div>
     </div>
+    <div class="row">
+        <div class="col"></div>
+        <div class="col">
+            <h5>Random Melody from distribution.</h5><br>
+            <label>Melody length:</label><input type="text" size="1" id="rand_dist_length" value="8"><br>
+            <input type="button" value="Generate Melody" id="rand_dist_gen">
+            <input type="text" contenteditable="false" id="rand_dist_result" style="width: 500px">
+        </div>
+    </div>
 </div>
 
 
@@ -319,6 +328,14 @@ $("#ngram_button").click(function () {
     let start = $("#n_gram_start").val().trim().split(' ').map((v)=>parseInt(v))
     let length = parseInt($("#n_gram_length").val())
     $('#ngram_melody').val(edo.convert.midi_to_name(edo.get.random_melody_from_ngram(ngrams,start,length),60).join(" "))
+})
+
+$("#rand_dist_gen").click(function () {
+    let melody = $('#melody_input').val().trim().split(' ')
+    let length = parseInt($("#rand_dist_length").val().trim())
+    let dist = edo.get.pitch_distribution(melody)
+    let result = edo.get.random_melody_from_distribution(dist,length)
+    $("#rand_dist_result").val(result.join(" "))
 })
 
 </script>
