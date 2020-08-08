@@ -40,8 +40,13 @@ let edo = new EDO(12)
 // console.log(edo.get.random_melody_from_distribution(dist))
 
 
-let ngrams = edo.get.ngrams([4,4,5,7,7,5,4,2,0,0,2,4,4,2,2])
-console.log(ngrams);
+// let ngrams = edo.get.ngrams([4,4,5,7,7,5,4,2,0,0,2,4,4,2,2])
+let np = edo.get.pitch_fields([8,7,7,8,7,7,8,7,7,15,15,14,12,12,10,8,8,7,5,5])
+np = np.map((notes,i)=>{
+    if(i==0) return notes
+    return edo.get.without(notes,np[i-1])
+})
+console.log(np);
 
 
 
