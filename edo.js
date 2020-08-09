@@ -821,6 +821,24 @@ class EDO {
     /**A collection of functions manipulates an input
      * @namespace EDO#get*/
     get = {
+        /** <p>Returns the angle created on the necklace for a given trichord.</p>
+         *
+         * <p>If <code>a</code>, <code>b</code>, and <code>c</code>, are vertices of a triangle (trichord) on a necklace. This function returns the angle <code>abc</code>. That is, the angle node b has with a and c.</p>
+         * @param  {Array<Number>} triplet - a triplet/trichord of 3 numbers (pitch classes)
+         * @returns {Number} the angle in degrees
+         * @memberOf EDO#get
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * edo.get.angle([0,3,6]) //returns 90
+
+         */
+        angle: (triplet) => {
+            let diff1=Math.abs(triplet[0]-triplet[1])
+            diff1=(diff1>Math.ceil(this.edo/2))?this.edo-diff1:diff1
+            let diff2=Math.abs(triplet[1]-triplet[2])
+            diff2=(diff2>Math.ceil(this.edo/2))?this.edo-diff2:diff2
+            return ((180-diff1/12*360)/2) + ((180-diff2/12*360)/2)
+        },
 
         /** <p>Returns a vector describing the contour of the given pitches.</p>
          *

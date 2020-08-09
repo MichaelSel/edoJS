@@ -41,12 +41,26 @@ let edo = new EDO(12)
 
 
 // let ngrams = edo.get.ngrams([4,4,5,7,7,5,4,2,0,0,2,4,4,2,2])
-let np = edo.get.pitch_fields([8,7,7,8,7,7,8,7,7,15,15,14,12,12,10,8,8,7,5,5])
-np = np.map((notes,i)=>{
-    if(i==0) return notes
-    return edo.get.without(notes,np[i-1])
+// let np = edo.get.pitch_fields([8,7,7,8,7,7,8,7,7,15,15,14,12,12,10,8,8,7,5,5])
+// np = np.map((notes,i)=>{
+//     if(i==0) return notes
+//     return edo.get.without(notes,np[i-1])
+// })
+// console.log(np);
+
+let perms = edo.get.permutations([0,2,4,5,7,9,11]).map(p=>p.slice(0,3))
+let perm_ang = []
+perms=edo.get.unique_elements(perms).filter(a=>a[0]<a[2])
+perms.forEach(p=>{
+    perm_ang.push([p,edo.get.angle(p)])
 })
-console.log(np);
+perm_ang = perm_ang.sort((a,b)=>a[1]-b[1])
+perm_ang.forEach(p=>{
+    console.log(p)
+})
+
+
+
 
 
 
