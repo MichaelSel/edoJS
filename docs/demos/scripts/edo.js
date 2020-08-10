@@ -821,6 +821,24 @@ class EDO {
     /**A collection of functions manipulates an input
      * @namespace EDO#get*/
     get = {
+        /** <p>Returns the angle created on the necklace for a given trichord.</p>
+         *
+         * <p>If <code>a</code>, <code>b</code>, and <code>c</code>, are vertices of a triangle (trichord) on a necklace. This function returns the angle <code>abc</code>. That is, the angle node b has with a and c.</p>
+         * @param  {Array<Number>} triplet - a triplet/trichord of 3 numbers (pitch classes)
+         * @returns {Number} the angle in degrees
+         * @memberOf EDO#get
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * edo.get.angle([0,3,6]) //returns 90
+
+         */
+        angle: (triplet) => {
+            let diff1=Math.abs(triplet[0]-triplet[1])
+            diff1=(diff1>Math.ceil(this.edo/2))?this.edo-diff1:diff1
+            let diff2=Math.abs(triplet[1]-triplet[2])
+            diff2=(diff2>Math.ceil(this.edo/2))?this.edo-diff2:diff2
+            return ((180-diff1/12*360)/2) + ((180-diff2/12*360)/2)
+        },
 
         /** <p>Returns a vector describing the contour of the given pitches.</p>
          *
@@ -876,6 +894,7 @@ class EDO {
          * The function also keeps track of the number of times each motive appeared.</p>
          * @param  {Array<Number>} melody - a collection of pitches to find (in order)
          * @param  {Boolean} [allow_skips=false] - if false, the search will only be done on consecutive items
+         * @param  {Number} [maximal_length=8] - Do not look for motives longer than this value.
          * @return {Array<motives>}
          * @memberOf EDO#get
          * @function
@@ -889,9 +908,10 @@ class EDO {
          *   { motive: [ 1 ], incidence: 2 } //going a half-step up appears twice
          * ]
          */
-        contour_motives: (melody, allow_skips = false) => {
+        contour_motives: (melody, allow_skips = false,maximal_length=8) => {
             let motives = []
             let all_subsets = this.get.subsets(melody, allow_skips).map((subset) => this.get.contour(subset)).filter((contour) => contour.length > 1)
+            all_subsets = all_subsets.filter(sub=>sub.length<=maximal_length)
 
             let unique_subsets = this.get.unique_elements(all_subsets)
             motives = unique_subsets.map((subset) => {
@@ -1293,6 +1313,7 @@ class EDO {
          * @param  {Array<Number>} melody - a collection of pitches to find (in order)
          * @param  {Boolean} [intervalic=true] - looks at the intervals rather than the pitch classes.
          * @param  {Boolean} [allow_skips=true] - if false, the search will only be done on consecutive items
+         * @param  {Number} [maximal_length=8] - Do not look for motives longer than this value
          * @return {Array<motives>}
          * @memberOf EDO#get
          * @function
@@ -1306,16 +1327,16 @@ class EDO {
          *   { motive: [ 1 ], incidence: 2 } //going a half-step up appears twice
          * ]
          */
-        motives: (melody, intervalic = true, allow_skips = false) => {
+        motives: (melody, intervalic = true, allow_skips = false,maximal_length=8) => {
             let motives = []
             if (!intervalic) {
-                let all_subsets = unique_in_array(this.get.subsets(melody, allow_skips))
+                let all_subsets = this.get.unique_elements(this.get.subsets(melody, allow_skips).filter(s=>s.length<=maximal_length))
                 all_subsets.forEach((subset) => {
                     let incidence = this.get.subset_indices(subset, melody, allow_skips).length
                     motives.push({motive: subset, incidence: incidence})
                 })
             } else {
-                let all_subsets = this.get.subsets(melody, allow_skips).map((subset) => this.convert.to_steps(subset))
+                let all_subsets = this.get.subsets(melody, allow_skips).filter(s=>s.length<=maximal_length).map((subset) => this.convert.to_steps(subset))
                 let unique_subsets = this.get.unique_elements(all_subsets)
 
                 motives = unique_subsets.map((subset) => {
@@ -3846,7 +3867,7 @@ class Scale {
          *  { motive: [ -1, 0 ], incidence: 5 }
          * ]
          */
-        motives_diatonic: (melody, allow_skips = false) => {
+        motives_diatonic: (melody, allow_skips = false,maximal_length=8) => {
             let scale = this.pitches
             let not_in_scale = melody.filter((note) => scale.indexOf(this.parent.mod(note, this.edo)) == -1)
             if (not_in_scale.length > 0) return null
@@ -3854,7 +3875,7 @@ class Scale {
             scale = this.parent.get.unique_elements(scale).sort((a, b) => a - b)
 
             let scale_degrees = melody.map((note) => scale.indexOf(note) + 1)
-            let motives = this.parent.get.motives(scale_degrees, true, allow_skips)
+            let motives = this.parent.get.motives(scale_degrees, true, allow_skips,maximal_length)
             return motives
 
         },
