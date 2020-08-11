@@ -2024,11 +2024,12 @@ class EDO {
          * <p>Returns all the melodies that can be constructed without any leaps (regardless of how many notes in the melody need to be skipped until next scalar note is found)</p>
          * @param  {Array<Number>} melody - a collection of pitches (not necessarily PCs, not necessarily unique)
          * @param  {Array<Number>} [steps=[1,2]] - which PCs to consider as steps
+         * @param  {Boolean} [look_back=true] - When true, the algorithm creates alternate paths to already resolves melodies. When false, resolved melodies will not be considered and a new path will begin.
          * @return {Array<Object>} object with property <code>pitch</code> indicating the pitch, and property <code>index</code> representing its original position in the melody.
          * @example
          * let edo = new EDO(12) // define a tuning system
-         * let melody = [2,2,4,2,7,6,2,2,4,2,9,7,2,2,14,11,7,6,4,12,12,11,7,9,7] //happy birthday song
-         * edo.get.scalar_melodies([0,4,7,4])
+         * let melody = [2,2,4,2,7,6,2,2,4,2,9,7] //happy birthday song
+         * edo.get.scalar_melodies(melody)
          * //returns
          * [
          *  [
@@ -2039,51 +2040,22 @@ class EDO {
          *      { pitch: 2, index: 6 },
          *      { pitch: 2, index: 7 },
          *      { pitch: 4, index: 8 },
-         *      { pitch: 2, index: 9 },
-         *      { pitch: 2, index: 12 },
-         *      { pitch: 2, index: 13 },
-         *      { pitch: 4, index: 18 }
+         *      { pitch: 2, index: 9 }
          *  ],
          *  [
          *      { pitch: 7, index: 4 },
          *      { pitch: 6, index: 5 },
          *      { pitch: 4, index: 8 },
-         *      { pitch: 2, index: 9 },
-         *      { pitch: 2, index: 12 },
-         *      { pitch: 2, index: 13 },
-         *      { pitch: 4, index: 18 }
+         *      { pitch: 2, index: 9 }
          *  ],
          *  [
+         *      { pitch: 7, index: 4 },
          *      { pitch: 9, index: 10 },
-         *      { pitch: 7, index: 11 },
-         *      { pitch: 7, index: 16 },
-         *      { pitch: 6, index: 17 },
-         *      { pitch: 4, index: 18 }
+         *      { pitch: 7, index: 11 }
          *  ],
-         *  [
-         *      { pitch: 14, index: 14 },
-         *      { pitch: 12, index: 19 },
-         *      { pitch: 12, index: 20 },
-         *      { pitch: 11, index: 21 },
-         *      { pitch: 9, index: 23 },
-         *      { pitch: 7, index: 24 }
-         *  ],
-         *  [
-         *      { pitch: 11, index: 15 },
-         *      { pitch: 12, index: 19 },
-         *      { pitch: 12, index: 20 },
-         *      { pitch: 11, index: 21 },
-         *      { pitch: 9, index: 23 },
-         *      { pitch: 7, index: 24 }
-         *  ],
-         *  [
-         *      { pitch: 7, index: 22 },
-         *      { pitch: 9, index: 23 },
-         *      { pitch: 7, index: 24 }
-         *  ]
          * ]
          * */
-        scalar_melodies: (melody,steps=[1,2])=> {
+        scalar_melodies: (melody,steps=[1,2],look_back=true)=> {
             steps.push(0)
             let melodies = []
             melody.forEach((note,ind)=> {
@@ -2100,27 +2072,29 @@ class EDO {
                 }
                 if(!in_any) {
                     let possible = []
-                    let look_for=[]
-                    steps.forEach(s=>{
-                        look_for.push(note+s)
-                        look_for.push(note-s)
-                    })
-                    look_for=this.get.unique_elements(look_for)
-                    look_for.forEach((n)=>{
-                        melodies.map(m=>m.map(el=>el.pitch)).forEach((m,index1)=>{
-                            if(m.includes(n)) {
-                                let last = m.lastIndexOf(n)
-                                possible.push([note,ind,index1,last])
-                                // possible.push([m,m.lastIndexOf(n)])
-                            }
+                    if(look_back) {
+                        let look_for=[]
+                        steps.forEach(s=>{
+                            look_for.push(note+s)
+                            look_for.push(note-s)
                         })
-                    })
-                    possible = possible.map(el=>{
-                        let mel = melodies[el[2]].slice(0,el[3]+1)
-                        mel = [...mel,{pitch:el[0],index:el[1]}]
-                        return mel
-                    })
-                    melodies = [...melodies,...possible]
+                        look_for=this.get.unique_elements(look_for)
+                        look_for.forEach((n)=>{
+                            melodies.map(m=>m.map(el=>el.pitch)).forEach((m,index1)=>{
+                                if(m.includes(n)) {
+                                    let last = m.lastIndexOf(n)
+                                    possible.push([note,ind,index1,last])
+                                    // possible.push([m,m.lastIndexOf(n)])
+                                }
+                            })
+                        })
+                        possible = possible.map(el=>{
+                            let mel = melodies[el[2]].slice(0,el[3]+1)
+                            mel = [...mel,{pitch:el[0],index:el[1]}]
+                            return mel
+                        })
+                        melodies = [...melodies,...possible]
+                    }
                     if(possible.length==0) melodies.push([{pitch:note,index:ind}])
 
                 }

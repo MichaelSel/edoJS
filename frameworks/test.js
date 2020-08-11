@@ -64,8 +64,6 @@ let edo = new EDO(12)
 
 
 
-let melody = [0, 4, 7, 12, 16, 7, 12, 16, 0, 4, 7, 12, 16, 7, 12, 16, 0, 2, 9, 14, 17, 9, 14, 17, -1, 2, 7, 14, 17, 7, 14, 17, 0, 4, 7, 12, 16, 0, 4, 7, 12, 16]
-
-
-console.log(edo.get.scalar_melodies(melody,[1,2]))
+let melody = [2,2,4,2,7,6,2,2,4,2,9,7] //happy birthday song
+console.log(edo.get.scalar_melodies(melody,[1,2],true))
 
