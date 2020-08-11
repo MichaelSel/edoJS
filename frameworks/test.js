@@ -64,6 +64,6 @@ let edo = new EDO(12)
 
 
 
-let melody = [2,2,4,2,7,6,2,2,4,2,9,7] //happy birthday song
-console.log(edo.get.scalar_melodies(melody,[1,2],true))
-
+let midi = edo.midi.import('midi/Bach - Prelude1.mid')
+midi = edo.midi.strip(midi).map(n=>(Array.isArray(n))?n[0]:n)
+console.log(midi.join(" "))

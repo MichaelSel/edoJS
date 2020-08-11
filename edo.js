@@ -2530,6 +2530,109 @@ class EDO {
 
     }
 
+    /**A collection of functions to import and manipulate a midi file
+     * @namespace EDO#midi*/
+    midi = {
+        /** <p>Imports a midi file</p>
+         *
+         * @param  {String} file_path - The path of the file
+         * @returns {JSON} the midi file as JSON
+         * @memberOf EDO#midi
+         */
+        import: (file_path) => {
+            if (environment != 'server') return alert("This is currently supported only on server-side")
+            let midi = load_file(file_path)
+            midi = midiParser.parse(midi);
+            midi.track = midi.track.map(track=>{
+                track.event = track.event.map((e,i,all)=>{
+                    if(i==0) e.onset = e.deltaTime
+                    else {
+                        e.onset = all[i-1].onset+e.deltaTime
+                    }
+                    return e
+                })
+                return track
+            })
+
+
+            return midi
+        },
+
+        /** <p>Gets a midi file and returns only the note on events from all tracks in correct order as one big array</p>
+         *
+         * @param  {String} file_path - The path of the file
+         * @returns {JSON} the midi file as JSON
+         * @memberOf EDO#midi
+         * @see EDO#midi.import
+         */
+        strip: (parsed_midi) =>{
+            let p = parsed_midi
+            let all_times = []
+            p.track = p.track.map(t=>{
+                t.event = t.event.filter(e=>{
+                    return e.type==9
+                }).map(e=>{
+                    let el = {pitch:e.data[0],onset:e.onset}
+                    return el
+                }).map((e,i,all)=>{
+                    let onset = e.onset
+                    if (all_times.indexOf(onset)==-1) all_times.push(onset)
+
+                    return all.filter((element)=>element.onset==onset)
+                })
+                t.event = this.get.unique_elements(t.event)
+                return t
+            })
+            all_times.sort((a,b)=>a-b)
+            p.track = p.track.map(t=>{
+                t.event = t.event.map(e=>{
+                    e = e.map(ev=>{
+                        ev.onset = all_times.indexOf(ev.onset)
+                        return ev
+                    })
+                    return e
+                })
+                return t
+            })
+            p.track = p.track.map(t=>{
+                t = t.event.reduce((a,e)=>{
+                    e.forEach(n=>{
+                        if(a[n.onset]==undefined) a[n.onset] = [n.pitch]
+                        else a[n.onset].push(n.pitch)
+                    })
+                    return a
+                },[])
+                return t
+            })
+            p.track = p.track
+            //     .map(t=>{
+            //     t = t.map(n=>{
+            //         return (n.length==1)? n[0]: n
+            //     })
+            //     return t
+            // })
+                .filter(t=>{
+                return t.length>0
+            })
+                // .map(t=>{
+                //     console.log(this.convert.midi_to_name(t))
+                //     return t
+                // })
+            let all_tracks = []
+            p.track.forEach((t)=>{
+                t.forEach((n,i)=>{
+                    if(all_tracks[i]==undefined) all_tracks[i]=[...n]
+                    else all_tracks[i] = [...all_tracks[i],...n]
+                })
+
+            })
+            all_tracks=all_tracks.map(e=>(e.length==1)?e[0]:e)
+            return all_tracks
+
+        }
+
+    }
+
     /**A collection of functions that import files into the framework
      * @namespace EDO#import*/
     import = {
@@ -2548,19 +2651,8 @@ class EDO {
                 parsed = result
             });
             return parsed
-        },
-        /** <p>Imports a midi file</p>
-         *
-         * @param  {String} file_path - The path of the file
-         * @returns {JSON} the midi file as JSON
-         * @memberOf EDO#import
-         */
-        midi: (file_path) => {
-            if (environment != 'server') return alert("This is currently supported only on server-side")
-            let midi = load_file(file_path)
-            midi = midiParser.parse(midi);
-            return midi
-        },
+        }
+
 
 
     }
