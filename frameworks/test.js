@@ -48,22 +48,24 @@ let edo = new EDO(12)
 // })
 // console.log(np);
 
-let perms = edo.get.permutations([0,2,4,5,7,9,11]).map(p=>p.slice(0,3))
-let perm_ang = []
-perms=edo.get.unique_elements(perms).filter(a=>a[0]<a[2])
-perms.forEach(p=>{
-    perm_ang.push([p,edo.get.angle(p)])
-})
-perm_ang = perm_ang.sort((a,b)=>a[1]-b[1])
-perm_ang.forEach(p=>{
-    console.log(p)
-})
+// let perms = edo.get.permutations([0,2,4,5,7,9,11]).map(p=>p.slice(0,3))
+// let perm_ang = []
+// perms=edo.get.unique_elements(perms).filter(a=>a[0]<a[2])
+// perms.forEach(p=>{
+//     perm_ang.push([p,edo.get.angle(p)])
+// })
+// perm_ang = perm_ang.sort((a,b)=>a[1]-b[1])
+// perm_ang.forEach(p=>{
+//     console.log(p)
+// })
 
 
 
 
 
 
+let melody = [2,2,4,2,7,6,2,2,4,2,9,7,2,2,14,11,7,6,4,12,12,11,7,9,7]
 
 
+console.log(edo.get.scalar_melodies(melody,[1,2]))
 

@@ -237,6 +237,18 @@
             <input type="text" contenteditable="false" id="rand_dist_result" style="width: 500px">
         </div>
     </div>
+    <div class="row">
+        <div class="col">
+            <h5>Scalar sub-melodies</h5><br>
+            <label>Original:</label><br>
+            <div id="sub_melody_viewer" style="text-align:left;color:black;margin:0 auto;width: 500px;height:75px;background-color: white"></div>
+            <input type="button" value="Find Melodies" id="sub_melody_button">
+            <select id="sub_melody_select" size="15" style="width: 500px;height:200px"></select>
+        </div>
+        <div class="col">
+
+        </div>
+    </div>
 </div>
 
 
@@ -354,6 +366,39 @@ $("#field_button").click(function () {
     fields.forEach((field)=>{
         $("#field_select").append("<option value='" + field + "'>" + field.join('  ') + "</option>")
     })
+})
+
+$("#melody_input").change(function() {
+    let mel = $('#melody_input').val().trim()
+    $("#sub_melody_viewer").html(mel)
+})
+
+$("#sub_melody_viewer").html($('#melody_input').val().trim())
+
+$("#sub_melody_button").click(function () {
+    let mel = $('#melody_input').val().trim().split(' ')
+    let melodies = edo.get.scalar_melodies(mel)
+    melodies.forEach(m=>{
+        let str = "<option value='" + JSON.stringify(m) +"'>" +
+            m.map(el=>el.pitch).join(" ") +
+            "</option>"
+        $("#sub_melody_select").append(str)
+
+
+    })
+})
+
+$("#sub_melody_select").change(function () {
+    let sel = JSON.parse($(this).val()).map(el=>el.index)
+    let mel = $('#melody_input').val().trim().split(" ")
+    mel=mel.map((n,i)=>{
+        // if(edo.is.element_of(parseInt(i),parseInt(sel))) return "<span style='background-color: blue'>" + n + "</span>"
+        // return "<span>" + n + "</span>"
+        if(sel.includes(i)) return "<span style='font-weight:bold;color: red'>" + n + "</span>"
+        return "<span>" + n + "</span>"
+    }).join(" ")
+    $("#sub_melody_viewer").html(mel)
+    console.log(sel,mel)
 })
 </script>
 </body>

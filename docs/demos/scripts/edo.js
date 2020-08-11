@@ -1549,8 +1549,11 @@ class EDO {
         without: (array1, array2, normal = false) => {
             let copy = [...array1]
             array2.forEach((note) => {
-                var index = copy.indexOf(note);
-                if (index != -1) copy.splice(index, 1);
+                do {
+                    var index = copy.indexOf(note);
+                    if (index != -1) copy.splice(index, 1);
+                } while (index!=-1)
+
             })
             if (normal) copy = this.get.normal_order(copy)
 
@@ -2017,6 +2020,89 @@ class EDO {
             return rotations
         },
 
+        /**
+         * <p>Returns all the melodies that can be constructed without any leaps (regardless of how many notes in the melody need to be skipped until next scalar note is found)</p>
+         * @param  {Array<Number>} melody - a collection of pitches (not necessarily PCs, not necessarily unique)
+         * @param  {Array<Number>} [steps=[1,2]] - which PCs to consider as steps
+         * @return {Array<Object>} object with property <code>pitch</code> indicating the pitch, and property <code>index</code> representing its original position in the melody.
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * let melody = [2,2,4,2,7,6,2,2,4,2,9,7,2,2,14,11,7,6,4,12,12,11,7,9,7] //happy birthday song
+         * edo.get.scalar_melodies([0,4,7,4])
+         * //returns
+         * [
+         *  [
+         *      { pitch: 2, index: 0 },
+         *      { pitch: 2, index: 1 },
+         *      { pitch: 4, index: 2 },
+         *      { pitch: 2, index: 3 },
+         *      { pitch: 2, index: 6 },
+         *      { pitch: 2, index: 7 },
+         *      { pitch: 4, index: 8 },
+         *      { pitch: 2, index: 9 },
+         *      { pitch: 2, index: 12 },
+         *      { pitch: 2, index: 13 },
+         *      { pitch: 4, index: 18 }
+         *  ],
+         *  [
+         *      { pitch: 7, index: 4 },
+         *      { pitch: 6, index: 5 },
+         *      { pitch: 4, index: 8 },
+         *      { pitch: 2, index: 9 },
+         *      { pitch: 2, index: 12 },
+         *      { pitch: 2, index: 13 },
+         *      { pitch: 4, index: 18 }
+         *  ],
+         *  [
+         *      { pitch: 9, index: 10 },
+         *      { pitch: 7, index: 11 },
+         *      { pitch: 7, index: 16 },
+         *      { pitch: 6, index: 17 },
+         *      { pitch: 4, index: 18 }
+         *  ],
+         *  [
+         *      { pitch: 14, index: 14 },
+         *      { pitch: 12, index: 19 },
+         *      { pitch: 12, index: 20 },
+         *      { pitch: 11, index: 21 },
+         *      { pitch: 9, index: 23 },
+         *      { pitch: 7, index: 24 }
+         *  ],
+         *  [
+         *      { pitch: 11, index: 15 },
+         *      { pitch: 12, index: 19 },
+         *      { pitch: 12, index: 20 },
+         *      { pitch: 11, index: 21 },
+         *      { pitch: 9, index: 23 },
+         *      { pitch: 7, index: 24 }
+         *  ],
+         *  [
+         *      { pitch: 7, index: 22 },
+         *      { pitch: 9, index: 23 },
+         *      { pitch: 7, index: 24 }
+         *  ]
+         * ]
+         * */
+        scalar_melodies: (melody,steps=[1,2])=> {
+            steps.push(0)
+            let melodies = []
+            melody.forEach((note,ind)=> {
+                let in_any=false
+                for (let i = 0; i < melodies.length; i++) {
+                    let mel = melodies[i]
+                    let last_note = mel[mel.length-1].pitch
+                    let step_size = Math.abs(note-last_note)
+                    let scalar = this.is.element_of(step_size,steps)
+                    if(scalar) {
+                        melodies[i].push({pitch:note,index:ind})
+                        in_any=true
+                    }
+                }
+                if(!in_any) melodies.push([{pitch:note,index:ind}])
+            })
+            return melodies
+        },
+
         /** Generates all possible necklaces (unique scales without their modes) based on input parameters.
          *
          * @param  {Number} min_step - The smallest step size that can be used to form scales. If min_step=3, no scale will contain
@@ -2396,6 +2482,32 @@ class EDO {
             return unique
         },
 
+        /** Gets a melody, and attempts to remove chromatic passing tones
+         *
+         * @param  {Array<number>} melody - an array representing a melody
+         * @returns {Array<Number>} The array without the chromatic passing tones
+         * @memberOf EDO#get
+         * @example
+         * let edo = new EDO(12) //Create a tuning context
+         * let melody = [12,10,9,8,7,6,8,10,11,12,10,9,8,7,6,8,10,11,12,14,19,15] //syrinx
+         * edo.get.without_chromatic_notes(melody)
+         * //returns [0, 12, 6, 8, 12, 6, 8, 12, 14, 19, 15]
+         */
+        without_chromatic_notes: (melody)=> {
+            melody = melody.filter((n,i,m)=>{
+                let adder = 0
+                if(i>0) {
+                    if(m[i-1]>m[i]) adder=-1
+                    else if(m[i-1]<m[i]) adder=1
+                }
+                if(m[i]+adder==m[i+1]) return false
+                return true
+
+            })
+
+            return melody
+        },
+
         primes_in_range: (upper = 17, lower = 2) => {
             let primes = []
             for (let num = lower; num <= upper; num++) {
@@ -2414,7 +2526,9 @@ class EDO {
                 if (n % parseInt(i) == 0) divisors.push(i)
             }
             return divisors
-        }
+        },
+
+
     }
 
     /**A collection of functions that import files into the framework
@@ -4499,6 +4613,8 @@ class Scale {
         without: (to_remove, normal = false) => {
             return this.parent.get.without(this.pitches, to_remove, normal)
         },
+
+
 
 
     }
