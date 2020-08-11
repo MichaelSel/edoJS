@@ -376,8 +376,9 @@ $("#melody_input").change(function() {
 $("#sub_melody_viewer").html($('#melody_input').val().trim())
 
 $("#sub_melody_button").click(function () {
-    let mel = $('#melody_input').val().trim().split(' ')
+    let mel = $('#melody_input').val().trim().split(' ').map(n=>parseInt(n))
     let melodies = edo.get.scalar_melodies(mel)
+    $("#sub_melody_select").html("")
     melodies.forEach(m=>{
         let str = "<option value='" + JSON.stringify(m) +"'>" +
             m.map(el=>el.pitch).join(" ") +
@@ -392,14 +393,13 @@ $("#sub_melody_select").change(function () {
     let sel = JSON.parse($(this).val()).map(el=>el.index)
     let mel = $('#melody_input').val().trim().split(" ")
     mel=mel.map((n,i)=>{
-        // if(edo.is.element_of(parseInt(i),parseInt(sel))) return "<span style='background-color: blue'>" + n + "</span>"
-        // return "<span>" + n + "</span>"
         if(sel.includes(i)) return "<span style='font-weight:bold;color: red'>" + n + "</span>"
         return "<span>" + n + "</span>"
     }).join(" ")
     $("#sub_melody_viewer").html(mel)
-    console.log(sel,mel)
 })
+
+
 </script>
 </body>
 </html>

@@ -2098,7 +2098,32 @@ class EDO {
                         in_any=true
                     }
                 }
-                if(!in_any) melodies.push([{pitch:note,index:ind}])
+                if(!in_any) {
+                    let possible = []
+                    let look_for=[]
+                    steps.forEach(s=>{
+                        look_for.push(note+s)
+                        look_for.push(note-s)
+                    })
+                    look_for=this.get.unique_elements(look_for)
+                    look_for.forEach((n)=>{
+                        melodies.map(m=>m.map(el=>el.pitch)).forEach((m,index1)=>{
+                            if(m.includes(n)) {
+                                let last = m.lastIndexOf(n)
+                                possible.push([note,ind,index1,last])
+                                // possible.push([m,m.lastIndexOf(n)])
+                            }
+                        })
+                    })
+                    possible = possible.map(el=>{
+                        let mel = melodies[el[2]].slice(0,el[3]+1)
+                        mel = [...mel,{pitch:el[0],index:el[1]}]
+                        return mel
+                    })
+                    melodies = [...melodies,...possible]
+                    if(possible.length==0) melodies.push([{pitch:note,index:ind}])
+
+                }
             })
             return melodies
         },
