@@ -324,7 +324,8 @@ class EDO {
      *  <li> [EDO.get]{@link EDO#get} is a set of functions used to manipulate and generate stuff.</li>
      *  <li> [EDO.is]{@link EDO#is} is a set of functions used for boolean truth statements.</li>
      *  <li> [EDO.show]{@link EDO#show} is a set of functions used for visualization.</li>
-     *  <li> [EDO.import]{@link EDO#import} is a set of functions used for importing other file formats (like midi or musicXML).</li>
+     *  <li> [EDO.midi]{@link EDO#midi} is a set of functions used for importing and processing midi files.</li>
+     *  <li> [EDO.xml]{@link EDO#xml} is a set of functions used for importing and processing musicXML files.</li>
      *  <li> [EDO.export]{@link EDO#export} is a set of functions used for exporting the output to various formats.</li>
      *  </ul>
      * @param {number} edo - The number of equal divisions of the octave.
@@ -2560,10 +2561,26 @@ class EDO {
 
         /** <p>Gets a midi file and returns only the note on events from all tracks in correct order as one big array</p>
          *
-         * @param  {String} file_path - The path of the file
-         * @returns {JSON} the midi file as JSON
+         * @param  {JSON} parsed_midi - The returned JSON from [EDO.midi.import()]{@link EDO#midi.import}
+         * @returns {Array<Number|Array<Number>>} Returns an array of pitches (or arrays of pitches if there's more than one note played simultaneously)
          * @memberOf EDO#midi
          * @see EDO#midi.import
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * let bach = edo.midi.import('midi/Bach - Prelude1.mid') //parsing Bach prelude in C major midi file which has multiple tracks
+         * edo.midi.strip(bach) //returns all tracks as one array of pitches
+         * [
+         *     60, 64, 67, 72, 76, 67, 72, 76, 60, 64, 67, 72,
+         *     76, 67, 72, 76, 60, 62, 69, 74, 77, 69, 74, 77,
+         *     60, 62, 69, 74, 77, 69, 74, 77, 59, 62, 67, 74,
+         *     77, 67, 74, 77, 59, 62, 67, 74, 77, 67, 74, 77,
+         *     60, 64, 67, 72, 76, 67, 72, 76, 60, 64, 67, 72,
+         *     76, 67, 72, 76, 60, 64, 69, 76, 81, 69, 76, 81,
+         *     60, 64, 69, 76, 81, 69, 76, 81, 60, 62, 66, 69,
+         *     74, 66, 69, 74, 60, 62, 66, 69, 74, 66, 69, 74,
+         *     59, 62, 67, 74,
+         *     ... 441 more items
+         * ]
          */
         strip: (parsed_midi) =>{
             let p = parsed_midi
@@ -2629,20 +2646,101 @@ class EDO {
             all_tracks=all_tracks.map(e=>(e.length==1)?e[0]:e)
             return all_tracks
 
+        },
+
+        /** <p>Gets a midi file and chunks all notes to partitions of a certain timeframe</p>
+         *
+         * @param  {JSON} parsed_midi - The returned JSON from [EDO.midi.import()]{@link EDO#midi.import}
+         * @param  {Number} [ticks=480] - The number of ticks for each partition (the "harmonic rhythm")
+         * @param  {Boolean} [unique=true] - When true, even if a note is repeated within a given timeframe it will appear once.
+         * @param  {Boolean} [as_PC=false] - When true, instead of returning the midi note number, the pitches will be returned as pitch classes
+         * @param  {Boolean} [ordered=false] - When true, each chord will be sorted by pitch height (rather than the order in which it appeared in the midi file)
+         * @returns {Array<Array<Number>>} The midi file returns as array of chords corresponding the to the given timeframe
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * let bach = edo.midi.import('midi/Bach - Prelude1.mid') //parsing Bach prelude in C major midi file
+         * bach = edo.midi.chordify(bach,960,true,false,true) //chordifying
+         * edo.convert.midi_to_name(bach) //replacing the midi values with note names
+         * //returns
+         * [
+         *  [ 'C4', 'E4', 'G4', 'C5', 'E5' ],
+         *  [ 'C4', 'D4', 'A4', 'D5', 'F5' ],
+         *  [ 'B3', 'D4', 'G4', 'D5', 'F5' ],
+         *  [ 'C4', 'E4', 'G4', 'C5', 'E5' ],
+         *  [ 'C4', 'E4', 'A4', 'E5', 'A5' ],
+         *  [ 'C4', 'D4', 'F#4', 'A4', 'D5' ],
+         *  [ 'B3', 'D4', 'G4', 'D5', 'G5' ],
+         *  [ 'B3', 'C4', 'E4', 'G4', 'C5' ],
+         *  [ 'A3', 'C4', 'E4', 'G4', 'C5' ],
+         *  [ 'D3', 'A3', 'D4', 'F#4', 'C5' ],
+         *  [ 'G3', 'B3', 'D4', 'G4', 'B4' ],
+         *  [ 'G3', 'Bb3', 'E4', 'G4', 'C#5' ],
+         *  [ 'F3', 'A3', 'D4', 'A4', 'D5' ],
+         *  [ 'F3', 'Ab3', 'D4', 'F4', 'B4' ],
+         *  [ 'E3', 'G3', 'C4', 'G4', 'C5' ],
+         *  [ 'E3', 'F3', 'A3', 'C4', 'F4' ],
+         *  [ 'D3', 'F3', 'A3', 'C4', 'F4' ],
+         *  [ 'G2', 'D3', 'G3', 'B3', 'F4' ],
+         *  [ 'C3', 'E3', 'G3', 'C4', 'E4' ],
+         *  [ 'C3', 'G3', 'Bb3', 'C4', 'E4' ],
+         *  [ 'F2', 'F3', 'A3', 'C4', 'E4' ],
+         *  [ 'F#2', 'C3', 'A3', 'C4', 'Eb4' ],
+         *  [ 'Ab2', 'F3', 'B3', 'C4', 'D4' ],
+         *  [ 'G2', 'F3', 'G3', 'B3', 'D4' ],
+         *  [ 'G2', 'E3', 'G3', 'C4', 'E4' ],
+         *  [ 'G2', 'D3', 'G3', 'C4', 'F4' ],
+         *  [ 'G2', 'D3', 'G3', 'B3', 'F4' ],
+         *  [ 'G2', 'Eb3', 'A3', 'C4', 'F#4' ],
+         *  [ 'G2', 'E3', 'G3', 'C4', 'G4' ],
+         *  [ 'G2', 'D3', 'G3', 'C4', 'F4' ],
+         *  [ 'G2', 'D3', 'G3', 'B3', 'F4' ],
+         *  [ 'C2', 'C3', 'G3', 'Bb3', 'E4' ],
+         *  ['C2', 'C3', 'D3', 'F3', 'A3', 'C4', 'F4'],
+         *  ['C2', 'B2', 'D4', 'E4', 'F4', 'G4', 'B4', 'D5', 'F5'],
+         *  [ 'C2', 'C3', 'E4', 'G4', 'C5' ]
+         * ]
+         *
+         * @memberOf EDO#midi
+         * @see EDO#midi.import
+         */
+        chordify: (parsed_midi,ticks=480,unique=true,as_PC=false,ordered=false) =>{
+            let p = parsed_midi
+            let max = 0
+            p = p.track.map(t=>{
+                t.event = t.event.filter(e=>e.type==9) // return only note on events
+                t.event.map(e=>(e.onset>max)?max=e.onset:max=max) //gets duration of file
+                return [...t.event]
+            }).flat().sort((a,b)=>a.onset-b.onset)
+            let partitions = Array.from(Array(Math.ceil(max/ticks)).keys())
+                .map(e=>e*ticks)
+                .map((e,i,arr)=> {
+                    if(arr.length-1>i) return p.filter(el=>el.onset>=arr[i] && el.onset<arr[i+1])
+                    else return p.filter(el=>el.onset>=arr[i])
+                })
+                .map(e=>{
+                    e = e.map(n=>{
+                        if(as_PC) return this.mod(n.data[0],this.edo)
+                        return n.data[0]
+                    })
+                    if(ordered) e.sort((a,b)=>a-b)
+                    if(unique) e=this.get.unique_elements(e)
+                    return e
+                })
+            return partitions
         }
 
     }
 
-    /**A collection of functions that import files into the framework
-     * @namespace EDO#import*/
-    import = {
+    /**A collection of functions to import and manipulate a midi file
+     * @namespace EDO#xml*/
+    xml = {
         /** <p>Imports a music xml file and loads it as a JSON.</p>
          *
          * @param  {String} file_path - The path of the file
          * @returns {JSON}
          * @memberOf EDO#import
          */
-        xml_raw: (file_path) => {
+        import: (file_path) => {
             if (environment != 'server') return alert("This is currently supported only on server-side")
 
             var xml = load_file(file_path)
@@ -2652,9 +2750,6 @@ class EDO {
             });
             return parsed
         }
-
-
-
     }
 
     /**A collection of functions that return a boolean

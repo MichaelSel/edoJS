@@ -65,5 +65,11 @@ let edo = new EDO(12)
 
 
 let midi = edo.midi.import('midi/Bach - Prelude1.mid')
-midi = edo.midi.strip(midi).map(n=>(Array.isArray(n))?n[0]:n)
-console.log(midi.join(" "))
+
+// midi = edo.midi.strip(midi).map(n=>(Array.isArray(n))?n[0]:n)
+// console.log(midi.join(" "))
+// let bach = edo.midi.chordify(midi,960,true,false,true)
+// console.log(edo.convert.midi_to_name(bach))
+
+midi = edo.midi.strip(midi)
+console.log(midi)
