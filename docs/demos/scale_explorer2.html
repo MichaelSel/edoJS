@@ -323,7 +323,6 @@
 
         $("#progression_result").html("")
         chords.forEach((chord)=>{
-            console.log(edo.convert.pc_to_name(chord))
             $("#progression_result").append(edo.convert.pc_to_name(chord).join(' ') + "\n")
         })
 
