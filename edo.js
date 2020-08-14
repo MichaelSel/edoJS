@@ -1208,6 +1208,66 @@ class EDO {
             return lattice
         },
 
+        /** <p>Returns the Levenshtein distance from one collection of pitches to another</p>
+         * @param {Array<Number>} collection1 - A collection of pitches
+         * @param {Array<Number>} collection1 - Another collection of pitches
+         * @param {Boolean} [ratio_calc=false] - When true, the function computes the
+         * levenshtein distance ratio of similarity between two collections
+         * @returns {Number}
+         * @example
+         * let edo = new EDO(12) //define tuning
+         * edo.get.levenshtein([0,2,4,7,9],[0,2,4,5,7,9,11]) //returns 1
+         *
+         * @example
+         * edo.get.levenshtein([0,2,4,7,9],[0,2,4,5,7,9,11],true) //returns 0.9230769230769231
+         * @memberOf EDO#get*/
+        levenshtein: (collection1,collection2, ratio_calc = false) => {
+
+
+
+            let s = collection1
+            let t = collection2
+
+            //initialize matrix with 0
+
+            let rows = s.length + 1
+            let cols = t.length + 1
+            let distance = Array.from({length: rows}, e => Array(cols).fill(0));
+            let col
+            let row
+            //Populate matrix of zeros with the indices of each character of both strings
+            for (let i = 1; i < rows; i++) {
+                for (let k = 1; k < cols; k++) {
+
+                    distance[i][0] = i
+                    distance[0][k] = k
+                }
+            }
+
+            // Iterate over the matrix to compute the cost of deletions,insertions and/or substitutions
+            let cost = 0
+            for (col = 1; col < cols; col++) {
+                for (row = 1; row < rows; row++) {
+                    if (s[row - 1] == t[col - 1]) cost = 0 //If the characters are the same in the two strings in a given position [i,j] then the cost is 0
+                    else {
+                        // In order to align the results with those of the Python Levenshtein package, if we choose to calculate the ratio
+                        // the cost of a substitution is 2. If we calculate just distance, then the cost of a substitution is 1.
+                        if (ratio_calc) cost = 2
+                        else cost = 1
+                    }
+                    let res = Math.min.apply(Math, [distance[row - 1][col] + 1, distance[row][col - 1] + 1, distance[row - 1][col - 1] + cost])
+                    distance[row][col] = res
+                }
+            }
+            if (ratio_calc) {
+                let Ratio = ((s.length + t.length) - distance[row - 1][col - 1]) / (s.length + t.length)
+
+                return Ratio
+            } else {
+                return distance[s.length][t.length]
+            }
+        },
+
         /** <p>Returns a "likely" root from a collection of pitches</p>
          *  <p>Given a set of pitches, the algorithm returns the pitch that contains the other pitches in lower positions in its overtone series.<br>
          *      E.g. If we consider C-E-G <code>(0,4,7)</code>, E and G appear as overtones of C at lower positions than C and G appear as overtones of E, and C and E as overtones of G.</p>
@@ -1247,20 +1307,24 @@ class EDO {
          * //returns [8,11,4]
          * */
         minimal_voice_leading: (chord1, chord2) => {
-            let modes = this.get.rotations(chord2)
-            let best_sum = Infinity
-            let best_ind = 0
-            modes.forEach((mode, mode_ind) => {
-                let total = 0
-                for (let i = 0; i < chord1.length; i++) {
-                    total += Math.abs(chord1[i] - Math.min(mode[i], this.edo - mode[i]))
-                }
-                if (total < best_sum) {
-                    best_sum = total
-                    best_ind = mode_ind
-                }
+            let permutations = this.get.permutations(chord2)
+            let dist = permutations.map(perm=>{
+                perm = perm.map((n,i)=>{
+                    let res = Math.abs(perm[i]-chord1[i])
+                    res = (res>Math.ceil(this.edo/2))?this.edo-res:res
+                    return res
+                }).reduce((a,el)=>a+el,0)
+                return perm
             })
-            return modes[best_ind]
+            let min = dist.reduce((min,el)=>(el<min)?el:min,Infinity)
+            let pos = dist.indexOf(min)
+
+        return permutations[pos]
+
+
+
+
+
 
         },
 
@@ -3906,6 +3970,34 @@ class Scale {
             return this.parent.get.complementary_set(this.pitches, from_0)
         },
 
+        /** <p>Returns the pitch classes of a chord "shape" on a given scale degree.</p>
+         * <p>for instance, in C major, the shape 1,2,3,5 on 1 gives C D E G, and starting on 2, gives D E F A.</p>
+         * @param {Array<Number>} shape - The "shape" starting from 1.
+         * @param {Number} [scale_degree=1] - The scale degree on which to apply the shape (starting from 1)
+         * @returns {Array<Number>} - The resultant pitch classes from that shape on that scale degree.
+         * @memberOf Scale#get
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * let scale = edo.scale([0,2,4,5,7,9,11])
+         * scale.get.chord_quality_from_shape([1,5,6],1)
+         * //returns [0, 7, 9]
+         *
+         * scale.get.chord_quality_from_shape([1,3,4,5,7],7)
+         * //returns [11, 2, 4, 6, 9]
+         *
+         * scale.get.chord_quality_from_shape([1,7,3,13,9],5) //Get a 7,9,13 (no 5) chord, on scale degree 5, in this specific voicing.
+         */
+        chord_quality_from_shape: (shape,scale_degree=1) =>{
+            shape = shape.map(note=>{
+                note = this.parent.mod(note,this.pitches.length)
+                return (note==0)?this.pitches.length:note
+            })
+            return shape.map(note=>{
+                let pos = this.parent.mod((note+scale_degree)-2,this.pitches.length)
+                return this.pitches[pos]
+            })
+        },
+
         /** Returns the interval vector of the scale.
          * @param  {Boolean} cache - When true, the result will be cached for faster retrieval
          * @returns {Array<Number>} An array representing the vector
@@ -4061,59 +4153,11 @@ class Scale {
          *
          * @example
          * scale.get.levenshtein([0,2,4,5,7,9,11],true) //returns 0.9230769230769231
-         * @memberOf Scale#get*/
+         * @memberOf Scale#get
+         * @see EDO#get.levenshtein
+         * */
         levenshtein: (t, ratio_calc = false) => {
-            /*Returns the Levenshtein distance of the scale to another scale*/
-
-            /*levenshtein_ratio_and_distance:
-            Calculates levenshtein distance between two strings.
-            If ratio_calc = True, the function computes the
-            levenshtein distance ratio of similarity between two strings
-            For all i and j, distance[i,j] will contain the Levenshtein
-            distance between the first i characters of s and the
-            first j characters of t*/
-
-
-            let s = this.pitches
-
-            //initialize matrix with 0
-
-            let rows = s.length + 1
-            let cols = t.length + 1
-            let distance = Array.from({length: rows}, e => Array(cols).fill(0));
-            let col
-            let row
-            //Populate matrix of zeros with the indices of each character of both strings
-            for (let i = 1; i < rows; i++) {
-                for (let k = 1; k < cols; k++) {
-
-                    distance[i][0] = i
-                    distance[0][k] = k
-                }
-            }
-
-            // Iterate over the matrix to compute the cost of deletions,insertions and/or substitutions
-            let cost = 0
-            for (col = 1; col < cols; col++) {
-                for (row = 1; row < rows; row++) {
-                    if (s[row - 1] == t[col - 1]) cost = 0 //If the characters are the same in the two strings in a given position [i,j] then the cost is 0
-                    else {
-                        // In order to align the results with those of the Python Levenshtein package, if we choose to calculate the ratio
-                        // the cost of a substitution is 2. If we calculate just distance, then the cost of a substitution is 1.
-                        if (ratio_calc) cost = 2
-                        else cost = 1
-                    }
-                    let res = Math.min.apply(Math, [distance[row - 1][col] + 1, distance[row][col - 1] + 1, distance[row - 1][col - 1] + cost])
-                    distance[row][col] = res
-                }
-            }
-            if (ratio_calc) {
-                let Ratio = ((s.length + t.length) - distance[row - 1][col - 1]) / (s.length + t.length)
-
-                return Ratio
-            } else {
-                return distance[s.length][t.length]
-            }
+           return this.parent.get.levenshtein(this.pitches,t,ratio_calc)
         },
 
         /** Returns all the various modes (normalized to 0, that include all pitches) available from this scale

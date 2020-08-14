@@ -64,12 +64,32 @@ let edo = new EDO(12)
 
 
 
-let midi = edo.midi.import('midi/Bach - Prelude1.mid')
+// let midi = edo.midi.import('midi/Bach - Prelude1.mid')
+//
+// // midi = edo.midi.strip(midi).map(n=>(Array.isArray(n))?n[0]:n)
+// // console.log(midi.join(" "))
+// // let bach = edo.midi.chordify(midi,960,true,false,true)
+// // console.log(edo.convert.midi_to_name(bach))
+//
+// midi = edo.midi.strip(midi)
+// console.log(midi)
 
-// midi = edo.midi.strip(midi).map(n=>(Array.isArray(n))?n[0]:n)
-// console.log(midi.join(" "))
-// let bach = edo.midi.chordify(midi,960,true,false,true)
-// console.log(edo.convert.midi_to_name(bach))
+// let edo24=new EDO(24)
+// edo24.get.scales(1,12,1,3)
+//     .filter(scale=>scale.count.transpositions()<24)
+//     .forEach(scale=>console.log(scale.pitches))
 
-midi = edo.midi.strip(midi)
-console.log(midi)
+
+let scale = edo.scale([0,2,4,6,8,9,11])
+let progression = [1,7,6,5,4,3,2,1]
+let shape = [1,3,4,5,7]
+let last_chord
+progression.forEach(scale_degree=>{
+    if(last_chord) {
+        last_chord = edo.get.minimal_voice_leading(last_chord,scale.get.chord_quality_from_shape(shape,scale_degree))
+    } else {
+        last_chord = scale.get.chord_quality_from_shape(shape,scale_degree)
+    }
+    console.log(last_chord)
+})
+

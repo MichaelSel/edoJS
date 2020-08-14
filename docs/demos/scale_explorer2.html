@@ -20,8 +20,9 @@
 <h1>Scale Explorer</h1>
 <div id="top">
     <label>Number of Equal Divisions of the Octave (EDO)</label><input id="edo_input" type="text" value="12" size="1"><br>
-    <label>Pitch Classes (separated by spaces)</label><input id="scale_input" type="text" value="0 2 4 5 7 9 11"><br>
+    <label>Pitch Classes (separated by spaces)</label><input id="scale_input" type="text" value="0 2 4 5 7 9 11"> or select <select id="scale_selector"></select><br>
     <input id="explore_button" type="button" value="Explore Scale">
+
 </div>
 <div id="main" style="max-width: 1900px;text-align: center;margin: 0 auto">
     <div class="row">
@@ -94,7 +95,24 @@
             </div>
         </div>
     </div>
+    <div class="row">
+        <div class="col">
+            <h4>Get voicing on scale degree</h4>
+            <label>Voicing (e.g. 1 5 7 3)</label><input type="text" value="1 3 5" id="voicing_shape"><br>
+            <label>Scale degree (starting from 1 for the "tonic")</label><input type="text" size="1" value="1" id="voicing_degree"><br>
+            <input type="text" id="voicing_result" disabled>
 
+        </div>
+        <div class="col">
+            <h4>Generate chord progression</h4>
+            <label>Scale degree to be used (in each chord)</label><input type="text" value="1 3 5" id="progression_shape"><br>
+            <label>Chord progression "roots" (e.g. 1 6 2 5 1)</label><input type="text" size="15" value="1 5 1" id="progression_degrees"><br>
+            <label>Mode:</label><select id="progression_mode"></select>
+            <input type="button" id="progression_button" value="Generate"><br>
+            <textarea id="progression_result" style="width:500px;height:200px"></textarea>
+
+        </div>
+    </div>
 </div>
 <script>
     const re_scale = (num, in_min, in_max, out_min, out_max) => {
@@ -227,12 +245,101 @@
             let height = re_scale(vector[i],0,vec_max,0,100)
             $("#vector_container").append("<div class='col' style='text-align:center;background-color:blue;margin:5px;height: " + height +"%'>" + (i+1) +" ("  + vector[i] + ")</div>")
         }
+
+        update_mode_selector()
+    }
+
+    let gen_scale_list = function () {
+        $("#scale_selector").html("")
+        let edo_div = parseInt($("#edo_input").val().trim())
+        if(edo_div>17) {
+            $("#scale_selector").disabled()
+            return
+        }
+        let tet = new EDO(edo_div)
+        $("#scale_selector").append('<optgroup label="All 7-Note Scales (with no consecutive minor 2nds)">')
+        let all = tet.get.scales(1,Math.ceil(edo_div/2),1,Math.ceil(edo_div/2))
+        let all_7 = all
+            .filter((scale)=>scale.count.consecutive_steps(1)<2)
+            .filter(scale=>scale.count.pitches()==7)
+            .forEach(scale=>{
+                $("#scale_selector").append("<option value='" + scale.pitches.join(' ') + "'>" + scale.pitches.join(' ') + "</option>")
+            })
+        $("#scale_selector").append('</optgroup>')
+        $("#scale_selector").append('<optgroup label="All 6-Note Scales (with no consecutive minor 2nds)">')
+        let all_6 = all
+            .filter((scale)=>scale.count.consecutive_steps(1)<2)
+            .filter(scale=>scale.count.pitches()==6)
+            .forEach(scale=>{
+                $("#scale_selector").append("<option value='" + scale.pitches.join(' ') + "'>" + scale.pitches.join(' ') + "</option>")
+            })
+            $("#scale_selector").append('</optgroup>')
+        $("#scale_selector").append('<optgroup label="All Modes of Limited Transposition">')
+        let all_MOLT = all
+            .filter(scale=>scale.count.transpositions()<edo_div)
+            .forEach(scale=>{
+                $("#scale_selector").append("<option value='" + scale.pitches.join(' ') + "'>" + scale.pitches.join(' ') + "</option>")
+            })
+        $("#scale_selector").append('</optgroup>')
+
+
     }
     document.getElementById("explore_button").onclick = function () {
         update_page()
     }
-    update_page()
+    $("#edo_input").change(function(){
+        gen_scale_list()
+    })
+    $("#scale_selector").change(function (){
+        $("#scale_input").val($(this).val())
+    })
+    $("#voicing_shape").change(function(){
+        shape_parser()
+    })
+    $("#voicing_degree").change(function(){
+        shape_parser()
+    })
+    const shape_parser = function () {
+        let edo = new EDO(parseInt($('#edo_input').val()))
+        let scale = edo.scale($('#scale_input').val().split(' ').map((el) => parseInt(el)))
+        let degree = parseInt($("#voicing_degree").val().trim())
+        let shape = $('#voicing_shape').val().split(' ').map((el) => parseInt(el))
+        $('#voicing_result').val(scale.get.chord_quality_from_shape(shape,degree).join(" "))
+    }
 
+    $("#progression_button").click(function () {
+        let edo = new EDO(parseInt($('#edo_input').val()))
+        let mode = parseInt($("#progression_mode").val().trim())-1
+        let scale = edo.scale($('#scale_input').val().split(' ').map((el) => parseInt(el)))
+        let progression = $("#progression_degrees").val().trim().split(" ").map(el=>parseInt(el)).map(el=>el+mode)
+        let shape = $('#progression_shape').val().split(' ').map((el) => parseInt(el))
+        let chords = progression.map((root,i,arr)=>{
+            return scale.get.chord_quality_from_shape(shape,root)
+        })
+        for (let i = 1; i < chords.length; i++) {
+            chords[i]=edo.get.minimal_voice_leading(chords[i-1],scale.get.chord_quality_from_shape(shape,progression[i]))
+        }
+
+
+        $("#progression_result").html("")
+        chords.forEach((chord)=>{
+            console.log(edo.convert.pc_to_name(chord))
+            $("#progression_result").append(edo.convert.pc_to_name(chord).join(' ') + "\n")
+        })
+
+
+    })
+    const update_mode_selector = function () {
+        $("#progression_mode").html("")
+        let nums = Array.from(new Array($('#scale_input').val().split(' ').length).keys()).map(e=>e+1).forEach(num=>{
+            $("#progression_mode").append("<option value='" + num + "'>" +  num + "</option>")
+        })
+
+    }
+    update_mode_selector()
+    gen_scale_list()
+    update_page()
+    shape_parser()
 </script>
 </body>
 </html>

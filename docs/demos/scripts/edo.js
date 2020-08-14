@@ -324,7 +324,8 @@ class EDO {
      *  <li> [EDO.get]{@link EDO#get} is a set of functions used to manipulate and generate stuff.</li>
      *  <li> [EDO.is]{@link EDO#is} is a set of functions used for boolean truth statements.</li>
      *  <li> [EDO.show]{@link EDO#show} is a set of functions used for visualization.</li>
-     *  <li> [EDO.import]{@link EDO#import} is a set of functions used for importing other file formats (like midi or musicXML).</li>
+     *  <li> [EDO.midi]{@link EDO#midi} is a set of functions used for importing and processing midi files.</li>
+     *  <li> [EDO.xml]{@link EDO#xml} is a set of functions used for importing and processing musicXML files.</li>
      *  <li> [EDO.export]{@link EDO#export} is a set of functions used for exporting the output to various formats.</li>
      *  </ul>
      * @param {number} edo - The number of equal divisions of the octave.
@@ -599,7 +600,8 @@ class EDO {
                 11: 'B ',
                 '*': '**'
             }
-            if (this.edo != 12) return undefined
+            if (this.edo != 12) return pc
+            if(Array.isArray(pc)) return pc.map(p=>this.convert.pc_to_name(p))
             return PC[pc]
         },
 
@@ -1207,6 +1209,66 @@ class EDO {
             return lattice
         },
 
+        /** <p>Returns the Levenshtein distance from one collection of pitches to another</p>
+         * @param {Array<Number>} collection1 - A collection of pitches
+         * @param {Array<Number>} collection1 - Another collection of pitches
+         * @param {Boolean} [ratio_calc=false] - When true, the function computes the
+         * levenshtein distance ratio of similarity between two collections
+         * @returns {Number}
+         * @example
+         * let edo = new EDO(12) //define tuning
+         * edo.get.levenshtein([0,2,4,7,9],[0,2,4,5,7,9,11]) //returns 1
+         *
+         * @example
+         * edo.get.levenshtein([0,2,4,7,9],[0,2,4,5,7,9,11],true) //returns 0.9230769230769231
+         * @memberOf EDO#get*/
+        levenshtein: (collection1,collection2, ratio_calc = false) => {
+
+
+
+            let s = collection1
+            let t = collection2
+
+            //initialize matrix with 0
+
+            let rows = s.length + 1
+            let cols = t.length + 1
+            let distance = Array.from({length: rows}, e => Array(cols).fill(0));
+            let col
+            let row
+            //Populate matrix of zeros with the indices of each character of both strings
+            for (let i = 1; i < rows; i++) {
+                for (let k = 1; k < cols; k++) {
+
+                    distance[i][0] = i
+                    distance[0][k] = k
+                }
+            }
+
+            // Iterate over the matrix to compute the cost of deletions,insertions and/or substitutions
+            let cost = 0
+            for (col = 1; col < cols; col++) {
+                for (row = 1; row < rows; row++) {
+                    if (s[row - 1] == t[col - 1]) cost = 0 //If the characters are the same in the two strings in a given position [i,j] then the cost is 0
+                    else {
+                        // In order to align the results with those of the Python Levenshtein package, if we choose to calculate the ratio
+                        // the cost of a substitution is 2. If we calculate just distance, then the cost of a substitution is 1.
+                        if (ratio_calc) cost = 2
+                        else cost = 1
+                    }
+                    let res = Math.min.apply(Math, [distance[row - 1][col] + 1, distance[row][col - 1] + 1, distance[row - 1][col - 1] + cost])
+                    distance[row][col] = res
+                }
+            }
+            if (ratio_calc) {
+                let Ratio = ((s.length + t.length) - distance[row - 1][col - 1]) / (s.length + t.length)
+
+                return Ratio
+            } else {
+                return distance[s.length][t.length]
+            }
+        },
+
         /** <p>Returns a "likely" root from a collection of pitches</p>
          *  <p>Given a set of pitches, the algorithm returns the pitch that contains the other pitches in lower positions in its overtone series.<br>
          *      E.g. If we consider C-E-G <code>(0,4,7)</code>, E and G appear as overtones of C at lower positions than C and G appear as overtones of E, and C and E as overtones of G.</p>
@@ -1246,20 +1308,24 @@ class EDO {
          * //returns [8,11,4]
          * */
         minimal_voice_leading: (chord1, chord2) => {
-            let modes = this.get.rotations(chord2)
-            let best_sum = Infinity
-            let best_ind = 0
-            modes.forEach((mode, mode_ind) => {
-                let total = 0
-                for (let i = 0; i < chord1.length; i++) {
-                    total += Math.abs(chord1[i] - Math.min(mode[i], this.edo - mode[i]))
-                }
-                if (total < best_sum) {
-                    best_sum = total
-                    best_ind = mode_ind
-                }
+            let permutations = this.get.permutations(chord2)
+            let dist = permutations.map(perm=>{
+                perm = perm.map((n,i)=>{
+                    let res = Math.abs(perm[i]-chord1[i])
+                    res = (res>Math.ceil(this.edo/2))?this.edo-res:res
+                    return res
+                }).reduce((a,el)=>a+el,0)
+                return perm
             })
-            return modes[best_ind]
+            let min = dist.reduce((min,el)=>(el<min)?el:min,Infinity)
+            let pos = dist.indexOf(min)
+
+            return permutations[pos]
+
+
+
+
+
 
         },
 
@@ -2530,16 +2596,216 @@ class EDO {
 
     }
 
-    /**A collection of functions that import files into the framework
-     * @namespace EDO#import*/
-    import = {
+    /**A collection of functions to import and manipulate a midi file
+     * @namespace EDO#midi*/
+    midi = {
+        /** <p>Imports a midi file</p>
+         *
+         * @param  {String} file_path - The path of the file
+         * @returns {JSON} the midi file as JSON
+         * @memberOf EDO#midi
+         */
+        import: (file_path) => {
+            if (environment != 'server') return alert("This is currently supported only on server-side")
+            let midi = load_file(file_path)
+            midi = midiParser.parse(midi);
+            midi.track = midi.track.map(track=>{
+                track.event = track.event.map((e,i,all)=>{
+                    if(i==0) e.onset = e.deltaTime
+                    else {
+                        e.onset = all[i-1].onset+e.deltaTime
+                    }
+                    return e
+                })
+                return track
+            })
+
+
+            return midi
+        },
+
+        /** <p>Gets a midi file and returns only the note on events from all tracks in correct order as one big array</p>
+         *
+         * @param  {JSON} parsed_midi - The returned JSON from [EDO.midi.import()]{@link EDO#midi.import}
+         * @returns {Array<Number|Array<Number>>} Returns an array of pitches (or arrays of pitches if there's more than one note played simultaneously)
+         * @memberOf EDO#midi
+         * @see EDO#midi.import
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * let bach = edo.midi.import('midi/Bach - Prelude1.mid') //parsing Bach prelude in C major midi file which has multiple tracks
+         * edo.midi.strip(bach) //returns all tracks as one array of pitches
+         * [
+         *     60, 64, 67, 72, 76, 67, 72, 76, 60, 64, 67, 72,
+         *     76, 67, 72, 76, 60, 62, 69, 74, 77, 69, 74, 77,
+         *     60, 62, 69, 74, 77, 69, 74, 77, 59, 62, 67, 74,
+         *     77, 67, 74, 77, 59, 62, 67, 74, 77, 67, 74, 77,
+         *     60, 64, 67, 72, 76, 67, 72, 76, 60, 64, 67, 72,
+         *     76, 67, 72, 76, 60, 64, 69, 76, 81, 69, 76, 81,
+         *     60, 64, 69, 76, 81, 69, 76, 81, 60, 62, 66, 69,
+         *     74, 66, 69, 74, 60, 62, 66, 69, 74, 66, 69, 74,
+         *     59, 62, 67, 74,
+         *     ... 441 more items
+         * ]
+         */
+        strip: (parsed_midi) =>{
+            let p = parsed_midi
+            let all_times = []
+            p.track = p.track.map(t=>{
+                t.event = t.event.filter(e=>{
+                    return e.type==9
+                }).map(e=>{
+                    let el = {pitch:e.data[0],onset:e.onset}
+                    return el
+                }).map((e,i,all)=>{
+                    let onset = e.onset
+                    if (all_times.indexOf(onset)==-1) all_times.push(onset)
+
+                    return all.filter((element)=>element.onset==onset)
+                })
+                t.event = this.get.unique_elements(t.event)
+                return t
+            })
+            all_times.sort((a,b)=>a-b)
+            p.track = p.track.map(t=>{
+                t.event = t.event.map(e=>{
+                    e = e.map(ev=>{
+                        ev.onset = all_times.indexOf(ev.onset)
+                        return ev
+                    })
+                    return e
+                })
+                return t
+            })
+            p.track = p.track.map(t=>{
+                t = t.event.reduce((a,e)=>{
+                    e.forEach(n=>{
+                        if(a[n.onset]==undefined) a[n.onset] = [n.pitch]
+                        else a[n.onset].push(n.pitch)
+                    })
+                    return a
+                },[])
+                return t
+            })
+            p.track = p.track
+                //     .map(t=>{
+                //     t = t.map(n=>{
+                //         return (n.length==1)? n[0]: n
+                //     })
+                //     return t
+                // })
+                .filter(t=>{
+                    return t.length>0
+                })
+            // .map(t=>{
+            //     console.log(this.convert.midi_to_name(t))
+            //     return t
+            // })
+            let all_tracks = []
+            p.track.forEach((t)=>{
+                t.forEach((n,i)=>{
+                    if(all_tracks[i]==undefined) all_tracks[i]=[...n]
+                    else all_tracks[i] = [...all_tracks[i],...n]
+                })
+
+            })
+            all_tracks=all_tracks.map(e=>(e.length==1)?e[0]:e)
+            return all_tracks
+
+        },
+
+        /** <p>Gets a midi file and chunks all notes to partitions of a certain timeframe</p>
+         *
+         * @param  {JSON} parsed_midi - The returned JSON from [EDO.midi.import()]{@link EDO#midi.import}
+         * @param  {Number} [ticks=480] - The number of ticks for each partition (the "harmonic rhythm")
+         * @param  {Boolean} [unique=true] - When true, even if a note is repeated within a given timeframe it will appear once.
+         * @param  {Boolean} [as_PC=false] - When true, instead of returning the midi note number, the pitches will be returned as pitch classes
+         * @param  {Boolean} [ordered=false] - When true, each chord will be sorted by pitch height (rather than the order in which it appeared in the midi file)
+         * @returns {Array<Array<Number>>} The midi file returns as array of chords corresponding the to the given timeframe
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * let bach = edo.midi.import('midi/Bach - Prelude1.mid') //parsing Bach prelude in C major midi file
+         * bach = edo.midi.chordify(bach,960,true,false,true) //chordifying
+         * edo.convert.midi_to_name(bach) //replacing the midi values with note names
+         * //returns
+         * [
+         *  [ 'C4', 'E4', 'G4', 'C5', 'E5' ],
+         *  [ 'C4', 'D4', 'A4', 'D5', 'F5' ],
+         *  [ 'B3', 'D4', 'G4', 'D5', 'F5' ],
+         *  [ 'C4', 'E4', 'G4', 'C5', 'E5' ],
+         *  [ 'C4', 'E4', 'A4', 'E5', 'A5' ],
+         *  [ 'C4', 'D4', 'F#4', 'A4', 'D5' ],
+         *  [ 'B3', 'D4', 'G4', 'D5', 'G5' ],
+         *  [ 'B3', 'C4', 'E4', 'G4', 'C5' ],
+         *  [ 'A3', 'C4', 'E4', 'G4', 'C5' ],
+         *  [ 'D3', 'A3', 'D4', 'F#4', 'C5' ],
+         *  [ 'G3', 'B3', 'D4', 'G4', 'B4' ],
+         *  [ 'G3', 'Bb3', 'E4', 'G4', 'C#5' ],
+         *  [ 'F3', 'A3', 'D4', 'A4', 'D5' ],
+         *  [ 'F3', 'Ab3', 'D4', 'F4', 'B4' ],
+         *  [ 'E3', 'G3', 'C4', 'G4', 'C5' ],
+         *  [ 'E3', 'F3', 'A3', 'C4', 'F4' ],
+         *  [ 'D3', 'F3', 'A3', 'C4', 'F4' ],
+         *  [ 'G2', 'D3', 'G3', 'B3', 'F4' ],
+         *  [ 'C3', 'E3', 'G3', 'C4', 'E4' ],
+         *  [ 'C3', 'G3', 'Bb3', 'C4', 'E4' ],
+         *  [ 'F2', 'F3', 'A3', 'C4', 'E4' ],
+         *  [ 'F#2', 'C3', 'A3', 'C4', 'Eb4' ],
+         *  [ 'Ab2', 'F3', 'B3', 'C4', 'D4' ],
+         *  [ 'G2', 'F3', 'G3', 'B3', 'D4' ],
+         *  [ 'G2', 'E3', 'G3', 'C4', 'E4' ],
+         *  [ 'G2', 'D3', 'G3', 'C4', 'F4' ],
+         *  [ 'G2', 'D3', 'G3', 'B3', 'F4' ],
+         *  [ 'G2', 'Eb3', 'A3', 'C4', 'F#4' ],
+         *  [ 'G2', 'E3', 'G3', 'C4', 'G4' ],
+         *  [ 'G2', 'D3', 'G3', 'C4', 'F4' ],
+         *  [ 'G2', 'D3', 'G3', 'B3', 'F4' ],
+         *  [ 'C2', 'C3', 'G3', 'Bb3', 'E4' ],
+         *  ['C2', 'C3', 'D3', 'F3', 'A3', 'C4', 'F4'],
+         *  ['C2', 'B2', 'D4', 'E4', 'F4', 'G4', 'B4', 'D5', 'F5'],
+         *  [ 'C2', 'C3', 'E4', 'G4', 'C5' ]
+         * ]
+         *
+         * @memberOf EDO#midi
+         * @see EDO#midi.import
+         */
+        chordify: (parsed_midi,ticks=480,unique=true,as_PC=false,ordered=false) =>{
+            let p = parsed_midi
+            let max = 0
+            p = p.track.map(t=>{
+                t.event = t.event.filter(e=>e.type==9) // return only note on events
+                t.event.map(e=>(e.onset>max)?max=e.onset:max=max) //gets duration of file
+                return [...t.event]
+            }).flat().sort((a,b)=>a.onset-b.onset)
+            let partitions = Array.from(Array(Math.ceil(max/ticks)).keys())
+                .map(e=>e*ticks)
+                .map((e,i,arr)=> {
+                    if(arr.length-1>i) return p.filter(el=>el.onset>=arr[i] && el.onset<arr[i+1])
+                    else return p.filter(el=>el.onset>=arr[i])
+                })
+                .map(e=>{
+                    e = e.map(n=>{
+                        if(as_PC) return this.mod(n.data[0],this.edo)
+                        return n.data[0]
+                    })
+                    if(ordered) e.sort((a,b)=>a-b)
+                    if(unique) e=this.get.unique_elements(e)
+                    return e
+                })
+            return partitions
+        }
+
+    }
+
+    /**A collection of functions to import and manipulate a midi file
+     * @namespace EDO#xml*/
+    xml = {
         /** <p>Imports a music xml file and loads it as a JSON.</p>
          *
          * @param  {String} file_path - The path of the file
          * @returns {JSON}
          * @memberOf EDO#import
          */
-        xml_raw: (file_path) => {
+        import: (file_path) => {
             if (environment != 'server') return alert("This is currently supported only on server-side")
 
             var xml = load_file(file_path)
@@ -2548,21 +2814,7 @@ class EDO {
                 parsed = result
             });
             return parsed
-        },
-        /** <p>Imports a midi file</p>
-         *
-         * @param  {String} file_path - The path of the file
-         * @returns {JSON} the midi file as JSON
-         * @memberOf EDO#import
-         */
-        midi: (file_path) => {
-            if (environment != 'server') return alert("This is currently supported only on server-side")
-            let midi = load_file(file_path)
-            midi = midiParser.parse(midi);
-            return midi
-        },
-
-
+        }
     }
 
     /**A collection of functions that return a boolean
@@ -3719,6 +3971,34 @@ class Scale {
             return this.parent.get.complementary_set(this.pitches, from_0)
         },
 
+        /** <p>Returns the pitch classes of a chord "shape" on a given scale degree.</p>
+         * <p>for instance, in C major, the shape 1,2,3,5 on 1 gives C D E G, and starting on 2, gives D E F A.</p>
+         * @param {Array<Number>} shape - The "shape" starting from 1.
+         * @param {Number} [scale_degree=1] - The scale degree on which to apply the shape (starting from 1)
+         * @returns {Array<Number>} - The resultant pitch classes from that shape on that scale degree.
+         * @memberOf Scale#get
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * let scale = edo.scale([0,2,4,5,7,9,11])
+         * scale.get.chord_quality_from_shape([1,5,6],1)
+         * //returns [0, 7, 9]
+         *
+         * scale.get.chord_quality_from_shape([1,3,4,5,7],7)
+         * //returns [11, 2, 4, 6, 9]
+         *
+         * scale.get.chord_quality_from_shape([1,7,3,13,9],5) //Get a 7,9,13 (no 5) chord, on scale degree 5, in this specific voicing.
+         */
+        chord_quality_from_shape: (shape,scale_degree=1) =>{
+            shape = shape.map(note=>{
+                note = this.parent.mod(note,this.pitches.length)
+                return (note==0)?this.pitches.length:note
+            })
+            return shape.map(note=>{
+                let pos = this.parent.mod((note+scale_degree)-2,this.pitches.length)
+                return this.pitches[pos]
+            })
+        },
+
         /** Returns the interval vector of the scale.
          * @param  {Boolean} cache - When true, the result will be cached for faster retrieval
          * @returns {Array<Number>} An array representing the vector
@@ -3874,59 +4154,11 @@ class Scale {
          *
          * @example
          * scale.get.levenshtein([0,2,4,5,7,9,11],true) //returns 0.9230769230769231
-         * @memberOf Scale#get*/
+         * @memberOf Scale#get
+         * @see EDO#get.levenshtein
+         * */
         levenshtein: (t, ratio_calc = false) => {
-            /*Returns the Levenshtein distance of the scale to another scale*/
-
-            /*levenshtein_ratio_and_distance:
-            Calculates levenshtein distance between two strings.
-            If ratio_calc = True, the function computes the
-            levenshtein distance ratio of similarity between two strings
-            For all i and j, distance[i,j] will contain the Levenshtein
-            distance between the first i characters of s and the
-            first j characters of t*/
-
-
-            let s = this.pitches
-
-            //initialize matrix with 0
-
-            let rows = s.length + 1
-            let cols = t.length + 1
-            let distance = Array.from({length: rows}, e => Array(cols).fill(0));
-            let col
-            let row
-            //Populate matrix of zeros with the indices of each character of both strings
-            for (let i = 1; i < rows; i++) {
-                for (let k = 1; k < cols; k++) {
-
-                    distance[i][0] = i
-                    distance[0][k] = k
-                }
-            }
-
-            // Iterate over the matrix to compute the cost of deletions,insertions and/or substitutions
-            let cost = 0
-            for (col = 1; col < cols; col++) {
-                for (row = 1; row < rows; row++) {
-                    if (s[row - 1] == t[col - 1]) cost = 0 //If the characters are the same in the two strings in a given position [i,j] then the cost is 0
-                    else {
-                        // In order to align the results with those of the Python Levenshtein package, if we choose to calculate the ratio
-                        // the cost of a substitution is 2. If we calculate just distance, then the cost of a substitution is 1.
-                        if (ratio_calc) cost = 2
-                        else cost = 1
-                    }
-                    let res = Math.min.apply(Math, [distance[row - 1][col] + 1, distance[row][col - 1] + 1, distance[row - 1][col - 1] + cost])
-                    distance[row][col] = res
-                }
-            }
-            if (ratio_calc) {
-                let Ratio = ((s.length + t.length) - distance[row - 1][col - 1]) / (s.length + t.length)
-
-                return Ratio
-            } else {
-                return distance[s.length][t.length]
-            }
+            return this.parent.get.levenshtein(this.pitches,t,ratio_calc)
         },
 
         /** Returns all the various modes (normalized to 0, that include all pitches) available from this scale
