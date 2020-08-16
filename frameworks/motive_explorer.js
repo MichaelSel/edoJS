@@ -25,7 +25,7 @@ console.log("\nPitch Distribution:",edo.get.pitch_distribution(melody))
 let motives = edo.get.motives(melody)
 
 motives = motives.map((motive) => {
-    motive.interval = edo.get.interval_shift(motive.motive)
+    motive.interval = edo.get.interval_traversed(motive.motive)
     return motive
 })
 

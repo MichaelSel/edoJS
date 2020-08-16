@@ -1048,10 +1048,10 @@ class EDO {
          * @memberOf EDO#get
          * @example
          * let edo = new EDO(12) // define a tuning system
-         * edo.get.interval_shift([2,-3,4,-1])
+         * edo.get.interval_traversed([2,-3,4,-1])
          * //returns 2 (moving up 2, then down 3, then up 4, then down 1 will get you +2 above where you started)
          */
-        interval_shift: (intervals) => {
+        interval_traversed: (intervals) => {
             /*Gets an array of intervals in order, and returns the interval traversed by the end*/
             return intervals.reduce((t, e) => t + e)
         },
@@ -1301,6 +1301,7 @@ class EDO {
          * @param  {Array<Number>} chord1 - an origin chord in some disposition
          * @param  {Array<Number>} chord2 - an destination chord
          * @returns {Array<Number>}
+         * @memberOf EDO#get
          * @example
          * let edo = new EDO(12) // define a tuning system
          * edo.get.minimal_voice_leading([7,0,3],[4,8,11])
@@ -1678,9 +1679,9 @@ class EDO {
          * @return {Array<Array<Number>>} An array of all the ways possible.
          * @memberOf EDO#get*/
         path_n_steps: (destination, motives = [], n_steps = 8) => {
-            const up_motives = motives.filter((m) => this.get.interval_shift(m) > 0)
-            const down_motives = motives.filter((m) => this.get.interval_shift(m) < 0)
-            const static_motives = motives.filter((m) => this.get.interval_shift(m) == 0)
+            const up_motives = motives.filter((m) => this.get.interval_traversed(m) > 0)
+            const down_motives = motives.filter((m) => this.get.interval_traversed(m) < 0)
+            const static_motives = motives.filter((m) => this.get.interval_traversed(m) == 0)
             let success = []
             const run_it = function (used = []) {
                 let sum = used.flat().reduce((t, e) => t + e, 0)
@@ -2072,6 +2073,7 @@ class EDO {
          * <p>Returns all the rotations (inversions) of an array of pitches</p>
          * @param  {Array<Number>} pitches - a collection of pitches (not necessarily PCs, not necessarily unique)
          * @return {Array<Array<Number>>}
+         * @memberOf EDO#get
          * @example
          * let edo = new EDO(12) // define a tuning system
          * edo.get.rotations([0,4,7,4])
@@ -2091,6 +2093,7 @@ class EDO {
          * @param  {Array<Number>} [steps=[1,2]] - which PCs to consider as steps
          * @param  {Boolean} [look_back=true] - When true, the algorithm creates alternate paths to already resolves melodies. When false, resolved melodies will not be considered and a new path will begin.
          * @return {Array<Object>} object with property <code>pitch</code> indicating the pitch, and property <code>index</code> representing its original position in the melody.
+         * @memberOf EDO#get
          * @example
          * let edo = new EDO(12) // define a tuning system
          * let melody = [2,2,4,2,7,6,2,2,4,2,9,7] //happy birthday song

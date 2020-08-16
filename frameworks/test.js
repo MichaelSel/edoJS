@@ -80,16 +80,12 @@ let edo = new EDO(12)
 //     .forEach(scale=>console.log(scale.pitches))
 
 
-let scale = edo.scale([0,2,4,6,8,9,11])
-let progression = [1,7,6,5,4,3,2,1]
-let shape = [1,3,4,5,7]
-let last_chord
-progression.forEach(scale_degree=>{
-    if(last_chord) {
-        last_chord = edo.get.minimal_voice_leading(last_chord,scale.get.chord_quality_from_shape(shape,scale_degree))
-    } else {
-        last_chord = scale.get.chord_quality_from_shape(shape,scale_degree)
-    }
-    console.log(last_chord)
+let scale = edo.scale([0,2,4,5,7,9,11])
+let shape = [1,3,5]
+let progression = [1,[5,5],5,1].map(el=>{
+    (!Number.isNaN(el))
 })
+let of = 2
+let chord = scale.get.chord_quality_from_shape(shape,5)
+console.log(edo.get.transposition(chord,scale.pitches[of-1]))
 

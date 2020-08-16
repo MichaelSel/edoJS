@@ -81,7 +81,7 @@
 
         </div>
     </div>
-    <div class="row">
+    <div class="row" style="padding-bottom: 0px">
         <div class="col" style="text-align: center">
             <h4>Mode Attraction Vectors</h4>
             <table id="vectors" style="text-align: center;font-size:x-large;margin: 0 auto">
@@ -106,7 +106,7 @@
         <div class="col">
             <h4>Generate chord progression</h4>
             <label>Scale degree to be used (in each chord)</label><input type="text" value="1 3 5" id="progression_shape"><br>
-            <label>Chord progression "roots" (e.g. 1 6 2 5 1)</label><input type="text" size="15" value="1 5 1" id="progression_degrees"><br>
+            <label>Chord progression "roots" (e.g. 1 4 5/5 7 5 1 = ["I IV V/V VII V I"])</label><input type="text" size="15" value="1 5 1" id="progression_degrees"><br>
             <label>Mode:</label><select id="progression_mode"></select>
             <input type="button" id="progression_button" value="Generate"><br>
             <textarea id="progression_result" style="width:500px;height:200px"></textarea>
@@ -311,13 +311,23 @@
         let edo = new EDO(parseInt($('#edo_input').val()))
         let mode = parseInt($("#progression_mode").val().trim())-1
         let scale = edo.scale($('#scale_input').val().split(' ').map((el) => parseInt(el)))
-        let progression = $("#progression_degrees").val().trim().split(" ").map(el=>parseInt(el)).map(el=>el+mode)
+        let progression = $("#progression_degrees").val().trim().split(" ")
+            .map(el=>(isNaN(el))?el.split('/').map(e=>parseInt(e)):[parseInt(el),1])
+            .map(el=>{
+                el[0]+=mode
+                return el
+            })
         let shape = $('#progression_shape').val().split(' ').map((el) => parseInt(el))
         let chords = progression.map((root,i,arr)=>{
-            return scale.get.chord_quality_from_shape(shape,root)
+            let of = root[1]
+            let chord = scale.get.chord_quality_from_shape(shape,root[0])
+            return scale.parent.get.transposition(chord,scale.pitches[of-1])
         })
         for (let i = 1; i < chords.length; i++) {
-            chords[i]=edo.get.minimal_voice_leading(chords[i-1],scale.get.chord_quality_from_shape(shape,progression[i]))
+            let chord = scale.get.chord_quality_from_shape(shape,progression[i][0])
+            let of = progression[i][1]
+            let trans = scale.parent.get.transposition(chord,scale.pitches[of-1])
+            chords[i]=edo.get.minimal_voice_leading(chords[i-1],trans)
         }
 
 
