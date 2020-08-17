@@ -116,12 +116,11 @@
     <div class="row">
         <div class="col">
             <h4>Transposition Common-tones</h4>
-            <label>Transposition:</label> <select id="common_tone_select"></select><br>
-            <label>Original:</label> <span id="common_tone_original"></span><br>
-            <label>Transposed:</label> <span id="common_tone_transposed"></span><br>
-            <label>Common:</label> <span id="common_tone_common"></span><br>
-            <label>O Unique:</label> <span id="common_tone_ct1"></span><br>
-            <label>T Unique:</label> <span id="common_tone_ct2"></span><br>
+            <label>Transposition:</label> <select id="common_tone_select"></select> <label>Mode:</label> <select id="common_tone_mode"></select><br>
+            <table style="text-align: center;margin: 0 auto;font-size: x-large">
+                <tr><td><label>Original:</label></td><td style="font-weight: bolder" id="common_tone_original"></td></tr>
+                <tr><td><label>Transposed:</label></td> <td style="font-weight: bolder" id="common_tone_transposed"></td></tr>
+            </table>
         </div>
         <div class="col" id="ct_necklace">
 
@@ -266,26 +265,42 @@
         for (let i = 1; i < edo.edo; i++) {
             $("#common_tone_select").append("<option value='" + i + "'>+" + String(i) + " / " + String(i-edo.edo) +"</option>")
         }
+        $("#common_tone_mode").html("")
+        for (let i = 0; i < scale.count.modes(); i++) {
+            $("#common_tone_mode").append("<option value='" + i + "'>Mode " + String(i+1) +"</option>")
+        }
         transposition_common_tone()
 
     }
 
     const transposition_common_tone = function () {
         let edo = new EDO(parseInt($('#edo_input').val()))
-        let scale = edo.scale($('#scale_input').val().split(' ').map((el) => parseInt(el)))
-        $("#common_tone_original").html(scale.pitches.join(" "))
+        let mode = parseInt($("#common_tone_mode").val())
+        let scale = edo.scale($('#scale_input').val().split(' ').map((el) => parseInt(el))).mode(mode)
+
         let transposition = parseInt($("#common_tone_select").val())
         let transposed = scale.get.transposition(transposition).sort((a,b)=>a-b)
-        $("#common_tone_transposed").html(transposed.join(" "))
         let intersection = edo.get.intersection(scale.pitches,transposed)
-        $("#common_tone_common").html(intersection.sort((a,b)=>a-b).join(" "))
-        let unique1 = edo.get.without(scale.pitches,transposed)
-        $("#common_tone_ct1").html(unique1.join(" "))
-        let unique2 = edo.get.without(transposed,scale.pitches)
-        $("#common_tone_ct2").html(unique2.join(" "))
-        edo.show.nested_necklaces("ct_necklace",[scale.pitches,transposed,intersection,unique1,unique2],true)
+        $("#common_tone_original").html(scale.pitches.map(e=>{
+            let color = "white"
+            if(intersection.indexOf(e)!=-1) color='red'
+            return "<td style='width:15px;color:" +color +"'>"+e+"</td>"
+        }).join(" "))
+
+
+        $("#common_tone_transposed").html(transposed.map(e=>{
+            let color = "white"
+            if(intersection.indexOf(e)!=-1) color='red'
+            return "<td style='width:15px;color:" +color +"'>"+e+"</td>"
+        }).join(""))
+
+
+        edo.show.nested_necklaces("ct_necklace",[scale.pitches,transposed,intersection],true,600,true,20,false)
     }
     $("#common_tone_select").change(function() {
+        transposition_common_tone()
+    })
+    $("#common_tone_mode").change(function() {
         transposition_common_tone()
     })
 
