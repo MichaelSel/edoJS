@@ -106,10 +106,24 @@
         <div class="col">
             <h4>Generate chord progression</h4>
             <label>Scale degree to be used (in each chord)</label><input type="text" value="1 3 5" id="progression_shape"><br>
-            <label>Chord progression "roots" (e.g. 1 4 5/5 7 5 1 = ["I IV V/V VII V I"])</label><input type="text" size="15" value="1 5 1" id="progression_degrees"><br>
+            <label>Chord progression "roots" (e.g. 1 4 5/5 7 1 = ["I IV V/V VII I"])</label><input type="text" size="15" value="1 4 5/5 7 1" id="progression_degrees"><br>
             <label>Mode:</label><select id="progression_mode"></select>
-            <input type="button" id="progression_button" value="Generate"><br>
+            <input type="button" id="progression_button" value="Generate"> <label>Voice-lead</label><input type="checkbox" id="progression_lead"><br>
             <textarea id="progression_result" style="width:500px;height:200px"></textarea>
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <h4>Transposition Common-tones</h4>
+            <label>Transposition:</label> <select id="common_tone_select"></select><br>
+            <label>Original:</label> <span id="common_tone_original"></span><br>
+            <label>Transposed:</label> <span id="common_tone_transposed"></span><br>
+            <label>Common:</label> <span id="common_tone_common"></span><br>
+            <label>O Unique:</label> <span id="common_tone_ct1"></span><br>
+            <label>T Unique:</label> <span id="common_tone_ct2"></span><br>
+        </div>
+        <div class="col" id="ct_necklace">
 
         </div>
     </div>
@@ -247,13 +261,38 @@
         }
 
         update_mode_selector()
+
+        $("#common_tone_select").html("")
+        for (let i = 1; i < edo.edo; i++) {
+            $("#common_tone_select").append("<option value='" + i + "'>+" + String(i) + " / " + String(i-edo.edo) +"</option>")
+        }
+        transposition_common_tone()
+
     }
+
+    const transposition_common_tone = function () {
+        let edo = new EDO(parseInt($('#edo_input').val()))
+        let scale = edo.scale($('#scale_input').val().split(' ').map((el) => parseInt(el)))
+        $("#common_tone_original").html(scale.pitches.join(" "))
+        let transposition = parseInt($("#common_tone_select").val())
+        let transposed = scale.get.transposition(transposition).sort((a,b)=>a-b)
+        $("#common_tone_transposed").html(transposed.join(" "))
+        let intersection = edo.get.intersection(scale.pitches,transposed)
+        $("#common_tone_common").html(intersection.sort((a,b)=>a-b).join(" "))
+        let unique1 = edo.get.without(scale.pitches,transposed)
+        $("#common_tone_ct1").html(unique1.join(" "))
+        let unique2 = edo.get.without(transposed,scale.pitches)
+        $("#common_tone_ct2").html(unique2.join(" "))
+        edo.show.nested_necklaces("ct_necklace",[scale.pitches,transposed,intersection,unique1,unique2],true)
+    }
+    $("#common_tone_select").change(function() {
+        transposition_common_tone()
+    })
 
     let gen_scale_list = function () {
         $("#scale_selector").html("")
         let edo_div = parseInt($("#edo_input").val().trim())
         if(edo_div>17) {
-            $("#scale_selector").disabled()
             return
         }
         let tet = new EDO(edo_div)
@@ -310,6 +349,7 @@
     $("#progression_button").click(function () {
         let edo = new EDO(parseInt($('#edo_input').val()))
         let mode = parseInt($("#progression_mode").val().trim())-1
+        let vl = $("#progression_lead").prop("checked")==true
         let scale = edo.scale($('#scale_input').val().split(' ').map((el) => parseInt(el)))
         let progression = $("#progression_degrees").val().trim().split(" ")
             .map(el=>(isNaN(el))?el.split('/').map(e=>parseInt(e)):[parseInt(el),1])
@@ -327,7 +367,9 @@
             let chord = scale.get.chord_quality_from_shape(shape,progression[i][0])
             let of = progression[i][1]
             let trans = scale.parent.get.transposition(chord,scale.pitches[of-1])
-            chords[i]=edo.get.minimal_voice_leading(chords[i-1],trans)
+            if(vl) chords[i]=edo.get.minimal_voice_leading(chords[i-1],trans)
+            else chords[i] = trans
+
         }
 
 
@@ -345,6 +387,8 @@
         })
 
     }
+
+
     update_mode_selector()
     gen_scale_list()
     update_page()

@@ -64,12 +64,9 @@ let edo = new EDO(12)
 
 
 
-// let midi = edo.midi.import('midi/Bach - Prelude1.mid')
-//
-// // midi = edo.midi.strip(midi).map(n=>(Array.isArray(n))?n[0]:n)
-// // console.log(midi.join(" "))
-// // let bach = edo.midi.chordify(midi,960,true,false,true)
-// // console.log(edo.convert.midi_to_name(bach))
+// let midi = edo.midi.import('midi/Beethoven - Symphony 5-1.mid')
+// let beethoven = edo.midi.chordify(midi,960,true,false,true)
+// console.log(edo.convert.midi_to_name(beethoven))
 //
 // midi = edo.midi.strip(midi)
 // console.log(midi)
@@ -80,12 +77,20 @@ let edo = new EDO(12)
 //     .forEach(scale=>console.log(scale.pitches))
 
 
-let scale = edo.scale([0,2,4,5,7,9,11])
-let shape = [1,3,5]
-let progression = [1,[5,5],5,1].map(el=>{
-    (!Number.isNaN(el))
-})
-let of = 2
-let chord = scale.get.chord_quality_from_shape(shape,5)
-console.log(edo.get.transposition(chord,scale.pitches[of-1]))
+// let scale = edo.scale([0,2,4,5,7,9,11])
+// let shape = [1,3,5]
+// let progression = [1,[5,5],5,1].map(el=>{
+//     (!Number.isNaN(el))
+// })
+// let of = 2
+// let chord = scale.get.chord_quality_from_shape(shape,5)
+// console.log(edo.get.transposition(chord,scale.pitches[of-1]))
 
+let scale = edo.scale([0,2,4,6,8,9,11])
+let scales = []
+for (let i = 0; i < 12; i++) {
+    let transposition = scale.get.transposition(i)
+    let ct = edo.count.common_tones(scale.pitches,transposition)
+    scales.push([transposition,ct])
+}
+scales = scales.sort((a,b)=>b[1]-a[1]).forEach(scale=>console.log(scale))
