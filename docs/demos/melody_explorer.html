@@ -225,7 +225,10 @@
     <div class="row">
         <div class="col">
             <h5>Pitch Fields</h5><br>
-            <label>Window size</label><input type="text" size="1" id="field_size" value="3"><br>
+            <label>Window size</label><input type="text" size="1" id="field_size" value="3">
+            <label>As pitch classes</label> <input id="field_asPC" type="checkbox"><br>
+            <label>Count only unique items:</label> <input id="field_unique" type="checkbox">
+            <label>Avoid repetitive windows:</label> <input id="field_window_repeat" type="checkbox"><br>
             <input type="button" value="Get Pitch Fields" id="field_button"><br><br>
             <select size=15 id="field_select" style="width: 500px;height: 250px"></select>
 
@@ -361,7 +364,10 @@ $("#rand_dist_gen").click(function () {
 $("#field_button").click(function () {
     let melody = $('#melody_input').val().trim().split(' ')
     let window = parseInt($("#field_size").val())
-    let fields = edo.get.pitch_fields(melody,window)
+    let unique = $("#field_unique").prop("checked")
+    let as_PC = $("#field_asPC").prop("checked")
+    let window_repeat = $("#field_window_repeat").prop("checked")
+    let fields = edo.get.pitch_fields(melody,window,as_PC,unique,window_repeat)
     $("#field_select").html("")
     fields.forEach((field)=>{
         $("#field_select").append("<option value='" + field + "'>" + field.join('  ') + "</option>")

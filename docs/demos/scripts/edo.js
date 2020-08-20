@@ -576,7 +576,7 @@ class EDO {
         },
 
         /** Returns the name of a note from a given pitch class (supports only 12-edo)
-         * @param  {Number} pc - a pitch class
+         * @param  {Number | Array<Number>} pc - a pitch class
          * @returns {String} The input as a note name
          * @memberOf EDO#convert
          * @example
@@ -1302,6 +1302,7 @@ class EDO {
          * @param  {Array<Number>} chord1 - an origin chord in some disposition
          * @param  {Array<Number>} chord2 - an destination chord
          * @returns {Array<Number>}
+         * @memberOf EDO#get
          * @example
          * let edo = new EDO(12) // define a tuning system
          * edo.get.minimal_voice_leading([7,0,3],[4,8,11])
@@ -1817,6 +1818,8 @@ class EDO {
          * @param  {Array<Number>} pitches - a given array of pitches
          * @param  {Number} [size=8] - The size of the window.
          * @param  {Boolean} [as_PC=true] - When true, notes that belong to the same PC will be counted as the same.
+         * @param  {Boolean} [unique=false] - When true, the function does not count pitches if they are already in the window.
+         * @param  {Boolean} [avoid_duplicate_windows=false] - When true, if two or more succeeding windows have the same content, the function will only return one of them.
          * @returns {Array<Array<Number>>}
          * @memberOf EDO#get
          * @example
@@ -1837,19 +1840,57 @@ class EDO {
          *  [ 0, 2, 5, 7, 8, 10 ],
          *  [ 0, 5, 7, 8, 10 ]
          *]
+         *
+         * edo.get.pitch_fields([8,7,7,8,7,7,8,7,7,15,15,14,12,12,10,8,8,7,5,5],5,false,true,true) //as_PC=false, unique=true,avoid_duplicate_windows=true
+         * [
+         *  [ 7, 8, 12, 14, 15 ],
+         *  [ 7, 10, 12, 14, 15 ],
+         *  [ 8, 10, 12, 14, 15 ],
+         *  [ 7, 8, 10, 12, 14 ],
+         *  [ 5, 7, 8, 10, 12 ],
+         *  [ 5, 7, 8, 10 ]
+         * ]
          */
-        pitch_fields: (pitches,size=8,as_PC=true) => {
-            let partitions = []
-            for (let i = 0; i <= pitches.length-size; i++) {
-                partitions.push(pitches.slice(i,i+size))
-            }
-            partitions = partitions.map((p)=>{
-                if(as_PC) p = p.map((note)=>this.mod(note,this.edo))
-                p = this.get.unique_elements(p).sort((a,b)=>a-b)
+        pitch_fields: (pitches,size=8,as_PC=true, unique=false,avoid_duplicate_windows=false) => {
+            if(unique) {
+                let partitions = []
+                loop1:
+                    for (let i = 0; i < pitches.length-size; i++) {
+                        let window = [(as_PC)?this.mod(pitches[i],this.edo):pitches[i]]
+                        loop2:
+                            for (let j = i+1; j < pitches.length; j++) {
+                                if(window.length==size) break loop2
+                                let el
+                                if(as_PC) el = this.mod(pitches[j],this.edo)
+                                else el = pitches[j]
+                                if(window.indexOf(el)==-1) window.push(el)
+                            }
+                        window = window.sort((a,b)=>a-b)
+                        if(avoid_duplicate_windows) {
+                            if(!this.is.same(partitions[partitions.length-1],window)) partitions.push(window)
+                        } else partitions.push(window)
 
-                return p
-            })
-            return partitions
+
+                    }
+                return partitions
+            }
+            else {
+                let partitions = []
+                for (let i = 0; i <= pitches.length-size; i++) {
+                    partitions.push(pitches.slice(i,i+size))
+                }
+                partitions = partitions.map((p)=>{
+                    if(as_PC) p = p.map((note)=>this.mod(note,this.edo))
+                    p = this.get.unique_elements(p).sort((a,b)=>a-b)
+
+                    return p
+                }).filter((el,i,arr)=>{
+                    if(i+1!=arr.length) {
+                        return !this.is.same(arr[i],arr[i+1])
+                    } else return true
+                })
+                return partitions
+            }
         },
 
         /** Returns an array of (length) (pseudo)random pitches, with lowest note not lower than range[0],
@@ -2073,6 +2114,7 @@ class EDO {
          * <p>Returns all the rotations (inversions) of an array of pitches</p>
          * @param  {Array<Number>} pitches - a collection of pitches (not necessarily PCs, not necessarily unique)
          * @return {Array<Array<Number>>}
+         * @memberOf EDO#get
          * @example
          * let edo = new EDO(12) // define a tuning system
          * edo.get.rotations([0,4,7,4])
@@ -2092,6 +2134,7 @@ class EDO {
          * @param  {Array<Number>} [steps=[1,2]] - which PCs to consider as steps
          * @param  {Boolean} [look_back=true] - When true, the algorithm creates alternate paths to already resolves melodies. When false, resolved melodies will not be considered and a new path will begin.
          * @return {Array<Object>} object with property <code>pitch</code> indicating the pitch, and property <code>index</code> representing its original position in the melody.
+         * @memberOf EDO#get
          * @example
          * let edo = new EDO(12) // define a tuning system
          * let melody = [2,2,4,2,7,6,2,2,4,2,9,7] //happy birthday song
@@ -3934,12 +3977,13 @@ class Scale {
          *  [ [ 4, 7, 11 ], 2 ]
          * ]
          */
-        common_tone_transpositions: () => {
+        common_tone_transpositions: (sort) => {
             let modes = this.get.modes()
             let result = []
             this.pitches.forEach((pitch) => {
                 modes.forEach((mode, inversion) => {
-                    let transposition = mode.map((note) => this.parent.mod(note + pitch, this.edo)).sort((a, b) => a - b)
+                    let transposition = mode.map((note) => this.parent.mod(note + pitch, this.edo))
+                    if(sort) transposition = transposition.sort((a, b) => a - b)
                     let CT = this.parent.count.common_tones(this.pitches, transposition)
                     result.push({
                         transposition: transposition,

@@ -35,6 +35,54 @@
             <div id="necklace" style="text-align: center"></div>
         </div>
     </div>
+    <div class="row" style="padding-bottom: 0px;min-height: 300px">
+        <div class="col" style="text-align: center">
+            <h4>Mode Attraction Vectors</h4>
+            <table id="vectors" style="text-align: center;font-size:x-large;margin: 0 auto">
+
+            </table>
+        </div>
+        <div class="col" style="height: 200px;width:400px;margin: 0 auto">
+            <h5>Interval Vector</h5>
+            <div class="row align-items-end" id="vector_container" style="height: 100%;">
+
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <h4>Get voicing on scale degree / Common-tone transpositions</h4>
+            <label>Voicing (e.g. 1 5 7 3)</label><input type="text" value="1 3 5" id="voicing_shape"><br>
+            <label>Scale degree (starting from 1 for the "tonic")</label><input type="text" size="1" value="1" id="voicing_degree"><br>
+            <input type="text" id="voicing_result" disabled><br>
+            <label>Scale degree as common tone:</label><select id="scale_degree_ct"></select><label>Voice lead</label><input id="ct_checkbox" type="checkbox"><br>
+            <textarea id="ct_text_area" style="width: 500px;height: 200px"></textarea>
+
+
+        </div>
+        <div class="col">
+            <h4>Generate chord progression</h4>
+            <label>Scale degree to be used (in each chord)</label><input type="text" value="1 3 5" id="progression_shape"><br>
+            <label>Chord progression "roots" (e.g. 1 4 5/5 7 1 = ["I IV V/V VII I"])</label><input type="text" size="15" value="1 4 5/5 7 1" id="progression_degrees"><br>
+            <label>Mode:</label><select id="progression_mode"></select>
+            <input type="button" id="progression_button" value="Generate"> <label>Voice-lead</label><input type="checkbox" id="progression_lead"><br>
+            <textarea id="progression_result" style="width:500px;height:200px"></textarea>
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <h4>Transposition Common-tones</h4>
+            <label>Transposition:</label> <select id="common_tone_select"></select> <label>Mode:</label> <select id="common_tone_mode"></select><br>
+            <table style="text-align: center;margin: 0 auto;font-size: x-large">
+                <tr><td><label>Original:</label></td><td style="font-weight: bolder" id="common_tone_original"></td></tr>
+                <tr><td><label>Transposed:</label></td> <td style="font-weight: bolder" id="common_tone_transposed"></td></tr>
+            </table>
+        </div>
+        <div class="col" id="ct_necklace">
+
+        </div>
+    </div>
     <div class="row">
         <div class="col">
             <h4>Trichords</h4>
@@ -81,51 +129,7 @@
 
         </div>
     </div>
-    <div class="row" style="padding-bottom: 0px">
-        <div class="col" style="text-align: center">
-            <h4>Mode Attraction Vectors</h4>
-            <table id="vectors" style="text-align: center;font-size:x-large;margin: 0 auto">
 
-            </table>
-        </div>
-        <div class="col" style="height: 200px;width:400px;margin: 0 auto">
-            <h5>Interval Vector</h5>
-            <div class="row align-items-end" id="vector_container" style="height: 100%;">
-
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col">
-            <h4>Get voicing on scale degree</h4>
-            <label>Voicing (e.g. 1 5 7 3)</label><input type="text" value="1 3 5" id="voicing_shape"><br>
-            <label>Scale degree (starting from 1 for the "tonic")</label><input type="text" size="1" value="1" id="voicing_degree"><br>
-            <input type="text" id="voicing_result" disabled>
-
-        </div>
-        <div class="col">
-            <h4>Generate chord progression</h4>
-            <label>Scale degree to be used (in each chord)</label><input type="text" value="1 3 5" id="progression_shape"><br>
-            <label>Chord progression "roots" (e.g. 1 4 5/5 7 1 = ["I IV V/V VII I"])</label><input type="text" size="15" value="1 4 5/5 7 1" id="progression_degrees"><br>
-            <label>Mode:</label><select id="progression_mode"></select>
-            <input type="button" id="progression_button" value="Generate"> <label>Voice-lead</label><input type="checkbox" id="progression_lead"><br>
-            <textarea id="progression_result" style="width:500px;height:200px"></textarea>
-
-        </div>
-    </div>
-    <div class="row">
-        <div class="col">
-            <h4>Transposition Common-tones</h4>
-            <label>Transposition:</label> <select id="common_tone_select"></select> <label>Mode:</label> <select id="common_tone_mode"></select><br>
-            <table style="text-align: center;margin: 0 auto;font-size: x-large">
-                <tr><td><label>Original:</label></td><td style="font-weight: bolder" id="common_tone_original"></td></tr>
-                <tr><td><label>Transposed:</label></td> <td style="font-weight: bolder" id="common_tone_transposed"></td></tr>
-            </table>
-        </div>
-        <div class="col" id="ct_necklace">
-
-        </div>
-    </div>
 </div>
 <script>
     const re_scale = (num, in_min, in_max, out_min, out_max) => {
@@ -271,6 +275,9 @@
         }
         transposition_common_tone()
 
+        $("#scale_degree_ct").html("")
+        scale.pitches.forEach((pitch,i)=>$("#scale_degree_ct").append("<option value='" + (i+1) +"'>" + String(i+1) +"</option>"))
+
     }
 
     const transposition_common_tone = function () {
@@ -279,19 +286,25 @@
         let scale = edo.scale($('#scale_input').val().split(' ').map((el) => parseInt(el))).mode(mode)
 
         let transposition = parseInt($("#common_tone_select").val())
-        let transposed = scale.get.transposition(transposition).sort((a,b)=>a-b)
+        let transposed = scale.get.transposition(transposition)
+        let t_root = parseInt(transposed[0])
+            transposed = transposed.sort((a,b)=>a-b)
         let intersection = edo.get.intersection(scale.pitches,transposed)
         $("#common_tone_original").html(scale.pitches.map(e=>{
+            let decoration = "none"
+            if(e==0) decoration='underline'
             let color = "white"
             if(intersection.indexOf(e)!=-1) color='red'
-            return "<td style='width:15px;color:" +color +"'>"+e+"</td>"
+            return "<td style='text-decoration:" +  decoration +";width:15px;color:" +color +"'>"+e+"</td>"
         }).join(" "))
 
 
         $("#common_tone_transposed").html(transposed.map(e=>{
+            let decoration = "none"
+            if(e==t_root) decoration='underline'
             let color = "white"
             if(intersection.indexOf(e)!=-1) color='red'
-            return "<td style='width:15px;color:" +color +"'>"+e+"</td>"
+            return "<td style='text-decoration:" +  decoration +";width:15px;color:" +color +"'>"+e+"</td>"
         }).join(""))
 
 
@@ -358,6 +371,29 @@
         let scale = edo.scale($('#scale_input').val().split(' ').map((el) => parseInt(el)))
         let degree = parseInt($("#voicing_degree").val().trim())
         let shape = $('#voicing_shape').val().split(' ').map((el) => parseInt(el))
+        let common_tones = scale.get.common_tone_transpositions(sort=false)
+        let common_tone = parseInt($("#scale_degree_ct").val())
+        common_tones = common_tones.filter(e=>e.common_tone==scale.pitches[(common_tone-1)])
+        common_tones = common_tones.map(ct=>{
+            let n=scale.count.pitches()-(ct.as_scale_degree-1)
+            return ct.transposition.slice(n, ct.transposition.length).concat(ct.transposition.slice(0, n))
+        }).map(ct=>{
+            return shape.map(n=>{
+                return ct[edo.mod(n-1,scale.pitches.length)]
+            })
+        }).filter(t=>t.indexOf(scale.pitches[common_tone-1])!=-1)
+
+
+        let vl = $("#ct_checkbox").prop("checked")
+        for (let i = 1; i < common_tones.length; i++) {
+            if(vl) common_tones[i]=edo.get.minimal_voice_leading(common_tones[i-1],common_tones[i])
+        }
+        $("#ct_text_area").html("")
+        common_tones.forEach(ct=>{
+            $("#ct_text_area").append(edo.convert.pc_to_name(ct).join(" ") + "\n")
+        })
+
+
         $('#voicing_result').val(scale.get.chord_quality_from_shape(shape,degree).join(" "))
     }
 
@@ -384,7 +420,6 @@
             let trans = scale.parent.get.transposition(chord,scale.pitches[of-1])
             if(vl) chords[i]=edo.get.minimal_voice_leading(chords[i-1],trans)
             else chords[i] = trans
-
         }
 
 
@@ -402,7 +437,8 @@
         })
 
     }
-
+    $("#scale_degree_ct").change(function () {shape_parser()})
+    $("#ct_checkbox").change(function () {shape_parser()})
 
     update_mode_selector()
     gen_scale_list()

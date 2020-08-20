@@ -86,11 +86,16 @@ let edo = new EDO(12)
 // let chord = scale.get.chord_quality_from_shape(shape,5)
 // console.log(edo.get.transposition(chord,scale.pitches[of-1]))
 
-let scale = edo.scale([0,2,4,6,8,9,11])
-let scales = []
-for (let i = 0; i < 12; i++) {
-    let transposition = scale.get.transposition(i)
-    let ct = edo.count.common_tones(scale.pitches,transposition)
-    scales.push([transposition,ct])
-}
-scales = scales.sort((a,b)=>b[1]-a[1]).forEach(scale=>console.log(scale))
+// let scale = edo.scale([0,2,4,6,8,9,11])
+// let scales = []
+// for (let i = 0; i < 12; i++) {
+//     let transposition = scale.get.transposition(i)
+//     let ct = edo.count.common_tones(scale.pitches,transposition)
+//     scales.push([transposition,ct])
+// }
+// scales = scales.sort((a,b)=>b[1]-a[1]).forEach(scale=>console.log(scale))
+
+
+// console.log(edo.get.pitch_fields([8,7,7,8,7,7,8,7,7,15,15,14,12,12,10,8,8,7,5,5],5,false,true,true))
+
+console.log(edo.convert.pc_to_name([1,2,3,[4,5,[6,7,8,15]]]))
