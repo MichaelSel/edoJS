@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <title>show</title>
+    <title>get</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -47,7 +47,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">show</h1>
+    <h1 class="page-title">get</h1>
     
 
     
@@ -63,9 +63,9 @@
         
         <h2>
         
-            <span class="ancestors"><a href="EDO.html">EDO</a>#</span>
+            <span class="ancestors"><a href="Time.html">Time</a>#</span>
         
-        show
+        get
         
         </h2>
         
@@ -78,8 +78,7 @@
     <div class="container-overview">
     
         
-            <div class="description"><p>A collection of functions that make visual representations</p>
-<p>Note: EDO.show can only be used client-side</p></div>
+            <div class="description"><p>A collection of functions manipulates an input</p></div>
         
 
         
@@ -107,15 +106,369 @@
 
     
 
-    <h4 class="name" id=".contour"><span class="type-signature">(static) </span>contour<span class="signature">(container_id, pitches, replace<span class="signature-attributes">opt</span>, size<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id=".beat"><span class="type-signature">(static) </span>beat<span class="signature">(array)</span><span class="type-signature"> &rarr; {Array.&lt;Number>}</span></h4>
 
     
 
 
 
     <div class="description">
-        <p>Plots the contour of a given melody.</p>
-<img src = "img/contour.png">
+        <p>Returns an array of arrays representing different sized beats coalescing with the pattern.</p>
+    </div>
+
+
+
+
+
+
+
+
+
+    <div class="method-member-container flex flex-col w-100 overflow-auto mt-20">
+        <strong>Parameters:</strong>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>array</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;Number></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>A beat pattern</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    </div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <div class="details-item-container">
+            <dt class="tag-source">Source:</dt>
+            <dd class="tag-source"><ul class="dummy"><li>
+                <a href="edo.js.html">edo.js</a>, <a href="edo.js.html#line5294">line 5294</a>
+            </li></ul></dd>
+        </div>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class="method-member-container mt-20">
+    <strong>Returns:</strong>
+        
+            
+<div class="param-desc">
+    <p>An ordered array showing as tuples [beat_size,number_of_alignments]</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array.&lt;Number></span>
+
+
+    </dd>
+</dl>
+ 
+    </div>
+
+
+
+    <div class="method-member-container flex flex-col w-100 overflow-auto mt-20">
+        <strong>Example</strong>
+        
+    <pre class="prettyprint"><code>let time = new Time()time.get.beat([2,4,4,4,4,4,4,4])//returns[ [ 2, 8 ], //a beat of size 2 aligns with the pattern 8 times (every element in the pattern falls on a beat) [ 4, 7 ], //a beat of size 4 aligns with the pattern 7 times (in this case, all the elements align if the first element is seen as a pickup) [ 3, 3 ] //a beat of size 3 aligns with the pattern 3 times]</code></pre>
+
+    </div>
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".fractal"><span class="type-signature">(static) </span>fractal<span class="signature">(base, iteration)</span><span class="type-signature"> &rarr; {Array.&lt;Number>}</span></h4>
+
+    
+
+
+
+    <div class="description">
+        <p>Multiplies each element in the <code>base</code>with the entire <code>base</code>, <code>iteration</code> times.</p>
+    </div>
+
+
+
+
+
+
+
+
+
+    <div class="method-member-container flex flex-col w-100 overflow-auto mt-20">
+        <strong>Parameters:</strong>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>base</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>some rhythmic cell</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>iteration</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The amount of times to apply the algorithms to the cell</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    </div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <div class="details-item-container">
+            <dt class="tag-source">Source:</dt>
+            <dd class="tag-source"><ul class="dummy"><li>
+                <a href="edo.js.html">edo.js</a>, <a href="edo.js.html#line5259">line 5259</a>
+            </li></ul></dd>
+        </div>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class="method-member-container mt-20">
+    <strong>Returns:</strong>
+        
+            
+<div class="param-desc">
+    <p>The fractal</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array.&lt;Number></span>
+
+
+    </dd>
+</dl>
+ 
+    </div>
+
+
+
+    <div class="method-member-container flex flex-col w-100 overflow-auto mt-20">
+        <strong>Example</strong>
+        
+    <pre class="prettyprint"><code>let time = new Time()time.get.fractal([2,4,3],1)//returns [2, 4, 3]time.get.fractal([2,4,3],2)//returns [4, 8,  6, 8, 16, 12, 6, 12, 9]time.get.fractal([2,4,3],3)//returns[8, 16, 12, 16, 32, 24, 12, 24, 18, 16, 32, 24, 32, 64, 48, 24, 48, 36, 12, 24, 18, 24, 48, 36, 18, 36, 27]</code></pre>
+
+    </div>
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".motives"><span class="type-signature">(static) </span>motives<span class="signature">(array, maximal_length<span class="signature-attributes">opt</span>, show_singulars<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Array.&lt;Object>}</span></h4>
+
+    
+
+
+
+    <div class="description">
+        <p>Returns the rhythmic motives as they appear verbatim, from most common to least common.</p>
     </div>
 
 
@@ -156,42 +509,7 @@
 
         <tr>
             
-                <td class="name"><code>container_id</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last"><p>The ID of a DOM element in which the contour will be shown.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>pitches</code></td>
+                <td class="name"><code>array</code></td>
             
 
             <td class="type">
@@ -219,14 +537,53 @@
                 </td>
             
 
-            <td class="description last"><p>The melody.</p></td>
+            <td class="description last"><p>A beat pattern</p></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>replace</code></td>
+                <td class="name"><code>maximal_length</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    8
+                
+                </td>
+            
+
+            <td class="description last"><p>The maximal motive length to be searched</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>show_singulars</code></td>
             
 
             <td class="type">
@@ -258,47 +615,7 @@
                 </td>
             
 
-            <td class="description last"><p>When false, any time the function is called a new contour will be appended to the object. When true, it will replace the contents of the container.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>size</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Number</span>
-|
-
-<span class="param-type">Array.&lt;Number, Number></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last"><p>Size (in px) of the plot. When no values are passed, the plot will take the size of the container. If 1 value is passed, it will be used for both dimensions. Otherwise pass data as [width,height].</p></td>
+            <td class="description last"><p>Whether to show &quot;motives&quot; that appear only once.</p></td>
         </tr>
 
     
@@ -341,7 +658,7 @@
         <div class="details-item-container">
             <dt class="tag-source">Source:</dt>
             <dd class="tag-source"><ul class="dummy"><li>
-                <a href="edo.js.html">edo.js</a>, <a href="edo.js.html#line2965">line 2965</a>
+                <a href="edo.js.html">edo.js</a>, <a href="edo.js.html#line5333">line 5333</a>
             </li></ul></dd>
         </div>
     
@@ -353,7 +670,7 @@
             <dt class="tag-see">See:</dt>
             <dd class="tag-see">
                 <ul>
-                    <li>/demos/contour_plotter.html</li>
+                    <li><a href="Time_get.html#.relational_motives">Time#get.relational_motives</a></li>
                 </ul>
             </dd>
         </div>
@@ -374,12 +691,36 @@
 
 
 
+    <div class="method-member-container mt-20">
+    <strong>Returns:</strong>
+        
+            
+<div class="param-desc">
+    <p>motive:[an array with the motive], incidence: the number of times that motive appears in the input</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array.&lt;Object></span>
+
+
+    </dd>
+</dl>
+ 
+    </div>
+
 
 
     <div class="method-member-container flex flex-col w-100 overflow-auto mt-20">
         <strong>Example</strong>
         
-    <pre class="prettyprint"><code>&lt;script src="edo.js">&lt;/script>&lt;script src="raphael.min.js">&lt;/script>&lt;div id="container" style="width:900px;height:600px; margin:0 auto;">&lt;/div>&lt;script>let edo = new EDO(12)perms = edo.get.permutations([1,2,3,4])perms.sort((a,b)=>b[0]-a[0] || b[b.length-1]-a[a.length-1])for(let perm of perms) {     edo.show.contour('container', perm,false,150) }&lt;/script></code></pre>
+    <pre class="prettyprint"><code>let time = new Time()time.get.motives([2,2,4,2,2,4,3,3,6,3])//returns[   { motive: [ 2, 2, 4 ], incidence: 2 }   { motive: [ 2, 2 ], incidence: 2 },   { motive: [ 2, 4 ], incidence: 2 }]</code></pre>
 
     </div>
 
@@ -389,15 +730,14 @@
 
     
 
-    <h4 class="name" id=".interval_fractal_tree"><span class="type-signature">(static) </span>interval_fractal_tree<span class="signature">(container_id, length<span class="signature-attributes">opt</span>, angle_span<span class="signature-attributes">opt</span>, mode<span class="signature-attributes">opt</span>, intervals<span class="signature-attributes">opt</span>, iterations<span class="signature-attributes">opt</span>, length_mul<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id=".ratios"><span class="type-signature">(static) </span>ratios<span class="signature">(base_ratio, max_ratio)</span><span class="type-signature"> &rarr; {Object}</span></h4>
 
     
 
 
 
     <div class="description">
-        <p>Makes a fractal tree with branches diverging by given intervals
-<img src = "img/fractal_tree.png"></p>
+        <p>returns the ratios to a <code>max_ratio</code> from a given <code>base_ratio</code>.</p>
     </div>
 
 
@@ -422,11 +762,7 @@
         <th>Type</th>
 
         
-        <th>Attributes</th>
-        
 
-        
-        <th>Default</th>
         
 
         <th class="last">Description</th>
@@ -438,42 +774,7 @@
 
         <tr>
             
-                <td class="name"><code>container_id</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last"><p>The ID of a DOM element in which the tree will be shown.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>length</code></td>
+                <td class="name"><code>base_ratio</code></td>
             
 
             <td class="type">
@@ -486,33 +787,17 @@
             </td>
 
             
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
 
             
-                <td class="default">
-                
-                    200
-                
-                </td>
-            
 
-            <td class="description last"><p>The length (or height) or the tree's &quot;trunk&quot;.</p></td>
+            <td class="description last"><p>The number to be used as a baseline (=:1)</p></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>angle_span</code></td>
+                <td class="name"><code>max_ratio</code></td>
             
 
             <td class="type">
@@ -525,182 +810,10 @@
             </td>
 
             
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
 
             
-                <td class="default">
-                
-                    90
-                
-                </td>
-            
 
-            <td class="description last"><p>the angle between branches.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>mode</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Array.&lt;Number></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    [0,2,4,5,7,9,11]
-                
-                </td>
-            
-
-            <td class="description last"><p>If provided, the tree will conform to that mode.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>intervals</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Array.&lt;Number></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    [-1,1]
-                
-                </td>
-            
-
-            <td class="description last"><p>If mode is provided, each interval represents the number of scale degrees away from the current node. If mode is not provided, the intervals represent PCs away from the current node.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>iterations</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Number</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    5
-                
-                </td>
-            
-
-            <td class="description last"><p>The number of sub-branches on the tree</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>length_mul</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Number</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    0.7
-                
-                </td>
-            
-
-            <td class="description last"><p>The factor by which every new sub-branch's length is to its parent.</p></td>
+            <td class="description last"><p>The maximal ratio to be returned</p></td>
         </tr>
 
     
@@ -743,22 +856,13 @@
         <div class="details-item-container">
             <dt class="tag-source">Source:</dt>
             <dd class="tag-source"><ul class="dummy"><li>
-                <a href="edo.js.html">edo.js</a>, <a href="edo.js.html#line3042">line 3042</a>
+                <a href="edo.js.html">edo.js</a>, <a href="edo.js.html#line5228">line 5228</a>
             </li></ul></dd>
         </div>
     
 
     
 
-    
-        <div class="details-item-container">
-            <dt class="tag-see">See:</dt>
-            <dd class="tag-see">
-                <ul>
-                    <li>/demos/fractal_tree.html</li>
-                </ul>
-            </dd>
-        </div>
     
 
     
@@ -776,85 +880,66 @@
 
 
 
-
-
-    <div class="method-member-container flex flex-col w-100 overflow-auto mt-20">
-        <strong>Example</strong>
-        
-    <pre class="prettyprint"><code>&lt;script src="edo.js">&lt;/script>&lt;script src="raphael.min.js">&lt;/script>&lt;div id="container" style="width:900px;height:600px; margin:0 auto;">&lt;/div>&lt;script> let edo = new EDO() edo.show.interval_fractal_tree(container_id)&lt;/script></code></pre>
-
-    </div>
-
-
+    <div class="method-member-container mt-20">
+    <strong>Returns:</strong>
         
             
-
-    
-
-    <h4 class="name" id=".necklace"><span class="type-signature">(static) </span>necklace<span class="signature">(args)</span><span class="type-signature"></span></h4>
-
-    
+<div class="param-desc">
+    <p>A list of ratios given the <code>base_ratio</code></p>
+</div>
 
 
 
-    <div class="description">
-        <p>Graphs a given necklace in a container.
-<img src='img/Necklace.png'></p>
-    </div>
-
-
-
-
-
-
-
-
-
-    <div class="method-member-container flex flex-col w-100 overflow-auto mt-20">
-        <strong>Parameters:</strong>
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
         
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>args</code></td>
-            
-
-            <td class="type">
-            
-                
 <span class="param-type">Object</span>
 
 
-            
-            </td>
+    </dd>
+</dl>
+ 
+    </div>
 
+
+
+    <div class="method-member-container flex flex-col w-100 overflow-auto mt-20">
+        <strong>Example</strong>
+        
+    <pre class="prettyprint"><code>let time = new Time()time.get.ratios(110,3)//returns { '1': 110, '2': 220, '3': 330, '1/2': 55, '1/3': 36.666666666666664 }</code></pre>
+
+    </div>
+
+
+        
             
 
-            
+    
 
-            <td class="description last"><p>An object with the necklace arguments</p>
-                <h6>Properties</h6>
-                
+    <h4 class="name" id=".relational_motives"><span class="type-signature">(static) </span>relational_motives<span class="signature">(array, maximal_length<span class="signature-attributes">opt</span>, show_singulars<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Array.&lt;Object>}</span></h4>
+
+    
+
+
+
+    <div class="description">
+        <p>Returns the rhythmic motives in terms of relationships (rather than verbatim durations like in <a href="Time_get.html#.motives">Time.get.motives</a> ), from most common to least common.</p>
+    </div>
+
+
+
+
+
+
+
+
+
+    <div class="method-member-container flex flex-col w-100 overflow-auto mt-20">
+        <strong>Parameters:</strong>
+        
 
 <table class="params">
     <thead>
@@ -882,42 +967,7 @@
 
         <tr>
             
-                <td class="name"><code>paper</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Paper</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last"><p>A Raphael Paper object on which the necklace will be drawn</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>pitches</code></td>
+                <td class="name"><code>array</code></td>
             
 
             <td class="type">
@@ -945,14 +995,14 @@
                 </td>
             
 
-            <td class="description last"><p>The pitches of the necklace</p></td>
+            <td class="description last"><p>A beat pattern</p></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>cx</code></td>
+                <td class="name"><code>maximal_length</code></td>
             
 
             <td class="type">
@@ -979,91 +1029,19 @@
             
                 <td class="default">
                 
+                    8
+                
                 </td>
             
 
-            <td class="description last"><p>The center x coordinate of the necklace (in relation to the paper object).</p></td>
+            <td class="description last"><p>The maximal motive length to be searched</p></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>cy</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Number</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last"><p>The center y coordinate of the necklace (in relation to the paper object).</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>radius</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Number</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last"><p>The center y coordinate of the necklace (in relation to the paper object)</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>ring</code></td>
+                <td class="name"><code>show_singulars</code></td>
             
 
             <td class="type">
@@ -1090,173 +1068,12 @@
             
                 <td class="default">
                 
-                    true
+                    false
                 
                 </td>
             
 
-            <td class="description last"><p>When false, the necklace ring will be hidden.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>inner_strings</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Boolean</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    true
-                
-                </td>
-            
-
-            <td class="description last"><p>When false, the necklace's inner strings will be hidden.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>PC_at_midnight</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Number</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    0
-                
-                </td>
-            
-
-            <td class="description last"><p>The PC starting the necklace at the very top (midnight)</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>string_width</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Number</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    1
-                
-                </td>
-            
-
-            <td class="description last"><p>The width of the strings of the necklace.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>node_radius</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Number</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last"><p>The radius of each node on the necklace</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-            </td>
+            <td class="description last"><p>Whether to show &quot;motives&quot; that appear only once.</p></td>
         </tr>
 
     
@@ -1299,7 +1116,7 @@
         <div class="details-item-container">
             <dt class="tag-source">Source:</dt>
             <dd class="tag-source"><ul class="dummy"><li>
-                <a href="edo.js.html">edo.js</a>, <a href="edo.js.html#line3166">line 3166</a>
+                <a href="edo.js.html">edo.js</a>, <a href="edo.js.html#line5358">line 5358</a>
             </li></ul></dd>
         </div>
     
@@ -1311,7 +1128,7 @@
             <dt class="tag-see">See:</dt>
             <dd class="tag-see">
                 <ul>
-                    <li>/demos/necklace.html</li>
+                    <li><a href="Time_get.html#.motives">Time#get.motives</a></li>
                 </ul>
             </dd>
         </div>
@@ -1332,12 +1149,36 @@
 
 
 
+    <div class="method-member-container mt-20">
+    <strong>Returns:</strong>
+        
+            
+<div class="param-desc">
+    <p>motive:[an array with the motive], incidence: the number of times that motive appears in the input</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array.&lt;Object></span>
+
+
+    </dd>
+</dl>
+ 
+    </div>
+
 
 
     <div class="method-member-container flex flex-col w-100 overflow-auto mt-20">
         <strong>Example</strong>
         
-    <pre class="prettyprint"><code>&lt;script src="edo.js">&lt;/script>&lt;script src="raphael.min.js">&lt;/script>&lt;div id="container" style="width:900px;height:600px; margin:0 auto;">&lt;/div>&lt;script> let edo = new EDO(12) let paper = edo.make_DOM_svg('container',1200,1200,true).paper edo.show.necklace({paper:paper,pitches:[0,2,4,5,7,9,11]})&lt;/script></code></pre>
+    <pre class="prettyprint"><code>let time = new Time()time.get.relational_motives([2,2,4,2,2,4,3,3,6,3])//returns[ { motive: [ 1, 2 ], incidence: 3, position: [ 0, 3, 6 ] }, //motive of duration=[same,double] appears 3 times, at positions 0, 3, and 6 of the original input { motive: [ 1, 2, 0.5 ], incidence: 2, position: [ 0, 6 ] }, //motive of duration=[same,double,half] appears 2 times, at positions 0, and 6 of the original input { motive: [ 2, 0.5 ], incidence: 2, position: [ 1, 7 ] } //motive of duration=[double,half] appears 2 times, at positions 1, and 7 of the original input]</code></pre>
 
     </div>
 
@@ -1347,15 +1188,14 @@
 
     
 
-    <h4 class="name" id=".necklace_fractal"><span class="type-signature">(static) </span>necklace_fractal<span class="signature">(args)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id=".subdivisions"><span class="type-signature">(static) </span>subdivisions<span class="signature">(num_of_beats, minimal_subdivision, maximal_subdivision)</span><span class="type-signature"> &rarr; {Array.&lt;Array.&lt;Number>>}</span></h4>
 
     
 
 
 
     <div class="description">
-        <p>Graphs necklaces on every node of a parent necklace recursively.
-<img src='img/necklace_fractal.png'></p>
+        <p>Get all unique subdivisions of a given <code>num_of_beats</code>, without their rotations.</p>
     </div>
 
 
@@ -1392,123 +1232,7 @@
 
         <tr>
             
-                <td class="name"><code>args</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The arguments of the necklaces</p>
-                <h6>Properties</h6>
-                
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-        <th>Attributes</th>
-        
-
-        
-        <th>Default</th>
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>container_id</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last"><p>The ID of a DOM element in which the necklaces will be shown.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>necklaces</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Array.&lt;Array.&lt;Number>></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last"><p>The necklaces to be drawn</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>canvas_width</code></td>
+                <td class="name"><code>num_of_beats</code></td>
             
 
             <td class="type">
@@ -1521,33 +1245,17 @@
             </td>
 
             
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
 
             
-                <td class="default">
-                
-                    900
-                
-                </td>
-            
 
-            <td class="description last"><p>The width of the drawable area</p></td>
+            <td class="description last"><p>The amount of beats to subdivide</p></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>canvas_height</code></td>
+                <td class="name"><code>minimal_subdivision</code></td>
             
 
             <td class="type">
@@ -1560,33 +1268,17 @@
             </td>
 
             
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
 
             
-                <td class="default">
-                
-                    900
-                
-                </td>
-            
 
-            <td class="description last"><p>The height of the drawable area</p></td>
+            <td class="description last"><p>The smallest allowed subdivision (the returned result will not include subdivisions smaller than this value)</p></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>initial_radius</code></td>
+                <td class="name"><code>maximal_subdivision</code></td>
             
 
             <td class="type">
@@ -1599,267 +1291,10 @@
             </td>
 
             
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
 
             
-                <td class="default">
-                
-                    250
-                
-                </td>
-            
 
-            <td class="description last"><p>The radius of the top-level necklace</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>radius_multiplier</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Number</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    0.5
-                
-                </td>
-            
-
-            <td class="description last"><p>The rate of change in radius size for every new level of necklace.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>offset_x</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Number</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    0
-                
-                </td>
-            
-
-            <td class="description last"><p>Initial necklace's x offset from the center</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>offset_y</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Number</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    50
-                
-                </td>
-            
-
-            <td class="description last"><p>Initial necklace's y offset from the center</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>minimum_node_radius</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Number</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    20
-                
-                </td>
-            
-
-            <td class="description last"><p>The smallest radius a node can have</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>ring</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Boolean</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    true
-                
-                </td>
-            
-
-            <td class="description last"><p>When false, the necklace's ring will be hidden</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>replace</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Boolean</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    false
-                
-                </td>
-            
-
-            <td class="description last"><p>When true, the contents of the container will be replaced by the function. When false, it will be appended.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-            </td>
+            <td class="description last"><p>The largest allowed subdivision (the returned result will not include subdivisions larger than this value)</p></td>
         </tr>
 
     
@@ -1902,7 +1337,7 @@
         <div class="details-item-container">
             <dt class="tag-source">Source:</dt>
             <dd class="tag-source"><ul class="dummy"><li>
-                <a href="edo.js.html">edo.js</a>, <a href="edo.js.html#line3436">line 3436</a>
+                <a href="edo.js.html">edo.js</a>, <a href="edo.js.html#line5212">line 5212</a>
             </li></ul></dd>
         </div>
     
@@ -1926,369 +1361,36 @@
 
 
 
-
-
-    <div class="method-member-container flex flex-col w-100 overflow-auto mt-20">
-        <strong>Example</strong>
-        
-    <pre class="prettyprint"><code>&lt;script src="edo.js">&lt;/script>&lt;script src="raphael.min.js">&lt;/script>&lt;div id="container" style="width:900px;height:900px; margin:0 auto;">&lt;/div>&lt;script>const divisions = 12let edo = new EDO(divisions)edo.show.necklace_fractal({container_id:'container',necklaces:[[0,3,6],[0,4,8],[0,6]]})&lt;/script></code></pre>
-
-    </div>
-
-
+    <div class="method-member-container mt-20">
+    <strong>Returns:</strong>
         
             
-
-    
-
-    <h4 class="name" id=".nested_necklaces"><span class="type-signature">(static) </span>nested_necklaces<span class="signature">(container_id, necklaces, replace<span class="signature-attributes">opt</span>, radius<span class="signature-attributes">opt</span>, ring<span class="signature-attributes">opt</span>, min_node_radius<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
-
-    
+<div class="param-desc">
+    <p>All possible subdivisions.</p>
+</div>
 
 
 
-    <div class="description">
-        <p>Graphs nested necklaces.
-<img src='img/nested_necklaces.png'></p>
-    </div>
-
-
-
-
-
-
-
-
-
-    <div class="method-member-container flex flex-col w-100 overflow-auto mt-20">
-        <strong>Parameters:</strong>
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
         
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-        <th>Attributes</th>
-        
-
-        
-        <th>Default</th>
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>container_id</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last"><p>The ID of a DOM element in which the contour will be shown.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>necklaces</code></td>
-            
-
-            <td class="type">
-            
-                
 <span class="param-type">Array.&lt;Array.&lt;Number>></span>
 
 
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last"><p>The necklaces to be drawn</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>replace</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Boolean</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    false
-                
-                </td>
-            
-
-            <td class="description last"><p>When true, the contents of the container will be replaced by the function. When false, it will be appended.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>radius</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Number</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    600
-                
-                </td>
-            
-
-            <td class="description last"><p>Radius (in px) of the ring.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>ring</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Boolean</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    false
-                
-                </td>
-            
-
-            <td class="description last"><p>When true, the ring of the scale will be drawn</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>min_node_radius</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Number</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last"><p>When passed, the radius of each node won't be smaller than the value passed</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    </div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-        <div class="details-item-container">
-            <dt class="tag-source">Source:</dt>
-            <dd class="tag-source"><ul class="dummy"><li>
-                <a href="edo.js.html">edo.js</a>, <a href="edo.js.html#line3379">line 3379</a>
-            </li></ul></dd>
-        </div>
-    
-
-    
-
-    
-        <div class="details-item-container">
-            <dt class="tag-see">See:</dt>
-            <dd class="tag-see">
-                <ul>
-                    <li>/demos/necklace.html</li>
-                </ul>
-            </dd>
-        </div>
-    
-
-    
+    </dd>
 </dl>
-
-
-
-
-
-
-
-
-
-
-
-
+ 
+    </div>
 
 
 
     <div class="method-member-container flex flex-col w-100 overflow-auto mt-20">
         <strong>Example</strong>
         
-    <pre class="prettyprint"><code>&lt;script src="edo.js">&lt;/script>&lt;script src="raphael.min.js">&lt;/script>&lt;div id="container" style="width:900px;height:900px; margin:0 auto;">&lt;/div>&lt;script>const divisions = 12let edo = new EDO(divisions)let scale = edo.scale([0,2,4,5,7,9,11])let necklaces = scale.get.scale_degree_transpositions().map((trans)=>trans[0])edo.show.nested_necklaces("container",necklaces,true,900)//Graphs all of the common tone transpositions of the major scale&lt;/script></code></pre>
+    <pre class="prettyprint"><code>let time = new Time()time.get.subdivisions(12,2,3)//returns[ [ 2, 2, 2, 2, 2, 2 ], [ 2, 2, 2, 3, 3 ], [ 2, 2, 3, 2, 3 ], [ 3, 3, 3, 3 ]]</code></pre>
 
     </div>
 

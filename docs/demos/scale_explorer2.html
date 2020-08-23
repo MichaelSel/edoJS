@@ -21,6 +21,7 @@
 <div id="top">
     <label>Number of Equal Divisions of the Octave (EDO)</label><input id="edo_input" type="text" value="12" size="1"><br>
     <label>Pitch Classes (separated by spaces)</label><input id="scale_input" type="text" value="0 2 4 5 7 9 11"> or select <select id="scale_selector"></select><br>
+    <label>Showing information for:</label> <span id="scale_info"></span><br>
     <input id="explore_button" type="button" value="Explore Scale">
 
 </div>
@@ -140,6 +141,9 @@
 
         let edo = new EDO(parseInt($('#edo_input').val()))
         let scale = edo.scale($('#scale_input').val().split(' ').map((el) => parseInt(el)))
+        $("#scale_info").html(scale.pitches.join(" ") + " (" + scale.get.normal_order().join(' ') +" in normal order)")
+        $("#scale_selector").val(scale.get.normal_order().join(' '))
+
         let transpositions = scale.get.scale_degree_transpositions().map((t)=>t[0])
         edo.show.nested_necklaces('transpositions_necklace',transpositions,true,700,true,15,false)
         let necklace_paper = edo.make_DOM_svg('necklace',700,700,true).paper

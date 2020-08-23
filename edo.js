@@ -820,7 +820,7 @@ class EDO {
 
     }
 
-    /**A collection of functions manipulates an input
+    /**A collection of functions manipulating an input
      * @namespace EDO#get*/
     get = {
         /** <p>Returns the angle created on the necklace for a given trichord.</p>
@@ -2459,8 +2459,8 @@ class EDO {
          * @param  {Array<Number>} arr - a bigger collection where we search
          * @param  {Boolean} [allow_skips=true] - if false, the search will only be done on consecutive items
          * @example
-         * // returns [[ 0, 2, 5 ], [ 0, 2, 6 ],[ 0, 4, 5 ], [ 0, 4, 6 ],[ 1, 2, 5 ], [ 1, 2, 6 ],[ 1, 4, 5 ], [ 1, 4, 6 ],[ 3, 4, 5 ], [ 3, 4, 6 ]]
          * get.subset_indices([0, 2, 3], [0, 0, 2, 0, 2, 3, 3])
+         * // returns [[ 0, 2, 5 ], [ 0, 2, 6 ],[ 0, 4, 5 ], [ 0, 4, 6 ],[ 1, 2, 5 ], [ 1, 2, 6 ],[ 1, 4, 5 ], [ 1, 4, 6 ],[ 3, 4, 5 ], [ 3, 4, 6 ]]
          * @return {Array<Array<Number>>}
          * @memberOf EDO#get
          */
@@ -5182,12 +5182,273 @@ class Scale {
 
 }
 
+/** <p>Class for rhythm / tempo manipulation</p>
+ * <p>(This is not really part of a "tuning system" per se, but a need to interact with rhythm seems fitting for such a library).</p> */
+class Time {
+    constructor() {
+
+    }
+
+    /**A collection of functions manipulates an input
+     * @namespace Time#get*/
+    get = {
+        /** Get all unique subdivisions of a given <code>num_of_beats</code>, without their rotations.
+         *
+         * @param  {Number} num_of_beats - The amount of beats to subdivide
+         * @param  {Number} minimal_subdivision - The smallest allowed subdivision (the returned result will not include subdivisions smaller than this value)
+         * @param  {Number} maximal_subdivision - The largest allowed subdivision (the returned result will not include subdivisions larger than this value)
+         * @returns {Array<Array<Number>>} All possible subdivisions.
+         * @memberOf Time#get
+         * @example
+         * let time = new Time()
+         * time.get.subdivisions(12,2,3)
+         * //returns
+         * [
+         *  [ 2, 2, 2, 2, 2, 2 ],
+         *  [ 2, 2, 2, 3, 3 ],
+         *  [ 2, 2, 3, 2, 3 ],
+         *  [ 3, 3, 3, 3 ]
+         * ]*/
+        subdivisions: (num_of_beats,minimal_subdivision = 2, maximal_subdivision = 8) => {
+            let edo = new EDO(num_of_beats)
+            let scales = edo.get.scales(minimal_subdivision,maximal_subdivision).map(scale=>scale.to.steps())
+            return scales
+        },
+
+        /** returns the ratios to a <code>max_ratio</code> from a given <code>base_ratio</code>.
+         *
+         * @param  {Number} base_ratio - The number to be used as a baseline (=:1)
+         * @param  {Number} max_ratio - The maximal ratio to be returned
+         * @returns {Object} A list of ratios given the <code>base_ratio</code>
+         * @memberOf Time#get
+         * @example
+         * let time = new Time()
+         * time.get.ratios(110,3)
+         * //returns { '1': 110, '2': 220, '3': 330, '1/2': 55, '1/3': 36.666666666666664 } */
+        ratios: (base_ratio=1,max_ratio=10) =>{
+            let beats = {}
+            for (let i = 1; i <=max_ratio ; i++) {
+
+                beats[i]=base_ratio*i
+                if(i==1) continue
+                beats["1/"+String(i)] = base_ratio/i
+            }
+            return beats
+        },
+
+        /** Multiplies each element in the <code>base</code>with the entire <code>base</code>, <code>iteration</code> times.
+         *
+         * @param  {Number} base - some rhythmic cell
+         * @param  {Number} iteration - The amount of times to apply the algorithms to the cell
+         * @returns {Array<Number>} The fractal
+         * @memberOf Time#get
+         * @example
+         * let time = new Time()
+         * time.get.fractal([2,4,3],1)
+         * //returns [2, 4, 3]
+         *
+         * time.get.fractal([2,4,3],2)
+         * //returns [4, 8,  6, 8, 16, 12, 6, 12, 9]
+         *
+         * time.get.fractal([2,4,3],3)
+         * //returns
+         * [8, 16, 12, 16, 32, 24, 12, 24,
+         *  18, 16, 32, 24, 32, 64, 48, 24,
+         *  48, 36, 12, 24, 18, 24, 48, 36,
+         *  18, 36, 27]*/
+        fractal: (base=[2,2,3],iteration=1) =>{
+            const do_it = function (arr,it) {
+                if(it<=1) return arr
+                else {
+                    it--
+                    arr = arr.map(el=>{
+                        return base.map(b=>{
+                            return b*el
+                        })
+                    }).flat()
+                    return do_it([...arr],it)
+                }
+
+            }
+            return do_it([...base],iteration)
+
+
+        },
+
+        /** Returns an array of arrays representing different sized beats coalescing with the pattern.
+         *
+         * @param  {Array<Number>} array - A beat pattern
+         * @returns {Array<Number>} An ordered array showing as tuples [beat_size,number_of_alignments]
+         * @memberOf Time#get
+         * @example
+         * let time = new Time()
+         * time.get.beat([2,4,4,4,4,4,4,4])
+         * //returns
+         * [
+         *  [ 2, 8 ], //a beat of size 2 aligns with the pattern 8 times (every element in the pattern falls on a beat)
+         *  [ 4, 7 ], //a beat of size 4 aligns with the pattern 7 times (in this case, all the elements align if the first element is seen as a pickup)
+         *  [ 3, 3 ] //a beat of size 3 aligns with the pattern 3 times
+         * ]
+         *
+         * */
+        beat: (array) =>{
+            let beats = []
+            let min = Math.min(...array)
+            let max = Math.max(...array)
+            let edo = new EDO()
+            for (let i = min; i <= max; i++) {
+                let max_oc = 0
+                let intervals = edo.convert.intervals_to_pitches(array).slice(1)
+                for (let j = 0; j < array.length; j++) {
+                    let len = intervals.filter(el=>Math.round(el/i)==el/i).length
+                    if(len>max_oc) max_oc=len
+                    intervals = edo.convert.intervals_to_pitches(array.slice(j)).slice(1)
+                }
+                if(max_oc!=0) beats.push([i,max_oc])
+
+            }
+            beats = beats.sort((a,b)=>b[1]-a[1])
+            return beats
+
+        },
+
+        /** Returns the rhythmic motives as they appear verbatim, from most common to least common.
+         *
+         * @param  {Array<Number>} array - A beat pattern
+         * @param  {Number} [maximal_length=8] - The maximal motive length to be searched
+         * @param  {Boolean} [show_singulars=false] - Whether to show "motives" that appear only once.
+         * @returns {Array<Object>} motive:[an array with the motive], incidence: the number of times that motive appears in the input
+         * @memberOf Time#get
+         * @example
+         * let time = new Time()
+         * time.get.motives([2,2,4,2,2,4,3,3,6,3])
+         * //returns
+         * [
+         *    { motive: [ 2, 2, 4 ], incidence: 2 }
+         *    { motive: [ 2, 2 ], incidence: 2 },
+         *    { motive: [ 2, 4 ], incidence: 2 }
+         * ]
+         * @see Time#get.relational_motives
+         * */
+        motives: (array,maximal_length=8,show_singulars=false) => {
+            let edo = new EDO()
+            return edo.get.motives(array,false,false,maximal_length)
+                .filter(el=>(el.incidence>1 || show_singulars) && el.motive.length>1)
+        },
+
+        /** Returns the rhythmic motives in terms of relationships (rather than verbatim durations like in [Time.get.motives]{@link Time#get.motives} ), from most common to least common.
+         *
+         * @param  {Array<Number>} array - A beat pattern
+         * @param  {Number} [maximal_length=8] - The maximal motive length to be searched
+         * @param  {Boolean} [show_singulars=false] - Whether to show "motives" that appear only once.
+         * @returns {Array<Object>} motive:[an array with the motive], incidence: the number of times that motive appears in the input
+         * @memberOf Time#get
+         * @example
+         * let time = new Time()
+         * time.get.relational_motives([2,2,4,2,2,4,3,3,6,3])
+         * //returns
+         * [
+         *  { motive: [ 1, 2 ], incidence: 3, position: [ 0, 3, 6 ] }, //motive of duration=[same,double] appears 3 times, at positions 0, 3, and 6 of the original input
+         *  { motive: [ 1, 2, 0.5 ], incidence: 2, position: [ 0, 6 ] }, //motive of duration=[same,double,half] appears 2 times, at positions 0, and 6 of the original input
+         *  { motive: [ 2, 0.5 ], incidence: 2, position: [ 1, 7 ] } //motive of duration=[double,half] appears 2 times, at positions 1, and 7 of the original input
+         * ]
+         * @see Time#get.motives
+         *
+         * */
+        relational_motives: (array,maximal_length=8,show_singular = false)=> {
+            let ratios = this.convert.beats_to_ratios(array)
+            let motives = this.get.motives(ratios,maximal_length,show_singular)
+            let edo = new EDO()
+            motives = motives.map(motive=>{
+                let position = edo.get.subset_indices(motive.motive,ratios,false).map(i=>i[0])
+                motive.position = position
+                return motive
+            })
+            return motives
+        }
+    }
+
+    /**A collection of functions that resizes the elements of an array or the array itself
+     * @namespace Time#resize*/
+    resize = {
+        /** Returns a given array with its elements "resized" by a given multiplier.
+         *
+         * @param  {Array<Number>} input - The original array.
+         * @param  {Number} [by=1] - The number by which to resize the elements
+         * @param  {false|"up"|"down"|"closest"} [round=false] - When not false, this determines how the elements are to be rounded when not integers
+         * @param  {Boolean} [remove_0s=false] - When true, 0s will be completely erased from the array.
+         * @returns {Array<Number>} The resized input
+         * @memberOf Time#resize
+         * @example
+         * let time = new Time()
+         * time.resize.by_product([2,4,1,3],0.45) // returns [ 0.9, 1.8, 0.45, 1.35 ]
+         * time.resize.by_product([2,4,1,3],0.45,"up") // returns [ 1, 2, 1, 2 ]
+         * time.resize.by_product([2,4,1,3],0.45,"closest",false) // returns [ 1, 2, 0, 1 ]
+         * time.resize.by_product([2,4,1,3],0.45,"closest",true) // returns [ 1, 2, 1 ]
+         * */
+        by_product: (input,by=1,round=false,remove_0s=false) =>{
+            input = input.map(el=>el*by).map(el=>{
+                switch(round) {
+                    case "closest": return Math.round(el)
+                    case "down":return Math.floor(el)
+                    case "up":return Math.ceil(el)
+                    case false: return el
+                }
+            })
+            if(remove_0s) input = input.filter(el=>el!=0)
+
+            return input
+        },
+
+        /** Returns a given array with its elements "resized" by an added sum.
+         *
+         * @param  {Array<Number>} input - The original array.
+         * @param  {Number} [by=1] - The number by which to resize the elements
+         * @param  {Boolean} [remove_0s=false] - When true, 0s will be completely erased from the array.
+         * @returns {Array<Number>} The resized input
+         * @memberOf Time#resize
+         * @example
+         * let time = new Time()
+         * time.resize.by_sum([2,4,1,3],-1,false) //[ 1, 3, 0, 2 ]
+         * time.resize.by_sum([2,4,1,3],-1,true) //[ 1, 3, 2 ]
+         * */
+        by_sum: (input,by,remove_0s)=>{
+            input = input.map(el=>el+by)
+            if(remove_0s) input = input.filter(el=>el!=0)
+            return input
+        }
+    }
+
+    /**A collection of functions that convert an input into other equivalent representations
+     * @namespace Time#convert*/
+    convert = {
+        /** Returns the new tempo, if the number of <code>beats_in_old_tempo</code> occupies the same time as the number of <code>beats_in_new_tempo</code>, and the old tempo being <code>old_tempo</code>.
+         *
+         * @param  {Number} beats_in_old_tempo - The number of beats in the old tempo
+         * @param  {Number} beats_in_new_tempo - The equivalent number of beats in the new tempo
+         * @param  {Number} old_tempo - The old tempo
+         * @returns {Number} The new tempo
+         * @memberOf Time#convert
+         * @example
+         * let time = new Time()
+         * time.convert.beats_to_tempo(4,6,60) // returns 90 */
+        beats_to_tempo: (beats_in_old_tempo=4,beats_in_new_tempo=6,old_tempo=60) =>{
+            return (beats_in_new_tempo/beats_in_old_tempo)*old_tempo
+        },
+
+        beats_to_ratios: (array)=>{
+            return array.map((el,i,arr)=>(i>0)?arr[i]/arr[i-1]:1).slice(1)
+        }
+    }
+}
+
 /**
  * For server side*/
 try {
     module.exports = {
         EDO: EDO,
-        Scale: Scale
+        Scale: Scale,
+        Time: Time
     }
 }
     /**

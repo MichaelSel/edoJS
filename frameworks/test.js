@@ -4,6 +4,7 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 const EDO = require("../edo").EDO
+const Time = require("../edo").Time
 let edo = new EDO(12)
 // let chords = [[0,4,6,8,11],[1,3,6,7,11],[1,4,5,9,11],[3,5,7,10,11]]
 // chords = edo.get.permutations(chords)
@@ -98,4 +99,9 @@ let edo = new EDO(12)
 
 // console.log(edo.get.pitch_fields([8,7,7,8,7,7,8,7,7,15,15,14,12,12,10,8,8,7,5,5],5,false,true,true))
 
-console.log(edo.convert.pc_to_name([1,2,3,[4,5,[6,7,8,15]]]))
+// console.log(edo.convert.pc_to_name([1,2,3,[4,5,[6,7,8,15]]]))
+
+let time = new Time()
+// console.log(time.convert.beats_to_ratios([2,2,4,2,2,4,3,3,6,2,2,4]))
+console.log(time.get.relational_motives([2,2,4,2,2,4,3,3,6,3]))
+// console.log(time.get.motives([2,2,4,2,2,4,3,3,6,3]))
