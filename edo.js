@@ -1,6 +1,6 @@
 /**
  * @author Michael Seltenreich <seltenmusic@gmail.com>
- * @version 1.0.0
+ * @version 1.2.0
  * @license
  * <pre>Copyright 2020 Michael Seltenreich
  *
@@ -5455,8 +5455,3 @@ try {
      * For client-side*/ catch (e) {
     1 + 1
 }
-
-
-
-
-
