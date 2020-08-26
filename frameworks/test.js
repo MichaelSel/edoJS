@@ -103,5 +103,19 @@ let edo = new EDO(12)
 
 let time = new Time()
 // console.log(time.convert.beats_to_ratios([2,2,4,2,2,4,3,3,6,2,2,4]))
-console.log(time.get.relational_motives([2,2,4,2,2,4,3,3,6,3]))
+// console.log(time.get.relational_motives([2,2,4,2,2,4,3,3,6,3]))
 // console.log(time.get.motives([2,2,4,2,2,4,3,3,6,3]))
+//
+// let sub = time.get.subdivisions(12)
+// let rhythms = time.get.explicit(...sub)
+// rhythms.forEach(r=>console.log(JSON.stringify(r)))
+    let cp = time.get.counterpoint_cycle([1,2,1,3,1],[3,1])
+    cp.forEach(e=>console.log(JSON.stringify(e)))
+
+
+
+
+
+
+
+

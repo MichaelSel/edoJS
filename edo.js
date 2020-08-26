@@ -309,7 +309,7 @@ const combinations = (set, k) => {
 const rescale = (num, in_min, in_max, out_min, out_max) => {
     return (num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
-
+const GCD = (...n) => n.length === 2 ? n[1] ? GCD(n[1], n[0] % n[1]) : n[0] : n.reduce((a, c) => a = GCD(a, c));
 
 /** Class representing some EDO tuning system.*/
 
@@ -5209,7 +5209,7 @@ class Time {
          *  [ 2, 2, 3, 2, 3 ],
          *  [ 3, 3, 3, 3 ]
          * ]*/
-        subdivisions: (num_of_beats,minimal_subdivision = 2, maximal_subdivision = 8) => {
+        subdivisions: (num_of_beats,minimal_subdivision = 2, maximal_subdivision = 3) => {
             let edo = new EDO(num_of_beats)
             let scales = edo.get.scales(minimal_subdivision,maximal_subdivision).map(scale=>scale.to.steps())
             return scales
@@ -5313,6 +5313,17 @@ class Time {
         },
 
         /** Returns the rhythmic motives as they appear verbatim, from most common to least common.
+         * @memberOf Time#get
+         * @param {Array<Number>} pattern - The pattern to be repeated
+         * @param {Number} times - The number of times to repeat
+         * @returns The pattern repeating
+         * @example
+         * let time = new Time()
+         * time.get.repeated([2,1,1],3) // returns  [2,1,1,2,1,1,2,1,1]
+         */
+        repeated: (pattern,times=2)=>Array.from(new Array(times), () => pattern).flat(),
+
+        /** Returns the rhythmic motives as they appear verbatim, from most common to least common.
          *
          * @param  {Array<Number>} array - A beat pattern
          * @param  {Number} [maximal_length=8] - The maximal motive length to be searched
@@ -5365,7 +5376,73 @@ class Time {
                 return motive
             })
             return motives
-        }
+        },
+
+        /** Returns the position of every subdivision of a given beat(s).
+         *
+         * @param  {Array<Number>} arrays - Any number of beat patterns separated by commas.
+         * @returns {Array<String>} The flushing out of each pattern into its subdivisional representation.
+         * @memberOf Time#get
+         * @example
+         * let time = new Time()
+         * let sub = time.get.subdivisions(12) //get all subdivisions of 12 beats
+         * let rhythms = time.get.explicit(...sub)
+         * rhythms.forEach(r=>console.log(r))
+         * //returns
+         *  "2  .  2  .  2  .  2  .  2  .  2  . "
+         *  "2  .  2  .  2  .  3  .  .  3  .  . "
+         *  "2  .  2  .  3  .  .  2  .  3  .  . "
+         *  "3  .  .  3  .  .  3  .  .  3  .  . "
+         *
+         * */
+        explicit: (...arrays) =>{
+            arrays = arrays.map(arr=>{
+                arr = arr.map(el=>{
+                    el = [String(el),...Array.from(Array(el-1).fill("."))]
+                    el = el.map(e=>(e.length==1)?e+" ":e)
+                    return el
+                })
+                return arr.flat().join(" ")
+            })
+            return arrays
+        },
+
+
+        /** Returns a binary representation of ONE complete cycle of all given beat patterns
+         *
+         * @param  {...Array<Number>|Number} patterns - beat patterns as arrays or integers seperated by commas.
+         * @returns {Array<Array<Number>>} Returns a binary representation of ONE complete cycle of all given beat patterns
+         * @memberOf Time#get
+         * @example
+         * let time = new Time()
+         * time.get.counterpoint_cycle([1,1,2],3)
+         * //returns
+         * [1,1,1,0,1,1,1,0,1,1,1,0]
+         * [1,0,0,1,0,0,1,0,0,1,0,0]
+         *
+         * time.get.counterpoint_cycle([1,2,1,3,1],[3,1])
+         * //returns
+         * [1,1,0,1,1,0,0,1]
+         * [1,0,0,1,1,0,0,1]
+         * */
+        counterpoint_cycle: (...patterns) => {
+            patterns = patterns.map(p=>(Array.isArray(p))?p:[p]).map(p=>this.convert.binary(p))
+            let lengths = patterns.map(p=>p.length)
+
+            let product = lengths.reduce((a,e)=>a*e,1)
+
+            let gcd = GCD(...lengths)
+            let divisible = false
+            product=Math.max(...lengths)
+            while(!divisible) {
+                divisible = Boolean(lengths.map(l=>Number(Number.isInteger(product/l))).reduce((ar,el)=>ar*el,1))
+                if(divisible) break
+                product++
+            }
+            patterns = patterns.map(p=>this.get.repeated(p,product/p.length))
+            return patterns
+
+        },
     }
 
     /**A collection of functions that resizes the elements of an array or the array itself
@@ -5412,16 +5489,23 @@ class Time {
          * time.resize.by_sum([2,4,1,3],-1,false) //[ 1, 3, 0, 2 ]
          * time.resize.by_sum([2,4,1,3],-1,true) //[ 1, 3, 2 ]
          * */
-        by_sum: (input,by,remove_0s)=>{
-            input = input.map(el=>el+by)
-            if(remove_0s) input = input.filter(el=>el!=0)
-            return input
-        }
+        by_sum: (input,by,remove_0s)=>(remove_0s)?input.map(d=>d+by).filter(el=>el!=0): input.map(d=>d+by),
+
     }
 
     /**A collection of functions that convert an input into other equivalent representations
      * @namespace Time#convert*/
     convert = {
+        binary: (pattern) =>{
+            return pattern.map(e=>{
+                if(e==0) return [0]
+                e = Array.from([...new Array(e).fill(0)])
+                e[0]=1
+                return e
+            }).flat()
+
+        },
+
         /** Returns the new tempo, if the number of <code>beats_in_old_tempo</code> occupies the same time as the number of <code>beats_in_new_tempo</code>, and the old tempo being <code>old_tempo</code>.
          *
          * @param  {Number} beats_in_old_tempo - The number of beats in the old tempo
@@ -5432,13 +5516,34 @@ class Time {
          * @example
          * let time = new Time()
          * time.convert.beats_to_tempo(4,6,60) // returns 90 */
-        beats_to_tempo: (beats_in_old_tempo=4,beats_in_new_tempo=6,old_tempo=60) =>{
-            return (beats_in_new_tempo/beats_in_old_tempo)*old_tempo
-        },
+        beats_to_tempo: (beats_in_old_tempo=4,beats_in_new_tempo=6,old_tempo=60) =>(beats_in_new_tempo/beats_in_old_tempo)*old_tempo,
 
-        beats_to_ratios: (array)=>{
-            return array.map((el,i,arr)=>(i>0)?arr[i]/arr[i-1]:1).slice(1)
-        }
+        /** Returns the new tempo, if the number of <code>beats_in_old_tempo</code> occupies the same time as the number of <code>beats_in_new_tempo</code>, and the old tempo being <code>old_tempo</code>.
+         *
+         * @param  {Array<Number>} array - An array of beats
+         * @param  {Boolean} [relate_only_to_first=false] - When true, all ratios will be calculated based on the first value. Otherwised, they'll be calculated based on their relationship with the previous beat.
+         * @returns {Array<Number>} An array with the ratios
+         * @memberOf Time#convert
+         * @example
+         * let time = new Time()
+         * time.convert.beats_to_ratios([2,3,2,1]) // [ 1.5, 0.6666666666666666, 0.5 ] */
+        beats_to_ratios: (array,relate_only_to_first=false)=>array.map((el,i,arr)=>(i>0)?arr[i]/arr[(relate_only_to_first)?0:i-1]:1).slice(1),
+
+
+
+
+        /** Returns an array of beats as expressed in their duration in milliseconds
+         *
+         * @param  {Array<Number>} beats - An array of beats
+         * @param  {Number} [bpm=60] - The tempo
+         * @param  {Number} [units_per_beat=1] - The number of units each beat subdivides to.
+         * @returns {Array<Number>} An array with the pattern in milliseconds
+         * @memberOf Time#convert
+         * @example
+         * let time = new Time()
+         * time.convert.beats_to_msec([2,3,2,1],120,2) // [ 500, 750, 500, 250 ] */
+        beats_to_msec: (beats,bpm=60,units_per_beat=1) =>beats.map(b=>((60/bpm*1000)*b)/units_per_beat)
+
     }
 }
 
