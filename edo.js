@@ -5431,7 +5431,7 @@ class Time {
 
             let product = lengths.reduce((a,e)=>a*e,1)
 
-            let gcd = GCD(...lengths)
+            // let gcd = GCD(...lengths)
             let divisible = false
             product=Math.max(...lengths)
             while(!divisible) {
