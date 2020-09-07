@@ -446,7 +446,7 @@ class EDO {
 
         /** Returns a ratio as a decimal number from a given interval
          *
-         * @param  {Number} interval - Some interval
+         * @param  {Number|Array<Number>} interval - Some interval
          * @returns {Number} a ratio
          * @memberOf EDO#convert
          * @example
@@ -454,7 +454,9 @@ class EDO {
          * edo.convert.interval_to_ratio(7)
          * // returns 1.4983070768766815*/
         interval_to_ratio: (interval) => {
+            if(Array.isArray(interval)) return interval.map(i=>this.convert.interval_to_ratio(i))
             return Math.pow(2, interval / this.edo)
+
         },
 
         /** Given a list of intervals (or list of lists), returns pitches made with the intervals
@@ -960,6 +962,71 @@ class EDO {
             })
             if (from_0) PCs = this.scale(PCs).pitches
             return PCs
+        },
+
+
+
+        /** <p>Returns the measure of dissonance of a given input based on Sethares' algorithm.</p>
+         * @param {Array<Number>} ratios - An (ordered) array of ratios with root=1 (e.g. [1,1.5,1.66,2])
+         * @param {Array<Number>} [amplitudes=[1,1...]] - An (ordered) array of corresponding amplitudes to each ratio (0<=amp<=1)
+         * @param {Number} [base_freq=440] - The frequency to use as the basis for the calculation
+         * @returns {Number} a number value of the measure of dissonance of the given input
+         * @memberOf Scale#get
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * edo.get.dissonance_measure([1,2]) //returns 0.000009198921497239643
+         *
+         * edo.get.dissonance_measure([1,2],[1,0.5],110) //returns 0.029873544106178103
+         *
+         * @see https://sethares.engr.wisc.edu/consemi.html
+         */
+        dissonance_measure: (ratios,amplitudes=Array.from(new Array(ratios.length).fill(1)),base_freq=440) => {
+            ratios = ratios.map(r=>r*base_freq)
+            const Dstar=0.24, S1=0.0207, S2=18.96, C1=5, C2=-5,
+            A1=-3.51, A2=-5.75, firstpass=1, N=ratios.length
+            let D=0
+            for (let i = 2; i <= N; i++) {
+                let Fmin = ratios.slice(0,N-i+1)
+                let S = Fmin.map(e=>Dstar/(S1*e+S2))
+                let slice1 = ratios.slice(i-1,N)
+                let slice2 = ratios.slice(0,(N-i+1))
+                let Fdif = []
+                for (let j = 0; j < slice1.length; j++) {
+                    Fdif.push(slice1[j]-slice2[j])
+                }
+
+                let aslice1 = amplitudes.slice(i-1,N)
+                let aslice2 = amplitudes.slice(0,(N-i+1))
+                let a = (aslice1.reduce((a,b)=>a+b,0)<aslice2.reduce((a,b)=>a+b,0))?aslice1:aslice2
+
+
+                let calc1= Fdif.map((el,ind)=>Math.exp(el*S[ind]*A1)*C1)
+                let calc2 = Fdif.map((el,ind)=>Math.exp(el*S[ind]*A2)*C2)
+                let calcsum = calc1.map((el,ind)=>el+calc2[ind])
+                let Dnew = calcsum.map((el,ind)=>el*a[ind])
+                let Dnewsum = Dnew.reduce((a,b)=>a+b,0)
+                D+=Dnewsum
+            }
+            return D
+
+        },
+
+        /** <p>Returns mean (Sethares) dissonance value for every rotation of a given set.</p>
+         * @param {Array<Number>} set - A set of pitches
+         * @returns {Number} a number value of the measure of dissonance of the given input
+         * @memberOf Scale#get
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * edo.get.mean_set_dissonance([0,2,4,5,7,9,11]) //returns 4.846261636284487
+         *
+         * @see EDO#get.dissonance_measure
+         */
+        mean_set_dissonance: (set)=>{
+            let modes = this.get.modes(set)
+            let ratios = modes.map(m=>this.convert.interval_to_ratio(m))
+            let dis = ratios.map(r=>this.get.dissonance_measure(r))
+            let mean = dis.reduce((a,e)=>a+e,0)/dis.length
+            return mean
         },
 
         /** <p>Expends / contracts the intervals between pitches of a melody.</p>
@@ -5209,7 +5276,7 @@ class Time {
          *  [ 2, 2, 3, 2, 3 ],
          *  [ 3, 3, 3, 3 ]
          * ]*/
-        subdivisions: (num_of_beats,minimal_subdivision = 2, maximal_subdivision = 3) => {
+        subdivisions: (num_of_beats,minimal_subdivision = 1, maximal_subdivision = num_of_beats) => {
             let edo = new EDO(num_of_beats)
             let scales = edo.get.scales(minimal_subdivision,maximal_subdivision).map(scale=>scale.to.steps())
             return scales

@@ -109,8 +109,30 @@ let time = new Time()
 // let sub = time.get.subdivisions(12)
 // let rhythms = time.get.explicit(...sub)
 // rhythms.forEach(r=>console.log(JSON.stringify(r)))
-    let cp = time.get.counterpoint_cycle([1,2,1,3,1],[3,1])
-    cp.forEach(e=>console.log(JSON.stringify(e)))
+// let gati = 4
+// let jathi = 3
+// let cycle = 4*gati
+// let t = time.get.counterpoint_cycle(gati, jathi, cycle)
+// t.forEach(e=>console.log(JSON.stringify(e)))
+
+
+
+// let scale= edo.scale([0,2,3,5,6,8,9,11])
+// let scales = scale.parent.get.subsets(scale.pitches,true,true)
+// scales = edo.get.unique_elements(scales)
+//     .map(s=>edo.scale(s))
+//     .filter(s=>s.count.pitches()>5)
+// scales.forEach(s=>console.log(JSON.stringify(s.pitches)))
+
+
+// let itr = edo.convert.interval_to_ratio
+
+// console.log(edo.get.modes([0,4,7]))
+
+console.log(edo.get.mean_set_dissonance([0,2,4,5,7,9,11]))
+
+
+
 
 
 

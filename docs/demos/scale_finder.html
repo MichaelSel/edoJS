@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+    <script src="scripts/raphael.min.js"></script>
+    <script src="scripts/edo.js"></script>
+    <title>Scale Explorer</title>
+    <style>
+        .col {
+            border: solid 1px;
+        }
+        input[type=text] {
+            margin-right: 50px;
+        }
+        td:first-child {
+            font-weight: bold;
+        }
+    </style>
+
+</head>
+<body class="" style="color:white;background-color: black">
+<h1>Scale Finder</h1>
+<div id="top">
+
+
+</div>
+<div id="main" style="max-width: 1900px">
+    <table>
+        <tr><td>EDO:</td><td><input typ="text" size="1"></td></tr>
+        <tr><td># of pitches:</td><td>At least: <input typ="text" size="1" value="1"></td><td>At most: <input typ="text" size="1" value="12"></td></tr>
+        <tr><td>Step sizes:</td><td>At least: <input typ="text" size="1" value="1"></td><td>At most: <input typ="text" size="1" value="12"></td></tr>
+        <tr><td>Modes of limited transposition:</td><td><label>include<input name="MOLT_Radio" type="radio" value="include"></label><label>exclude<input name="MOLT_Radio" type="radio" value="exclude"></label><label>only<input name="MOLT_Radio" type="radio" value="only"></label></td></tr>
+    </table>
+
+</div>
+<script>
+
+</script>
+</body>
+</html>
