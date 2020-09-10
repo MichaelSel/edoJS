@@ -249,6 +249,10 @@
             <select id="sub_melody_select" size="15" style="width: 500px;height:200px"></select>
         </div>
         <div class="col">
+            <h5>Quality Dissonance</h5><br>
+            <label>Pitches</label><input type="text" id="dissonance_input"><input type="button" id="dissonance_button" value="submit"><br>
+            <label>*Mean dissonance: </label><span id="dissonance_viewer"></span><br>
+            (*measured using <a href="https://sethares.engr.wisc.edu/consemi.html">Sethares'</a> algorithm.)
 
         </div>
     </div>
@@ -405,6 +409,14 @@ $("#sub_melody_select").change(function () {
     $("#sub_melody_viewer").html(mel)
 })
 
+$("#dissonance_button").click(function () {
+    let intervals = $("#dissonance_input").val().trim().split(" ").map(e=>parseInt(e)).sort((a,b)=>a-b)
+    let len = intervals.length
+    let ratios = edo.convert.interval_to_ratio(intervals)
+    console.log(ratios)
+    let avg = Math.round((edo.get.dissonance_measure(ratios)/len)*1000)/1000
+    $("#dissonance_viewer").html(" " + avg)
+})
 
 </script>
 </body>

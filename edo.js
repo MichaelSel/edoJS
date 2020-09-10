@@ -1013,6 +1013,7 @@ class EDO {
 
         /** <p>Returns mean (Sethares) dissonance value for every rotation of a given set.</p>
          * @param {Array<Number>} set - A set of pitches
+         * @param {Boolean} normalize - when true, the value is divided by the number of pitches to make it easier to compare roughness of scales with different number of pitches
          * @returns {Number} a number value of the measure of dissonance of the given input
          * @memberOf Scale#get
          * @example
@@ -1021,11 +1022,13 @@ class EDO {
          *
          * @see EDO#get.dissonance_measure
          */
-        mean_set_dissonance: (set)=>{
+        mean_set_dissonance: (set,normalize=false)=>{
+            set = set.sort((a,b)=>a-b)
             let modes = this.get.modes(set)
             let ratios = modes.map(m=>this.convert.interval_to_ratio(m))
             let dis = ratios.map(r=>this.get.dissonance_measure(r))
             let mean = dis.reduce((a,e)=>a+e,0)/dis.length
+            if(normalize) mean = mean/set.length
             return mean
         },
 
