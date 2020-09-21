@@ -4883,6 +4883,41 @@ class Scale {
             return tetrachords
         },
 
+        /** <p>Returns every possible interpretation of the scale's intervals in terms of their possible scale degree</p>
+         * @param  {Object} [interval_map] - a map of every interval and the role it can play in the scale (for instance PC6 in 12EDO  can be both an augmented 4th and a diminished 5th. see code for clarity). This paramater must be passed in EDO systems other than 12.
+         * @returns {Array<Array<Number>>} An array containing every interpretation of the scale degrees.
+         * @memberOf Scale#get
+         *
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,7,9]) //pentatonic scale
+         * scale.get.scale_degree_roles()
+         * //returns [ [ 1, 2, 3, 5, 6 ], [ 1, 2, 3, 5, 7 ] ] (the last note can be interpreted as a major 6th, or a diminished 7th)
+         *
+         */
+        scale_degree_roles: (interval_map) => {
+            if(this.edo!=12 && !interval_map) return
+            if(!interval_map) {
+                interval_map = {
+                    0:[1],
+                    1:[2],
+                    2:[2],
+                    3:[2,3],
+                    4:[3],
+                    5:[4],
+                    6:[4,5],
+                    7:[5],
+                    8:[5,6],
+                    9:[6,7],
+                    10:[6,7],
+                    11:[7]
+                }
+
+            }
+            let interpretations = this.parent.get.partitioned_subsets(this.pitches.map(n=>interval_map[n]))
+            return interpretations
+        },
+
         /** <p>Returns the scale's pitches transposed by a certain amount</p>
          * @param {Number} amount - The amount by which to transpose the pitches
          * @returns {Array<Number>} The transposed pitches

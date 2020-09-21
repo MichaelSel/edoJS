@@ -140,8 +140,14 @@ let time = new Time()
 
 let scale = edo.scale([0,2,4,5,7,9,11])
 
-console.log(scale.get.segments())
 
+
+
+
+
+
+scale = edo.scale([0,2,4,7,9])
+console.log(scale.get.scale_degree_roles())
 
 
 
