@@ -4672,7 +4672,7 @@ class Scale {
             let all = []
             while(steps.length>0) {
                 let sub = steps.splice(0,1)
-                while(pi[0]==sub[0]) sub.push(steps.splice(0,1)[0])
+                while(steps[0]==sub[0]) sub.push(steps.splice(0,1)[0])
                 all.push(sub)
             }
             return all
