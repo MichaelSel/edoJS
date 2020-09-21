@@ -125,12 +125,30 @@ let time = new Time()
 // scales.forEach(s=>console.log(JSON.stringify(s.pitches)))
 
 
-let itr = edo.convert.interval_to_ratio
+// let itr = edo.convert.interval_to_ratio
+//
+// // console.log(edo.get.modes([0,4,7]))
+//
+// console.log(edo.get.dissonance_measure(itr([0,0+12,7+12,4+24])))
+// console.log(edo.get.dissonance_measure([1,2,3,4,5,6,7,8]))
 
-// console.log(edo.get.modes([0,4,7]))
 
-console.log(edo.get.dissonance_measure(itr([0,0+12,7+12,4+24])))
-console.log(edo.get.dissonance_measure([1,2,3,4,5,6,7,8]))
+// let a = time.get.subdivisions(7)
+//     .filter(b=>b.length==3)
+//     .forEach(b=>edo.get.unique_elements(edo.get.rotations(b)).forEach(p=>console.log(JSON.stringify(p))))
+
+
+let scale = edo.scale([0,2,4,5,7,9,11])
+
+console.log(scale.to.steps())
+
+
+
+
+
+
+
+
 
 
 

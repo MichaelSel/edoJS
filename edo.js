@@ -4657,6 +4657,27 @@ class Scale {
 
         },
 
+        /** Returns the scale as steps, broken to their repetitive segments.
+
+         * @returns {Array<Array<Number>>} An array containing the scale's steps in segments
+         * @memberOf Scale#get
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //major scale
+         * scale.get.segments()
+         * //returns [[2,2],[1],[2,2,2],[1]]
+         */
+        segments: () => {
+            let steps = this.to.steps()
+            let all = []
+            while(steps.length>0) {
+                let sub = steps.splice(0,1)
+                while(pi[0]==sub[0]) sub.push(steps.splice(0,1)[0])
+                all.push(sub)
+            }
+            return all
+        },
+
         /** <p>Transposes a melody within the scale by a given number of scale degrees</p>
          * @param {Array<Number>} seq - The original melody / sequence to be "transposed"
          * @param {Number} transposition - The number of scale degrees (up or down) by which to shift the melody.
