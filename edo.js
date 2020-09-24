@@ -1670,6 +1670,45 @@ class EDO {
             return result
         },
 
+        /** Returns the given pitches, stacked with the given intervals
+         * @param  {Array<Number>} pitches - a collection of pitches
+         * @param  {Array<Number>} intervals - The intervals with which to stack
+         * @param  {Boolean} transposed_to_0 - When true, the returned sets will be transposed to start from 0
+         * @return {Array<Array<Number>>} All the stacks that can be created with the given pitches using the given intervals
+         * @memberOf EDO#get
+         * @example
+         * let edo = new EDO(12) //Create a tuning context
+         * edo.get.stacked([0,2,4,6,9],[3,4])
+         * //returns [ [ 2, 6, 9, 12, 16 ] ]
+         *
+         * edo.get.stacked([0,2,4,6,9],[3,4,5],true)
+         * //returns [ [ 0, 4, 9, 14, 18 ], [ 0, 4, 7, 10, 14 ] ]
+         * */
+        stacked: (pitches, intervals,transposed_to_0=false) => {
+            let perms = this.get.permutations(pitches)
+            let available =[]
+            for (let perm = 0; perm < perms.length; perm++) {
+                let p = perms[perm]
+                for (let i = 0; i <p.length; i++) {
+                    if(i==0) 1+1
+                    let multiplier =1
+                    while(p[i]<p[i-1]) {
+                        p.splice(i,1,p[i]+(this.edo*multiplier))
+                        multiplier++
+                    }
+                    if(intervals.indexOf(p[i]-p[i-1])==-1 && i!=0) {
+                        p=false
+                        continue
+                    }
+                }
+                if(p) {
+                    if(transposed_to_0) available.push(this.get.transposition(p,p[0]*-1,false))
+                    else available.push(p)
+                }
+            }
+            return available
+        },
+
         /** Returns the elements of array1, but not if they are found in array 2
          * @param  {Array<Number>} array1 - a collection of PCs
          * @param  {Array<Number>} array2 - a collection of PCs
@@ -3687,7 +3726,7 @@ class Scale {
          * let scale = edo.scale([0,2,4,5,7,9,11]) //define new scale (Major)
          * scale.count.consecutive_steps(2) //returns 3
          * */
-        consecutive_steps: (size) => {
+        consecutive_steps: (size,) => {
             let counts = []
             let steps = this.to.steps()
             steps = [...steps, ...steps]
@@ -4275,6 +4314,33 @@ class Scale {
            return this.parent.get.levenshtein(this.pitches,t,ratio_calc)
         },
 
+        /** <p>Returns true if a scale has the Myhill Property</p>
+         * @param {Number} [constant=2] - The exact number of specific intervals necessary for each generic interval
+         * @returns {Boolean}
+         * @example
+         * let edo = new EDO(12) //define tuning
+         * let scale = edo.scale([0,2,4,7,9]) //a major pentatonic scale
+         * scale.get.myhill_property() //true
+         * */
+        myhill_property: (constant = 2)=>{
+            let map = {}
+            let mod = this.parent.mod
+            let n = this.count.pitches()
+            let p = this.pitches
+            for (let i = 1; i < n; i++) {
+                map[i]=new Set()
+                for (let j = 0; j < n; j++) {
+                    map[i].add(mod(p[mod(j+i,n)]-p[j],this.edo))
+                    if(map[i].size>constant) return false
+                }
+            }
+            for (let i = 1; i <n ; i++) {
+                if(map[i].size!=constant) return false
+            }
+
+            return true
+        },
+
         /** Returns all the various modes (normalized to 0, that include all pitches) available from this scale
          * @param  {Boolean} cache - When true, the result will be cached for faster retrieval
          * @returns {Array<Array<Number>>} An array of the different modes
@@ -4550,6 +4616,25 @@ class Scale {
             }
             if (cache) this.catalog['prime form'] = result
             return result
+        },
+
+        /** <p>Returns the scale's pitches in prime form</p>
+
+         * @param {Number} multiplier - The number by which to multiply the set
+         * @param {Boolean} [sort=false] - When true, the returned result will be sorted
+         * @returns {Array<Number>} The pitches after multiplication
+         * @memberOf Scale#get
+         *
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,7,9]) //pentatonic scale
+         * scale.get.product(2) //returns [ 0, 4, 8, 2, 6 ]
+         * scale.get.product(5,true) //returns [ 0, 8, 9, 10, 11 ]*/
+        product: (multiplier,sort=false) => {
+
+            let res =  this.pitches.map(n=>this.parent.mod(n*multiplier,this.edo))
+            if(sort) res = res.sort((a,b)=>a-b)
+            return res
         },
 
         /** <p>Returns all of the rotations of the scale (not normalized to 0).</p>

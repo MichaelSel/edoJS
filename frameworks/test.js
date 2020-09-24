@@ -138,29 +138,38 @@ let time = new Time()
 //     .forEach(b=>edo.get.unique_elements(edo.get.rotations(b)).forEach(p=>console.log(JSON.stringify(p))))
 
 
-let scale = edo.scale([0,2,4,5,7,9,11])
 
 
 
+// let piece = edo.midi.import('./midi/syrinx.mid')
+// piece = edo.midi.strip(piece).map(n=>(Array.isArray(n))?n[0]:n)
+// console.log(edo.get.pitch_fields(piece,5,true,true,true).map(q=>edo.get.normal_order(q)))
 
 
+// scale = edo.scale([0,2,4,7,9])
+// console.log(scale.get.scale_degree_roles())
 
 
-scale = edo.scale([0,2,4,7,9])
-console.log(scale.get.scale_degree_roles())
+// scale = edo.scale([0,2,4,6,9])
+// let tonal_interpretations = 0
+// for (let i = 0; i < scale.count.pitches(); i++) {
+//     let possibilities = scale.mode(i).get.scale_degree_roles()
+//         .filter(r=>edo.get.unique_elements(r).length==scale.count.pitches())
+//         .filter(r=>{
+//             let v1 = [...r].sort((a,b)=>a-b)
+//             return edo.is.same(v1,r)
+//         })
+//         .filter(r=>{
+//             return (r.indexOf(3)!=-1 && r.indexOf(5)!=0)
+//         })
+//
+//     if(possibilities.length>0) tonal_interpretations++
+// }
+//
+// console.log(tonal_interpretations)
 
 
-
-
-
-
-
-
-
-
-
-
-
+console.log(edo.get.stacked([0,2,3,5,8],[3,4]))
 
 
 
