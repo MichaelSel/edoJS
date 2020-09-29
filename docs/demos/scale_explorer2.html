@@ -188,7 +188,8 @@
                 location.hash = "#quality_sec";
             })
             $(trichord_svg.div).css('position','relative')
-            let R = edo.get.mean_set_dissonance(trichord)
+            let tri_scale = edo.scale(trichord)
+            let R = tri_scale.get.roughness()
             R = Math.round(R*100)/100
             $(trichord_svg.div).append("<span style='position: absolute;left:0;right:0'>Roughness: " + R + "</span>")
             let positions = scale.get.position_of_quality(trichord)
@@ -212,7 +213,8 @@
                 location.hash = "#quality_sec";
             })
             $(tetrachord_svg.div).css('position','relative')
-            let R = edo.get.mean_set_dissonance(tetrachord)
+            let tetra_scale =edo.scale(tetrachord)
+            let R = tetra_scale.get.roughness()
             R = Math.round(R*100)/100
             $(tetrachord_svg.div).append("<span style='position: absolute;left:0;right:0'>Roughness: " + R + "</span>")
             let positions = scale.get.position_of_quality(tetrachord)
@@ -233,7 +235,8 @@
                 location.hash = "#quality_sec";
             })
             $(pentachord_svg.div).css('position','relative')
-            let R = edo.get.mean_set_dissonance(pentachord)
+            let penta_scale = edo.scale(pentachord)
+            let R = penta_scale.get.roughness()
             R = Math.round(R*100)/100
             $(pentachord_svg.div).append("<span style='position: absolute;left:0;right:0'>Roughness: " + R + "</span>")
             let positions = scale.get.position_of_quality(pentachord)
@@ -253,7 +256,8 @@
                 location.hash = "#quality_sec";
             })
             $(hexachord_svg.div).css('position','relative')
-            let R = edo.get.mean_set_dissonance(hexachord)
+            let hexa_scale = edo.scale(hexachord)
+            let R = hexa_scale.get.roughness()
             R = Math.round(R*100)/100
             $(hexachord_svg.div).append("<span style='position: absolute;left:0;right:0'>Roughness: " + R + "</span>")
             let positions = scale.get.position_of_quality(hexachord)
@@ -274,7 +278,8 @@
                 location.hash = "#quality_sec";
             })
             $(stack_svg.div).css('position','relative')
-            let R = edo.get.mean_set_dissonance(stack)
+            let stack_scale = edo.scale(stack)
+            let R = stack_scale.get.roughness()
             R = Math.round(R*100)/100
             $(stack_svg.div).append("<span style='position: absolute;left:0;right:0'>Roughness: " + R + "</span>")
             let positions = scale.get.position_of_quality(stack)
@@ -295,7 +300,8 @@
                 location.hash = "#quality_sec";
             })
             $(stack_svg.div).css('position','relative')
-            let R = edo.get.mean_set_dissonance(stack)
+            let stack_scale = edo.scale(stack)
+            let R = stack_scale.get.roughness()
             R = Math.round(R*100)/100
             $(stack_svg.div).append("<span style='position: absolute;left:0;right:0'>Roughness: " + R + "</span>")
             let positions = scale.get.position_of_quality(stack)
@@ -316,7 +322,8 @@
                 location.hash = "#quality_sec";
             })
             $(stack_svg.div).css('position','relative')
-            let R = edo.get.mean_set_dissonance(stack)
+            let stack_scale = edo.scale(stack)
+            let R = stack_scale.get.roughness()
             R = Math.round(R*100)/100
             $(stack_svg.div).append("<span style='position: absolute;left:0;right:0'>Roughness: " + R + "</span>")
             let positions = scale.get.position_of_quality(stack)
@@ -337,7 +344,8 @@
                 document.location = "#quality_sec";
             })
             $(stack_svg.div).css('position','relative')
-            let R = edo.get.mean_set_dissonance(stack)
+            let stack_scale = edo.scale(stack)
+            let R = stack_scale.get.roughness()
             R = Math.round(R*100)/100
             $(stack_svg.div).append("<span style='position: absolute;left:0;right:0'>Roughness: " + R + "</span>")
             let positions = scale.get.position_of_quality(stack)
@@ -483,7 +491,7 @@
             .filter((scale)=>scale.count.consecutive_steps(1)<2)
             .filter(scale=>scale.count.pitches()==7)
             .forEach(scale=>{
-                let dis = Math.round(100*tet.get.mean_set_dissonance(tet.convert.interval_to_ratio(scale.pitches),true))/100
+                let dis = Math.round(100*scale.get.roughness())/100
                 $("#scale_selector").append("<option value='" + scale.pitches.join(' ') + "'>" + scale.pitches.join(' ') + " (roughness: " +dis + ")</option>")
             })
         $("#scale_selector").append('</optgroup>')
@@ -492,7 +500,7 @@
             .filter((scale)=>scale.count.consecutive_steps(1)<2)
             .filter(scale=>scale.count.pitches()==6)
             .forEach(scale=>{
-                let dis = Math.round(100*tet.get.mean_set_dissonance(tet.convert.interval_to_ratio(scale.pitches),true))/100
+                let dis = Math.round(100*scale.get.roughness())/100
                 $("#scale_selector").append("<option value='" + scale.pitches.join(' ') + "'>" + scale.pitches.join(' ') + " (roughness: " +dis + ")</option>")
             })
             $("#scale_selector").append('</optgroup>')
@@ -500,7 +508,7 @@
         let all_MOLT = all
             .filter(scale=>scale.count.transpositions()<edo_div)
             .forEach(scale=>{
-                let dis = Math.round(100*tet.get.mean_set_dissonance(tet.convert.interval_to_ratio(scale.pitches),true))/100
+                let dis = Math.round(100*scale.get.roughness())/100
                 $("#scale_selector").append("<option value='" + scale.pitches.join(' ') + "'>" + scale.pitches.join(' ') + " (roughness: " +dis + ")</option>")
             })
         $("#scale_selector").append('</optgroup>')
@@ -550,8 +558,9 @@
         })
 
         let voicing = scale.get.chord_quality_from_shape(shape,degree)
+        let voicing_scale = edo.scale(voicing)
         $('#voicing_result').val(voicing.join(" "))
-        $('#voicing_roughness').html(" "+ Math.round(scale.parent.get.dissonance_measure(scale.parent.convert.interval_to_ratio(voicing))*100)/100)
+        $('#voicing_roughness').html(" "+ Math.round(voicing_scale.get.roughness()*100)/100)
 
     }
 
