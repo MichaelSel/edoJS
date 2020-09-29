@@ -4450,6 +4450,7 @@ class Scale {
         },
 
         /** <p>Returns the scale's pitches in prime form</p>
+         * (Notice, the prime form calculation conforms to Rahn's prime form rather than Forte's)
 
          * @param {Boolean} [cache=false] - When true, the result will be cached for future retrieval
          * @returns {Array<Number>} The pitches in prime form

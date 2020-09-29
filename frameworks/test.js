@@ -168,8 +168,39 @@ let time = new Time()
 //
 // console.log(tonal_interpretations)
 
+// let diatonic = edo.scale([0,2,4,5,7,9,11]) //
+// let harmonicm = edo.scale([0,2,3,5,7,8,11]) //
+// let melodicm = edo.scale([0,2,3,5,7,9,11]) //
+// let all_diatonic = []
+// let all_harmonicm = []
+// let all_melodicm = []
+// for (let i = 0; i < 12; i++) {
+//     all_diatonic.push(diatonic.get.transposition(i).sort((a,b)=>a-b))
+//     all_harmonicm.push(harmonicm.get.transposition(i).sort((a,b)=>a-b))
+//     all_melodicm.push(melodicm.get.transposition(i).sort((a,b)=>a-b))
+// }
+//
+//
+// scale = edo.scale([0,2,4,5,7])
+//
+// let total_diatonic = all_diatonic.map(t=>edo.is.subset(scale.pitches,t)).filter(t=>t).length
+// let total_harmonicm = all_harmonicm.map(t=>edo.is.subset(scale.pitches,t)).filter(t=>t).length
+// let total_melodicm = all_melodicm.map(t=>edo.is.subset(scale.pitches,t)).filter(t=>t).length
+// console.log(total_diatonic,total_harmonicm,total_melodicm)
 
-console.log(edo.get.stacked([0,2,3,5,8],[3,4]))
+
+scale = edo.scale([0,2,4,7,9])
+console.log(scale.get.roughness())
+
+
+
+
+
+
+
+
+
+
 
 
 

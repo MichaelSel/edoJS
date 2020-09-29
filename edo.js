@@ -550,6 +550,22 @@ class EDO {
 
         },
 
+        /** Returns the frequency of the midi note
+         * @param  {Array<Number>|Number} note_number - a midi note number or an array of midi note numbers
+         * @param  {Number} [offset=0] - By how much to offset every given number
+         * @param  {Number} [A=440] - What is the tuning of A
+         * @example
+         * let edo = new EDO(12) // define a tuning system with 12 divisions of the octave
+         * edo.convert.midi_to_freq(69) //returns 440
+         * edo.convert.midi_to_freq([69,70]) //returns [ 440, 466.1637615180899 ]
+         * @returns {Array<Number>|Number} the frequency of the midi note
+         * @memberOf EDO#convert*/
+        midi_to_freq: (midi,offset=0,A=440) => {
+            if(Array.isArray(midi)) return midi.map(n=>this.convert.midi_to_freq(n,offset,A))
+            else return Math.pow(2,((midi+offset)-69)/12)*A
+        },
+
+
         /** Gets a scale's name, and returns it as a Scale object
          *
          * @param  {String} name - a scale's name (based on this API's naming formula)
@@ -844,6 +860,35 @@ class EDO {
             return ((180-diff1/12*360)/2) + ((180-diff2/12*360)/2)
         },
 
+
+        /** Returns the [x,y] coordinates of the nodes of the given pitches.
+         * pitch
+         * @param  {Array<Number> | Number} pitch - A pitch, or an array of pitches
+         * @param  {Array<Number>} [circle_center=[0,0]] - The center of the circle
+         * @param  {Number} [r=0.56418958354776] - The radius of the circle. By default the radius is of a circle with area=1
+         * @returns {Array<Array<Number,Number>>} An array with tuples each corresponding to the x,y position of every pitch
+         * @memberOf EDO#get
+         * @see Scale#get.coordinates
+         * @example
+         * let edo = new EDO(12) //define context
+         * edo.get.coordinates([0,3,7]) //minor triad
+         * //returns
+         * [
+         *  [ 0, 0.56418958354776 ],
+         *  [ 0.5043836053298857, -0.25279846688265545 ],
+         *  [ 0.26388191608137657, -0.4986744635020088 ]
+         * ]
+         */
+        coordinates: (pitch,circle_center = [0,0],r=0.56418958354776	) => {
+            if(Array.isArray(pitch)) return pitch.map(p=>this.get.coordinates(p,circle_center,r))
+            const angle_mult = 360/this.edo
+            pitch = this.mod(pitch,this.edo)
+            const angle = (pitch*angle_mult)*(Math.PI/180)
+            const x = (r*Math.sin(angle))+circle_center[0]
+            const y = (r*Math.cos(angle))+circle_center[1]
+            return [x,y]
+        },
+
         /** <p>Returns a vector describing the contour of the given pitches.</p>
          *
          * <p>If local is set to true, every cell in the vector will be
@@ -964,73 +1009,125 @@ class EDO {
             return PCs
         },
 
-
-
-        /** <p>Returns the measure of dissonance of a given input based on Sethares' algorithm.</p>
-         * @param {Array<Number>} ratios - An (ordered) array of ratios with root=1 (e.g. [1,1.5,1.66,2])
-         * @param {Array<Number>} [amplitudes=[1,1...]] - An (ordered) array of corresponding amplitudes to each ratio (0<=amp<=1)
-         * @param {Number} [base_freq=440] - The frequency to use as the basis for the calculation
-         * @returns {Number} a number value of the measure of dissonance of the given input
+        /** <p>Returns all combinations of size k from an array.</p>
+         * @param {Array} arr - An array with elements
+         * @param {Number} k=2 - The number of elements in each returned permutation
+         * @returns {Array<Number>}
          * @memberOf Scale#get
          * @example
-         * let edo = new EDO(12) // define a tuning system
-         * edo.get.dissonance_measure([1,2]) //returns 0.000009198921497239643
-         *
-         * edo.get.dissonance_measure([1,2],[1,0.5],110) //returns 0.029873544106178103
-         *
-         * @see https://sethares.engr.wisc.edu/consemi.html
+         * edo.get.n_choose_k([1,3,5,7],k=3)
+         * //returns [ [ 1, 3, 5 ], [ 1, 3, 7 ], [ 1, 5, 7 ], [ 3, 5, 7 ] ]
          */
-        dissonance_measure: (ratios,amplitudes=Array.from(new Array(ratios.length).fill(1)),base_freq=440) => {
-            ratios = ratios.map(r=>r*base_freq)
-            const Dstar=0.24, S1=0.0207, S2=18.96, C1=5, C2=-5,
-            A1=-3.51, A2=-5.75, firstpass=1, N=ratios.length
-            let D=0
-            for (let i = 2; i <= N; i++) {
-                let Fmin = ratios.slice(0,N-i+1)
-                let S = Fmin.map(e=>Dstar/(S1*e+S2))
-                let slice1 = ratios.slice(i-1,N)
-                let slice2 = ratios.slice(0,(N-i+1))
-                let Fdif = []
-                for (let j = 0; j < slice1.length; j++) {
-                    Fdif.push(slice1[j]-slice2[j])
+        n_choose_k: (arr,k=2) =>{
+            let results = []
+            const combinations = (arr,len,start_pos=0,result=Array(len)) =>{
+                if(len==0) {
+                    results.push([...result])
+                    return
                 }
-
-                let aslice1 = amplitudes.slice(i-1,N)
-                let aslice2 = amplitudes.slice(0,(N-i+1))
-                let a = (aslice1.reduce((a,b)=>a+b,0)<aslice2.reduce((a,b)=>a+b,0))?aslice1:aslice2
-
-
-                let calc1= Fdif.map((el,ind)=>Math.exp(el*S[ind]*A1)*C1)
-                let calc2 = Fdif.map((el,ind)=>Math.exp(el*S[ind]*A2)*C2)
-                let calcsum = calc1.map((el,ind)=>el+calc2[ind])
-                let Dnew = calcsum.map((el,ind)=>el*a[ind])
-                let Dnewsum = Dnew.reduce((a,b)=>a+b,0)
-                D+=Dnewsum
+                for (let i = start_pos; i <= arr.length-len ; i++) {
+                    result[result.length-len] = arr[i]
+                    combinations(arr,len-1,i+1,result)
+                }
             }
-            return D
-
+            combinations(arr,k)
+            return results
         },
 
-        /** <p>Returns mean (Sethares) dissonance value for every rotation of a given set.</p>
-         * @param {Array<Number>} set - A set of pitches
-         * @param {Boolean} normalize - when true, the value is divided by the number of pitches to make it easier to compare roughness of scales with different number of pitches
-         * @returns {Number} a number value of the measure of dissonance of the given input
+        /** <p>Returns the ROUGHNESS OF SINE-PAIRS based on algorithm from Vassilakis, 2001 & 2005 .</p>
+         * @param {Number} freq1 - the frequency of the 1st sine
+         * @param {Number} freq2 - the frequency of the 2nd sine
+         * @param {Number} [amp1=1] - the amplitude of the 1st sine
+         * @param {Number} [amp2=1] - the amplitude of the 2nd sine
+         * @returns {Number}
          * @memberOf Scale#get
          * @example
-         * let edo = new EDO(12) // define a tuning system
-         * edo.get.mean_set_dissonance([0,2,4,5,7,9,11]) //returns 4.846261636284487
-         *
-         * @see EDO#get.dissonance_measure
+         * edo.get.sine_pair_dissonance(440,475) //returns 0.17190984235878704
+         * @see http://www.acousticslab.org/learnmoresra/moremodel.html
          */
-        mean_set_dissonance: (set,normalize=false)=>{
-            set = set.sort((a,b)=>a-b)
-            let modes = this.get.modes(set)
-            let ratios = modes.map(m=>this.convert.interval_to_ratio(m))
-            let dis = ratios.map(r=>this.get.dissonance_measure(r))
-            let mean = dis.reduce((a,e)=>a+e,0)/dis.length
-            if(normalize) mean = mean/set.length
-            return mean
+        sine_pair_dissonance: (freq1,freq2,amp1=1,amp2=1) => {
+            const f_min = Math.min(freq1,freq2)
+            const f_max = Math.max(freq1,freq2)
+            const a_min = Math.min(amp1,amp2)
+            const a_max = Math.max(amp1,amp2)
+            const X = a_min*a_max
+            const Y = 2*a_min/(a_min+a_max)
+            const b1 = 3.5
+            const b2=5.75
+            const s1 = 0.0207
+            const s2 = 18.96
+            const s = 0.24/(s1*f_min+s2)
+            const Z = Math.pow(Math.E,-1*b1*s*(f_max-f_min)) - Math.pow(Math.E,(-1*b2*s*(f_max-f_min)))
+            const R = (X^0.1)*0.5*(Y^3.11)*Z
+            return R
+
         },
+
+        // /** <p>Returns the measure of dissonance of a given input based on Sethares' algorithm.</p>
+        //  * @param {Array<Number>} ratios - An (ordered) array of ratios with root=1 (e.g. [1,1.5,1.66,2])
+        //  * @param {Array<Number>} [amplitudes=[1,1...]] - An (ordered) array of corresponding amplitudes to each ratio (0<=amp<=1)
+        //  * @param {Number} [base_freq=440] - The frequency to use as the basis for the calculation
+        //  * @returns {Number} a number value of the measure of dissonance of the given input
+        //  * @memberOf Scale#get
+        //  * @example
+        //  * let edo = new EDO(12) // define a tuning system
+        //  * edo.get.dissonance_measure([1,2]) //returns 0.000009198921497239643
+        //  *
+        //  * edo.get.dissonance_measure([1,2],[1,0.5],110) //returns 0.029873544106178103
+        //  *
+        //  * @see https://sethares.engr.wisc.edu/consemi.html
+        //  */
+        // dissonance_measure: (ratios,amplitudes=Array.from(new Array(ratios.length).fill(1)),base_freq=440) => {
+        //     ratios = ratios.map(r=>r*base_freq)
+        //     const Dstar=0.24, S1=0.0207, S2=18.96, C1=5, C2=-5,
+        //     A1=-3.51, A2=-5.75, firstpass=1, N=ratios.length
+        //     let D=0
+        //     for (let i = 2; i <= N; i++) {
+        //         let Fmin = ratios.slice(0,N-i+1)
+        //         let S = Fmin.map(e=>Dstar/(S1*e+S2))
+        //         let slice1 = ratios.slice(i-1,N)
+        //         let slice2 = ratios.slice(0,(N-i+1))
+        //         let Fdif = []
+        //         for (let j = 0; j < slice1.length; j++) {
+        //             Fdif.push(slice1[j]-slice2[j])
+        //         }
+        //
+        //         let aslice1 = amplitudes.slice(i-1,N)
+        //         let aslice2 = amplitudes.slice(0,(N-i+1))
+        //         let a = (aslice1.reduce((a,b)=>a+b,0)<aslice2.reduce((a,b)=>a+b,0))?aslice1:aslice2
+        //
+        //
+        //         let calc1= Fdif.map((el,ind)=>Math.exp(el*S[ind]*A1)*C1)
+        //         let calc2 = Fdif.map((el,ind)=>Math.exp(el*S[ind]*A2)*C2)
+        //         let calcsum = calc1.map((el,ind)=>el+calc2[ind])
+        //         let Dnew = calcsum.map((el,ind)=>el*a[ind])
+        //         let Dnewsum = Dnew.reduce((a,b)=>a+b,0)
+        //         D+=Dnewsum
+        //     }
+        //     return D
+        //
+        // },
+
+        // /** <p>Returns mean (Sethares) dissonance value for every rotation of a given set.</p>
+        //  * @param {Array<Number>} set - A set of pitches
+        //  * @param {Boolean} normalize - when true, the value is divided by the number of pitches to make it easier to compare roughness of scales with different number of pitches
+        //  * @returns {Number} a number value of the measure of dissonance of the given input
+        //  * @memberOf Scale#get
+        //  * @example
+        //  * let edo = new EDO(12) // define a tuning system
+        //  * edo.get.mean_set_dissonance([0,2,4,5,7,9,11]) //returns 4.846261636284487
+        //  *
+        //  * @see EDO#get.dissonance_measure
+        //  */
+        // mean_set_dissonance: (set,normalize=false)=>{
+        //     set = set.sort((a,b)=>a-b)
+        //     let modes = this.get.modes(set)
+        //     let ratios = modes.map(m=>this.convert.interval_to_ratio(m))
+        //     let dis = ratios.map(r=>this.get.dissonance_measure(r))
+        //     let mean = dis.reduce((a,e)=>a+e,0)/dis.length
+        //     if(normalize) mean = mean/set.length
+        //     return mean
+        // },
 
         /** <p>Expends / contracts the intervals between pitches of a melody.</p>
          * @param {Array<Number>} melody - The melody to be modified
@@ -4065,6 +4162,54 @@ class Scale {
      * @namespace*/
     get = {
 
+        /** Returns the area of the polygon created by the nodes of the set on the bracelet.
+         * With radius left to its default value, the area of the entire bracelet is 1, so this function will return a value between 0 to 1.
+         * @param  {Number} [r = 0.56418958354776] - The radius of the circle/bracelet. The default value is the radius of a circle with area=1
+         * @returns {Number} The area of the polygon. with the default settings if also conveys the percentage of the circle being occupied. (0=0% - 1=100%)
+         * @memberOf Scale#get
+         * @see EDO#get.area
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,1,2,3,4,5,6,7,8,9,10,11]) //chromatic scale
+         * scale.get.coordinates() //returns 0.9549296585513847
+         *
+         * scale = edo.scale([0,4,7]) //major triad
+         * scale.get.coordinates() //returns 0.376564638493296
+         */
+        area: (r=0.56418958354776 /*radius of circle with area=1*/) => {
+            const angle_discrete = 360/this.edo
+            const coors = this.get.coordinates([0,0],r)
+            let part_a=0
+            let part_b=0
+            for (let i = 0; i < coors.length; i++) {
+                part_a+=(coors[i][0]*coors[(i+1)%coors.length][1])
+                part_b+=(coors[i][1]*coors[(i+1)%coors.length][0])
+            }
+            let area = Math.abs((part_a-part_b)/2)
+            return area
+        },
+
+        /** Returns the [x,y] coordinates of the nodes of the scale.
+         * @param  {Array<Number>} [circle_center=[0,0]] - The center of the circle
+         * @param  {Number} [r=0.56418958354776] - The radius of the circle. By default the radius is of a circle with area=1
+         * @returns {Array<Array<Number,Number>>} An array with tuples each corresponding to the x,y position of every pitch
+         * @memberOf Scale#get
+         * @see EDO#get.coordinates
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,3,7]) //minor triad
+         * scale.get.coordinates()
+         * //returns
+         * [
+         *  [ 0, 0.56418958354776 ],
+         *  [ 0.5043836053298857, -0.25279846688265545 ],
+         *  [ 0.26388191608137657, -0.4986744635020088 ]
+         * ]
+         */
+        coordinates: (circle_center=[0,0],r=0.56418958354776) => {
+            return this.parent.get.coordinates(this.pitches,circle_center,r)
+        },
+
         /** Returns all the transpositions of the scale that are constructed on the scale degrees of the original scale,
          * As well the the number of notes altered to get from the original scale to the new scale as a "Tuple"
          * @param  {Boolean} [normalize=true] - when true, all of the transpositions will be constructed by altering the original scale
@@ -4586,7 +4731,7 @@ class Scale {
         },
 
         /** <p>Returns the scale's pitches in prime form</p>
-
+         * (Notice, the prime form calculation conforms to Rahn's prime form rather than Forte's)
          * @param {Boolean} [cache=false] - When true, the result will be cached for future retrieval
          * @returns {Array<Number>} The pitches in prime form
          * @memberOf Scale#get
@@ -4697,6 +4842,28 @@ class Scale {
             else result = "improper"
             if (cache) this.catalog['rothenberg'] = result
             return result
+        },
+
+
+        /** <p>Returns the sum of the roughness of every pair in the set, averaged across all modes</p>
+         * @param {Number} [base_freq=440] - The frequency to associate with PC0
+         * @returns Number
+         * @example
+         * let edo = new EDO(12) //define tuning
+         * let scale = edo.scale([0,2,4,7,9]) //a major pentatonic scale
+         * scale.get.roughness()
+         * //returns 0.376424315400336
+         * @memberOf Scale#get*/
+        roughness: (base_freq=440) => {
+            let modes = this.get.modes()
+            let mode_roughness_sum = modes.map(mode=>{
+                let pairs = this.parent.get.n_choose_k(mode,2)
+                pairs = pairs.map(p=>this.parent.convert.midi_to_freq(p,69,base_freq))
+                    .map(p=>this.parent.get.sine_pair_dissonance(p[0],p[1],1,1))
+                    .reduce((ag,e)=>ag+e,0)
+                return pairs
+            }).reduce((ag,e)=>ag+e,0)
+            return mode_roughness_sum/modes.length
         },
 
         /** Returns all the transpositions of the scale that are constructed on the scale degrees of the original scale,
@@ -5210,6 +5377,7 @@ class Scale {
 
         /**
          * <p>Returns True if the scale is in prime form and False if it isn't.</p>
+         * (Notice, the prime form calculation conforms to Rahn's prime form rather than Forte's)
          * @returns {Boolean}
          * @memberOf Scale#is
          *
