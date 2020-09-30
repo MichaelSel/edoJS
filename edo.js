@@ -4846,6 +4846,7 @@ class Scale {
 
 
         /** <p>Returns the sum of the roughness of every pair in the set, averaged across all modes</p>
+         * @param {Boolean} [all_modes=false] - When true, the algorithm returns the roughness value for all of the modes
          * @param {Number} [base_freq=440] - The frequency to associate with PC0
          * @returns Number
          * @example
@@ -4854,16 +4855,25 @@ class Scale {
          * scale.get.roughness()
          * //returns 0.376424315400336
          * @memberOf Scale#get*/
-        roughness: (base_freq=440) => {
-            let modes = this.get.modes()
-            let mode_roughness_sum = modes.map(mode=>{
-                let pairs = this.parent.get.n_choose_k(mode,2)
-                pairs = pairs.map(p=>this.parent.convert.midi_to_freq(p,69,base_freq))
-                    .map(p=>this.parent.get.sine_pair_dissonance(p[0],p[1],1,1))
-                    .reduce((ag,e)=>ag+e,0)
-                return pairs
-            }).reduce((ag,e)=>ag+e,0)
-            return mode_roughness_sum/modes.length
+        roughness: (all_modes=false,base_freq=440) => {
+            const get_scale_roughness =function (scale) {
+                    let pairs = scale.parent.get.n_choose_k(scale.pitches,2)
+                    pairs = pairs.map(p=>scale.parent.convert.midi_to_freq(p,69,base_freq))
+                        .map(p=>scale.parent.get.sine_pair_dissonance(p[0],p[1],1,1))
+                        .reduce((ag,e)=>ag+e,0)
+                    return pairs
+            }
+            if(all_modes) {
+                let roughness_arr = []
+                for (let i = 0; i < scale.count.pitches(); i++) {
+                    roughness_arr.push(get_scale_roughness(scale.mode(i)))
+                }
+                return roughness_arr
+            }
+            else {
+                return get_scale_roughness(this)
+            }
+
         },
 
         /** Returns all the transpositions of the scale that are constructed on the scale degrees of the original scale,

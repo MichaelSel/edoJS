@@ -190,7 +190,11 @@ let time = new Time()
 
 
 scale = edo.scale([0,2,4,7,9])
-console.log(scale.get.roughness())
+let roughness = scale.get.roughness(true)
+let min_r = Math.min(...roughness)
+let max_r = Math.max(...roughness)
+let med_r = roughness[2]
+console.log(min_r,max_r,med_r)
 
 
 
