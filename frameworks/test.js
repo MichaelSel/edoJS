@@ -188,13 +188,25 @@ let time = new Time()
 // let total_melodicm = all_melodicm.map(t=>edo.is.subset(scale.pitches,t)).filter(t=>t).length
 // console.log(total_diatonic,total_harmonicm,total_melodicm)
 
+// edo = new EDO()
+// scales = edo.get.scales().filter(s=>s.count.pitches()==5)
+// scales.forEach(scale=>console.log(scale.pitches,scale.get.myhill_property()))
 
-scale = edo.scale([0,2,4,7,9])
-let roughness = scale.get.roughness(true)
-let min_r = Math.min(...roughness)
-let max_r = Math.max(...roughness)
-let med_r = roughness[2]
-console.log(min_r,max_r,med_r)
+
+edo = new EDO(16)
+console.log(edo.get.balzano())
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

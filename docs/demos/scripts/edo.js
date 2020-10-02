@@ -1009,6 +1009,19 @@ class EDO {
             return PCs
         },
 
+        /** <p>Returns the interval-class between two pitch classes.</p>
+         * @param {Number} PC1 - The first pitch class
+         * @param {Number} PC2 - The second pitch class
+         * @returns {Array<Number>}
+         * @memberOf Scale#get
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * edo.get.interval_class(1,8) //returns 5
+         */
+        interval_class: (PC1,PC2) => {
+            return this.mod(PC1-PC2,this.edo)
+        },
+
         /** <p>Returns all combinations of size k from an array.</p>
          * @param {Array} arr - An array with elements
          * @param {Number} k=2 - The number of elements in each returned permutation
@@ -4297,6 +4310,10 @@ class Scale {
             })
         },
 
+
+
+
+
         /** Returns the interval vector of the scale.
          * @param  {Boolean} cache - When true, the result will be cached for faster retrieval
          * @returns {Array<Number>} An array representing the vector
@@ -4460,7 +4477,7 @@ class Scale {
         },
 
         /** <p>Returns true if a scale has the Myhill Property</p>
-         * @param {Number} [constant=2] - The exact number of specific intervals necessary for each generic interval
+         * @param {Number} [constant=2] - The exact number of specific intervals necessary for each generic interval. Use 3 to check if scale is trivalent.
          * @returns {Boolean}
          * @example
          * let edo = new EDO(12) //define tuning
@@ -4865,8 +4882,8 @@ class Scale {
             }
             if(all_modes) {
                 let roughness_arr = []
-                for (let i = 0; i < scale.count.pitches(); i++) {
-                    roughness_arr.push(get_scale_roughness(scale.mode(i)))
+                for (let i = 0; i < this.count.pitches(); i++) {
+                    roughness_arr.push(get_scale_roughness(this.mode(i)))
                 }
                 return roughness_arr
             }
@@ -5427,6 +5444,8 @@ class Scale {
             }
             return false
         },
+
+        // well_formed: () => {}
     }
 
     /**A collection of functions that convert data from one representation to another
