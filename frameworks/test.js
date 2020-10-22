@@ -5,7 +5,7 @@ function getRandomInt(min, max) {
 }
 const EDO = require("../edo").EDO
 const Time = require("../edo").Time
-let edo = new EDO(12)
+// let edo = new EDO(12)
 // let chords = [[0,4,6,8,11],[1,3,6,7,11],[1,4,5,9,11],[3,5,7,10,11]]
 // chords = edo.get.permutations(chords)
 // chords.forEach((coll)=>{
@@ -193,8 +193,12 @@ let time = new Time()
 // scales.forEach(scale=>console.log(scale.pitches,scale.get.myhill_property()))
 
 
-edo = new EDO(16)
-console.log(edo.get.balzano())
+let edo = new EDO(12)
+console.log(edo.get.harmonic_progression([[0,3,7],[0,4,7]],[1,4,7]))
+
+
+
+
 
 
 

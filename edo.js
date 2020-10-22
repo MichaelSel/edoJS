@@ -715,11 +715,8 @@ class EDO {
          * //returns 2 (because 2 and 4 are in both lists)
          */
         common_tones: (list1, list2) => {
-            let common_tones = 0
-            for (let note of list2) {
-                if (list1.indexOf(note) != -1) common_tones++
-            }
-            return common_tones
+
+            return list1.reduce((ag,e)=>ag+ list2.includes(e),0)
         },
 
         /**
@@ -1033,7 +1030,42 @@ class EDO {
             return PCs
         },
 
+        /** <p>Returns a chord progression of length <code>num_of_chords</code> using only <code>allowed_qualities</code>, with at least <code>common_notes_min</code> notes in common between every chord.</p>
+         * @param {Array<Array<Number>>} allowed_qualities - A list of allowed chord qualities (regardless of transposition)
+         * @param {Array<Number>} starting_chord - The first chord in the progression (using exact pitches and voicing)
+         * @param {Number} [num_of_chords=4] - The number of chords the final progression shuold include.
+         * @param {Number} [common_notes_min=2] - The minimal number of notes in common between every two succeeding chords in the progression.
+         * @returns {Array<Array<Number>>}
+         * @memberOf Scale#get
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * edo.get.harmonic_progression([[0,3,7],[0,4,7]],[1,4,7])
+         * //returns e.g. [ [ 1, 4, 7 ], [ 11, 4, 7 ], [ 11, 2, 7 ], [ 10, 2, 7 ] ]
+         */
+        harmonic_progression: (allowed_qualities, starting_chord,num_of_chords=4, common_notes_min=2) => {
+            let progression = [starting_chord]
+            let escape=100
+            while(progression.length<num_of_chords && escape>0) {
+                let last_chord = progression[progression.length-1]
+                let possibilities = []
+                for(let quality of allowed_qualities) {
+                    for (let i = 0; i < this.edo; i++) {
+                        let trans = quality.map(n=>(n+i)%this.edo)
+                        let in_common = this.count.common_tones(trans,last_chord)
+                        if(in_common>=common_notes_min && in_common!=last_chord.length) possibilities.push(trans)
+                    }
+                }
+                possibilities = this.get.unique_elements(possibilities)
+                progression.push(this.shuffle_array(possibilities)[0])
+            }
+            for (let i = 1; i < progression.length; i++) {
 
+                progression[i]=this.get.minimal_voice_leading(progression[i-1],progression[i])
+
+            }
+            return progression
+
+        },
 
         /** <p>Returns the interval-class between two pitch classes.</p>
          * @param {Number} PC1 - The first pitch class
@@ -1501,32 +1533,56 @@ class EDO {
             }
         },
 
-        /** <p>Returns a "likely" root from a collection of pitches</p>
-         *  <p>Given a set of pitches, the algorithm returns the pitch that contains the other pitches in lower positions in its overtone series.<br>
-         *      E.g. If we consider C-E-G <code>(0,4,7)</code>, E and G appear as overtones of C at lower positions than C and G appear as overtones of E, and C and E as overtones of G.</p>
-         *      <p>Note: a root can be highly dependent on context, therefore this algorithm at its current state cannot provide a decisive answer.</p>
-         * @param  {Array<Number>} pitches - a collection of pitch classes
-         * @param  {Array<Number>} [limit=19] - The overtone limit by which PCs are approximated
-         * @return {Number} The pitch-class of the likely root.
-         * @memberOf EDO#get
-         * @example
-         * let edo = new EDO(12) // define a tuning system
-         * edo.get.likely_root([0,5,9])
-         * //returns 5*/
-        likely_root: (pitches, limit = 17) => {
-            pitches = this.get.unique_elements(pitches).sort((a, b) => a - b)
-            let catalog = {}
-            let ratios = this.get.modes(pitches)
-                .map((mode) =>
-                    mode.filter((interval) => interval != 0)
-                        .map((interval) => this.get.ratio_approximation(interval, limit).octave)
-                        .reduce((a, e) => a + e)
-                )
+        // /** <p>Returns a "likely" root from a collection of pitches</p>
+        //  *  <p>Given a set of pitches, the algorithm returns the pitch that contains the other pitches in lower positions in its overtone series.<br>
+        //  *      E.g. If we consider C-E-G <code>(0,4,7)</code>, E and G appear as overtones of C at lower positions than C and G appear as overtones of E, and C and E as overtones of G.</p>
+        //  *      <p>Note: a root can be highly dependent on context, therefore this algorithm at its current state cannot provide a decisive answer.</p>
+        //  * @param  {Array<Number>} pitches - a collection of pitch classes
+        //  * @param  {Array<Number>} [limit=19] - The overtone limit by which PCs are approximated
+        //  * @return {Number} The pitch-class of the likely root.
+        //  * @memberOf EDO#get
+        //  * @example
+        //  * let edo = new EDO(12) // define a tuning system
+        //  * edo.get.likely_root([0,5,9])
+        //  * //returns 5*/
+        // likely_root: (pitches, limit = 17) => {
+        //     pitches = this.get.unique_elements(pitches).sort((a, b) => a - b)
+        //     let catalog = {}
+        //     let ratios = this.get.modes(pitches)
+        //         .map((mode) =>
+        //             mode.filter((interval) => interval != 0)
+        //                 .map((interval) => this.get.ratio_approximation(interval, limit).octave)
+        //                 .reduce((a, e) => a + e)
+        //         )
+        //
+        //     let min = Math.min.apply(Array, ratios)
+        //     let pos = ratios.indexOf(min)
+        //     return pitches[pos]
+        // },
 
-            let min = Math.min.apply(Array, ratios)
-            let pos = ratios.indexOf(min)
-            return pitches[pos]
-        },
+        // likely_root2: (pitches) => {
+        //     let scale = this.scale(pitches)
+        //     let modes = scale.get.modes()
+        //     modes = modes.map((mode,i)=>{
+        //         // mode.tiers = {
+        //         //     1:[], //has a 5th, has a 3rd, can be stacked in 3rds
+        //         //     2:[], //has a 5th, has a 3rd, has no contradictions [1,2,3,5]
+        //         //     3:[], //has a 5th, has a 3rd, has contradictions but not with 5th and 3rd [1,2,2,3,5]
+        //         //     4:[], //has a 5th, has a 3rd, has contradictions but not with BOTH 5ths and 3rds [1,2,3,3,5] / [1,2,3,5,5]
+        //         //     5:[], //has a 5th, has a 3rd, has contradictions with both 5ths and 3rds [1,2,3,3,5,5]
+        //         //     6:[], //has a 5th, has NO 3rd, has no contradictions [1,5,7]
+        //         //     7:[], //has a 5th, has NO 3rd, has contradictions [1,5,5,7] / [1,5,7,7]
+        //         //     8:[], //has no 5th, has no contradictions [1,2,3,4,6,7]
+        //         //     9:[] //has no 5th, has contradiction [1,2,3,3,6,7]
+        //         // }
+        //         // let roles = this.scale(mode).get.scale_degree_roles()
+        //         // mode.tiers[1].push(...roles.filter(r=>(r.indexOf(5)!=-1 && r.indexOf(3)!=-1 && this.get.unique_elements(r).length==r.length)))
+        //         // edo.get.stacked(set1.pitches,[3,4])
+        //         // console.log(mode.tiers)
+        //         // return mode
+        //         console.log(this.get.stacked(mode,[3,4]))
+        //     })
+        // },
 
 
 
