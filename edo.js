@@ -1051,11 +1051,17 @@ class EDO {
                 for(let quality of allowed_qualities) {
                     for (let i = 0; i < this.edo; i++) {
                         let trans = quality.map(n=>(n+i)%this.edo)
+
                         let in_common = this.count.common_tones(trans,last_chord)
                         if(in_common>=common_notes_min && in_common!=last_chord.length) possibilities.push(trans)
                     }
                 }
                 possibilities = this.get.unique_elements(possibilities)
+                if(possibilities.length==0) {
+                    escape--
+                    continue
+                }
+
                 progression.push(this.shuffle_array(possibilities)[0])
             }
             for (let i = 1; i < progression.length; i++) {
@@ -1064,6 +1070,36 @@ class EDO {
 
             }
             return progression
+
+        },
+
+        harmonized_melody: (melody,allowed_qualities,starting_chord, common_notes_min=1) => {
+            let harmony = []
+            let melody_copy = [...melody]
+            let last_chord = starting_chord
+            last_chord=[0,4,7]
+            allowed_qualities = allowed_qualities.map(q=>this.scale(q).get.modes()).flat()
+
+            melody_copy = melody_copy.map(note=>{
+                let options = allowed_qualities.map(q=>q.map(n=>(n+note)%this.edo).sort((a,b)=>a-b))
+                if(last_chord) {
+                    options = options.filter(option => {
+                        let in_common = this.count.common_tones(option,last_chord)
+                        return in_common>=common_notes_min && in_common!=last_chord.length
+                    })
+                }
+                let chord = this.shuffle_array(options)[0]
+                harmony.push(chord)
+                last_chord=chord
+                return last_chord
+            })
+
+            for (let i = 1; i < harmony.length; i++) {
+                if(harmony[i]==undefined || harmony[i-1]==undefined) continue
+                harmony[i] = this.get.minimal_voice_leading(harmony[i-1],harmony[i])
+            }
+
+            console.log(harmony)
 
         },
 

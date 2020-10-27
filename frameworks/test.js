@@ -194,7 +194,7 @@ let time = new Time()
 
 
 let edo = new EDO(12)
-console.log(edo.get.harmonic_progression([[0,3,7],[0,4,7]],[1,4,7]))
+edo.get.harmonized_melody([0,2,4,5,7],[[0,4,7],[0,3,7]])
 
 
 
