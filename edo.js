@@ -1073,15 +1073,40 @@ class EDO {
 
         },
 
+        /** <p>Returns a chord progression to harmonize a given melodies with given possible chord qualities.</p>
+         * @param {<Array<Number>} melody - The melody
+         * @param {Array<Array<Number>>} allowed_qualities - A list of allowed chord qualities (regardless of transposition)
+         * @param {Array<Number>} starting_chord - The first chord in the progression (using exact pitches and voicing)
+         * @param {Number} [common_notes_min=1] - The minimal number of notes in common between every two succeeding chords in the progression.
+         * @returns {Array<Array<Number>>}
+         * @memberOf Scale#get
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * edo.get.harmonized_melody([7,4,5,2,4,0,2],[[0,4,7],[0,3,7]])
+         * //returns e.g.
+         * [
+         *  [ 4, 7, 11 ],
+         *  [ 4, 9, 0 ],
+         *  [ 5, 9, 2 ],
+         *  [ 7, 11, 2 ],
+         *  [ 7, 0, 4 ],
+         *  [ 9, 0, 4 ],
+         *  [ 9, 2, 5 ]
+         * ]
+         */
         harmonized_melody: (melody,allowed_qualities,starting_chord, common_notes_min=1) => {
             let harmony = []
             let melody_copy = [...melody]
             let last_chord = starting_chord
-            last_chord=[0,4,7]
             allowed_qualities = allowed_qualities.map(q=>this.scale(q).get.modes()).flat()
 
-            melody_copy = melody_copy.map(note=>{
+            melody_copy = melody_copy.map((note,i)=>{
+
                 let options = allowed_qualities.map(q=>q.map(n=>(n+note)%this.edo).sort((a,b)=>a-b))
+                if(last_chord && i==0) {
+                    harmony.push(last_chord)
+                    return last_chord
+                }
                 if(last_chord) {
                     options = options.filter(option => {
                         let in_common = this.count.common_tones(option,last_chord)
@@ -1100,6 +1125,8 @@ class EDO {
             }
 
             console.log(harmony)
+
+            return harmony
 
         },
 
