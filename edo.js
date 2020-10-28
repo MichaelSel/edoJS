@@ -1012,7 +1012,7 @@ class EDO {
         /** <p>Returns all the PCs of the EDO that the scale does not use.</p>
          * @param {boolean} [from_0=false] - when true, the output will be normalized to 0.
          * @returns {Array<Number>}
-         * @memberOf Scale#get
+         * @memberOf EDO#get
          * @example
          * let edo = new EDO(12) // define a tuning system
          * edo.get.complementary_set([0,2,4,5,7,9,11])
@@ -1036,7 +1036,7 @@ class EDO {
          * @param {Number} [num_of_chords=4] - The number of chords the final progression shuold include.
          * @param {Number} [common_notes_min=2] - The minimal number of notes in common between every two succeeding chords in the progression.
          * @returns {Array<Array<Number>>}
-         * @memberOf Scale#get
+         * @memberOf EDO#get
          * @example
          * let edo = new EDO(12) // define a tuning system
          * edo.get.harmonic_progression([[0,3,7],[0,4,7]],[1,4,7])
@@ -1079,7 +1079,7 @@ class EDO {
          * @param {Array<Number>} starting_chord - The first chord in the progression (using exact pitches and voicing)
          * @param {Number} [common_notes_min=1] - The minimal number of notes in common between every two succeeding chords in the progression.
          * @returns {Array<Array<Number>>}
-         * @memberOf Scale#get
+         * @memberOf EDO#get
          * @example
          * let edo = new EDO(12) // define a tuning system
          * edo.get.harmonized_melody([7,4,5,2,4,0,2],[[0,4,7],[0,3,7]])
@@ -1127,6 +1127,36 @@ class EDO {
             console.log(harmony)
 
             return harmony
+
+        },
+
+
+        /** <p>Returns all of the possible combinations of pitches on a harp (through pedaling).</p>
+         * @param {Boolean} [as_intervals=false] - When true, the returned values are of the interval relationships between the pitches, and not the pitch classes.
+         * @param {<Array<Number>} [strings_in_octave=[0,2,4,5,7,9,11]] - The tuning of the strings
+         * @param {Array<Number>} [pedal_shift=[-1,0,1]] - The possible configurations of every pedal (how much does a configuration raise/lower the pitch)
+         * @returns {Array<Array<Number>>}
+         * @memberOf EDO#get
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * edo.get.harmonized_melody([7,4,5,2,4,0,2],[[0,4,7],[0,3,7]])
+         * //returns e.g.
+         *[
+         * [11, 1,  3, 4,  6, 8, 10],
+         * [11, 1,  3, 4,  6, 8, 11],
+         * etc... ~2000 more entries
+         */
+        harp_configurations: (as_intervals=false,strings_in_octave=[0,2,4,5,7,9,11],pedal_shift = [-1,0,1]) => {
+            strings_in_octave = strings_in_octave.map(s=>pedal_shift.map(p=>this.mod(s+p,this.edo)))
+            let configurations = this.get.partitioned_subsets(strings_in_octave)
+            if(as_intervals) {
+                configurations = this.get.unique_elements(configurations.map(c=> {
+                    // let min_index = c.indexOf(Math.min(...c))
+                    // return this.convert.to_steps(c)))
+                }))
+
+            }
+            return configurations
 
         },
 
@@ -1346,8 +1376,6 @@ class EDO {
             if (with_complement_interval) generators = generators.map((el) => [el, this.get.complementary_interval(el)])
             return generators
         },
-
-
 
         /** <p>Returns the elements that are found in all given sets</p>
          * @param {...Array<Number>} collections - Any number of arrays containing pitches
@@ -2534,6 +2562,23 @@ class EDO {
         },
 
         /**
+         * <p>Returns a given collection of pitches, rotated n times.
+         * @param  {Array<Number>} pitches - a collection of pitches (not necessarily PCs, not necessarily unique)
+         * @param  {Number} n - Number of rotations
+         * @return {Array<Number>}
+         * @memberOf EDO#get
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * edo.get.rotations([0,2,4,5,7],2) //returns [4,5,7,0,2]
+         * edo.get.rotations([0,2,4,5,7],-1) //returns [7,0,2,4,5]
+         * */
+        rotated: (pitches,n) => {
+            n=this.mod(n,pitches.length)
+            return [...pitches.slice(n),...pitches].slice(0,pitches.length)
+        },
+
+
+        /**
          * <p>Returns all the rotations (inversions) of an array of pitches</p>
          * @param  {Array<Number>} pitches - a collection of pitches (not necessarily PCs, not necessarily unique)
          * @return {Array<Array<Number>>}
@@ -3324,6 +3369,25 @@ class EDO {
         },
 
         /**
+         * Returns true the two given collections of pitches are a rotation of one another.
+         * @param  {Array<Number>} collection1 - a collection of pitches (not necessarily pitch classes)
+         * @param  {Array<Number>} collection2 - a collection of pitches (not necessarily pitch classes)
+         * @return {Boolean}
+         * @memberOf EDO#is
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * edo.is.transposition([0,2,4,5,7,9,11],[2,4,5,7,9,11,0])
+         * //returns true
+         */
+        rotation:(collection1,collection2)=> {
+            let double = [...collection2,...collection2]
+            for (let i = 0; i < collection2.length; i++) {
+                if(this.is.same(collection1,double.slice(i,i+collection2.length))) return true
+            }
+            return false
+        },
+
+        /**
          * Returns True if arr1 equals arr2 in contents and in order.
          * @param  {Array<Number>} arr1 - a collection of pitches (not necessarily pitch classes)
          * @param  {Array<Number>} arr2 - a collection of pitches (not necessarily pitch classes)
@@ -3367,6 +3431,23 @@ class EDO {
                 if (thing2.indexOf(note) == -1) return false
             }
             return true
+        },
+
+        /**
+         * Returns true the two given collections of pitches are a transposition of one another.
+         * @param  {Array<Number>} collection1 - a collection of pitches (not necessarily pitch classes)
+         * @param  {Array<Number>} collection2 - a collection of pitches (not necessarily pitch classes)
+         * @return {Boolean}
+         * @memberOf EDO#is
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * edo.is.transposition([0,2,4,5,7,9,11],[5,7,9,10,0,2,4]) //C major and F major
+         * //returns true
+         */
+        transposition: (collection1,collection2) => {
+            let c1 = collection1
+            let c2 = collection2
+            return this.is.same(c1,c2.map(n=>this.mod(n-c2[0]-c1[0],this.edo)))
         }
     }
 

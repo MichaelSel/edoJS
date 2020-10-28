@@ -194,7 +194,9 @@ let time = new Time()
 
 
 let edo = new EDO(12)
-edo.get.harmonized_melody([7,4,5,2,4,0,2],[[0,4,7],[0,3,7]])
+// console.log(edo.get.harp_configurations(true))
+console.log(edo.get.rotated([0,2,4,5,7],-1))
+
 
 
 
