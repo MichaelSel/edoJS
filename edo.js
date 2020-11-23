@@ -414,6 +414,8 @@ class EDO {
         return scales
     }
 
+
+
     /**A collection of functions that convert an input into other equivalent representations
      * @namespace EDO#convert*/
     convert = {
@@ -971,7 +973,6 @@ class EDO {
 
         },
 
-
         /**
          * <p>From a given set of pitches, returns every combination (order specific) of size k</p>
          * <p>(For a similar function where the order doesn't matter use [EDO.get.n_choose_k()]{@link EDO#get.n_choose_k})
@@ -1131,34 +1132,224 @@ class EDO {
         },
 
 
-        /** <p>Returns all of the possible combinations of pitches on a harp (through pedaling).</p>
-         * @param {Boolean} [as_intervals=false] - When true, the returned values are of the interval relationships between the pitches, and not the pitch classes.
-         * @param {<Array<Number>} [strings_in_octave=[0,2,4,5,7,9,11]] - The tuning of the strings
+        // /** <p>Returns all of the possible combinations of pitches on a harp (through pedaling).</p>
+        //  * @param {Boolean} [as_intervals=false] - When true, the returned values are of the interval relationships between the pitches, and not the pitch classes.
+        //  * @param {<Array<Number>} [strings_in_octave=[0,2,4,5,7,9,11]] - The tuning of the strings
+        //  * @param {Array<Number>} [pedal_shift=[-1,0,1]] - The possible configurations of every pedal (how much does a configuration raise/lower the pitch)
+        //  * @returns {Array<Array<Number>>}
+        //  * @memberOf EDO#get
+        //  * @example
+        //  * let edo = new EDO(12) // define a tuning system
+        //  * edo.get.harp_configurations()
+        //  */
+        // harp_configurations: (as_intervals=false,strings_in_octave=[0,2,4,5,7,9,11],pedal_shift = [-1,0,1],with_quality) => {
+        //     strings_in_octave = strings_in_octave.map(s=>pedal_shift.map(p=>this.mod(s+p,this.edo)))
+        //     let configurations = this.get.partitioned_subsets(strings_in_octave)
+        //     if(with_quality) {
+        //         configurations = configurations.filter(c=>this.scale(c).count.chord_quality(with_quality)>0)
+        //     }
+        //     if(as_intervals) {
+        //         configurations = this.get.unique_elements(configurations.map(c=> {
+        //             let min_index = c.indexOf(Math.min(...c))
+        //             c = this.get.rotated(c,min_index)
+        //             // console.log(c)
+        //             let steps = this.convert.to_steps(c).map(c=>(this.edo-c<c)?c-this.edo:c)
+        //             steps = steps.map(s=>{
+        //                 if(s<-(this.edo/2)) return this.edo+s
+        //                 else return s
+        //             })
+        //             return steps
+        //         }))
+        //
+        //     }
+        //     return configurations
+        //
+        // },
+
+        /** <p>Returns all of the possible ways to achieve a certain chord quality on a harp.</p>
+         * @param {Array<Number>} quality - The desired chord quality
+         * @param {Array<Number>} [scordatura=[0,2,4,5,7,9,11]] - The tuning of the strings
          * @param {Array<Number>} [pedal_shift=[-1,0,1]] - The possible configurations of every pedal (how much does a configuration raise/lower the pitch)
-         * @returns {Array<Array<Number>>}
+         * @returns {Array<Object>}
          * @memberOf EDO#get
          * @example
          * let edo = new EDO(12) // define a tuning system
-         * edo.get.harmonized_melody([7,4,5,2,4,0,2],[[0,4,7],[0,3,7]])
-         * //returns e.g.
-         *[
-         * [11, 1,  3, 4,  6, 8, 10],
-         * [11, 1,  3, 4,  6, 8, 11],
-         * etc... ~2000 more entries
+         * edo.get.harp_position_of_quality([0,1,2,3]) //find all possible chromatic tetrachord on a harp
+         * //returns
+         * [
+         *  {
+         *      strings: [ 6, 1, 7, 2 ], //the strings to be plucked
+         *      pedals: [ 1, -1, 1, -1 ], //the pedals corresponding to the aforementioned strings
+         *      pitches: [ 10, 11, 0, 1 ] //the resultant pitches
+         *  },
+         *  {
+         *      strings: [ 5, 6, 7, 1 ],
+         *      pedals: [ 1, 0, -1, -1 ],
+         *      pitches: [ 8, 9, 10, 11 ]
+         *  },
+         *  {
+         *      strings: [ 3, 4, 5, 6 ],
+         *      pedals: [ 1, 1, 0, -1 ],
+         *      pitches: [ 5, 6, 7, 8 ]
+         *  },
+         *  {
+         *      strings: [ 2, 3, 4, 5 ],
+         *      pedals: [ 1, 0, 0, -1 ],
+         *      pitches: [ 3, 4, 5, 6 ]
+         *  },
+         *  {
+         *      strings: [ 2, 4, 3, 5 ],
+         *      pedals: [ 1, -1, 1, -1 ],
+         *      pitches: [ 3, 4, 5, 6 ]
+         *  },
+         *  {
+         *      strings: [ 6, 7, 1, 2 ],
+         *      pedals: [ 1, 0, 0, -1 ],
+         *      pitches: [ 10, 11, 0, 1 ]
+         *  },
+         *  {
+         *      strings: [ 1, 2, 3, 4 ],
+         *      pedals: [ 1, 0, -1, -1 ],
+         *      pitches: [ 1, 2, 3, 4 ]
+         *  },
+         *  {
+         *      strings: [ 7, 1, 2, 3 ],
+         *      pedals: [ 1, 1, 0, -1 ],
+         *      pitches: [ 0, 1, 2, 3 ]
+         *  }
+         * ]
+         *
          */
-        harp_configurations: (as_intervals=false,strings_in_octave=[0,2,4,5,7,9,11],pedal_shift = [-1,0,1]) => {
-            strings_in_octave = strings_in_octave.map(s=>pedal_shift.map(p=>this.mod(s+p,this.edo)))
+        harp_position_of_quality: (quality,scordatura=[0,2,4,5,7,9,11],pedal_shift = [-1,0,1]) =>{
+            let results = []
+            let strings_in_octave_norm = scordatura.map(s=>pedal_shift.map(p=>this.mod(s+p,this.edo)))
+            let configurations = this.get.partitioned_subsets(strings_in_octave_norm)
+            configurations = configurations.map(c=>{
+                for (let i = 0; i < this.edo; i++) {
+                    let qual = quality.map(q=>(q+i)%this.edo)
+                    if(this.is.subset(qual,c)) {
+                        let positions = []
+                        let transpositions = []
+                        let pitches = []
+                        qual.forEach(qu=>positions.push(c.indexOf(qu)+1))
+                        positions.forEach(pos=>{
+
+                            let res = -scordatura[pos-1]+c[pos-1]
+                            if(!pedal_shift.includes(res)) {
+                                if(res<0) res = this.mod(res+this.edo,this.edo)
+                                else if (res>0) res = res-this.edo
+                            }
+                            pitches.push(c[pos-1])
+                            transpositions.push(res)
+                        })
+                        results.push({strings:positions,pedals:transpositions,pitches:pitches})
+                    }
+                }
+
+            })
+            results = this.get.unique_elements(results)
+            return results
+        },
+
+        /** <p>Returns the pitches produced given a list of harp pedal transpositions (in ascending order, not harp pedal order).</p>
+         * @param {Array<Number>} pedals - The configuration / transposition set be each pedal (e.g. [-1,0,0,0,1,0,0]) for Cb and G# in 12EDO
+         * @param {Array<Number>} [scordatura=[0,2,4,5,7,9,11]] - The tuning of the strings
+         * @returns {Array<Number>}
+         * @memberOf EDO#get
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * edo.get.harp_pedals_to_pitches([0,0,0,0,0,1,-1]) 6th string sharpened, 7th string flattened
+         * //returns
+         * [0, 2, 4, 5, 7, 10, 10]
+         *
+         */
+        harp_pedals_to_pitches: (pedals,scordatura=[0,2,4,5,7,9,11])=>{
+            return scordatura.map((note,i)=>this.mod(note+pedals[i],this.edo))
+        },
+
+        harp_least_pedals_passage: (pitches,scordatura=[0,2,4,5,7,9,11],pedal_shift = [-1,0,1]) => {
+            let strings_in_octave = scordatura.map(s=>pedal_shift.map(p=>this.mod(s+p,this.edo)))
             let configurations = this.get.partitioned_subsets(strings_in_octave)
-            if(as_intervals) {
-                configurations = this.get.unique_elements(configurations.map(c=> {
-                    // let min_index = c.indexOf(Math.min(...c))
-                    // return this.convert.to_steps(c)))
-                }))
+            let paths = []
+
+            let recurrent = (pitches,path=[]) => {
+                let ml,mr
+                let options
+                for (let i = 0; i < pitches.length; i++) {
+                    ml = pitches.slice(0,pitches.length-i)
+                    mr = pitches.slice(pitches.length-i)
+                    let unique = this.get.unique_elements(ml.map(n=>this.mod(n,this.edo)))
+                    let uniquel = unique.length
+                    if(uniquel>scordatura.length) continue
+                    options = configurations.filter(conf=>this.is.subset(unique,conf))
+                    if(options.length>0) break
+                }
+                if(!options) return
+                options.forEach(opt=>{
+                    if(mr.length==0) paths.push([...path,opt])
+                    else recurrent(mr,[...path,opt])
+                })
+
+
+
+
 
             }
-            return configurations
+            recurrent(pitches)
+
+
+            let distances = paths.map((path)=>{
+                return path.map((p,i)=>{
+                    if(i==path.length-1) return 0
+                    let ar1=path[i]
+                    let ar2 = path[i+1]
+                    let dist = 0
+                    for (let j = 0; j < ar2.length; j++) {
+                        if(ar1[j]!=ar2[j]) dist++
+                    }
+                    return dist
+                })
+
+
+
+
+
+
+            }).map(path=>path.reduce((ag,e)=>ag+e,0))
+            let min = Math.min(...distances)
+            let indexes = []
+            distances.forEach((dist,i)=>{
+                if(dist==min) indexes.push(i)
+            })
+
+            paths = paths.filter((path,i)=>indexes.includes(i))
+            return {paths:paths,pedals:min}
 
         },
+
+        /** <p>Fills in the missing pedals to the output of [EDO.get.harp_position_of_quality()]{@link EDO#get.harp_position_of_quality}.</p>
+         * @param {Array<Object>} qualities - The output of @link EDO#get.harp_position_of_quality
+         * @param {Array<Number>} [harp_default=[-1,-1,-1,-1,-1,-1,-1]] - The default configuration of the pedals
+         * @param {Array<Number>} [scordatura=[0,2,4,5,7,9,11]] - The tuning of the strings when all pedals are not flattened nor sharpened.
+         * @returns {Array<Number>}
+         * @memberOf EDO#get
+         */
+        fill_partial_harp_pedaling: (qualities,harp_default=[-1,-1,-1,-1,-1,-1,-1],scordatura=[0,2,4,5,7,9,11])=> {
+            qualities = qualities.map(q=>{
+                let new_pedals = [...harp_default]
+                q.strings.forEach((str,i)=>{
+                    new_pedals[str-1]=q.pedals[i]
+                })
+                q.pedals=new_pedals
+
+                return q
+            })
+            return qualities
+        },
+
+
+
+
 
         /** <p>Returns the interval-class between two pitch classes.</p>
          * @param {Number} PC1 - The first pitch class
@@ -3428,7 +3619,7 @@ class EDO {
         subset: (thing, thing2) => {
 
             for (let note of thing) {
-                if (thing2.indexOf(note) == -1) return false
+                if (!thing2.includes(note)) return false
             }
             return true
         },

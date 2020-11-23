@@ -192,10 +192,31 @@ let time = new Time()
 // scales = edo.get.scales().filter(s=>s.count.pitches()==5)
 // scales.forEach(scale=>console.log(scale.pitches,scale.get.myhill_property()))
 
+// let edo = new EDO(12)
+// console.log(edo.get.harp_position_of_quality([0,1,2,3,4]))
 
-let edo = new EDO(12)
-// console.log(edo.get.harp_configurations(true))
-console.log(edo.get.rotated([0,2,4,5,7],-1))
+let edo = new EDO(24)
+// console.log(edo.get.harp_position_of_quality([0,8,14,19,4,11],[0,3,8,11,14,18,22],[-2,0,2])) //maj79E
+// console.log(edo.get.harp_position_of_quality([0,3,6,9,12],[0,3,8,11,14,18,22],[-2,0,2])) // 3/4 tone pentachord
+// console.log(edo.get.harp_position_of_quality([0,3,6,14],[0,3,8,11,14,18,22],[-2,0,2])) //min~9
+// console.log(edo.get.harp_position_of_quality([0,1,7,8],[0,3,8,11,14,18,22],[-2,0,2]))
+// console.log(edo.get.harp_position_of_quality([0,2,4,6],[0,3,8,11,14,18,22],[-2,0,2])) //Chromatic tetrachord
+// console.log(edo.get.harp_position_of_quality([0,1,2],[0,3,8,11,14,18,22],[-2,0,2])) //microtonal trichord
+// console.log(edo.get.harp_position_of_quality([0,4,8,12,16,19],[0,3,8,11,14,18,22],[-2,0,2])) //whole-tone pentachord + 3/4
+// console.log(edo.get.harp_position_of_quality([0,4,8,11,14],[0,3,8,11,14,18,22],[-2,0,2])) //overtone lydian
+// console.log(edo.get.harp_position_of_quality([20,0,4,8,11,14],[0,3,8,11,14,18,22],[-2,0,2])) //wholetone + overtone lydian
+// console.log(edo.get.harp_position_of_quality([17,20,0,4,8,11,14],[0,3,8,11,14,18,22],[-2,0,2])) //wholetone + overtone lydian variation
+// console.log(edo.get.harp_position_of_quality([0,4,8,11,14,18,19],[0,3,8,11,14,18,22],[-2,0,2])) //Overtone scale
+// console.log(edo.get.harp_position_of_quality([1,4,8,12,16,20],[0,3,8,11,14,18,22],[-2,0,2])) // 3/4 + whole-tone pentachord
+// console.log(edo.get.harp_position_of_quality([0,1,5,12,13,17],[0,3,8,11,14,18,22],[-2,0,2])) //MOLT
+// console.log(edo.get.harp_position_of_quality([0,1,6,12,13,18],[0,3,8,11,14,18,22],[-2,0,2])) //MOLT
+// console.log(edo.get.harp_position_of_quality([0,4,5,12,16,17],[0,3,8,11,14,18,22],[-2,0,2])) //MOLT
+// console.log(edo.get.harp_position_of_quality([0,5,6,12,17,18],[0,3,8,11,14,18,22],[-2,0,2])) //MOLT
+// console.log(edo.get.harp_position_of_quality([0,5,12,17],[0,3,8,11,14,18,22],[-2,0,2])) //MOLT
+console.log(edo.get.harp_position_of_quality([0,3,7,11,15,18],[0,3,8,11,14,18,22],[-2,0,2])) //3/4+wholetone sextachord
+
+
+
 
 
 
