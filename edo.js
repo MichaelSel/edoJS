@@ -6168,7 +6168,6 @@ class Scale {
         },
 
         /**<p>Checks if the scale is a mode of limited transpositions</p>
-         * @param {Array<Number>} scale - a scale
          * @returns {Boolean}
          * @memberOf Scale#is
          * @see Scale#is.MOLT
@@ -6178,8 +6177,8 @@ class Scale {
          * let scale = edo.scale([0,2,4,6,8,10]) //whole-tones
          * scale.is.MOLT() //returns true
          * */
-        MOLT: (scale) => {
-            return scale.count.transposition()<this.edo
+        MOLT: () => {
+            return this.count.transposition()<this.edo
         },
 
         /**

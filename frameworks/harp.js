@@ -77,6 +77,6 @@ let scordatura = harmonic_on_G
 
 
 let scales = edo.get.scales(1,12,2,6,7)
-scales.filter(scale=>scale.count.transpositions()<24).forEach(scale=>{
+scales.filter(scale=>scale.is.MOLT()).forEach(scale=>{
     console.log(JSON.stringify(scale.pitches))
 })
