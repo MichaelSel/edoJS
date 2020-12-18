@@ -195,7 +195,7 @@ let time = new Time()
 // let edo = new EDO(12)
 // console.log(edo.get.harp_position_of_quality([0,1,2,3,4]))
 
-let edo = new EDO(24)
+// let edo = new EDO(24)
 // console.log(edo.get.harp_position_of_quality([0,8,14,19,4,11],[0,3,8,11,14,18,22],[-2,0,2])) //maj79E
 // console.log(edo.get.harp_position_of_quality([0,3,6,9,12],[0,3,8,11,14,18,22],[-2,0,2])) // 3/4 tone pentachord
 // console.log(edo.get.harp_position_of_quality([0,3,6,14],[0,3,8,11,14,18,22],[-2,0,2])) //min~9
@@ -213,15 +213,24 @@ let edo = new EDO(24)
 // console.log(edo.get.harp_position_of_quality([0,4,5,12,16,17],[0,3,8,11,14,18,22],[-2,0,2])) //MOLT
 // console.log(edo.get.harp_position_of_quality([0,5,6,12,17,18],[0,3,8,11,14,18,22],[-2,0,2])) //MOLT
 // console.log(edo.get.harp_position_of_quality([0,5,12,17],[0,3,8,11,14,18,22],[-2,0,2])) //MOLT
-console.log(edo.get.harp_position_of_quality([0,3,7,11,15,18],[0,3,8,11,14,18,22],[-2,0,2])) //3/4+wholetone sextachord
+// console.log(edo.get.harp_position_of_quality([0,3,7,11,15,18],[0,3,8,11,14,18,22],[-2,0,2])) //3/4+wholetone sextachord
 
 
 
 
 
+let edo = new EDO()
+// edo.get.permutations("said she stole my".split(' ')).map(p=>console.log("I never " + p.join(" ") + " money"))
+
+// words = ["I never said she stole your money","I never said she your stole money","I never said stole she your money","I never said stole your she money","I never said your she stole money","I never said your stole she money","I never she said stole your money","I never she said your stole money","I never she stole said your money","I never she stole your said money","I never she your said stole money","I never she your stole said money","I never stole said she your money","I never stole said your she money","I never stole she said your money","I never stole she your said money","I never stole your said she money","I never stole your she said money","I never your said she stole money","I never your said stole she money","I never your she said stole money","I never your she stole said money","I never your stole said she money","I never your stole she said money"]
+// edo.shuffle_array(words).forEach(sen=>console.log(sen))
 
 
-
+words = "ne ver sed shi stol may ma"
+words = words.split(' ')
+for (let i = 0; i < 7*4; i++) {
+    console.log("Ay " +edo.shuffle_array(words).join(" ") + " ni")
+}
 
 
 

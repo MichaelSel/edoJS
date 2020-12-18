@@ -1248,6 +1248,14 @@ class EDO {
 
             })
             results = this.get.unique_elements(results)
+            results = results.sort((a,b)=>{
+                let ap = a['pitches']
+                let bp = b['pitches']
+                let len = ap.length
+                for (let i = 0; i < len; i++) {
+                    if(ap[i]!=bp[i]) return ap[i]-bp[i]
+                }
+            })
             return results
         },
 

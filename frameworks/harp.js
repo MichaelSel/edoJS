@@ -4,7 +4,9 @@ let edo = new EDO(24)
 
 let parker1 = [0,3,8,11,14,18,22]
 let parker2 = [0,5,8,9,14,18,22]
-let scordatura = parker1
+let harmonic_on_G = [1,4,8,9,14,18,22]
+let harmonic_on_F = [0,5,8,10,14,18,21]
+let scordatura = harmonic_on_G
 // console.log(edo.get.harp_position_of_quality([0,8,14,19,4,11],scordatura,[-2,0,2])) //maj79E
 // console.log(edo.get.harp_position_of_quality([0,3,6,9,12],scordatura,[-2,0,2])) // 3/4 tone pentachord
 // console.log(edo.get.harp_position_of_quality([0,3,6,14],scordatura,[-2,0,2])) //min~9
@@ -12,7 +14,7 @@ let scordatura = parker1
 // console.log(edo.get.harp_position_of_quality([0,2,4,6],scordatura,[-2,0,2])) //Chromatic tetrachord
 // console.log(edo.get.harp_position_of_quality([0,1,2],scordatura,[-2,0,2])) //microtonal trichord
 // console.log(edo.get.harp_position_of_quality([0,4,8,12,16,19],scordatura,[-2,0,2])) //whole-tone pentachord + 3/4
-// console.log(edo.get.harp_position_of_quality([0,4,8,11,14],scordatura,[-2,0,2])) //overtone lydian
+console.log(edo.get.harp_position_of_quality([0,4,8,11,14],scordatura,[-2,0,2])) //overtone lydian
 // console.log(edo.get.harp_position_of_quality([20,0,4,8,11,14],scordatura,[-2,0,2])) //wholetone + overtone lydian
 // console.log(edo.get.harp_position_of_quality([17,20,0,4,8,11,14],scordatura,[-2,0,2])) //wholetone + overtone lydian variation
 // console.log(edo.get.harp_position_of_quality([0,4,8,11,14,18,19],scordatura,[-2,0,2])) //Overtone scale
@@ -26,7 +28,7 @@ let scordatura = parker1
 // console.log(edo.get.harp_position_of_quality([0,3,6,9,12],scordatura,[-2,0,2]))
 // console.log(edo.get.harp_position_of_quality([0,1,3],scordatura,[-2,0,2]))
 // console.log(edo.get.harp_position_of_quality([0,8,11],scordatura,[-2,0,2]))
-console.log(edo.get.harp_position_of_quality([0,1,3,5],scordatura,[-2,0,2])) // :(
+// console.log(edo.get.harp_position_of_quality([0,1,3,5],scordatura,[-2,0,2])) // :(
 
 // let configurations = ["NNSFNSS", "NNFFNNF", "NNFFNSN", "NNNFNSS", "SSNNSNN", "NNFSSSN", "NNNFFFN", "SSNNNNN", "NNFFFFN", "NNNFFFS", "NNNNFNN", "NNFFFNS", "NNSSSSN", "NNSFNNN", "NNNFNNN", "NNNNNNN", "NNNSSNF", "NNNSSSN", "SSNNNNF", "SSNNNSN", "NFFNNSN", "FSSSNFN", "NNFNNFF", "NNFNFFF", "NSNFFNN", "FNSNNFF", "NSNFNNN", "NNSFNSS", "NNFFNNF", "NNFFNSN", "NNNFNSS", "NSNFFFN", "SSNNNNN", "NNFFNFF", "SSNNNNN", "NSNFFFN", "NNFFFFF", "SSNNNNN", "SSNNSFN", "FSNFSNN", "FNSFSFN", "FNNFSFN", "FNSNSFS", "FNFNSFN", "FNNNSFS", "FSFNSNN", "FSNNSNS", "FNNFSNN", "FNFNSNN", "FNNNSNS", "NNFNFFF", "SSNNNNN"]
 //
