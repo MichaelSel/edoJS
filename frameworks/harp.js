@@ -14,7 +14,7 @@ let scordatura = harmonic_on_G
 // console.log(edo.get.harp_position_of_quality([0,2,4,6],scordatura,[-2,0,2])) //Chromatic tetrachord
 // console.log(edo.get.harp_position_of_quality([0,1,2],scordatura,[-2,0,2])) //microtonal trichord
 // console.log(edo.get.harp_position_of_quality([0,4,8,12,16,19],scordatura,[-2,0,2])) //whole-tone pentachord + 3/4
-console.log(edo.get.harp_position_of_quality([0,4,8,11,14],scordatura,[-2,0,2])) //overtone lydian
+// console.log(edo.get.harp_position_of_quality([0,4,8,11,14],scordatura,[-2,0,2])) //overtone lydian
 // console.log(edo.get.harp_position_of_quality([20,0,4,8,11,14],scordatura,[-2,0,2])) //wholetone + overtone lydian
 // console.log(edo.get.harp_position_of_quality([17,20,0,4,8,11,14],scordatura,[-2,0,2])) //wholetone + overtone lydian variation
 // console.log(edo.get.harp_position_of_quality([0,4,8,11,14,18,19],scordatura,[-2,0,2])) //Overtone scale
@@ -76,3 +76,7 @@ console.log(edo.get.harp_position_of_quality([0,4,8,11,14],scordatura,[-2,0,2]))
 // }
 
 
+let scales = edo.get.scales(1,12,2,6,7)
+scales.filter(scale=>scale.count.transpositions()<24).forEach(scale=>{
+    console.log(JSON.stringify(scale.pitches))
+})

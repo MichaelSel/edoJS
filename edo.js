@@ -2897,7 +2897,7 @@ class EDO {
          * step sizes. step size=1 between 0 and 1, step size=2 between 5 and 7, and step size = 3 between 1 and 4.
          * @return {Array<Scale>} all the scales that abide by the criteria given
          * @memberOf EDO#get*/
-        scales: (min_step = 1, max_step = this.edo - 1, min_sizes = 1, max_sizes = this.edo, EDO = this) => {
+        scales: (min_step = 1, max_step = this.edo - 1, min_sizes = 1, max_sizes = this.edo, max_num_of_pitches=this.edo,EDO = this,) => {
 
             //get all unique combinations of size s from set of intervals set
             const calc_comb = (s, set) => {
@@ -2983,8 +2983,7 @@ class EDO {
             let step_sizes = get_step_sizes(min_step, max_step)
 
             let interval_combinations = get_interval_combinations(min_sizes, max_sizes, step_sizes)
-            let combos = unique_for_all(interval_combinations)
-
+            let combos = unique_for_all(interval_combinations).filter(combo=>combo.length<=max_num_of_pitches)
             let all_necklaces = make_all_necklaces(combos)
 
             let _scales = get_all_scales(all_necklaces)
@@ -6166,6 +6165,21 @@ class Scale {
         mode_of: (scale) => {
             let modes = this.parent.get.modes(scale)
             return (this.parent.is.element_of(this.pitches, modes))
+        },
+
+        /**<p>Checks if the scale is a mode of limited transpositions</p>
+         * @param {Array<Number>} scale - a scale
+         * @returns {Boolean}
+         * @memberOf Scale#is
+         * @see Scale#is.MOLT
+         *
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,6,8,10]) //whole-tones
+         * scale.is.MOLT() //returns true
+         * */
+        MOLT: (scale) => {
+            return scale.count.transposition()<this.edo
         },
 
         /**
