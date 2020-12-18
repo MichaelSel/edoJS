@@ -6178,7 +6178,7 @@ class Scale {
          * scale.is.MOLT() //returns true
          * */
         MOLT: () => {
-            return this.count.transposition()<this.edo
+            return this.count.transpositions()<this.edo
         },
 
         /**
