@@ -414,6 +414,8 @@ class EDO {
         return scales
     }
 
+
+
     /**A collection of functions that convert an input into other equivalent representations
      * @namespace EDO#convert*/
     convert = {
@@ -715,11 +717,37 @@ class EDO {
          * //returns 2 (because 2 and 4 are in both lists)
          */
         common_tones: (list1, list2) => {
-            let common_tones = 0
-            for (let note of list2) {
-                if (list1.indexOf(note) != -1) common_tones++
-            }
-            return common_tones
+
+            return list1.reduce((ag,e)=>ag+ list2.includes(e),0)
+        },
+
+        /**
+         * From a list of arrays passed to the function, returns the number of differences between each array and its following neighbor.
+         * @param  {Array<Number>} ...args - As many arrays as needed.
+         * @return {Number} The number of differences between neighboring arrays
+         * @memberOf EDO#count
+         * @example
+         * let edo = new EDO()
+         * edo.count.differences([0,2,3],[0,1,2],[0,2,4],[0,2,1,1,1])
+         * // returns [2,2,3] (2 differences between the 1st and 2nd arrays, 2 diffs between the 2nd and 3rd, and 3 diffs between the 3rd and 4th.)
+         */
+        differences: (...arrays) => {
+            let args = arrays.map((el,i,arr)=>{
+                if(i!=arr.length-1) {
+                    let lena = arr[i].length
+                    let lenb = arr[i+1].length
+                    let minlen = Math.min(lena,lenb)
+                    let maxlen = Math.max(lena,lenb)
+                    let diff = maxlen-minlen
+                    for (let j = 0; j < minlen; j++) {
+                        if(arr[i][j]!=arr[i+1][j]) diff++
+                    }
+                    return diff
+                }
+            })
+            return args.slice(0,args.length-1)
+
+
         },
 
         /**
@@ -860,7 +888,6 @@ class EDO {
             return ((180-diff1/12*360)/2) + ((180-diff2/12*360)/2)
         },
 
-
         /** Returns the [x,y] coordinates of the nodes of the given pitches.
          * pitch
          * @param  {Array<Number> | Number} pitch - A pitch, or an array of pitches
@@ -975,6 +1002,30 @@ class EDO {
 
         },
 
+        /**
+         * <p>From a given set of pitches, returns every combination (order specific) of size k</p>
+         * <p>(For a similar function where the order doesn't matter use [EDO.get.n_choose_k()]{@link EDO#get.n_choose_k})
+         * @param  {Array<Number>} set - The array from which to extract combinations
+         * @param  {Number} k - The number of elements per set returned
+         * @return {Array<Array<Number>>}
+         * @memberOf EDO#get
+         * @example
+         * edo.get.combinations([1,3,5,7],2)
+         * //returns
+         * [
+         *   { motive: [ -1, 1 ], incidence: 2 }, //going a half-step down, then up appears twice
+         *   { motive: [ -1 ], incidence: 2 }, //going a half-step down appears twice
+         *   { motive: [ 1 ], incidence: 2 } //going a half-step up appears twice
+         * ]
+         */
+        combinations: (set, k) => {
+            let combs = this.get.n_choose_k(set,k)
+            combs = combs.map(e=>this.get.permutations(e))
+            combs = combs.flat()
+            combs = this.get.unique_elements(combs)
+            return combs
+        },
+
         /** <p>Returns the complementary interval (needed to complete the octave) for a given an interval class.</p>
          * @param {Number} interval - Some interval class
          * @returns {Number}
@@ -991,7 +1042,7 @@ class EDO {
         /** <p>Returns all the PCs of the EDO that the scale does not use.</p>
          * @param {boolean} [from_0=false] - when true, the output will be normalized to 0.
          * @returns {Array<Number>}
-         * @memberOf Scale#get
+         * @memberOf EDO#get
          * @example
          * let edo = new EDO(12) // define a tuning system
          * edo.get.complementary_set([0,2,4,5,7,9,11])
@@ -1009,6 +1060,334 @@ class EDO {
             return PCs
         },
 
+        /** <p>Returns a chord progression of length <code>num_of_chords</code> using only <code>allowed_qualities</code>, with at least <code>common_notes_min</code> notes in common between every chord.</p>
+         * @param {Array<Array<Number>>} allowed_qualities - A list of allowed chord qualities (regardless of transposition)
+         * @param {Array<Number>} starting_chord - The first chord in the progression (using exact pitches and voicing)
+         * @param {Number} [num_of_chords=4] - The number of chords the final progression shuold include.
+         * @param {Number} [common_notes_min=2] - The minimal number of notes in common between every two succeeding chords in the progression.
+         * @returns {Array<Array<Number>>}
+         * @memberOf EDO#get
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * edo.get.harmonic_progression([[0,3,7],[0,4,7]],[1,4,7])
+         * //returns e.g. [ [ 1, 4, 7 ], [ 11, 4, 7 ], [ 11, 2, 7 ], [ 10, 2, 7 ] ]
+         */
+        harmonic_progression: (allowed_qualities, starting_chord,num_of_chords=4, common_notes_min=2) => {
+            let progression = [starting_chord]
+            let escape=100
+            while(progression.length<num_of_chords && escape>0) {
+                let last_chord = progression[progression.length-1]
+                let possibilities = []
+                for(let quality of allowed_qualities) {
+                    for (let i = 0; i < this.edo; i++) {
+                        let trans = quality.map(n=>(n+i)%this.edo)
+
+                        let in_common = this.count.common_tones(trans,last_chord)
+                        if(in_common>=common_notes_min && in_common!=last_chord.length) possibilities.push(trans)
+                    }
+                }
+                possibilities = this.get.unique_elements(possibilities)
+                if(possibilities.length==0) {
+                    escape--
+                    continue
+                }
+
+                progression.push(this.shuffle_array(possibilities)[0])
+            }
+            for (let i = 1; i < progression.length; i++) {
+
+                progression[i]=this.get.minimal_voice_leading(progression[i-1],progression[i])
+
+            }
+            return progression
+
+        },
+
+        /** <p>Returns a chord progression to harmonize a given melodies with given possible chord qualities.</p>
+         * @param {<Array<Number>} melody - The melody
+         * @param {Array<Array<Number>>} allowed_qualities - A list of allowed chord qualities (regardless of transposition)
+         * @param {Array<Number>} starting_chord - The first chord in the progression (using exact pitches and voicing)
+         * @param {Number} [common_notes_min=1] - The minimal number of notes in common between every two succeeding chords in the progression.
+         * @returns {Array<Array<Number>>}
+         * @memberOf EDO#get
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * edo.get.harmonized_melody([7,4,5,2,4,0,2],[[0,4,7],[0,3,7]])
+         * //returns e.g.
+         * [
+         *  [ 4, 7, 11 ],
+         *  [ 4, 9, 0 ],
+         *  [ 5, 9, 2 ],
+         *  [ 7, 11, 2 ],
+         *  [ 7, 0, 4 ],
+         *  [ 9, 0, 4 ],
+         *  [ 9, 2, 5 ]
+         * ]
+         */
+        harmonized_melody: (melody,allowed_qualities,starting_chord, common_notes_min=1) => {
+            let harmony = []
+            let melody_copy = [...melody]
+            let last_chord = starting_chord
+            allowed_qualities = allowed_qualities.map(q=>this.scale(q).get.modes()).flat()
+
+            melody_copy = melody_copy.map((note,i)=>{
+
+                let options = allowed_qualities.map(q=>q.map(n=>(n+note)%this.edo).sort((a,b)=>a-b))
+                if(last_chord && i==0) {
+                    harmony.push(last_chord)
+                    return last_chord
+                }
+                if(last_chord) {
+                    options = options.filter(option => {
+                        let in_common = this.count.common_tones(option,last_chord)
+                        return in_common>=common_notes_min && in_common!=last_chord.length
+                    })
+                }
+                let chord = this.shuffle_array(options)[0]
+                harmony.push(chord)
+                last_chord=chord
+                return last_chord
+            })
+
+            for (let i = 1; i < harmony.length; i++) {
+                if(harmony[i]==undefined || harmony[i-1]==undefined) continue
+                harmony[i] = this.get.minimal_voice_leading(harmony[i-1],harmony[i])
+            }
+
+            console.log(harmony)
+
+            return harmony
+
+        },
+
+
+        // /** <p>Returns all of the possible combinations of pitches on a harp (through pedaling).</p>
+        //  * @param {Boolean} [as_intervals=false] - When true, the returned values are of the interval relationships between the pitches, and not the pitch classes.
+        //  * @param {<Array<Number>} [strings_in_octave=[0,2,4,5,7,9,11]] - The tuning of the strings
+        //  * @param {Array<Number>} [pedal_shift=[-1,0,1]] - The possible configurations of every pedal (how much does a configuration raise/lower the pitch)
+        //  * @returns {Array<Array<Number>>}
+        //  * @memberOf EDO#get
+        //  * @example
+        //  * let edo = new EDO(12) // define a tuning system
+        //  * edo.get.harp_configurations()
+        //  */
+        // harp_configurations: (as_intervals=false,strings_in_octave=[0,2,4,5,7,9,11],pedal_shift = [-1,0,1],with_quality) => {
+        //     strings_in_octave = strings_in_octave.map(s=>pedal_shift.map(p=>this.mod(s+p,this.edo)))
+        //     let configurations = this.get.partitioned_subsets(strings_in_octave)
+        //     if(with_quality) {
+        //         configurations = configurations.filter(c=>this.scale(c).count.chord_quality(with_quality)>0)
+        //     }
+        //     if(as_intervals) {
+        //         configurations = this.get.unique_elements(configurations.map(c=> {
+        //             let min_index = c.indexOf(Math.min(...c))
+        //             c = this.get.rotated(c,min_index)
+        //             // console.log(c)
+        //             let steps = this.convert.to_steps(c).map(c=>(this.edo-c<c)?c-this.edo:c)
+        //             steps = steps.map(s=>{
+        //                 if(s<-(this.edo/2)) return this.edo+s
+        //                 else return s
+        //             })
+        //             return steps
+        //         }))
+        //
+        //     }
+        //     return configurations
+        //
+        // },
+
+        /** <p>Returns all of the possible ways to achieve a certain chord quality on a harp.</p>
+         * @param {Array<Number>} quality - The desired chord quality
+         * @param {Array<Number>} [scordatura=[0,2,4,5,7,9,11]] - The tuning of the strings
+         * @param {Array<Number>} [pedal_shift=[-1,0,1]] - The possible configurations of every pedal (how much does a configuration raise/lower the pitch)
+         * @returns {Array<Object>}
+         * @memberOf EDO#get
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * edo.get.harp_position_of_quality([0,1,2,3]) //find all possible chromatic tetrachord on a harp
+         * //returns
+         * [
+         *  {
+         *      strings: [ 6, 1, 7, 2 ], //the strings to be plucked
+         *      pedals: [ 1, -1, 1, -1 ], //the pedals corresponding to the aforementioned strings
+         *      pitches: [ 10, 11, 0, 1 ] //the resultant pitches
+         *  },
+         *  {
+         *      strings: [ 5, 6, 7, 1 ],
+         *      pedals: [ 1, 0, -1, -1 ],
+         *      pitches: [ 8, 9, 10, 11 ]
+         *  },
+         *  {
+         *      strings: [ 3, 4, 5, 6 ],
+         *      pedals: [ 1, 1, 0, -1 ],
+         *      pitches: [ 5, 6, 7, 8 ]
+         *  },
+         *  {
+         *      strings: [ 2, 3, 4, 5 ],
+         *      pedals: [ 1, 0, 0, -1 ],
+         *      pitches: [ 3, 4, 5, 6 ]
+         *  },
+         *  {
+         *      strings: [ 2, 4, 3, 5 ],
+         *      pedals: [ 1, -1, 1, -1 ],
+         *      pitches: [ 3, 4, 5, 6 ]
+         *  },
+         *  {
+         *      strings: [ 6, 7, 1, 2 ],
+         *      pedals: [ 1, 0, 0, -1 ],
+         *      pitches: [ 10, 11, 0, 1 ]
+         *  },
+         *  {
+         *      strings: [ 1, 2, 3, 4 ],
+         *      pedals: [ 1, 0, -1, -1 ],
+         *      pitches: [ 1, 2, 3, 4 ]
+         *  },
+         *  {
+         *      strings: [ 7, 1, 2, 3 ],
+         *      pedals: [ 1, 1, 0, -1 ],
+         *      pitches: [ 0, 1, 2, 3 ]
+         *  }
+         * ]
+         *
+         */
+        harp_position_of_quality: (quality,scordatura=[0,2,4,5,7,9,11],pedal_shift = [-1,0,1]) =>{
+            let results = []
+            let strings_in_octave_norm = scordatura.map(s=>pedal_shift.map(p=>this.mod(s+p,this.edo)))
+            let configurations = this.get.partitioned_subsets(strings_in_octave_norm)
+            configurations = configurations.map(c=>{
+                for (let i = 0; i < this.edo; i++) {
+                    let qual = quality.map(q=>(q+i)%this.edo)
+                    if(this.is.subset(qual,c)) {
+                        let positions = []
+                        let transpositions = []
+                        let pitches = []
+                        qual.forEach(qu=>positions.push(c.indexOf(qu)+1))
+                        positions.forEach(pos=>{
+
+                            let res = -scordatura[pos-1]+c[pos-1]
+                            if(!pedal_shift.includes(res)) {
+                                if(res<0) res = this.mod(res+this.edo,this.edo)
+                                else if (res>0) res = res-this.edo
+                            }
+                            pitches.push(c[pos-1])
+                            transpositions.push(res)
+                        })
+                        results.push({strings:positions,pedals:transpositions,pitches:pitches})
+                    }
+                }
+
+            })
+            results = this.get.unique_elements(results)
+            results = results.sort((a,b)=>{
+                let ap = a['pitches']
+                let bp = b['pitches']
+                let len = ap.length
+                for (let i = 0; i < len; i++) {
+                    if(ap[i]!=bp[i]) return ap[i]-bp[i]
+                }
+            })
+            return results
+        },
+
+        /** <p>Returns the pitches produced given a list of harp pedal transpositions (in ascending order, not harp pedal order).</p>
+         * @param {Array<Number>} pedals - The configuration / transposition set be each pedal (e.g. [-1,0,0,0,1,0,0]) for Cb and G# in 12EDO
+         * @param {Array<Number>} [scordatura=[0,2,4,5,7,9,11]] - The tuning of the strings
+         * @returns {Array<Number>}
+         * @memberOf EDO#get
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * edo.get.harp_pedals_to_pitches([0,0,0,0,0,1,-1]) 6th string sharpened, 7th string flattened
+         * //returns
+         * [0, 2, 4, 5, 7, 10, 10]
+         *
+         */
+        harp_pedals_to_pitches: (pedals,scordatura=[0,2,4,5,7,9,11])=>{
+            return scordatura.map((note,i)=>this.mod(note+pedals[i],this.edo))
+        },
+
+        harp_least_pedals_passage: (pitches,scordatura=[0,2,4,5,7,9,11],pedal_shift = [-1,0,1]) => {
+            let strings_in_octave = scordatura.map(s=>pedal_shift.map(p=>this.mod(s+p,this.edo)))
+            let configurations = this.get.partitioned_subsets(strings_in_octave)
+            let paths = []
+
+            let recurrent = (pitches,path=[]) => {
+                let ml,mr
+                let options
+                for (let i = 0; i < pitches.length; i++) {
+                    ml = pitches.slice(0,pitches.length-i)
+                    mr = pitches.slice(pitches.length-i)
+                    let unique = this.get.unique_elements(ml.map(n=>this.mod(n,this.edo)))
+                    let uniquel = unique.length
+                    if(uniquel>scordatura.length) continue
+                    options = configurations.filter(conf=>this.is.subset(unique,conf))
+                    if(options.length>0) break
+                }
+                if(!options) return
+                options.forEach(opt=>{
+                    if(mr.length==0) paths.push([...path,opt])
+                    else recurrent(mr,[...path,opt])
+                })
+
+
+
+
+
+            }
+            recurrent(pitches)
+
+
+            let distances = paths.map((path)=>{
+                return path.map((p,i)=>{
+                    if(i==path.length-1) return 0
+                    let ar1=path[i]
+                    let ar2 = path[i+1]
+                    let dist = 0
+                    for (let j = 0; j < ar2.length; j++) {
+                        if(ar1[j]!=ar2[j]) dist++
+                    }
+                    return dist
+                })
+
+
+
+
+
+
+            }).map(path=>path.reduce((ag,e)=>ag+e,0))
+            let min = Math.min(...distances)
+            let indexes = []
+            distances.forEach((dist,i)=>{
+                if(dist==min) indexes.push(i)
+            })
+
+            paths = paths.filter((path,i)=>indexes.includes(i))
+            return {paths:paths,pedals:min}
+
+        },
+
+        /** <p>Fills in the missing pedals to the output of [EDO.get.harp_position_of_quality()]{@link EDO#get.harp_position_of_quality}.</p>
+         * @param {Array<Object>} qualities - The output of @link EDO#get.harp_position_of_quality
+         * @param {Array<Number>} [harp_default=[-1,-1,-1,-1,-1,-1,-1]] - The default configuration of the pedals
+         * @param {Array<Number>} [scordatura=[0,2,4,5,7,9,11]] - The tuning of the strings when all pedals are not flattened nor sharpened.
+         * @returns {Array<Number>}
+         * @memberOf EDO#get
+         */
+        fill_partial_harp_pedaling: (qualities,harp_default=[-1,-1,-1,-1,-1,-1,-1],scordatura=[0,2,4,5,7,9,11])=> {
+            qualities = qualities.map(q=>{
+                let new_pedals = [...harp_default]
+                q.strings.forEach((str,i)=>{
+                    new_pedals[str-1]=q.pedals[i]
+                })
+                q.pedals=new_pedals
+
+                return q
+            })
+            return qualities
+        },
+
+
+
+
+
         /** <p>Returns the interval-class between two pitch classes.</p>
          * @param {Number} PC1 - The first pitch class
          * @param {Number} PC2 - The second pitch class
@@ -1019,7 +1398,9 @@ class EDO {
          * edo.get.interval_class(1,8) //returns 5
          */
         interval_class: (PC1,PC2) => {
-            return this.mod(PC1-PC2,this.edo)
+            let diff = Math.abs(PC1-PC2)
+            return (diff<Math.ceil(this.edo/2))? diff : this.edo-diff
+
         },
 
         /** <p>Returns all combinations of size k from an array.</p>
@@ -1057,6 +1438,7 @@ class EDO {
          * @example
          * edo.get.sine_pair_dissonance(440,475) //returns 0.17190984235878704
          * @see http://www.acousticslab.org/learnmoresra/moremodel.html
+         * @see Vassilakis, P. (2001). "Auditory roughness estimation of complex spectra—Roughness degrees and dissonance ratings of harmonic intervals revisited." The journal of the Acoustical Society of America 110(5): 2755-2755.
          */
         sine_pair_dissonance: (freq1,freq2,amp1=1,amp2=1) => {
             const f_min = Math.min(freq1,freq2)
@@ -1175,6 +1557,27 @@ class EDO {
             return edo.get.transposition(melody, note1, false)
 
 
+        },
+
+        /** <p>Returns a generated scale generated by a given generator, with a given cardinality.</p>
+         * @param {Number} [generator=7] - The generator
+         * @param {Number} [cardinality=7] - The cardinality (number of pitches)
+         * @returns {Array<Number>}
+         * @memberOf EDO#get
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * edo.get.generated_scale(7,5) // returns [0,2,4,7,9]
+         * @see Balzano, G. J. (1980). "The group-theoretic description of 12-fold and microtonal pitch systems." Computer music journal 4(4): 66-84.
+         * @see Carey, N. (2007). "Coherence and sameness in well-formed and pairwise well-formed scales." Journal of Mathematics and Music 1(2): 79-98.
+         * @see Carey, N. and D. Clampitt (1989). "Aspects of well-formed scales." Music Theory Spectrum 11(2): 187-206.
+         */
+        generated_scale: (generator=7,cardinality=7,return_object=false) =>{
+            let scale = []
+            for (let i = 0; i < cardinality ; i++) {
+                scale.push(this.mod(generator*i,this.edo))
+            }
+            scale = this.get.normal_order(scale.sort((a,b)=>a-b))
+            return scale
         },
 
         /** <p>Returns every IC that by iteratively adding it to 0, produces all of the pitches of the tuning space.</p>
@@ -1449,31 +1852,88 @@ class EDO {
             }
         },
 
-        /** <p>Returns a "likely" root from a collection of pitches</p>
-         *  <p>Given a set of pitches, the algorithm returns the pitch that contains the other pitches in lower positions in its overtone series.<br>
-         *      E.g. If we consider C-E-G <code>(0,4,7)</code>, E and G appear as overtones of C at lower positions than C and G appear as overtones of E, and C and E as overtones of G.</p>
-         *      <p>Note: a root can be highly dependent on context, therefore this algorithm at its current state cannot provide a decisive answer.</p>
-         * @param  {Array<Number>} pitches - a collection of pitch classes
-         * @param  {Array<Number>} [limit=19] - The overtone limit by which PCs are approximated
-         * @return {Number} The pitch-class of the likely root.
+        // /** <p>Returns a "likely" root from a collection of pitches</p>
+        //  *  <p>Given a set of pitches, the algorithm returns the pitch that contains the other pitches in lower positions in its overtone series.<br>
+        //  *      E.g. If we consider C-E-G <code>(0,4,7)</code>, E and G appear as overtones of C at lower positions than C and G appear as overtones of E, and C and E as overtones of G.</p>
+        //  *      <p>Note: a root can be highly dependent on context, therefore this algorithm at its current state cannot provide a decisive answer.</p>
+        //  * @param  {Array<Number>} pitches - a collection of pitch classes
+        //  * @param  {Array<Number>} [limit=19] - The overtone limit by which PCs are approximated
+        //  * @return {Number} The pitch-class of the likely root.
+        //  * @memberOf EDO#get
+        //  * @example
+        //  * let edo = new EDO(12) // define a tuning system
+        //  * edo.get.likely_root([0,5,9])
+        //  * //returns 5*/
+        // likely_root: (pitches, limit = 17) => {
+        //     pitches = this.get.unique_elements(pitches).sort((a, b) => a - b)
+        //     let catalog = {}
+        //     let ratios = this.get.modes(pitches)
+        //         .map((mode) =>
+        //             mode.filter((interval) => interval != 0)
+        //                 .map((interval) => this.get.ratio_approximation(interval, limit).octave)
+        //                 .reduce((a, e) => a + e)
+        //         )
+        //
+        //     let min = Math.min.apply(Array, ratios)
+        //     let pos = ratios.indexOf(min)
+        //     return pitches[pos]
+        // },
+
+        // likely_root2: (pitches) => {
+        //     let scale = this.scale(pitches)
+        //     let modes = scale.get.modes()
+        //     modes = modes.map((mode,i)=>{
+        //         // mode.tiers = {
+        //         //     1:[], //has a 5th, has a 3rd, can be stacked in 3rds
+        //         //     2:[], //has a 5th, has a 3rd, has no contradictions [1,2,3,5]
+        //         //     3:[], //has a 5th, has a 3rd, has contradictions but not with 5th and 3rd [1,2,2,3,5]
+        //         //     4:[], //has a 5th, has a 3rd, has contradictions but not with BOTH 5ths and 3rds [1,2,3,3,5] / [1,2,3,5,5]
+        //         //     5:[], //has a 5th, has a 3rd, has contradictions with both 5ths and 3rds [1,2,3,3,5,5]
+        //         //     6:[], //has a 5th, has NO 3rd, has no contradictions [1,5,7]
+        //         //     7:[], //has a 5th, has NO 3rd, has contradictions [1,5,5,7] / [1,5,7,7]
+        //         //     8:[], //has no 5th, has no contradictions [1,2,3,4,6,7]
+        //         //     9:[] //has no 5th, has contradiction [1,2,3,3,6,7]
+        //         // }
+        //         // let roles = this.scale(mode).get.scale_degree_roles()
+        //         // mode.tiers[1].push(...roles.filter(r=>(r.indexOf(5)!=-1 && r.indexOf(3)!=-1 && this.get.unique_elements(r).length==r.length)))
+        //         // edo.get.stacked(set1.pitches,[3,4])
+        //         // console.log(mode.tiers)
+        //         // return mode
+        //         console.log(this.get.stacked(mode,[3,4]))
+        //     })
+        // },
+
+
+
+        /** Returns the Maximal number of differences for a a scale of cardinality N
+         * @param  {Number} N - The cardinality of the scale (how many pitches it has)
+         * @return {Number}
          * @memberOf EDO#get
          * @example
-         * let edo = new EDO(12) // define a tuning system
-         * edo.get.likely_root([0,5,9])
-         * //returns 5*/
-        likely_root: (pitches, limit = 17) => {
-            pitches = this.get.unique_elements(pitches).sort((a, b) => a - b)
-            let catalog = {}
-            let ratios = this.get.modes(pitches)
-                .map((mode) =>
-                    mode.filter((interval) => interval != 0)
-                        .map((interval) => this.get.ratio_approximation(interval, limit).octave)
-                        .reduce((a, e) => a + e)
-                )
+         * let edo = new EDO() // create a tuning context
+         * edo.get.maximal_rahn_difference(7) //maximal rahn difference for a scale of length 7
+         * //returns 126
+         * @see Rahn, J. (1991). "Coordination of interval sizes in seven-tone collections." Journal of Music Theory 35(1/2): 33-60.
+         * @see Carey, N. (2007). "Coherence and sameness in well-formed and pairwise well-formed scales." Journal of Mathematics and Music 1(2): 79-98.
+         * */
+        maximal_rahn_difference: (N) => {
+            return (N*(N-1)*(N-1))/2
+        },
 
-            let min = Math.min.apply(Array, ratios)
-            let pos = ratios.indexOf(min)
-            return pitches[pos]
+        /** Returns the Maximal number of coherence failures as described in the paper by Carey (see citation)
+         * This agrees with Balzano coherency and Rothenberg Propriety, but provides a continues measure rather than a discrete one.
+         * @param  {Number} N - The cardinality of the scale (how many pitches it has)
+         * @return {Number}
+         * @memberOf EDO#get
+         * @example
+         * let edo = new EDO() // create a tuning context
+         * edo.get.maximal_carey_coherence_failures(7) * //returns 140
+
+         * @see Carey, N. (2007). "Coherence and sameness in well-formed and pairwise well-formed scales." Journal of Mathematics and Music 1(2): 79-98.
+         * @see Rahn, J. (1991). "Coordination of interval sizes in seven-tone collections." Journal of Music Theory 35(1/2): 33-60.
+         * */
+        maximal_carey_coherence_failures: (N) => {
+            return (N*(N-1)*(N-2)*((3*N)-5))/24
         },
 
         /**
@@ -2330,6 +2790,23 @@ class EDO {
         },
 
         /**
+         * <p>Returns a given collection of pitches, rotated n times.
+         * @param  {Array<Number>} pitches - a collection of pitches (not necessarily PCs, not necessarily unique)
+         * @param  {Number} n - Number of rotations
+         * @return {Array<Number>}
+         * @memberOf EDO#get
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * edo.get.rotations([0,2,4,5,7],2) //returns [4,5,7,0,2]
+         * edo.get.rotations([0,2,4,5,7],-1) //returns [7,0,2,4,5]
+         * */
+        rotated: (pitches,n) => {
+            n=this.mod(n,pitches.length)
+            return [...pitches.slice(n),...pitches].slice(0,pitches.length)
+        },
+
+
+        /**
          * <p>Returns all the rotations (inversions) of an array of pitches</p>
          * @param  {Array<Number>} pitches - a collection of pitches (not necessarily PCs, not necessarily unique)
          * @return {Array<Array<Number>>}
@@ -2449,7 +2926,7 @@ class EDO {
          * step sizes. step size=1 between 0 and 1, step size=2 between 5 and 7, and step size = 3 between 1 and 4.
          * @return {Array<Scale>} all the scales that abide by the criteria given
          * @memberOf EDO#get*/
-        scales: (min_step = 1, max_step = this.edo - 1, min_sizes = 1, max_sizes = this.edo, EDO = this) => {
+        scales: (min_step = 1, max_step = this.edo - 1, min_sizes = 1, max_sizes = this.edo, max_num_of_pitches=this.edo,EDO = this,) => {
 
             //get all unique combinations of size s from set of intervals set
             const calc_comb = (s, set) => {
@@ -2535,8 +3012,7 @@ class EDO {
             let step_sizes = get_step_sizes(min_step, max_step)
 
             let interval_combinations = get_interval_combinations(min_sizes, max_sizes, step_sizes)
-            let combos = unique_for_all(interval_combinations)
-
+            let combos = unique_for_all(interval_combinations).filter(combo=>combo.length<=max_num_of_pitches)
             let all_necklaces = make_all_necklaces(combos)
 
             let _scales = get_all_scales(all_necklaces)
@@ -2807,6 +3283,20 @@ class EDO {
             unique = Array.from(unique).map(JSON.parse);
 
             return unique
+        },
+
+        /** Generates a well-formed scale in the current EDO with a given cardinality.
+         * @param  {Number} [cardinality=7] - The number of pitches in the scale
+         * @returns {Array<Number>} A well formed scale
+         * @memberOf EDO#get
+         * @example
+         * let edo = new EDO(12) //Create a tuning context
+         * edo.get.well_formed_scale(5) //returns [0,2,4,7,9]
+         * @see Clough, J. and J. Douthett (1991). "Maximally even sets." Journal of Music Theory 35(1/2): 93-173.
+         */
+        well_formed_scale: (cardinality=7) => {
+            let scale = [...Array(cardinality).keys()].map(n=>Math.floor((n*this.edo)/cardinality))
+            return scale
         },
 
         /** Gets a melody, and attempts to remove chromatic passing tones
@@ -3106,6 +3596,25 @@ class EDO {
         },
 
         /**
+         * Returns true the two given collections of pitches are a rotation of one another.
+         * @param  {Array<Number>} collection1 - a collection of pitches (not necessarily pitch classes)
+         * @param  {Array<Number>} collection2 - a collection of pitches (not necessarily pitch classes)
+         * @return {Boolean}
+         * @memberOf EDO#is
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * edo.is.transposition([0,2,4,5,7,9,11],[2,4,5,7,9,11,0])
+         * //returns true
+         */
+        rotation:(collection1,collection2)=> {
+            let double = [...collection2,...collection2]
+            for (let i = 0; i < collection2.length; i++) {
+                if(this.is.same(collection1,double.slice(i,i+collection2.length))) return true
+            }
+            return false
+        },
+
+        /**
          * Returns True if arr1 equals arr2 in contents and in order.
          * @param  {Array<Number>} arr1 - a collection of pitches (not necessarily pitch classes)
          * @param  {Array<Number>} arr2 - a collection of pitches (not necessarily pitch classes)
@@ -3146,9 +3655,26 @@ class EDO {
         subset: (thing, thing2) => {
 
             for (let note of thing) {
-                if (thing2.indexOf(note) == -1) return false
+                if (!thing2.includes(note)) return false
             }
             return true
+        },
+
+        /**
+         * Returns true the two given collections of pitches are a transposition of one another.
+         * @param  {Array<Number>} collection1 - a collection of pitches (not necessarily pitch classes)
+         * @param  {Array<Number>} collection2 - a collection of pitches (not necessarily pitch classes)
+         * @return {Boolean}
+         * @memberOf EDO#is
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * edo.is.transposition([0,2,4,5,7,9,11],[5,7,9,10,0,2,4]) //C major and F major
+         * //returns true
+         */
+        transposition: (collection1,collection2) => {
+            let c1 = collection1
+            let c2 = collection2
+            return this.is.same(c1,c2.map(n=>this.mod(n-c2[0]-c1[0],this.edo)))
         }
     }
 
@@ -4024,6 +4550,91 @@ class Scale {
         },
 
         /**
+         * <p>Returns the number of (Rahn's) differences in the scale.</p>
+         * @return {Number}
+         * @memberOf Scale#count
+         * @example
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //The diatonic scale
+         * scale.count.rahn_differences() //returns 56
+         * @see Rahn, J. (1991). "Coordination of interval sizes in seven-tone collections." Journal of Music Theory 35(1/2): 33-60.
+         * @see Scale#get.generic_intervals
+         */
+        rahn_differences: () => {
+            let total = 0
+            for (let i = 1; i < this.count.pitches(); i++) {
+                let gi = this.get.generic_intervals(i)
+                gi = gi.map(a=>a.instances)
+                let nck = this.parent.get.n_choose_k(gi,2)
+                let product = nck.map(el=>el[0]*el[1]).reduce((ag,el)=>ag+el,0)
+                total+=product
+            }
+            return total
+        },
+
+        /**
+         * <p>Returns the number of (Rahn's) contradictions in the scale.</p>
+         * @return {Number}
+         * @memberOf Scale#count
+         * @example
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //The diatonic scale
+         * scale.count.rahn_contradictions() //returns 0
+         * @see Rahn, J. (1991). "Coordination of interval sizes in seven-tone collections." Journal of Music Theory 35(1/2): 33-60.
+         */
+        rahn_contradictions: () => {
+            let total = 0
+            let scale_degrees = [...Array(this.pitches.length).keys()]
+            let combinations = this.parent.get.combinations(scale_degrees,2).sort((a,b)=>a[0]-b[0] || a[1]-b[1])
+            let pairwise = combinations.map(c=>{
+                let obj = this.get.pairwise_generic_specific_intervals(c[0],c[1])
+                obj.scale_degs = c
+                obj.pitches = [this.pitches[c[0]],this.pitches[c[1]]]
+                return obj
+            })
+            for (let i = 0; i < pairwise.length-1; i++) {
+                let p1 = pairwise[i]
+                for (let j =i+1; j < pairwise.length; j++) {
+                    let p2 = pairwise[j]
+                    if((p1.generic<p2.generic && p1.specific>p2.specific) || (p2.generic<p1.generic && p2.specific>p1.specific)){
+                        total++
+                    }
+                }
+            }
+            return total
+        },
+
+        /**
+         * <p>Returns the number of (Rahn's) ambiguities in the scale.</p>
+         * @return {Number}
+         * @memberOf Scale#count
+         * @example
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //The diatonic scale
+         * scale.count.rahn_ambiguities() //returns 1
+         * @see Rahn, J. (1991). "Coordination of interval sizes in seven-tone collections." Journal of Music Theory 35(1/2): 33-60.
+         * @see Scale#get.specific_intervals
+         */
+        rahn_ambiguities: () => {
+            let total = 0
+            let scale_degrees = [...Array(this.pitches.length).keys()]
+            let combinations = this.parent.get.combinations(scale_degrees,2).sort((a,b)=>a[0]-b[0] || a[1]-b[1])
+            let pairwise = combinations.map(c=>{
+                let obj = this.get.pairwise_generic_specific_intervals(c[0],c[1])
+                obj.scale_degs = c
+                obj.pitches = [this.pitches[c[0]],this.pitches[c[1]]]
+                return obj
+            })
+            for (let i = 0; i < pairwise.length-1; i++) {
+                let p1 = pairwise[i]
+                for (let j =i+1; j < pairwise.length; j++) {
+                    let p2 = pairwise[j]
+                    if((p1.generic<p2.generic && p1.specific==p2.specific) || (p2.generic<p1.generic && p2.specific==p1.specific)){
+                        total++
+                    }
+                }
+            }
+            return total
+        },
+
+        /**
          * Counts how many times some ratio appears in the scale within a given tolerance.
          * @param {Number} ratio
          * @param {Number} [tolerance=10] - a tolerance in cents
@@ -4310,9 +4921,86 @@ class Scale {
             })
         },
 
+        /** <p>Given a generic interval ("scale degrees apart") returns all of the specific intervals.</p>
+         * @param {Number} generic_interval_size- The generic interval
+         * @returns {Array<Object>}
+         * @memberOf Scale#get
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * let scale = edo.scale([0,2,4,5,7,9,11])
+         * scale.get.generic_intervals(3) //3 scale-degrees apart (e.g 4ths)
+         * //returns
+         * [
+         *  {"generic":3,"specific":5,"pitches":[[0,5],[2,7],[4,9],[7,0],[9,2],[11,4]],"instances":6},
+         *  {"generic":3,"specific":6,"pitches":[[5,11]],"instances":1}
+         * ]
+         * @see Rahn, J. (1991). "Coordination of interval sizes in seven-tone collections." Journal of Music Theory 35(1/2): 33-60.
+         * @see Scale#get.specific_intervals
+         */
+        generic_intervals: (generic_interval_size=1) => {
+            let arr = []
+            let g= generic_interval_size
+            let mod = this.parent.mod
+            let p =this.pitches
+            let len = p.length
+            let map = {}
+            for (let i = 0; i < len; i++) {
+                let note1 = p[i]
+                let note2 = p[mod(i+g,len)]
+                let spec = mod(note2-note1,this.edo)
+                if(!map[spec]) map[spec]=[[note1,note2]]
+                else map[spec].push([note1,note2])
+            }
+            for(let key in map) {
+                arr.push({generic:g,specific:parseInt(key),pitches:map[key],instances:map[key].length})
+            }
+            return arr
+        },
 
+        /** <p>Given a specific interval (in semitones or whatever the smallest division is) returns all of the generic intervals.</p>
+         * @param {Number} specific_interval_size- The specific interval size (in semitones or whatever the smallest division is)
+         * @returns {Array<Object>}
+         * @memberOf Scale#get
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * let scale = edo.scale([0,2,4,5,7,9,11])
+         * scale.get.specific_intervals(6) //3 scale-degrees apart (e.g 4ths)
+         * //returns
+         * [
+         *  {"generic":"3","specific":6,"pitches":[[5,11]],"instances":1},
+         *  {"generic":"4","specific":6,"pitches":[[11,5]],"instances":1}
+         * ]
+         * @see Rahn, J. (1991). "Coordination of interval sizes in seven-tone collections." Journal of Music Theory 35(1/2): 33-60.
+         * @see Scale#get.generic_intervals
+         */
+        specific_intervals: (specific_interval_size=1) => {
+            let arr = []
+            let s= specific_interval_size
+            let mod = this.parent.mod
+            let p =this.pitches
+            let len = p.length
+            let map = {}
+            loop1:
+                for (let i = 0; i < len; i++) {
+                    loop2:
+                        for (let g = 1; g < len; g++) {
+                            let note1=p[i]
+                            let note2 = p[mod(i+g,len)]
 
+                            let diff =  mod(note2-note1,this.edo)
+                            if(diff==s) {
+                                if(!map[g]) map[g]=[[note1,note2]]
+                                else map[g].push([note1,note2])
+                                break loop2
+                            } else if (diff>s) break loop2
+                        }
+                }
+            for(let key in map) {
+                arr.push({generic:key,specific:s,pitches:map[key],instances:map[key].length})
+            }
+            return arr
 
+        },
 
         /** Returns the interval vector of the scale.
          * @param  {Boolean} cache - When true, the result will be cached for faster retrieval
@@ -4477,12 +5165,13 @@ class Scale {
         },
 
         /** <p>Returns true if a scale has the Myhill Property</p>
-         * @param {Number} [constant=2] - The exact number of specific intervals necessary for each generic interval. Use 3 to check if scale is trivalent.
+         * @param {Number} [constant=2] - The exact number of specific intervals necessary for each generic interval
          * @returns {Boolean}
          * @example
          * let edo = new EDO(12) //define tuning
          * let scale = edo.scale([0,2,4,7,9]) //a major pentatonic scale
          * scale.get.myhill_property() //true
+         * @see Clough, J. and G. Myerson (1985). "Variety and multiplicity in diatonic systems." Journal of Music Theory 29(2): 249-270.
          * */
         myhill_property: (constant = 2)=>{
             let map = {}
@@ -4619,7 +5308,6 @@ class Scale {
             return all
         },
 
-
         /** <p>Return every quality available in the scale for a combination of <code>n</code> scale degrees.</p>
          * @param  {Number} n - Number of pitches in every chord
          * @returns {Array<steps_quality_obj>}
@@ -4688,6 +5376,28 @@ class Scale {
             if (cache) this.catalog['normal_order'] = result
             return result
 
+        },
+
+        /** <p>Returns the generic and specific intervals for a pair of scale degrees</p>
+
+         * @param {Number} SD1 - The first scale degree
+         * @param {Number} SD2 - The second scale degree
+         * @returns {Array<Number>}
+         * @memberOf Scale#get
+         *
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //major scale
+         * scale.get.pairwise_generic_specific_intervals() //returns [0, 1, 3, 5, 6, 8, 10]
+         * @see Rahn, J. (1991). "Coordination of interval sizes in seven-tone collections." Journal of Music Theory 35(1/2): 33-60.
+         * */
+        pairwise_generic_specific_intervals: (SD1,SD2) => {
+            let mod = this.parent.mod
+            let p = this.pitches
+            let len = p.length
+            let specific = mod(p[mod(SD2,len)]-p[mod(SD1,len)],this.edo)
+            let generic = mod(SD2 - SD1,len)
+            return {specific:specific,generic:generic}
         },
 
         /** <p>Returns every ordering (permutation) of notes in the scale</p>
@@ -4799,6 +5509,41 @@ class Scale {
             return res
         },
 
+        quality_with_intervals: (sizes=[7],length,last) => {
+            let scale = this.pitches
+            let helper = function (scale, sizes,length,last) {
+                if(!length) length= scale.length
+                let TET = this.edo
+                if(!last) last = [scale.shift()]
+                if(last.length==length) return last
+
+                let result = sizes.map(size=>{
+
+                    let note = (last[last.length-1]+size)%TET
+                    let ind = scale.indexOf(note)
+                    if(ind==-1) return false
+                    else {
+                        let new_scale = [...scale]
+                        new_scale.splice(ind,1)
+                        let new_last = [...last,note]
+                        return quality_with_intervals(new_scale,sizes,length,new_last)
+                    }
+                }).reduce((ag,el)=>el?[...ag,el]:ag,[]).flat()
+
+                const chunk = function(array, size) {
+                    if (!array.length) {
+                        return [];
+                    }
+                    const head = array.slice(0, size);
+                    const tail = array.slice(size);
+
+                    return [head, ...chunk(tail, size)];
+                };
+                return chunk(result.flat(),length)
+            }
+            return helper(scale,sizes,length,last)
+        },
+
         /** <p>Returns all of the rotations of the scale (not normalized to 0).</p>
          *
          * <p>To get the rotations normalized to zero (the modes) use [Scale.get.modes()]{@link Scale#get.modes}</p>
@@ -4861,7 +5606,6 @@ class Scale {
             return result
         },
 
-
         /** <p>Returns the sum of the roughness of every pair in the set, averaged across all modes</p>
          * @param {Boolean} [all_modes=false] - When true, the algorithm returns the roughness value for all of the modes
          * @param {Number} [base_freq=440] - The frequency to associate with PC0
@@ -4871,7 +5615,9 @@ class Scale {
          * let scale = edo.scale([0,2,4,7,9]) //a major pentatonic scale
          * scale.get.roughness()
          * //returns 0.376424315400336
-         * @memberOf Scale#get*/
+         * @memberOf Scale#get
+         * @see EDO#get.sine_pair_dissonance
+         * */
         roughness: (all_modes=false,base_freq=440) => {
             const get_scale_roughness =function (scale) {
                 let pairs = scale.parent.get.n_choose_k(scale.pitches,2)
@@ -4892,6 +5638,40 @@ class Scale {
             }
 
         },
+
+        /** <p>Returns the sameness quotient according to Carey (2007) (see citation)</p>
+         * @returns Number
+         * @example
+         * let edo = new EDO(12) //define tuning
+         * let scale = edo.scale([0,2,4,6,8,10]) //a whole-tone scale
+         * scale.get.sameness_quotient() //returns 1
+         *
+         * scale = edo.scale([0,2,4,5,7,9,11]) //the diatonic scale
+         * scale.get.sameness_quotient() //returns 0.5555555555555556
+         * @see Carey, N. (2007). "Coherence and sameness in well-formed and pairwise well-formed scales." Journal of Mathematics and Music 1(2): 79-98.
+         * @memberOf Scale#get*/
+        sameness_quotient: () => {
+            let D_S = this.count.rahn_differences()
+            let max_D = this.parent.get.maximal_rahn_difference(this.count.pitches())
+            return 1-(D_S/max_D)
+        },
+
+        /** <p>Returns the coherence quotient according to Carey (2007) (see citation)</p>
+         * @returns Number
+         * @example
+         * let edo = new EDO(12) //define tuning
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //The diatonic scale
+         * scale.get.coherence_quotient() //returns 1
+         * @see Carey, N. (2007). "Coherence and sameness in well-formed and pairwise well-formed scales." Journal of Mathematics and Music 1(2): 79-98.
+         * @memberOf Scale#get*/
+        coherence_quotient: () => {
+            let all_amb = this.count.rahn_ambiguities()
+            let all_cont = this.count.rahn_contradictions()
+            let total = all_amb + all_cont
+            let maximal_failures = this.parent.get.maximal_carey_coherence_failures(this.count.pitches())
+            return 1-(total/maximal_failures)
+        },
+
 
         /** Returns all the transpositions of the scale that are constructed on the scale degrees of the original scale,
          * As well the the number of notes altered to get from the original scale to the new scale as a "Tuple"
@@ -5009,6 +5789,9 @@ class Scale {
             console.log(result)
 
         },
+
+
+
 
         /** <p>Returns a list of lists of size "levels" made out of scale degrees with "skip" steps skipped apart.</p>
          * @param  {Number} levels - The number of levels to the stack
@@ -5303,6 +6086,43 @@ class Scale {
      * @namespace*/
     is = {
 
+        /**<p>Returns true if the scale a deep scale</p>
+         * @returns {Boolean}
+         * @memberOf Scale#is
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //major scale
+         * scale.is.deep() //returns false
+         * @see Clough, J., et al. (1999). "Scales, sets, and interval cycles: A taxonomy." Music Theory Spectrum 21(1): 74-104.
+         * */
+        deep: () => {
+            let vector = this.get.interval_vector()
+            let vector_set = new Set(this.get.interval_vector())
+            return vector.length==vector_set.size
+        },
+
+        /**<p>Returns true if the scale is distributionally even</p>
+         * @returns {Boolean}
+         * @memberOf Scale#is
+         *
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //major scale
+         * scale.is.distributionally_even() //returns true
+         * @see Clough, J., et al. (1999). "Scales, sets, and interval cycles: A taxonomy." Music Theory Spectrum 21(1): 74-104.
+         * */
+        distributionally_even: () => {
+            let map = {}
+            for (let i = 0; i < this.count.pitches(); i++) {
+                let gen = this.get.generic_intervals(i)
+                gen.forEach(interval=>(map[interval.generic])?map[interval.generic].push(interval.specific):map[interval.generic]=[interval.specific])
+            }
+            for (let i = 0; i < this.count.pitches(); i++) {
+                if(map[String(i)].length>2) return false
+            }
+            return true
+        },
+
         /**<p>Returns a list of (lower-order) EDOs if the scale can be represented in them.</p>
          <p>For instance 12-EDO <code>[0,3,6,9]</code> also exists in in 4-EDO as <code>[0,1,2,3]</code>. Therefore the function will return <code>[4]</code></p>
          * @param {Boolean} cache - When true, the result will be cached for faster retrieval in subsequent calls.
@@ -5353,6 +6173,46 @@ class Scale {
             return result
         },
 
+        /**<p>Returns true if the scale is maximally even</p>
+         * @returns {Boolean}
+         * @memberOf Scale#is
+         *
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //major scale
+         * scale.is.maximally_even() //returns true
+         * @see Clough, J., et al. (1999). "Scales, sets, and interval cycles: A taxonomy." Music Theory Spectrum 21(1): 74-104.
+         * */
+        maximally_even: () => {
+            let map = {}
+            for (let i = 0; i < this.count.pitches(); i++) {
+                let gen = this.get.generic_intervals(i)
+                gen.forEach(interval=>(map[interval.generic])?map[interval.generic].push(interval.specific):map[interval.generic]=[interval.specific])
+            }
+            for (let i = 0; i < this.count.pitches(); i++) {
+                if(map[String(i)].length>2) return false
+                if(map[String(i)].length==2) {
+                    if(Math.abs(map[String(i)][0]-map[String(i)][1]) != 1) return false
+                }
+            }
+            return true
+        },
+
+        /**<p>Returns true if the scale has the Myhill property</p>
+         * @returns {Boolean}
+         * @memberOf Scale#is
+         *
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //major scale
+         * scale.is.myhill_property() //returns true
+         * @see Scale#get.myhill_property
+         * @see Clough, J., et al. (1999). "Scales, sets, and interval cycles: A taxonomy." Music Theory Spectrum 21(1): 74-104.
+         * */
+        myhill_property: () => {
+            return this.get.myhill_property()
+        },
+
         /**<p>Checks if the scale is a mode / rotation of another scale</p>
          *
          * <p>To check again multiple scale see [Scale.is.one_of]{@link Scale#is.one_of}</p>
@@ -5369,6 +6229,20 @@ class Scale {
         mode_of: (scale) => {
             let modes = this.parent.get.modes(scale)
             return (this.parent.is.element_of(this.pitches, modes))
+        },
+
+        /**<p>Checks if the scale is a mode of limited transpositions</p>
+         * @returns {Boolean}
+         * @memberOf Scale#is
+         * @see Scale#is.MOLT
+         *
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,6,8,10]) //whole-tones
+         * scale.is.MOLT() //returns true
+         * */
+        MOLT: () => {
+            return this.count.transpositions()<this.edo
         },
 
         /**
@@ -5444,8 +6318,6 @@ class Scale {
             }
             return false
         },
-
-        // well_formed: () => {}
     }
 
     /**A collection of functions that convert data from one representation to another

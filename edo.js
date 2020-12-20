@@ -722,6 +722,35 @@ class EDO {
         },
 
         /**
+         * From a list of arrays passed to the function, returns the number of differences between each array and its following neighbor.
+         * @param  {Array<Number>} ...args - As many arrays as needed.
+         * @return {Number} The number of differences between neighboring arrays
+         * @memberOf EDO#count
+         * @example
+         * let edo = new EDO()
+         * edo.count.differences([0,2,3],[0,1,2],[0,2,4],[0,2,1,1,1])
+         * // returns [2,2,3] (2 differences between the 1st and 2nd arrays, 2 diffs between the 2nd and 3rd, and 3 diffs between the 3rd and 4th.)
+         */
+        differences: (...arrays) => {
+            let args = arrays.map((el,i,arr)=>{
+                if(i!=arr.length-1) {
+                    let lena = arr[i].length
+                    let lenb = arr[i+1].length
+                    let minlen = Math.min(lena,lenb)
+                    let maxlen = Math.max(lena,lenb)
+                    let diff = maxlen-minlen
+                    for (let j = 0; j < minlen; j++) {
+                        if(arr[i][j]!=arr[i+1][j]) diff++
+                    }
+                    return diff
+                }
+            })
+            return args.slice(0,args.length-1)
+
+
+        },
+
+        /**
          * Returns the pitch and the number of its occurrences as a tuple for every unique value in pitches
          * @param  {Array<Number>} pitches - a collection of pitches (not necessarily pitch classes)
          * @example
@@ -5480,6 +5509,60 @@ class Scale {
             return res
         },
 
+        /** <p>Returns note combination of a given length who are restricted to only using specified intervals within the scale</p>
+
+         * @param {Array<Number>} intervals - A list of allowed intervals
+         * @param {Number} length - The length of the returned combinations. If not specific length will default to the length of the scale
+         * @returns {Array<Number>} The pitches after multiplication
+         * @memberOf Scale#get
+         *
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,7,9]) //pentatonic scale
+         * scale.get.product(2) //returns [ 0, 4, 8, 2, 6 ]
+         * scale.get.product(5,true) //returns [ 0, 8, 9, 10, 11 ]*/
+        quality_with_intervals: (intervals=[7],length) => {
+            let all = []
+            let TET = this.edo
+            let helper = function (scale, sizes,length,last) {
+                if(!length) length= scale.length
+                if(!last) last = [scale.shift()]
+                if(last.length==length) return last
+
+                let result = sizes.map(size=>{
+
+                    let note = (last[last.length-1]+size)%TET
+                    let ind = scale.indexOf(note)
+                    if(ind==-1) return false
+                    else {
+                        let new_scale = [...scale]
+                        new_scale.splice(ind,1)
+                        let new_last = [...last,note]
+                        return helper(new_scale,sizes,length,new_last)
+                    }
+                }).reduce((ag,el)=>el?[...ag,el]:ag,[]).flat()
+
+                const chunk = function(array, size) {
+                    if (!array.length) {
+                        return [];
+                    }
+                    const head = array.slice(0, size);
+                    const tail = array.slice(size);
+
+                    return [head, ...chunk(tail, size)];
+                };
+                return chunk(result.flat(),length)
+            }
+
+            let modes = this.parent.get.rotations(this.pitches)
+            for (let i = 0; i < modes.length; i++) {
+                all = all.concat(helper(modes[i],intervals,length))
+            }
+
+
+            return all
+        },
+
         /** <p>Returns all of the rotations of the scale (not normalized to 0).</p>
          *
          * <p>To get the rotations normalized to zero (the modes) use [Scale.get.modes()]{@link Scale#get.modes}</p>
@@ -5608,7 +5691,6 @@ class Scale {
             return 1-(total/maximal_failures)
         },
 
-
         /** Returns all the transpositions of the scale that are constructed on the scale degrees of the original scale,
          * As well the the number of notes altered to get from the original scale to the new scale as a "Tuple"
          * @param  {Boolean} [normalize=true] - when true, all of the transpositions will be constructed by altering the original scale
@@ -5725,9 +5807,6 @@ class Scale {
             console.log(result)
 
         },
-
-
-
 
         /** <p>Returns a list of lists of size "levels" made out of scale degrees with "skip" steps skipped apart.</p>
          * @param  {Number} levels - The number of levels to the stack
@@ -6012,9 +6091,6 @@ class Scale {
         without: (to_remove, normal = false) => {
             return this.parent.get.without(this.pitches, to_remove, normal)
         },
-
-
-
 
     }
 
