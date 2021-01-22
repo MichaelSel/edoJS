@@ -5351,6 +5351,67 @@ class Scale {
 
         },
 
+        /** <p>Returns all of the sets whose constituents are at most <code>size</code> away from the original constituent, where no more than <code>alterations</code> constituents were altered.</p>
+         * @param  {Number} [size=1] - Maximal alteration size (e.g. if 2, 3 can be altered into 2, 1, 4, or 5)
+         * @param  {Number} [alterations=1] - Maximal number of constituents that can be altered.
+         * @param  {Boolean} [normalize=true] - When true, the function will return the sets in normal order.
+         * @param  {Boolean} [maintain_cardinality=true] - When true, the function will only return sets that have the same number of pitches as the original set.
+         * @returns {Array<Number>} An array containing all neighboring sets
+         * @memberOf Scale#get
+         *
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,4,7])
+         * scale.get.neighborhood() //returns
+         * [
+         *  [ 0, 3, 6 ],
+         *  [ 0, 3, 7 ],
+         *  [ 0, 2, 7 ],
+         *  [ 0, 4, 8 ],
+         *  [ 0, 4, 6 ]
+         * ]
+         */
+        neighborhood: (size=1,alterations=1,normalize=true,maintain_cardinality=true) =>{
+            let card = this.count.pitches()
+            let parent = this.parent
+            let pitches = this.pitches
+            let sizes = Array.from(Array(size).keys()).map(el=>[el+1,-(el+1)]).flat()
+            let alter = Array.from(Array(alterations), () => Array.from(Array(card)).map(arr=>0))
+            alter = alter.map((arr,ind)=>{
+                let con = Array.from(Array(ind+1).fill(1))
+                arr = con.concat(arr).slice(0,card)
+                arr = this.parent.get.unique_elements(this.parent.get.permutations(arr))
+                return arr
+            }).flat()
+
+            const helper = function(arr,index,sizes) {
+                let narr=[]
+                for (let i = 0; i < sizes.length; i++) {
+                    let temp = Array.from(arr)
+
+                    temp[index] = parent.mod(temp[index]+sizes[i],parent.edo)
+                    narr.push(temp)
+                }
+                return narr
+            }
+            alter = alter.map(a=>{
+                let new_arrays = [Array.from(pitches)]
+                let indices = a.reduce((a, e, i) => (e === 1) ? a.concat(i) : a, [])
+                for (let i = 0; i < indices.length; i++) {
+                    new_arrays = new_arrays.map(arr=>{
+                        let h = helper(arr,indices[i],sizes)
+                        return h
+                    }).flat()
+                }
+                return new_arrays
+            }).flat()
+            if(normalize) alter =alter.map(arr=>parent.get.normal_order(arr))
+            if(maintain_cardinality) alter =alter.filter(arr=>arr.length==card)
+            alter = parent.get.unique_elements(alter)
+            return alter
+        },
+
+
         /** <p>Returns the scale's pitches in normal order</p>
 
          * @param {Boolean} [cache=false] - When true, the result will be cached for future retrieval
