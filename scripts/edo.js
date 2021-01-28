@@ -772,7 +772,9 @@ class EDO {
             }
             counts.sort((a, b) => b[1] - a[1])
             return counts
-        }
+        },
+
+
 
     }
 
@@ -3917,7 +3919,7 @@ class EDO {
             args.outer_strings = (args.outer_strings == undefined) ? true : args.outer_strings
             args.PC_at_midnight = args.PC_at_midnight || 0
             args.string_width = args.string_width || 1
-            args.node_color = args.node_color || "blue"
+            args.node_color = args.node_color || "black"
             args.node_radius = args.node_radius || (args.paper.height * Math.PI / (this.edo * 4)) / 2 - 5
             const parent = this
 
@@ -3954,7 +3956,7 @@ class EDO {
                     }
                 }
 
-                draw_ring(color = 'red', stroke_width = 3) {
+                draw_ring(color = 'white', stroke_width = 3) {
                     let paper = this.paper
                     //if already exists, remove the old one
                     if (this.ring) {
@@ -4049,7 +4051,7 @@ class EDO {
                     this.drawing = paper.set()
 
                     this.circle = paper.circle(this.cx, this.cy, this.radius)
-                        .attr('stroke', 'red')
+                        .attr('stroke', 'white')
                         .attr('fill', this.necklace.node_color)
                     this.drawing.push(this.circle)
                     this.text = paper.text(this.cx, this.cy, this.name)
@@ -4750,7 +4752,30 @@ class Scale {
          * scale.count.trichords() //returns 15*/
         trichords: () => {
             return this.get.trichords().length
+        },
+
+        /**
+         * <p>Returns the number of elements in the scale that are not in the provided arr.</p>
+         * @param  {Array<Number>} arr - a collection of pitch classes
+         * @return {Array<Number>}
+         * @function
+         * @memberOf Scale#count
+         *
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //major
+         * scale.count.unique_elements([2]) //6*/
+        unique_elements: (arr) => {
+
+            let p = this.pitches
+            let unique=p.length
+            p.forEach(n=>{
+                if(arr.indexOf(n)!=-1) unique--
+            })
+            return unique
         }
+
+
 
     }
 
@@ -4878,11 +4903,12 @@ class Scale {
          */
         per_note_set_difference: (set = [0,2,4,5,7,9,11]) => {
             let pitches = this.pitches
-            let delta = pitches.map((p,i)=>pitches[i]-p)
+
+            let delta = pitches.map((p,i)=>{
+                return set[i]-p
+            })
             return delta
         },
-
-
 
         /** Returns the [x,y] coordinates of the nodes of the scale.
          * @param  {Array<Number>} [circle_center=[0,0]] - The center of the circle
@@ -5224,7 +5250,7 @@ class Scale {
          * @example
          * let edo = new EDO(12) //define tuning
          * let scale = edo.scale([0,2,4,7,9]) //a major pentatonic scale
-         * scale.get.levenshtein([0,2,4,5,7,9,11] //returns 2
+         * scale.get.levenshtein([0,2,4,5,7,9,11] //returns 1
          *
          * @example
          * scale.get.levenshtein([0,2,4,5,7,9,11],true) //returns 0.9230769230769231
