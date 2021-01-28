@@ -290,11 +290,204 @@ edo = new EDO(12)
 //     console.log(JSON.stringify(scale.pitches))
 // })
 
-let scales = edo.get.scales().filter(scale=>scale.count.pitches()==5)
-scales.forEach(scale=>console.log("Set:",scale.pitches,"Neighborhood:", JSON.stringify(scale.get.neighborhood())))
+// let scales = edo.get.scales().filter(scale=>scale.count.pitches()==5)
+// scales.forEach(scale=>console.log("Set:",scale.pitches,"Neighborhood:", JSON.stringify(scale.get.neighborhood())))
 
 
 
+
+
+
+// let scales = edo.get.scales().filter(scale=>scale.count.pitches()==7)
+// scales.forEach(scale=>{
+//     let modes = []
+//     for (let i = 0; i < scale.pitches.length; i++) {
+//         modes.push(scale.mode(i))
+//     }
+//     modes=modes.filter((mode)=>{
+//         let roles = mode.get.scale_degree_roles()
+//         // console.log(mode.pitches,edo.is.element_of([1,2,3,4,5,6,7],roles))
+//         return edo.is.element_of([1,2,3,4,5,6,7],roles)
+//     }).map(m=>{
+//         return {
+//             pitches:m.pitches,
+//             alterations: m.get.set_difference().alterations
+//         }
+//     })
+//
+//
+//
+//     // let alterations = modes.map(mode=>mode.get.set_difference()).sort((a,b)=>a.alterations-b.alterations)[0]
+//     // if(alterations) console.log(alterations.alterations)
+//     // else console.log(6)
+//     // console.log("SET:",JSON.stringify(scale.pitches))
+//     let total_alterations = (7-modes.length)*6
+//     modes.forEach(mode=>total_alterations+=mode.alterations)
+//     // console.log(scale.get.coherence_quotient())
+//     console.log(scale.get.coherence_quotient())
+// })
+
+
+// let scales = edo.get.scales().filter(scale=>scale.count.pitches()==5)
+// scales.forEach(scale=>{
+//     let modes = []
+//     for (let i = 0; i < scale.pitches.length; i++) {
+//         modes.push(scale.mode(i))
+//     }
+//     modes=modes.filter((mode)=>{
+//         let roles = mode.get.scale_degree_roles()
+//         roles = roles.map(r=>{
+//             r = r.map(set=>{
+//                 let temp_set = new Set()
+//                 r.forEach(el=>temp_set.add(el))
+//                 return Array.from(temp_set)
+//             })
+//             r = r.filter(con=>con.length==5)
+//             r=r.filter(con=>con.indexOf(5)!=-1)
+//             return r
+//         })
+//         roles = roles.filter(arr=>arr.length>0)
+//         return roles.length>0
+//     })
+//
+//     console.log("SET:",JSON.stringify(scale.pitches),"mappable modes:",modes.length)
+// })
+
+
+
+let scales_all=edo.get.scales()
+let scales7=scales_all.filter(scale=>scale.count.pitches()==7)
+    // .sort((a,b)=>b.get.coherence_quotient()-a.get.coherence_quotient())
+let scales5=scales_all.filter(scale=>scale.count.pitches()==5)
+//
+// scales5.map(scale=>{
+//     let parent
+//     loop1:
+//     for (let i = 0; i < scales7.length; i++) {
+//         loop2:
+//         for (let j = 0; j < scales7[i].count.pitches(); j++) {
+//             if(edo.is.subset(scale.pitches,scales7[i].mode(j).pitches)) {
+//                 parent = scales7[i]
+//                 break loop1
+//             }
+//         }
+//
+//     }
+//     scale.closest = parent
+//     console.log(JSON.stringify(parent.get.coherence_quotient()))
+//     return scale
+// })
+
+
+const stability_vector = function (pitches) {
+    let ratios = pitches.map(p=>edo.convert.interval_to_ratio(p))
+    let vector = pitches.map(p=>0)
+    vector[0]='*'
+    let closest_P5=0
+    let P5_tol = 10
+    let P5 = 3/2
+
+    let closest_M3=0
+    let M3_tol = 15
+    let M3 = 5/4
+
+    let closest_m3=0
+    let m3_tol = 20
+    let m3 = 6/5
+
+
+    ratios.forEach(r=>{
+        let diff = Math.abs(P5-r)
+        if(diff<Math.abs(P5-closest_P5)) {
+            closest_P5= r
+        }
+
+        diff = Math.abs(M3-r)
+        if(diff<Math.abs(M3-closest_M3)) {
+            closest_M3= r
+        }
+    })
+    if(Math.abs(edo.convert.ratio_to_cents(P5) - edo.convert.ratio_to_cents(closest_P5))>P5_tol) {}
+    else {
+        let ind = ratios.indexOf(closest_P5)
+        vector[ind]="*"
+    }
+
+
+
+    if(Math.abs(edo.convert.ratio_to_cents(M3) - edo.convert.ratio_to_cents(closest_M3))>M3_tol){
+        ratios.forEach(r=>{
+            diff = Math.abs(m3-r)
+            if(diff<Math.abs(m3-closest_m3)) {
+                closest_m3= r
+            }
+        })
+        if(Math.abs(edo.convert.ratio_to_cents(m3) - edo.convert.ratio_to_cents(closest_m3))>m3_tol) {
+
+        }
+        else {
+            let ind = ratios.indexOf(closest_m3)
+            vector[ind]="*"
+        }
+
+
+    } else {
+        let ind = ratios.indexOf(closest_M3)
+        vector[ind]="*"
+    }
+    for (let i = 0; i < vector.length; i++) {
+        if(vector[i]=="*") continue
+        else if(vector[i-1]=="*" && vector[(i+1)%vector.length]=="*") vector[i]="<>"
+        else if(vector[i-1]=="*" && vector[(i+1)%vector.length]!="*") vector[i]="<<"
+        else if(vector[i-1]!="*" && vector[(i+1)%vector.length]=="*") vector[i]=">>"
+        else vector[i]="!"
+    }
+    return vector
+}
+scales7.forEach(scale=>{
+    // let vec = stability_vector(scale.pitches)
+    // console.log(JSON.stringify(scale.pitches),JSON.stringify(vec),"Mappable:", vec.indexOf("!")==-1)
+
+})
+
+let diatonic = edo.scale([0,2,4,5,7,9,11])
+// console.log(diatonic.mode(0).get.per_note_set_difference())
+
+
+scales7.forEach(scale=>{
+//     // let unique = 0
+//     // for (let i = 0; i < scale.count.pitches(); i++) {
+//     //     unique += scale.mode(i).count.unique_elements([0,2,4,5,7,9,11])
+//     // }
+//     // console.log(unique)
+//
+//     // let mappable = 0
+//     // for (let i = 0; i < scale.count.pitches(); i++) {
+//     //     let mode = scale.mode(i)
+//     //     let roles = mode.get.scale_degree_roles()
+//     //     if(edo.is.element_of([1,2,3,4,5,6,7],roles)) mappable++
+//     //     console.log()
+//     // }
+//     // console.log(mappable)
+//
+//     // let ambigious = 0
+//     // for (let i = 0; i < scale.count.pitches(); i++) {
+//     //     let mode = scale.mode(i)
+//     //     let vector = stability_vector( mode.pitches)
+//     //     if(vector.indexOf('!')!=-1) ambigious++
+//     //
+//     // }
+//     // console.log(ambigious)
+//
+//     console.log(scale.get.coherence_quotient())
+//
+//
+
+    let modes = scale.pitches.map((s,i)=>scale.mode(i))
+    let deltas = modes.map(m=>m.get.per_note_set_difference().reduce((ag,el)=>(el!=0)?ag+1:ag,0))
+    let smallest_delta = Math.min(...deltas)
+    console.log(smallest_delta)
+})
 
 
 

@@ -4813,6 +4813,77 @@ class Scale {
             return area
         },
 
+        /** Returns the difference between the current scale and a given set.
+         * @param  {Array<Number>} [set = [0,2,4,5,7,9,11]] - The set the current scale is compared to
+         * @param  {Boolean} [consider_all_modes=false] - Indicates whether the algorithm should consider every possible mode of the current scale to assess which is closest to the comparison set, or whether it should only consider the current set in its current mode.
+         * @param  {Number} [valid_diviations_max = 1] - The maximal amount each constituent can be "altered" to still be considered a "valid" alteration of the comparison set.
+         *
+         * @returns {Object}
+         * @memberOf Scale#get
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,5,7,8,10]) //
+         * scale.get.set_difference() //returns
+         * {
+         *  valid: true, //Whether it's a valid alteration of the comparison set or not
+         *  alterations: 2, //The amount of pitches that were altered between the sets
+         *  delta: [0, 0, 0, 0, 0, -1, -1], //The alteration vector
+         *  mode: [0, 2, 4, 5, 7, 8, 10] // The mode of the scale that was used
+         * }
+         */
+        set_difference: (set = [0,2,4,5,7,9,11],consider_all_modes=false,valid_diviations_max=1) =>{
+
+            let modes = (consider_all_modes)?this.count.pitches():1
+            let deltas = []
+            let valids =[]
+            let alterations=[]
+            let mode = []
+
+            for (let i = 0; i < modes; i++) {
+                let p = this.mode(i).pitches
+                let delta = []
+                for (let i = 0; i < p.length; i++) {
+                    delta.push(p[i]-set[i])
+                }
+                let valid = delta.map(el=>Math.abs(el)<=valid_diviations_max).reduce((ag,el)=>(ag && el),true)
+                let alteration = delta.reduce((ag,el)=>(el!=0)?ag+1:ag,0)
+                deltas.push(delta)
+                valids.push(valid)
+                mode.push(i)
+                alterations.push(alteration)
+            }
+
+            for (let i = valids.length-1; i >=0 ; i--) {
+                if(!valids[i]) {
+                    valids.splice(i,1)
+                    deltas.splice(i,1)
+                    alterations.splice(i,1)
+                    mode.splice(i,1)
+                }
+            }
+            let min_alter = Math.min(...alterations)
+            let min_ind = alterations.indexOf(min_alter)
+            return {valid:valids[min_ind]||false,alterations:alterations[min_ind],delta:deltas[min_ind],mode:valids[min_ind]?this.mode(mode[min_ind]).pitches:undefined}
+        },
+
+        /** Returns a vector indicating the delta between two different sets of the same cardinality.
+         * @param  {Array<Number>} [set = [0,2,4,5,7,9,11]] - The set the current scale is compared to
+         *
+         * @returns {Object}
+         * @memberOf Scale#get
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,5,7,8,10])
+         * scale.get.per_note_set_difference() //returns [0, 0, 0, 0, 0, -1, -1]
+         */
+        per_note_set_difference: (set = [0,2,4,5,7,9,11]) => {
+            let pitches = this.pitches
+            let delta = pitches.map((p,i)=>pitches[i]-p)
+            return delta
+        },
+
+
+
         /** Returns the [x,y] coordinates of the nodes of the scale.
          * @param  {Array<Number>} [circle_center=[0,0]] - The center of the circle
          * @param  {Number} [r=0.56418958354776] - The radius of the circle. By default the radius is of a circle with area=1
@@ -5153,7 +5224,7 @@ class Scale {
          * @example
          * let edo = new EDO(12) //define tuning
          * let scale = edo.scale([0,2,4,7,9]) //a major pentatonic scale
-         * scale.get.levenshtein([0,2,4,5,7,9,11] //returns 1
+         * scale.get.levenshtein([0,2,4,5,7,9,11] //returns 2
          *
          * @example
          * scale.get.levenshtein([0,2,4,5,7,9,11],true) //returns 0.9230769230769231
@@ -5350,6 +5421,67 @@ class Scale {
 
 
         },
+
+        /** <p>Returns all of the sets whose constituents are at most <code>size</code> away from the original constituent, where no more than <code>alterations</code> constituents were altered.</p>
+         * @param  {Number} [size=1] - Maximal alteration size (e.g. if 2, 3 can be altered into 2, 1, 4, or 5)
+         * @param  {Number} [alterations=1] - Maximal number of constituents that can be altered.
+         * @param  {Boolean} [normalize=true] - When true, the function will return the sets in normal order.
+         * @param  {Boolean} [maintain_cardinality=true] - When true, the function will only return sets that have the same number of pitches as the original set.
+         * @returns {Array<Number>} An array containing all neighboring sets
+         * @memberOf Scale#get
+         *
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,4,7])
+         * scale.get.neighborhood() //returns
+         * [
+         *  [ 0, 3, 6 ],
+         *  [ 0, 3, 7 ],
+         *  [ 0, 2, 7 ],
+         *  [ 0, 4, 8 ],
+         *  [ 0, 4, 6 ]
+         * ]
+         */
+        neighborhood: (size=1,alterations=1,normalize=true,maintain_cardinality=true) =>{
+            let card = this.count.pitches()
+            let parent = this.parent
+            let pitches = this.pitches
+            let sizes = Array.from(Array(size).keys()).map(el=>[el+1,-(el+1)]).flat()
+            let alter = Array.from(Array(alterations), () => Array.from(Array(card)).map(arr=>0))
+            alter = alter.map((arr,ind)=>{
+                let con = Array.from(Array(ind+1).fill(1))
+                arr = con.concat(arr).slice(0,card)
+                arr = this.parent.get.unique_elements(this.parent.get.permutations(arr))
+                return arr
+            }).flat()
+
+            const helper = function(arr,index,sizes) {
+                let narr=[]
+                for (let i = 0; i < sizes.length; i++) {
+                    let temp = Array.from(arr)
+
+                    temp[index] = parent.mod(temp[index]+sizes[i],parent.edo)
+                    narr.push(temp)
+                }
+                return narr
+            }
+            alter = alter.map(a=>{
+                let new_arrays = [Array.from(pitches)]
+                let indices = a.reduce((a, e, i) => (e === 1) ? a.concat(i) : a, [])
+                for (let i = 0; i < indices.length; i++) {
+                    new_arrays = new_arrays.map(arr=>{
+                        let h = helper(arr,indices[i],sizes)
+                        return h
+                    }).flat()
+                }
+                return new_arrays
+            }).flat()
+            if(normalize) alter =alter.map(arr=>parent.get.normal_order(arr))
+            if(maintain_cardinality) alter =alter.filter(arr=>arr.length==card)
+            alter = parent.get.unique_elements(alter)
+            return alter
+        },
+
 
         /** <p>Returns the scale's pitches in normal order</p>
 
@@ -5982,10 +6114,10 @@ class Scale {
                     3:[2,3],
                     4:[3],
                     5:[4],
-                    6:[4,5],
+                    6:[4],
                     7:[5],
-                    8:[5,6],
-                    9:[6,7],
+                    8:[6],
+                    9:[6],
                     10:[6,7],
                     11:[7]
                 }

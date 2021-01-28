@@ -772,7 +772,9 @@ class EDO {
             }
             counts.sort((a, b) => b[1] - a[1])
             return counts
-        }
+        },
+
+
 
     }
 
@@ -3917,7 +3919,7 @@ class EDO {
             args.outer_strings = (args.outer_strings == undefined) ? true : args.outer_strings
             args.PC_at_midnight = args.PC_at_midnight || 0
             args.string_width = args.string_width || 1
-            args.node_color = args.node_color || "blue"
+            args.node_color = args.node_color || "black"
             args.node_radius = args.node_radius || (args.paper.height * Math.PI / (this.edo * 4)) / 2 - 5
             const parent = this
 
@@ -3954,7 +3956,7 @@ class EDO {
                     }
                 }
 
-                draw_ring(color = 'red', stroke_width = 3) {
+                draw_ring(color = 'white', stroke_width = 3) {
                     let paper = this.paper
                     //if already exists, remove the old one
                     if (this.ring) {
@@ -4049,7 +4051,7 @@ class EDO {
                     this.drawing = paper.set()
 
                     this.circle = paper.circle(this.cx, this.cy, this.radius)
-                        .attr('stroke', 'red')
+                        .attr('stroke', 'white')
                         .attr('fill', this.necklace.node_color)
                     this.drawing.push(this.circle)
                     this.text = paper.text(this.cx, this.cy, this.name)
@@ -4750,7 +4752,30 @@ class Scale {
          * scale.count.trichords() //returns 15*/
         trichords: () => {
             return this.get.trichords().length
+        },
+
+        /**
+         * <p>Returns the number of elements in the scale that are not in the provided arr.</p>
+         * @param  {Array<Number>} arr - a collection of pitch classes
+         * @return {Array<Number>}
+         * @function
+         * @memberOf Scale#count
+         *
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //major
+         * scale.count.unique_elements([2]) //6*/
+        unique_elements: (arr) => {
+
+            let p = this.pitches
+            let unique=p.length
+            p.forEach(n=>{
+                if(arr.indexOf(n)!=-1) unique--
+            })
+            return unique
         }
+
+
 
     }
 
@@ -4811,6 +4836,78 @@ class Scale {
             }
             let area = Math.abs((part_a-part_b)/2)
             return area
+        },
+
+        /** Returns the difference between the current scale and a given set.
+         * @param  {Array<Number>} [set = [0,2,4,5,7,9,11]] - The set the current scale is compared to
+         * @param  {Boolean} [consider_all_modes=false] - Indicates whether the algorithm should consider every possible mode of the current scale to assess which is closest to the comparison set, or whether it should only consider the current set in its current mode.
+         * @param  {Number} [valid_diviations_max = 1] - The maximal amount each constituent can be "altered" to still be considered a "valid" alteration of the comparison set.
+         *
+         * @returns {Object}
+         * @memberOf Scale#get
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,5,7,8,10]) //
+         * scale.get.set_difference() //returns
+         * {
+         *  valid: true, //Whether it's a valid alteration of the comparison set or not
+         *  alterations: 2, //The amount of pitches that were altered between the sets
+         *  delta: [0, 0, 0, 0, 0, -1, -1], //The alteration vector
+         *  mode: [0, 2, 4, 5, 7, 8, 10] // The mode of the scale that was used
+         * }
+         */
+        set_difference: (set = [0,2,4,5,7,9,11],consider_all_modes=false,valid_diviations_max=1) =>{
+
+            let modes = (consider_all_modes)?this.count.pitches():1
+            let deltas = []
+            let valids =[]
+            let alterations=[]
+            let mode = []
+
+            for (let i = 0; i < modes; i++) {
+                let p = this.mode(i).pitches
+                let delta = []
+                for (let i = 0; i < p.length; i++) {
+                    delta.push(p[i]-set[i])
+                }
+                let valid = delta.map(el=>Math.abs(el)<=valid_diviations_max).reduce((ag,el)=>(ag && el),true)
+                let alteration = delta.reduce((ag,el)=>(el!=0)?ag+1:ag,0)
+                deltas.push(delta)
+                valids.push(valid)
+                mode.push(i)
+                alterations.push(alteration)
+            }
+
+            for (let i = valids.length-1; i >=0 ; i--) {
+                if(!valids[i]) {
+                    valids.splice(i,1)
+                    deltas.splice(i,1)
+                    alterations.splice(i,1)
+                    mode.splice(i,1)
+                }
+            }
+            let min_alter = Math.min(...alterations)
+            let min_ind = alterations.indexOf(min_alter)
+            return {valid:valids[min_ind]||false,alterations:alterations[min_ind],delta:deltas[min_ind],mode:valids[min_ind]?this.mode(mode[min_ind]).pitches:undefined}
+        },
+
+        /** Returns a vector indicating the delta between two different sets of the same cardinality.
+         * @param  {Array<Number>} [set = [0,2,4,5,7,9,11]] - The set the current scale is compared to
+         *
+         * @returns {Object}
+         * @memberOf Scale#get
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,5,7,8,10])
+         * scale.get.per_note_set_difference() //returns [0, 0, 0, 0, 0, -1, -1]
+         */
+        per_note_set_difference: (set = [0,2,4,5,7,9,11]) => {
+            let pitches = this.pitches
+
+            let delta = pitches.map((p,i)=>{
+                return set[i]-p
+            })
+            return delta
         },
 
         /** Returns the [x,y] coordinates of the nodes of the scale.
@@ -6043,10 +6140,10 @@ class Scale {
                     3:[2,3],
                     4:[3],
                     5:[4],
-                    6:[4,5],
+                    6:[4],
                     7:[5],
-                    8:[5,6],
-                    9:[6,7],
+                    8:[6],
+                    9:[6],
                     10:[6,7],
                     11:[7]
                 }
