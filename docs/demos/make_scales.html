@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!--    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">-->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+    <script src="scripts/raphael.min.js"></script>
+    <script src="scripts/edo.js"></script>
+    <script src="scripts/Pizzicato.min.js"></script>
+
+<style>
+    body{
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+</style>
+
+
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body style="background-color: black;color: white;font-size: 20px">
+<div id="instructions">
+    <span style="color: red">Red</span> nodes are fixed in place.<br>
+    <span style="color: green">Green</span> nodes are movable.<br>
+    To add a <span style="color: green">green</span> node double-click anywhere on the white ring.<br>
+    To move a <span style="color: green">green</span> node simply drag it to the desired location.<br>
+    To play a node's sound simply click on it and hold the mouse button for the desired duration.<br>
+
+
+
+</div>
+<div id="main" style="margin: auto;width: 800px;"></div>
+</body>
+
+<script>
+    let edo = new EDO()
+    let svg = edo.make_DOM_svg("main",800,800,true)
+    let paper = svg.paper
+    let center = [400,400]
+    let width = 800
+    let height = 800
+
+    const angle_to_radians = function (angle) {
+        return angle*Math.PI/180
+    }
+    const radians_to_angle = function (rad) {
+        return rad*180/Math.PI
+    }
+    const point_from_angle = function (angle,radius) {
+        let rad = angle_to_radians(angle)
+        let x = radius*Math.sin(rad)
+        let y = radius*Math.cos(rad)
+        return [x,y]
+    }
+
+    const make_ring = function (fixed_nodes=[],total_nodes = 7) {
+
+
+        let radius = (width/2)-100
+        let obj = paper.ellipse(center[0],center[1],radius,radius)
+            .attr('stroke','white').attr('stroke-width',15)
+        obj.radius =  radius
+        obj.cx =  obj.getBBox().cx
+        obj.cy =  obj.getBBox().cy
+        obj.nodes = []
+        obj.base_freq = 44
+        fixed_nodes.forEach(node=>{
+            let coords = point_from_angle(-(node+180),radius)
+
+            obj.nodes.push(new Node(obj,coords[0]+obj.cx,coords[1]+obj.cy,false))
+        })
+
+        obj.nodes_left = 7-fixed_nodes.length
+        nodes_left_text.attr("text","Please add " + obj.nodes_left + " more nodes by double-clicking on the ring.")
+        return obj
+    }
+
+    class Node {
+        constructor(parent,cx,cy,movable=true,fill) {
+            let this_node = this
+
+            function onDragStart(){
+                this.ox = this.attr('cx');
+                this.oy = this.attr('cy');
+            }
+
+            function onDragMove(dx,dy){
+                let vX = (this.ox+dx) - parent.cx;
+                let vY = (this.oy+dy) - parent.cy;
+                let magV = Math.sqrt(vX*vX + vY*vY);
+                let aX = parent.cx + vX / magV * parent.radius;
+                let aY = parent.cy + vY / magV * parent.radius;
+                this.attr({cx: aX, cy: aY });
+                this_node.angle = (radians_to_angle(Math.atan2(aX - parent.cy, aY - parent.cx))+90)%360
+                this_node.angle = ((-(this_node.angle+90))+360)%360
+                console.log(this_node.sound)
+                // this_node.sound.frequency = parent.base_freq*Math.pow(2,this_node.angle/360)
+                for (let i = 0; i < this_node.sound.sounds.length; i++) {
+                    let base = parent.base_freq * Math.pow(2,i)
+                    this_node.sound.sounds[i].frequency = base*Math.pow(2,this_node.angle/360)
+
+                }
+            }
+
+            function onDragComplete(){
+            };
+
+            this.parent = parent
+            this.cx = cx
+            this.cy = cy
+            this.radius = 15
+
+            this.angle = (radians_to_angle(Math.atan2(cy - parent.cy, cx - parent.cx))+90)%360
+            if(this.angle<0)this.angle = (this.angle+360)%360
+            if(fill) this.fill=fill
+            else {
+                if(movable) this.fill="green"
+                else this.fill="red"
+            }
+            this.body = paper.ellipse(this.cx,this.cy,this.radius,this.radius)
+            .attr("fill",this.fill)
+
+            if(movable) {
+                this.body.drag(onDragMove,onDragStart,onDragComplete)
+            }
+
+            // this.sound = new Pizzicato.Sound({
+            //     source: 'wave',
+            //     options: {
+            //         frequency: parent.base_freq*Math.pow(2,this.angle/360),
+            //         release:0.9,
+            //         volume:0.5
+            //
+            //     }
+            // });
+
+            this.sound = new Pizzicato.Group();
+            for (let i = 0; i < 10; i++) {
+                let base = parent.base_freq * Math.pow(2,i)
+                if(base>20000) break
+                let sound = new Pizzicato.Sound({
+                    source: 'wave',
+                    options: {
+                        frequency: base*Math.pow(2,this.angle/360),
+                        release:1.5,
+                        volume:0.05
+
+                    }
+                });
+                this.sound.addSound(sound)
+            }
+
+            this.body.mousedown(function () {
+                this_node.sound.play();
+            })
+
+            this.body.mouseup(function () {
+                this_node.sound.stop();
+            })
+
+        }
+
+
+    }
+
+    let nodes_left_text = paper.text(400,50,"")
+        .attr('fill','white').attr('font-size','30')
+
+    let ring = make_ring([90,270])
+
+    ring.dblclick(function(e) {
+        if(ring.nodes_left==0) return
+        console.log(e)
+        let vX = e.offsetX - ring.cx;
+        let vY = (e.offsetY) - ring.cy;
+        let magV = Math.sqrt(vX*vX + vY*vY);
+        let aX = ring.cx + vX / magV * ring.radius;
+        let aY = ring.cy + vY / magV * ring.radius;
+        let node = new Node(ring,aX,aY,true)
+        ring.nodes.push(node)
+        ring.nodes_left--
+        if(ring.nodes_left==0) nodes_left_text.attr("text","")
+        else nodes_left_text.attr("text","Please add " + ring.nodes_left + " more nodes by double-clicking on the ring.")
+        });
+
+    const all_sound_off = function () {
+        ring.nodes.forEach(node=>node.sound.stop())
+    }
+    $("body").mouseup(all_sound_off)
+
+
+
+
+</script>
+</html>
+
+

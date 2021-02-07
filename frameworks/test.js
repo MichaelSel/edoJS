@@ -454,40 +454,77 @@ let diatonic = edo.scale([0,2,4,5,7,9,11])
 // console.log(diatonic.mode(0).get.per_note_set_difference())
 
 
-scales7.forEach(scale=>{
+scales7.forEach(scale=> {
 //     // let unique = 0
 //     // for (let i = 0; i < scale.count.pitches(); i++) {
 //     //     unique += scale.mode(i).count.unique_elements([0,2,4,5,7,9,11])
 //     // }
 //     // console.log(unique)
 //
-//     // let mappable = 0
-//     // for (let i = 0; i < scale.count.pitches(); i++) {
-//     //     let mode = scale.mode(i)
-//     //     let roles = mode.get.scale_degree_roles()
-//     //     if(edo.is.element_of([1,2,3,4,5,6,7],roles)) mappable++
-//     //     console.log()
-//     // }
-//     // console.log(mappable)
+//     let mappable = 0
+//     for (let i = 0; i < scale.count.pitches(); i++) {
+//         let mode = scale.mode(i)
+//         let roles = mode.get.scale_degree_roles()
+//         if(edo.is.element_of([1,2,3,4,5,6,7],roles)) mappable++
+//     }
+//     console.log(mappable)
 //
-//     // let ambigious = 0
-//     // for (let i = 0; i < scale.count.pitches(); i++) {
-//     //     let mode = scale.mode(i)
-//     //     let vector = stability_vector( mode.pitches)
-//     //     if(vector.indexOf('!')!=-1) ambigious++
-//     //
-//     // }
-//     // console.log(ambigious)
+//     let ambigious = 0
+//     for (let i = 0; i < scale.count.pitches(); i++) {
+//         let mode = scale.mode(i)
+//         let vector = stability_vector( mode.pitches)
+//         if(vector.indexOf('!')!=-1) ambigious++
+//
+//     }
+//     console.log(ambigious)
 //
 //     console.log(scale.get.coherence_quotient())
 //
 //
 
-    let modes = scale.pitches.map((s,i)=>scale.mode(i))
-    let deltas = modes.map(m=>m.get.per_note_set_difference().reduce((ag,el)=>(el!=0)?ag+1:ag,0))
-    let smallest_delta = Math.min(...deltas)
-    console.log(smallest_delta)
+    // let modes = scale.pitches.map((s,i)=>scale.mode(i))
+    // let deltas = modes.map(m=>m.get.per_note_set_difference().reduce((ag,el)=>(el!=0)?ag+1:ag,0))
+    // let smallest_delta = Math.min(...deltas)
+    // console.log(smallest_delta)
+
 })
+
+let scales7p = scales7.filter(scale=>scale.is.prime_form())
+scales7p.forEach(scale=>{
+    // console.log(JSON.stringify(scale.pitches).replace(/,/g," "))
+    // console.log(JSON.stringify(scale.get.coherence_quotient()))
+
+    // let modes = scale.pitches.map((s,i)=>scale.mode(i))
+    // let deltas = modes.map(m=>m.get.per_note_set_difference().reduce((ag,el)=>(el!=0)?ag+1:ag,0))
+    // let smallest_delta = Math.min(...deltas)
+    // console.log(smallest_delta)
+
+    // let ambigious = 0
+    // for (let i = 0; i < scale.count.pitches(); i++) {
+    //     let mode = scale.mode(i)
+    //     let vector = stability_vector( mode.pitches)
+    //     if(vector.indexOf('!')!=-1) ambigious++
+    //
+    // }
+    // console.log(ambigious)
+
+    // let mappable = 0
+    // for (let i = 0; i < scale.count.pitches(); i++) {
+    //     let mode = scale.mode(i)
+    //     let roles = mode.get.scale_degree_roles()
+    //     if(edo.is.element_of([1,2,3,4,5,6,7],roles)) mappable++
+    // }
+    // console.log(mappable)
+
+    // console.log(scale.count.interval(7))
+
+
+
+
+})
+
+
+
 
 
 

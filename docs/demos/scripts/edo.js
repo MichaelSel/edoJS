@@ -4037,6 +4037,7 @@ class EDO {
                     this.cx = cx
                     this.cy = cy
                     this.name = name
+                    this.stroke_width = 3
 
                 }
 
@@ -4052,6 +4053,7 @@ class EDO {
 
                     this.circle = paper.circle(this.cx, this.cy, this.radius)
                         .attr('stroke', 'white')
+                        .attr('stroke-width', this.stroke_width)
                         .attr('fill', this.necklace.node_color)
                     this.drawing.push(this.circle)
                     this.text = paper.text(this.cx, this.cy, this.name)
