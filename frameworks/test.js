@@ -518,7 +518,7 @@ scales7p.forEach(scale=>{
 
     // console.log(scale.count.interval(7))
 
-
+    // console.log(JSON.stringify(scale.get.sameness_quotient()))
 
 
 })
@@ -526,7 +526,84 @@ scales7p.forEach(scale=>{
 
 
 
+// let arr = []
+//
+//
+// scales7.forEach(scale=>{
+//     let coords = scale.pitches.map(p=>((360/12)*p)*(Math.PI/180))
+//     let json = {
+//         set: scale.pitches.join(" ")
+//     }
+//     for (let i = 0; i < coords.length; i++) {
+//         json["rad"+String(i)] = coords[i]
+//     }
+//     arr.push(json)
+//     console.log(JSON.stringify(json))
+// })
 
 
 
 
+// const fs = require('fs');
+// const csv = require('csv-parser');
+//
+// const make_csv = function (array) {
+//     console.log(Object.keys(array[0]))
+//     const createCsvWriter = require('csv-writer').createObjectCsvWriter;
+//     const csvWriter = createCsvWriter({
+//         path: "./radians7.csv",
+//         header: Object.keys(array[0]).map(h=>{return {id:h, title:h}})
+//     });
+//
+//
+//
+//
+//
+//     csvWriter
+//         .writeRecords(array)
+//         .then(()=> console.log("CSV file was successfully created."));
+// }
+//
+// make_csv(arr)
+
+
+// let transpositions = []
+// let scale = edo.scale([0,2,4,5,7,9,11])
+// for (let i = 0; i < scale.edo; i++) {
+//     transpositions.push(scale.get.transposition(i))
+// }
+//
+// const possible_scales = function (pitches=[]) {
+//     return transpositions.filter(t=>edo.is.subset(pitches,t)).length
+// }
+//
+// let collection = [0,2,4]
+// console.log("This collection appears in", possible_scales(collection), "diatonic scales")
+
+const create_melodies = function (fragment_length=3,repeat_fragment = 4,max_traverse = 3,min_ginterval=-2,max_ginterval=2,scale,starting_pitch=0) {
+    const rand_in_range = function (min=-2,max=2) {
+        return Math.floor(Math.random() * (max - min +1)) + min
+    }
+
+    let interval_fragment = []
+    for (let i = 0; i < fragment_length; i++) {
+        interval_fragment.push(rand_in_range())
+    }
+    let interval_fragment_traverse = interval_fragment.reduce((ag,e)=>ag+e,0)
+    if(Math.abs(interval_fragment_traverse)>max_traverse) return create_melodies(fragment_length,repeat_fragment,max_traverse,min_ginterval,max_ginterval,scale,starting_pitch)
+
+    let fragment_as_pitches = scale.get.melody_from_intervals(interval_fragment)
+    let fragment_as_semitones = edo.convert.to_steps(fragment_as_pitches)
+
+    let generic_repeat = Array.from(Array(repeat_fragment).fill(interval_fragment).flat())
+    let specific_repeat = Array.from(Array(repeat_fragment).fill(fragment_as_semitones).flat())
+
+    let diatonic_melody = scale.get.melody_from_intervals(generic_repeat,1,starting_pitch)
+    let chromatic_melody = edo.convert.intervals_to_pitches(specific_repeat,starting_pitch)
+    return {diatonic: diatonic_melody,chromatic:chromatic_melody}
+
+}
+let scale = edo.scale([0,2,4,5,7,9,11])
+
+
+console.log(JSON.stringify(create_melodies(3,4,3,-2,2,scale,0)))

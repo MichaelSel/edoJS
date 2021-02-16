@@ -68,7 +68,7 @@
         obj.cx =  obj.getBBox().cx
         obj.cy =  obj.getBBox().cy
         obj.nodes = []
-        obj.base_freq = 44
+        obj.base_freq = 22
         fixed_nodes.forEach(node=>{
             let coords = point_from_angle(-(node+180),radius)
 
@@ -154,6 +154,11 @@
                 });
                 this.sound.addSound(sound)
             }
+            let lowPassFilter = new Pizzicato.Effects.LowPassFilter({
+                frequency: 2450,
+                peak: 10
+            });
+            this.sound.addEffect(lowPassFilter)
 
             this.body.mousedown(function () {
                 this_node.sound.play();

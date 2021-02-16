@@ -5018,6 +5018,36 @@ class Scale {
             })
         },
 
+        /** <p>Returns a melody by providing a list of generic intervals to traverse within the scale.</p>
+         * @param {Array<Number>} intervals - A list of generic intervals (how many scale degrees away from current)
+         * @param {Number} [starting_scale_degree=1] - The first note of the melody
+         * @param {Number} [starting_pitch=0] - The first pitch of the melody
+         * @returns {Array<Number>} - The a diatonic melody
+         * @memberOf Scale#get
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //major
+         * scale.get.melody_from_intervals([7,-1,-2,1,1,1,-7,5,-1,-6,5,-1]) //Over the rainbow
+         * //returns [0, 12, 11, 7,  9, 11, 12,  0,  9, 7, -3,  5, 4]
+         */
+        melody_from_intervals: (intervals,starting_scale_degree=1,starting_pitch=0) => {
+            let scale_degrees = [starting_scale_degree]
+            intervals.forEach(interval=> {
+                let last_scale_degree = scale_degrees[scale_degrees.length-1]
+                scale_degrees.push(last_scale_degree+interval)
+            })
+            let melody = scale_degrees.map(s=>{
+                let pc = this.get.pitches()[this.parent.mod(s-1,this.count.pitches())]
+                let octave = Math.floor((s-1)/this.count.pitches())
+                return pc + (octave*this.edo)
+            })
+
+            melody = melody.map(p=>p+(starting_pitch-melody[0]))
+
+
+            return melody
+        },
+
         /** <p>Given a generic interval ("scale degrees apart") returns all of the specific intervals.</p>
          * @param {Number} generic_interval_size- The generic interval
          * @returns {Array<Object>}
