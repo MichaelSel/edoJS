@@ -1,8 +1,8 @@
-// function getRandomInt(min, max) {
-//     min = Math.ceil(min);
-//     max = Math.floor(max);
-//     return Math.floor(Math.random() * (max - min + 1)) + min;
-// }
+function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 const EDO = require("../edo").EDO
 const Time = require("../edo").Time
 // // let edo = new EDO(12)
@@ -284,7 +284,6 @@ const Time = require("../edo").Time
 //
 
 
-edo = new EDO(12)
 // let scales = edo.get.scales(1,12,1,7,5).filter(scale=>scale.count.pitches()==5)
 // scales.forEach(scale=>{
 //     console.log(JSON.stringify(scale.pitches))
@@ -354,7 +353,7 @@ edo = new EDO(12)
 // })
 
 
-
+let edo = new EDO()
 let scales_all=edo.get.scales()
 let scales7=scales_all.filter(scale=>scale.count.pitches()==7)
     // .sort((a,b)=>b.get.coherence_quotient()-a.get.coherence_quotient())
@@ -580,30 +579,127 @@ scales7p.forEach(scale=>{
 // let collection = [0,2,4]
 // console.log("This collection appears in", possible_scales(collection), "diatonic scales")
 
-const create_melodies = function (fragment_length=3,repeat_fragment = 4,max_traverse = 3,min_ginterval=-2,max_ginterval=2,scale,starting_pitch=0) {
-    const rand_in_range = function (min=-2,max=2) {
-        return Math.floor(Math.random() * (max - min +1)) + min
-    }
+// const create_melodies = function (fragment_length=3,repeat_fragment = 4,max_traverse = 3,min_ginterval=-2,max_ginterval=2,scale,starting_pitch=0) {
+//     const rand_in_range = function (min=-2,max=2) {
+//         return Math.floor(Math.random() * (max - min +1)) + min
+//     }
+//
+//     let interval_fragment = []
+//     for (let i = 0; i < fragment_length; i++) {
+//         interval_fragment.push(rand_in_range())
+//     }
+//     let interval_fragment_traverse = interval_fragment.reduce((ag,e)=>ag+e,0)
+//     if(Math.abs(interval_fragment_traverse)>max_traverse) return create_melodies(fragment_length,repeat_fragment,max_traverse,min_ginterval,max_ginterval,scale,starting_pitch)
+//
+//     let fragment_as_pitches = scale.get.melody_from_intervals(interval_fragment)
+//     let fragment_as_semitones = edo.convert.to_steps(fragment_as_pitches)
+//
+//     let generic_repeat = Array.from(Array(repeat_fragment).fill(interval_fragment).flat())
+//     let specific_repeat = Array.from(Array(repeat_fragment).fill(fragment_as_semitones).flat())
+//
+//     let diatonic_melody = scale.get.melody_from_intervals(generic_repeat,1,starting_pitch)
+//     let chromatic_melody = edo.convert.intervals_to_pitches(specific_repeat,starting_pitch)
+//     return {diatonic: diatonic_melody,chromatic:chromatic_melody}
+//
+// }
+// let scale = edo.scale([0,2,4,5,7,9,11])
+//
+//
+// console.log(JSON.stringify(create_melodies(3,4,3,-2,2,scale,0)))
 
-    let interval_fragment = []
-    for (let i = 0; i < fragment_length; i++) {
-        interval_fragment.push(rand_in_range())
-    }
-    let interval_fragment_traverse = interval_fragment.reduce((ag,e)=>ag+e,0)
-    if(Math.abs(interval_fragment_traverse)>max_traverse) return create_melodies(fragment_length,repeat_fragment,max_traverse,min_ginterval,max_ginterval,scale,starting_pitch)
+// for (let i = 0; i < 30; i++) {
+//     let melody = []
+//     while(edo.get.unique_elements(melody).length<11) {
+//         melody = edo.get.random_melody(12,[0,11],4,[0,1,2,3,4,5,6,7,8,9,10])
+//     }
+//     let position=5 + Math.round(Math.random())
+//     let alter=(Math.round(Math.random())==0)?"down":"up"
+//
+//     let value_at_pos = melody[position]
+//     let melody_probe = melody.map(n=>{
+//         if((alter=="down" && n<value_at_pos) || (alter=="up" && n<=value_at_pos)) return n
+//         return n+1
+//     })
+//     console.log("probe  ",JSON.stringify(melody_probe))
+//     let shifted
+//     shifted = [...melody_probe]
+//     if(alter=="down") shifted[position] = shifted[position]-1
+//     else shifted[position] = shifted[position]+1
+//     console.log("shifted",JSON.stringify(shifted))
+// }
 
-    let fragment_as_pitches = scale.get.melody_from_intervals(interval_fragment)
-    let fragment_as_semitones = edo.convert.to_steps(fragment_as_pitches)
-
-    let generic_repeat = Array.from(Array(repeat_fragment).fill(interval_fragment).flat())
-    let specific_repeat = Array.from(Array(repeat_fragment).fill(fragment_as_semitones).flat())
-
-    let diatonic_melody = scale.get.melody_from_intervals(generic_repeat,1,starting_pitch)
-    let chromatic_melody = edo.convert.intervals_to_pitches(specific_repeat,starting_pitch)
-    return {diatonic: diatonic_melody,chromatic:chromatic_melody}
-
-}
-let scale = edo.scale([0,2,4,5,7,9,11])
 
 
-console.log(JSON.stringify(create_melodies(3,4,3,-2,2,scale,0)))
+// const edo10 = new EDO(10)
+// let scales = edo10.get.scales(1,10,2,10,7)
+//     .filter(scale=>scale.count.pitches()>5)
+//     .filter(scale=>scale.count.consecutive_steps(1)==1)
+//     .sort((a,b)=>b.get.area()-a.get.area())
+//
+// scales.forEach(scale=>console.log(JSON.stringify(scale.pitches),scale.get.area(),scale.get.coherence_quotient()))
+
+
+// let penta = edo.scale([0,2,4,7,9])
+// let scales5a = edo.get.scales(1,8,1,8,5)
+//     .filter(s=>s.count.pitches()==5)
+//     .map(s=>[s.pitches,s.count.n_chords()])
+//
+// scales5a.forEach(s=>{
+//     console.log(s[1])
+// })
+
+// let edo24 = new EDO(24)
+let edo12 = new EDO(12)
+
+
+
+// let times = 1000000
+// let areas = []
+// for (let i = 0; i < times; i++) {
+//     let set = [0,1,2,3,4,5,6,7,8,9,10,11]
+//     let our_set = []
+//     for (let j = 0; j < 7; j++) {
+//         our_set.push(set.splice(getRandomInt(0,set.length-1),1)[0])
+//     }
+//     let scale = edo12.scale(our_set)
+//     let area = scale.get.area()
+//     areas.push(area)
+//     // console.log(scale.get.pitches(),area)
+// }
+//
+// console.log("Average area " + areas.reduce((ag,el)=>ag+el,0)/times)
+
+
+// let scales = edo12.get.scales(1,12,1,12,5).filter(s=>s.length==5)
+// scales.forEach(scale=>{
+//     console.log(scale.count.rahn_contradictions())
+// })
+
+    //
+// let cents = [0,204,386,498,702,884,1088]
+// let edo_1 = new EDO(1200)
+// let scale = edo_1.scale([0,204,386,498,702,884,1088])
+// console.log(scale.get.coherence_quotient())
+
+
+// console.log(scales5.map(s=>s.is.maximally_even()))
+
+// scales5.forEach(scale=>{
+//     console.log(scale.get.roughness(true).sort((a,b)=>b-a)[2])
+// })
+
+
+// edo1200 = new EDO(1200)
+// diatonic = edo1200.scale([0,200,400,500,700,900,1100])
+// JI = edo1200.scale([0,204,386,498,702,884,1088])
+//
+// console.log(diatonic.get.coherence_quotient(),JI.get.coherence_quotient())
+
+let ss = [[0,1,2,3,4,5,6],[0,1,2,3,4,5,7],[0,1,2,3,4,5,8],[0,1,2,3,4,6,7],[0,1,2,3,5,6,7]]
+ss.forEach(scale=>{
+    scale = edo12.scale(scale)
+    console.log(JSON.stringify(scale.pitches),scale.count.rahn_differences(),scale.count.rahn_ambiguities(),scale.count.rahn_contradictions())
+})
+
+
+

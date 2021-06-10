@@ -430,7 +430,45 @@ class EDO {
          * edo.convert.cents_to_ratio(700)
          * // returns 1.4983070768766815*/
         cents_to_ratio: (cents) => {
+            if(Array.isArray(cents)) {
+                return cents.map(e=>this.convert.cents_to_ratio(e))
+            }
             return Math.pow(2, cents / 1200)
+        },
+
+        cents_to_simple_ratio: (cents,limit=17) => {
+            if(Array.isArray(cents)) return cents.map(c=>this.convert.cents_to_simple_ratio(c,limit))
+            cents = this.mod(cents,1200)
+            if(cents==0) {
+                return   {
+                    cents: 0,
+                    cents_in_octave: 0,
+                    value: 1,
+                    diff_in_octave: 0,
+                    ratio: '1/1',
+                    original: 0
+                }
+            }
+
+            let SR = this.get.simple_ratios(limit,true)
+            let min
+            for (let key of Object.keys(SR)) {
+
+                if(min) {
+                    let diff_in_octave = Math.abs(SR[key].cents_in_octave-cents)
+                    let diff_min = Math.abs(SR[min].cents_in_octave-cents)
+                    if(diff_in_octave<diff_min) min = key
+                } else min = key
+
+
+
+            }
+            SR[min].diff_in_octave = cents-SR[min].cents_in_octave
+            SR[min].ratio = min
+            SR[min].original = cents
+            return SR[min]
+
+
         },
 
         /** Returns a value in cents from a given interval
@@ -851,6 +889,20 @@ class EDO {
         },
 
 
+        /**
+         * <p>Downloads / saves an SVG file with the contents of a container</p>
+         * <p>Note: all of the graphics made with this library create SVG elements, so just pass the same ID that you used to create the graphic in the first place</p>
+         *
+         * @param  {String} container_id - The ID of a container that has one or more SVG elements in it.
+         * @memberOf EDO#export
+         * @example
+         *  let edo = new EDO()
+         *  //Create a necklace graphic
+         *  edo.show.necklace('container', [0,2,4,5,7,9,11])
+         *
+         *  //Save the graphic
+         *  edo.export.svg('container') //downloads the necklace
+         */
         svg: (container_id) => {
             if (environment == "server") return console.log("This is only support when run on client-side")
             let el = document.getElementById(container_id)
@@ -888,6 +940,36 @@ class EDO {
             let diff2=Math.abs(triplet[1]-triplet[2])
             diff2=(diff2>Math.ceil(this.edo/2))?this.edo-diff2:diff2
             return ((180-diff1/12*360)/2) + ((180-diff2/12*360)/2)
+        },
+
+        /** <p>Given an array of scale degrees in cents, returns a Scale Object in the edo that best describes the pitches.</p>
+         *
+         * <p>If <code>a</code>, <code>b</code>, and <code>c</code>, are vertices of a triangle (trichord) on a necklace. This function returns the angle <code>abc</code>. That is, the angle node b has with a and c.</p>
+         * @param  {Array<Number>} scale_in_cents - The scale in question represented in cents
+         * @param  {Number} begin_edo - The smallest EDO to consider
+         * @param  {Number} end_edo - The largest EDO to consider
+         * @returns {Scale} A scale in the best fitting EDO
+         * @memberOf EDO#get
+         * @example
+         * let edo = new EDO() // define a tuning system
+         * edo.get.best_edo_from_cents([0,200,350,500,700,900,1100])
+         * //returns the Scale Object [0,4,7,10,14,18,22] in a 24EDO context
+         */
+        best_edo_from_cents: (scale_in_cents,begin_edo=scale_in_cents.length+2,end_edo=24) => {
+            let cents = scale_in_cents
+            let diff = Infinity
+            let min_edo = Infinity
+            for (let i = begin_edo; i <= end_edo; i++) {
+                let ed = new EDO(i)
+                let edo_app = ed.get.notes_from_cents(cents)
+                let edo_diff = edo_app.reduce((ag,e)=>ag+Math.abs(e.diff),0)
+                if (edo_diff<diff) {
+                    diff = edo_diff
+                    min_edo = i
+                }
+            }
+            let win_edo = new EDO(min_edo)
+            return win_edo.scale(win_edo.get.notes_from_cents(cents).map(e=>e.note))
         },
 
         /** Returns the [x,y] coordinates of the nodes of the given pitches.
@@ -1409,7 +1491,7 @@ class EDO {
          * @param {Array} arr - An array with elements
          * @param {Number} k=2 - The number of elements in each returned permutation
          * @returns {Array<Number>}
-         * @memberOf Scale#get
+         * @memberOf EDO#get
          * @example
          * edo.get.n_choose_k([1,3,5,7],k=3)
          * //returns [ [ 1, 3, 5 ], [ 1, 3, 7 ], [ 1, 5, 7 ], [ 3, 5, 7 ] ]
@@ -1430,6 +1512,40 @@ class EDO {
             return results
         },
 
+        /** <p>Returns the closest approximation within the current EDO from a list of pitches in cents and the difference between the EDO version to the original in cents.</p>
+         * @param {Array<Number>} cents - A list of pitches as cents
+         * @returns {Array<Object>}
+         * @memberOf EDO#get
+         * @example
+         * edo.get.notes_from_cents([0,157,325,498,655,834,1027])
+         * //returns
+         * [
+         *  { note: 0, diff: 0 },
+         *  { note: 2, diff: 43 },
+         *  { note: 3, diff: -25 },
+         *  { note: 5, diff: 2 },
+         *  { note: 7, diff: 45 },
+         *  { note: 8, diff: -34 },
+         *  { note: 10, diff: -27 }
+         * ]
+         */
+        notes_from_cents: (cents=[]) => {
+            let step_in_cents = 1200/this.edo
+            cents = cents
+                .map(c=>this.mod(c,1200))
+                .map(c=>{
+                    let min = Math.floor(c/step_in_cents)
+                    let min_in_cents = min*step_in_cents
+                    let min_diff = c-min_in_cents
+                    let max = Math.ceil(c/step_in_cents)
+                    let max_in_cents = max*step_in_cents
+                    let max_diff = max_in_cents-c
+                    if(min_diff<max_diff) return {note:min,diff:-min_diff}
+                    else return {note:max,diff:max_diff}
+                })
+            return cents
+        },
+
         /** <p>Returns the ROUGHNESS OF SINE-PAIRS based on algorithm from Vassilakis, 2001 & 2005 .</p>
          * @param {Number} freq1 - the frequency of the 1st sine
          * @param {Number} freq2 - the frequency of the 2nd sine
@@ -1448,14 +1564,14 @@ class EDO {
             const a_min = Math.min(amp1,amp2)
             const a_max = Math.max(amp1,amp2)
             const X = a_min*a_max
-            const Y = 2*a_min/(a_min+a_max)
+            const Y = (2*a_min)/(a_min+a_max)
             const b1 = 3.5
             const b2=5.75
             const s1 = 0.0207
             const s2 = 18.96
             const s = 0.24/(s1*f_min+s2)
             const Z = Math.pow(Math.E,-1*b1*s*(f_max-f_min)) - Math.pow(Math.E,(-1*b2*s*(f_max-f_min)))
-            const R = (X^0.1)*0.5*(Y^3.11)*Z
+            const R = Math.pow(X,0.1)*0.5*Math.pow(Y,3.11)*Z
             return R
 
         },
@@ -2766,7 +2882,7 @@ class EDO {
                     numeric = ratios[ratio]['value']
                 }
             }
-            let num_den = closest_name.split('/')
+            let num_den = closest_name.split(':')
             let numerator = num_den[0]
             let denominator = num_den[1]
             return {
@@ -3123,7 +3239,7 @@ class EDO {
             for (let i = 2; i < limit + 1; i++) {
                 for (let j = 1; j < i; j++) {
                     if (((primes.indexOf(i) < 0) && (primes.indexOf(j) < 0)) || (i % 2 == 0 && j % 2 == 0) || (i % j == 0 && j > 2)) continue
-                    ratios[String(i) + '/' + String(j)] = {cents: this.convert.ratio_to_cents(i / j), value: i / j}
+                    ratios[String(i) + ':' + String(j)] = {cents: this.convert.ratio_to_cents(i / j), cents_in_octave: this.mod(this.convert.ratio_to_cents(i / j),1200), value: i / j}
                 }
             }
             return ratios
@@ -4235,7 +4351,7 @@ class EDO {
 
     }
 
-    mod(n, m) {
+    mod(n, m=this.edo) {
         return ((n % m) + m) % m;
     }
 
@@ -4306,7 +4422,7 @@ class Scale {
         this.pitches = this.pitches.map((pitch) => pitch % parent.edo)
         this.pitches = this.parent.get.unique_elements(this.pitches)
         this.pitches.sort((a, b) => a - b)
-
+        this.length = this.count.pitches()
         this.name = this.get.name()
     }
 
@@ -4525,6 +4641,23 @@ class Scale {
         },
 
         /**
+         * <p>Returns the number of unique combinations that can be made from the set or subsets of it.</p>
+         * @return {Number}
+         * @memberOf Scale#count
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,7,9]) //pentatonic
+         * scale.count.n_chords() //returns 15
+         * */
+        n_chords: () => {
+            let n_chords = 1 //1 because the collection of all pitches shuold also be counted
+            for (let i = 2; i < this.count.pitches(); i++) {
+                n_chords+=this.get.n_chords(i).length
+            }
+            return n_chords
+        },
+
+        /**
          * <p>Returns the number of Perfect Fifths (with a tolerance of 5 cents) in the scale.</p>
          *
          * <p>(To count other intervals or set a different tolerance use @Scale.count.ratio())</p>
@@ -4566,6 +4699,7 @@ class Scale {
             for (let i = 1; i < this.count.pitches(); i++) {
                 let gi = this.get.generic_intervals(i)
                 gi = gi.map(a=>a.instances)
+
                 let nck = this.parent.get.n_choose_k(gi,2)
                 let product = nck.map(el=>el[0]*el[1]).reduce((ag,el)=>ag+el,0)
                 total+=product
@@ -4583,6 +4717,7 @@ class Scale {
          * @see Rahn, J. (1991). "Coordination of interval sizes in seven-tone collections." Journal of Music Theory 35(1/2): 33-60.
          */
         rahn_contradictions: () => {
+            let all = []
             let total = 0
             let scale_degrees = [...Array(this.pitches.length).keys()]
             let combinations = this.parent.get.combinations(scale_degrees,2).sort((a,b)=>a[0]-b[0] || a[1]-b[1])
@@ -4597,10 +4732,16 @@ class Scale {
                 for (let j =i+1; j < pairwise.length; j++) {
                     let p2 = pairwise[j]
                     if((p1.generic<p2.generic && p1.specific>p2.specific) || (p2.generic<p1.generic && p2.specific>p1.specific)){
+                        all.push([p1,p2])
                         total++
                     }
                 }
             }
+            // all = all.sort((a,b)=>(a[0].specific==b[0].specific)?a[1].specific-b[1].specific:a[0].specific-b[0].specific)
+            // all.forEach(pair=>{
+            //     console.log(pair[1].pitches)
+            //     // console.log("Span1:",pair[0].generic,"Span2:",pair[1].generic,"Size1:",pair[0].specific,"Size2:",pair[1].specific,"int1:",pair[0].pitches,'int2:',pair[1].pitches)
+            // })
             return total
         },
 
@@ -4628,7 +4769,7 @@ class Scale {
                 let p1 = pairwise[i]
                 for (let j =i+1; j < pairwise.length; j++) {
                     let p2 = pairwise[j]
-                    if((p1.generic<p2.generic && p1.specific==p2.specific) || (p2.generic<p1.generic && p2.specific==p1.specific)){
+                    if(p1.specific==p2.specific && p1.generic!=p2.generic ){
                         total++
                     }
                 }
@@ -4836,6 +4977,31 @@ class Scale {
             }
             let area = Math.abs((part_a-part_b)/2)
             return area
+        },
+
+        /** <p>Returns the (specific) intervals that only occur once in the set.</p>
+         * <p>For instance, in the diatonic set (0 2 4 5 7 9 11) an interval of 6 semitones only occurs once (between 5 and 11). It is therefore a "diagnostic" interval within the diatonic scale.</p>
+         * @returns {Array<Number>} An array containing all diagnostic intervals (or an empty array if none are available)
+         * @memberOf Scale#get
+         * @see EDO#get.diagnostic_intervals
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //The diatonic set
+         * scale.get.diagnostic_intervals() //returns [6]
+         */
+        diagnostic_intervals: () => {
+            let intervals = []
+            for (let i = 1; i <= Math.floor(this.edo/2); i++) {
+                let specific = this.get.specific_intervals(i)
+                if(!specific) continue
+                if(specific.length==0) continue
+                let all1 = true
+                specific.forEach(s=>{
+                    if(s.instances!=1) all1=false
+                })
+                if(all1) intervals.push(specific[0].specific)
+            }
+            return intervals
         },
 
         /** Returns the difference between the current scale and a given set.
@@ -5065,8 +5231,10 @@ class Scale {
          * @see Scale#get.specific_intervals
          */
         generic_intervals: (generic_interval_size=1) => {
+
             let arr = []
             let g= generic_interval_size
+            if(g<1) return NaN
             let mod = this.parent.mod
             let p =this.pitches
             let len = p.length
@@ -5079,7 +5247,7 @@ class Scale {
                 else map[spec].push([note1,note2])
             }
             for(let key in map) {
-                arr.push({generic:g,specific:parseInt(key),pitches:map[key],instances:map[key].length})
+                arr.push({generic:g,specific:parseInt(key),instances:map[key].length,pitches:map[key]})
             }
             return arr
         },
@@ -5091,7 +5259,7 @@ class Scale {
          * @example
          * let edo = new EDO(12) // define a tuning system
          * let scale = edo.scale([0,2,4,5,7,9,11])
-         * scale.get.specific_intervals(6) //3 scale-degrees apart (e.g 4ths)
+         * scale.get.specific_intervals(6)
          * //returns
          * [
          *  {"generic":"3","specific":6,"pitches":[[5,11]],"instances":1},
@@ -5813,7 +5981,7 @@ class Scale {
             return result
         },
 
-        /** <p>Returns the sum of the roughness of every pair in the set, averaged across all modes</p>
+        /** <p>Returns the sum of the roughness of every pair in the set in a certain mode or averaged across all modes</p>
          * @param {Boolean} [all_modes=false] - When true, the algorithm returns the roughness value for all of the modes
          * @param {Number} [base_freq=440] - The frequency to associate with PC0
          * @returns Number
@@ -5831,6 +5999,7 @@ class Scale {
                     pairs = pairs.map(p=>scale.parent.convert.midi_to_freq(p,69,base_freq))
                         .map(p=>scale.parent.get.sine_pair_dissonance(p[0],p[1],1,1))
                         .reduce((ag,e)=>ag+e,0)
+
                     return pairs
             }
             if(all_modes) {
@@ -6161,7 +6330,7 @@ class Scale {
          *
          */
         scale_degree_roles: (interval_map) => {
-            if(this.edo!=12 && !interval_map) return
+            if(this.edo!=12 && !interval_map) return []
             if(!interval_map) {
                 interval_map = {
                     0:[1],

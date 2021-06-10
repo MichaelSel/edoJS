@@ -4306,7 +4306,7 @@ class Scale {
         this.pitches = this.pitches.map((pitch) => pitch % parent.edo)
         this.pitches = this.parent.get.unique_elements(this.pitches)
         this.pitches.sort((a, b) => a - b)
-
+        this.length = this.count.pitches()
         this.name = this.get.name()
     }
 
@@ -4838,6 +4838,8 @@ class Scale {
             return area
         },
 
+
+
         /** Returns the difference between the current scale and a given set.
          * @param  {Array<Number>} [set = [0,2,4,5,7,9,11]] - The set the current scale is compared to
          * @param  {Boolean} [consider_all_modes=false] - Indicates whether the algorithm should consider every possible mode of the current scale to assess which is closest to the comparison set, or whether it should only consider the current set in its current mode.
@@ -5061,7 +5063,7 @@ class Scale {
          * @example
          * let edo = new EDO(12) // define a tuning system
          * let scale = edo.scale([0,2,4,5,7,9,11])
-         * scale.get.specific_intervals(6) //3 scale-degrees apart (e.g 4ths)
+         * scale.get.specific_intervals(6)
          * //returns
          * [
          *  {"generic":"3","specific":6,"pitches":[[5,11]],"instances":1},

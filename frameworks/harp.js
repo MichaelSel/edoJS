@@ -14,6 +14,9 @@ let scordatura = harmonic_on_G
 // console.log(edo.get.harp_position_of_quality([0,1,7,8],scordatura,[-2,0,2])) // 1/4,min3, 1/4
 // console.log(edo.get.harp_position_of_quality([0,1,9,10],scordatura,[-2,0,2])) // 1/4, maj3, 1/4
 
+
+
+
 // console.log(edo.get.harp_position_of_quality([0,8,14,19,4,11],scordatura,[-2,0,2])) //maj79E
 // console.log(edo.get.harp_position_of_quality([0,3,6,9,12],scordatura,[-2,0,2])) // 3/4 tone pentachord
 // console.log(edo.get.harp_position_of_quality([0,4,8,11,14],scordatura,[-2,0,2])) //overtone lydian
@@ -21,12 +24,12 @@ let scordatura = harmonic_on_G
 // console.log(edo.get.harp_position_of_quality([0,4,8,11,14,16,21],scordatura,[-2,0,2])) //Cool scale
 
 // console.log(edo.get.harp_position_of_quality([0,1,2],scordatura,[-2,0,2])) //microtonal trichord
-// console.log(edo.get.harp_position_of_quality([0,4,7,11,14,18],scordatura,[-2,0,2])) // 1, 3/4, 1, 3/4, 1
+// console.log(edo.get.harp_position_of_quality([0,4,7,11,14,18],scordatura,[-2,0,2])) // 1, 3/4, 1, 3/4, 1 ****
 // console.log(edo.get.harp_position_of_quality([0,3,6,9,12],scordatura,[-2,0,2])) // 3/4 pentachord
 // console.log(edo.get.harp_position_of_quality([0,1,3,4],scordatura,[-2,0,2])) // 1/4,1/2,1/4
 // console.log(edo.get.harp_position_of_quality([21,0,1,4,5],scordatura,[-2,0,2])) // 3/4,1/4,3/4,1/4
 
-console.log(edo.get.harp_position_of_quality([0,4,8,12,16,19],scordatura,[-2,0,2])) //whole-tone pentachord + 3/4
+// console.log(edo.get.harp_position_of_quality([0,4,8,12,16,19],scordatura,[-2,0,2])) //whole-tone pentachord + 3/4
 
 // console.log(edo.get.harp_position_of_quality([0,1,2],scordatura,[-2,0,2])) //quarter-tone trichord
 
@@ -37,7 +40,7 @@ console.log(edo.get.harp_position_of_quality([0,4,8,12,16,19],scordatura,[-2,0,2
 // console.log(edo.get.harp_position_of_quality([20,0,4,8,11,14],scordatura,[-2,0,2])) //wholetone + overtone lydian
 // console.log(edo.get.harp_position_of_quality([17,20,0,4,8,11,14],scordatura,[-2,0,2])) //wholetone + overtone lydian variation
 
-//console.log(edo.get.harp_position_of_quality([ 16, 3, 14, 2, 13, 0 ] ,scordatura,[-2,0,2])) //quartal triton and triton-1/4
+// console.log(edo.get.harp_position_of_quality([ 16, 3, 14, 2, 13, 0 ] ,scordatura,[-2,0,2])) //quartal triton and triton-1/4
 // console.log(edo.get.harp_position_of_quality([4,11,18,1,8,16,0],scordatura,[-2,0,2])) //out of tune major 3 stack
 // console.log(edo.get.harp_position_of_quality([2,10,17,1,8,16,0],scordatura,[-2,0,2])) //out of tune major 3 stack
 // console.log(edo.get.harp_position_of_quality([17,1,9,16,0,7,15],scordatura,[-2,0,2])) //out of tune major 3 stack
@@ -64,22 +67,22 @@ console.log(edo.get.harp_position_of_quality([0,4,8,12,16,19],scordatura,[-2,0,2
 // console.log(edo.get.harp_position_of_quality([22,4,9,14,20,1,6],scordatura,[-2,0,2]))
 // console.log(edo.get.harp_position_of_quality([20,1,6,11,16,22,4],scordatura,[-2,0,2]))
 // console.log(edo.get.harp_position_of_quality([8,14,20,1,6,11,16],scordatura,[-2,0,2]))
-// console.log(edo.get.harp_position_of_quality([22,3,8,14,20,2,7],scordatura,[-2,0,2]))
+// console.log(edo.get.harp_position_of_quality([22,3,8,14,20,2,7],scordatura,[-2,0,2])) ?
 // console.log(edo.get.harp_position_of_quality([22,3,9,14,20,2,8],scordatura,[-2,0,2]))
 // console.log(edo.get.harp_position_of_quality([4,10,16,22,3,9,14],scordatura,[-2,0,2]))
 // console.log(edo.get.harp_position_of_quality([6,11,16,22,3,8,14],scordatura,[-2,0,2]))
 
 /** Modes of limited transposition*/
-
 // console.log(edo.get.harp_position_of_quality([0,1,4,12,13,16],scordatura,[-2,0,2])) //MOLT **
 // console.log(edo.get.harp_position_of_quality([0,1,5,12,13,17],scordatura,[-2,0,2])) //MOLT
 // console.log(edo.get.harp_position_of_quality([0,1,6,12,13,18],scordatura,[-2,0,2])) //MOLT
+// console.log(edo.get.harp_position_of_quality([0,1,8,9,16,17],scordatura,[-2,0,2])) //MOLT **
 // console.log(edo.get.harp_position_of_quality([0,1,12,13],scordatura,[-2,0,2])) //MOLT
 // console.log(edo.get.harp_position_of_quality([0,2,5,12,14,17],scordatura,[-2,0,2])) //MOLT *
 // console.log(edo.get.harp_position_of_quality([0,2,7,12,14,19],scordatura,[-2,0,2])) //MOLT *
 // console.log(edo.get.harp_position_of_quality([0,2,12,14],scordatura,[-2,0,2])) //MOLT
 // console.log(edo.get.harp_position_of_quality([0,3,4,12,15,16],scordatura,[-2,0,2])) //MOLT
-// console.log(edo.get.harp_position_of_quality([0,3,6,12,15,18],scordatura,[-2,0,2])) //MOLT **
+console.log(edo.get.harp_position_of_quality([0,3,6,12,15,18],scordatura,[-2,0,2])) //MOLT **
 // console.log(edo.get.harp_position_of_quality([0,3,7,12,15,19],scordatura,[-2,0,2])) //MOLT *
 // console.log(edo.get.harp_position_of_quality([0,3,12,15],scordatura,[-2,0,2])) //MOLT
 // console.log(edo.get.harp_position_of_quality([0,4,5,12,16,17],scordatura,[-2,0,2])) //MOLT **
@@ -87,6 +90,15 @@ console.log(edo.get.harp_position_of_quality([0,4,8,12,16,19],scordatura,[-2,0,2
 // console.log(edo.get.harp_position_of_quality([0,4,12,16],scordatura,[-2,0,2])) //MOLT
 // console.log(edo.get.harp_position_of_quality([0,5,6,12,17,18],scordatura,[-2,0,2])) //MOLT
 // console.log(edo.get.harp_position_of_quality([0,5,12,17],scordatura,[-2,0,2])) //MOLT
+
+// console.log(edo.get.harp_position_of_quality([ 0, 1, 8, 9, 16, 17 ],scordatura,[-2,0,2])) //MOLT
+// console.log(edo.get.harp_position_of_quality([ 0, 2, 8, 10, 16, 18 ],scordatura,[-2,0,2])) //MOLT
+// console.log(edo.get.harp_position_of_quality([ 0, 3, 8, 11, 16, 19 ],scordatura,[-2,0,2])) //MOLT
+// console.log(edo.get.harp_position_of_quality([ 0, 4, 8, 12, 16, 20 ],scordatura,[-2,0,2])) //MOLT
+// console.log(edo.get.harp_position_of_quality([ 0, 5, 8, 13, 16, 21 ],scordatura,[-2,0,2])) //MOLT
+// console.log(edo.get.harp_position_of_quality([ 0, 6, 8, 14, 16, 22 ],scordatura,[-2,0,2])) //MOLT
+// console.log(edo.get.harp_position_of_quality([ 0, 7, 8, 15, 16, 23 ],scordatura,[-2,0,2])) //MOLT
+
 
 
 /** All possible 7 note scales with 2 step sizes*/
@@ -99,12 +111,12 @@ console.log(edo.get.harp_position_of_quality([0,4,8,12,16,19],scordatura,[-2,0,2
 // console.log(edo.get.harp_position_of_quality([0,3,6,8,11,14,16],scordatura,[-2,0,2]))
 
 /** Mono-Stacks*/
-    // [0,9,18,3,12] //of IC9
-    // [[6,13,20,3,10]] //of IC7
-    // [[4,9,14,19,0]] //of IC5
-    // [[0,3,6,9,12]] //of IC3
+// console.log(edo.get.harp_position_of_quality([0,9,18,3,12],scordatura,[-2,0,2])) //IC9
+// console.log(edo.get.harp_position_of_quality([6,13,20,3,10],scordatura,[-2,0,2])) //IC7
+// console.log(edo.get.harp_position_of_quality([4,9,14,19,0],scordatura,[-2,0,2])) //IC5
+// console.log(edo.get.harp_position_of_quality([0,3,6,9,12],scordatura,[-2,0,2])) //IC3
 
-//
+
 
 // [1,2,8,7,16,16,0]
 
@@ -284,3 +296,9 @@ console.log(edo.get.harp_position_of_quality([0,4,8,12,16,19],scordatura,[-2,0,2
 // console.log(collection,min,collection.length)
 
 
+// console.log(edo.get.harp_position_of_quality([0,4,8,11,14,19],scordatura,[-2,0,2]))
+
+// molt = edo.get.scales(1,12,1,12,8)
+//     .filter(m=>m.count.pitches()==8)
+//     .filter(m=>m.count.transpositions()<8)
+// molt.forEach(m=>console.log(m.pitches,m.to.steps()))
