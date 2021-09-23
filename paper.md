@@ -37,31 +37,31 @@ Two classes are at the core of the package. The EDO class, and a daughter class,
 ### The EDO Class
 
 The class contains eight sets of functions:
- - Functions used for converting between equivalent representations of the input in various formats (cents, ratios, pitches, intervals, frequencies, etc.)
- - Functions used for quantifying various parameters of a given input (e.g., the number of common tones between two inputs).
- - Boolean assertations on input data (e.g., is a set of pitches a transposition of another?) 
- - Functions used for visualization (e.g., contours, fractal trees, necklaces, fractal necklaces, nested necklaces, etc.). 
- - Functions used for importing and processing of midi files.
- - Functions used for importing and processing MusicXml files.
- - Functions used for exporting output data in various formats (e.g., images).
- - Other functions for analysis, and manipulation (e.g., extracting motives, extracting contour, generating harmonic progressions, extract pitch distribution, generating pseudo-random melodies, and more). 
+* Functions used for converting between equivalent representations of the input in various formats (cents, ratios, pitches, intervals, frequencies, etc.)
+* Functions used for quantifying various parameters of a given input (e.g., the number of common tones between two inputs).
+* Boolean assertations on input data (e.g., is a set of pitches a transposition of another?) 
+* Functions used for visualization (e.g., contours, fractal trees, necklaces, fractal necklaces, nested necklaces, etc.). 
+* Functions used for importing and processing of midi files.
+* Functions used for importing and processing MusicXml files.
+* Functions used for exporting output data in various formats (e.g., images).
+* Other functions for analysis, and manipulation (e.g., extracting motives, extracting contour, generating harmonic progressions, extract pitch distribution, generating pseudo-random melodies, and more). 
 
 ### The Scale Class
 
 The class contains six sets of functions:
- - Functions for converting between equivalent representations of the scale (e.g., for converting pitches to step sizes). 
- - Functions for quantifying various parameters of a given scale (cardinality, trichords, dissonance, coherence, and others).
- - Boolean assertations about the scale (e.g., is it invertible? Is it a mode-of-limited-transposition?)
- - Functions used for exporting (e.g., Scala files). 
- - Functions used for scale structure visualization (e.g., scalar fractal trees). 
- - Analysis, manipulation, and generation functions (e.g., calculate the coherence quotient, extract diatonic motives, return the Rothernberg Propriety, calculate Vassilakis Roughness, retrieve available n-chords, etc.). 
+* Functions for converting between equivalent representations of the scale (e.g., for converting pitches to step sizes). 
+* Functions for quantifying various parameters of a given scale (cardinality, trichords, dissonance, coherence, and others).
+* Boolean assertations about the scale (e.g., is it invertible? Is it a mode-of-limited-transposition?)
+* Functions used for exporting (e.g., Scala files). 
+* Functions used for scale structure visualization (e.g., scalar fractal trees). 
+* Analysis, manipulation, and generation functions (e.g., calculate the coherence quotient, extract diatonic motives, return the Rothernberg Propriety, calculate Vassilakis Roughness, retrieve available n-chords, etc.). 
 
 In addition to the sets of functions described above, the Scale class also contains five chainable methods commonly used in set-theory. 
- - `Scale.invert()` returns the inversion of the original set.
- - `Scale.mode(n)` returns the nth mode of the original set.
- - `Scale.normal()` returns the set in normal order.
- - `Scale.prime()` returns the set in its prime form.
- - `Scale.complement()` returns the complement of the set in the current EDO.
+* `Scale.invert()` returns the inversion of the original set.
+* `Scale.mode(n)` returns the nth mode of the original set.
+* `Scale.normal()` returns the set in normal order.
+* `Scale.prime()` returns the set in its prime form.
+* `Scale.complement()` returns the complement of the set in the current EDO.
 
 For instance, `Scale.mode(3).invert().complement()` will return an instance of a Scale that is equivalent to the complement scale of the inversion of the 3rd mode of the original scale. 
 
