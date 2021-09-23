@@ -56,7 +56,7 @@ The class contains six sets of functions:
  * Boolean assertations about the scale (e.g., is it invertible? Is it a mode-of-limited-transposition?)
  * Functions used for exporting (e.g., Scala files). 
  * Functions used for scale structure visualization (e.g., scalar fractal trees). 
- * Analysis, manipulation, and generation functions (e.g., calculate the coherence quotient, extract diatonic motives, return the Rothernberg Propriety, calculate Vassilakis Roughness, retrieve available n-chords, etc.). 
+ * Analysis, manipulation, and generation functions (e.g., calculating the coherence quotient, extracting diatonic motives, returning the Rothernberg Propriety, calculating Vassilakis Roughness, retrieving available n-chords, etc.). 
 
 In addition to the sets of functions described above, the Scale class also contains five chainable methods commonly used in set-theory.
 
