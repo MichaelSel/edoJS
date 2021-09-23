@@ -44,8 +44,8 @@ The class contains eight sets of functions:
  * Functions used for visualization (e.g., contours, fractal trees, necklaces, fractal necklaces, nested necklaces, etc.). 
  * Functions used for importing and processing of midi files.
  * Functions used for importing and processing MusicXml files.
- * Functions used for exporting output data in various formats (e.g., images).
- * Other functions for analysis, and manipulation (e.g., extracting motives, extracting contour, generating harmonic progressions, extract pitch distribution, generating pseudo-random melodies, and more). 
+ * Functions used for exporting data in various formats (e.g., images).
+ * Other functions for analysis, and manipulation (e.g., extracting motives, extracting contour, generating harmonic progressions, extracting pitch distribution, generating pseudo-random melodies, and more). 
 
 ### The Scale Class
 
