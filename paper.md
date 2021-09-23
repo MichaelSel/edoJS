@@ -14,7 +14,8 @@ authors:
 - name: Michael Seltenreich
   orcid: 0000-0002-6061-0674
   affiliation: 1
-  affiliations:
+
+affiliations:
 - name: Department of Music, New York University
   index: 1
   
