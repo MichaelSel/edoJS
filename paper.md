@@ -17,8 +17,9 @@ authors:
   affiliations:
 - name: Department of Music, New York University
   index: 1
-  date: 23 September 2021
-  bibliography: paper.bib
+  
+date: 23 September 2021
+bibliography: paper.bib
 
 ---
 
