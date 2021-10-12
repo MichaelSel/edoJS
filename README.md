@@ -1,6 +1,12 @@
 # edoJS
 
-A JavaScript library for pitch set manipulation in any EDO tuning system.
+A Set-Theory based JavaScript library pitch manipulation and analysis in any tuning system that is based on equal divisions of the octave (i.e., EDO, and also known as "TET").
+
+As such, it allows to describe collections of pitches in psycho-acoustical terms (e.g., roughness or dissonance), it implements experimental algorithms proposed in the music theory literature, and allows for standard and novel set-theory manipulations.  
+
+This library is aimed at music theorists, musicologists, and cognitive scientists working on musical research, for the creation of stimuli for experiments, and for the analysis of musical structures.
+
+
 
 ## Usage
 
