@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "csv-parser": "^2.3.3",
+    "fs": "0.0.1-security",
     "midi-parser-js": "^4.0.4",
     "xml2js": "^0.4.23"
   },
