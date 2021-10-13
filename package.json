@@ -17,9 +17,11 @@
   "author": "Michael Seltenreich <seltenmusic@gmail.com> (http://www.michaelseltenreich.com/)",
   "license": "ISC",
   "devDependencies": {
-    "tui-jsdoc-template": "^1.2.2",
+    "chai": "^4.3.4",
     "clean-jsdoc-theme": "^2.2.11",
-    "swagger-jsdoc": "^4.0.0"
+    "mocha": "^9.1.2",
+    "swagger-jsdoc": "^4.0.0",
+    "tui-jsdoc-template": "^1.2.2"
   },
   "dependencies": {
     "csv-parser": "^2.3.3",

@@ -2309,7 +2309,7 @@ class EDO {
          * @example
          * let edo = new EDO(12) //Create a tuning context
          * edo.get.normal_order([0,2,4,5,7,9,11])
-         * //returns [0, 1, 2, 3, 5, 6, 8, 10]*/
+         * //returns [ 0, 1, 3, 5, 6, 8, 10 ]*/
         normal_order: (lst, cache = false) => {
             if (lst.length == 0) return []
             let edo = this.edo
@@ -2592,8 +2592,9 @@ class EDO {
          * edo.get.pitch_distribution([0,12,0,12,7,0])
          * //returns
          * [
-         *  { note: 0, rate: 0.8333333333333334 },
-         *  { note: 7, rate: 0.16666666666666666 }
+         *  {"note": 0,"rate": 0.5},
+         *  {"note": 12,"rate": 0.3333333333333333},
+         *  {"note": 7,"rate": 0.16666666666666666}
          * ]
          *
          */
@@ -2858,11 +2859,14 @@ class EDO {
          * @example
          * let edo = new EDO(12) // create a tuning context
          * edo.get.ratio_approximation(7)
-         * //returns { ratio: '3/2', cents_offset: -1.955000865387433, decimal: 1.5 }
+         * //returns {
+         *  "cents_offset": -1.955000865387433
+         *  "decimal": 1.5
+         *  "log_position": 0.5849625007211562
+         *  "octave": 1
+         *  "ratio": "3:2"
+         *  }
          *
-         * let edo = new EDO(17) // Notice this is 17 divisions
-         * console.log(edo.get.ratio_approximation(3))
-         * //returns {ratio: '17/15', cents_offset: -4.921988887832043, decimal: 1.1333333333333333}
          *
          */
         ratio_approximation: (interval, limit = 17) => {
@@ -2913,8 +2917,8 @@ class EDO {
          * @memberOf EDO#get
          * @example
          * let edo = new EDO(12) // define a tuning system
-         * edo.get.rotations([0,2,4,5,7],2) //returns [4,5,7,0,2]
-         * edo.get.rotations([0,2,4,5,7],-1) //returns [7,0,2,4,5]
+         * edo.get.rotated([0,2,4,5,7],2) //returns [4,5,7,0,2]
+         * edo.get.rotated([0,2,4,5,7],-1) //returns [7,0,2,4,5]
          * */
         rotated: (pitches,n) => {
             n=this.mod(n,pitches.length)
@@ -3162,28 +3166,6 @@ class EDO {
          * @example
          * //The quickest way to get to E (from 0) moving up with P5s and down with m3s
          * let path = edo.get.shortest_path(7,[5,-3]) // returns [ -3, 5, 5 ]
-         * let all = edo.get.permutations(path) //all permutation of the result
-         * //returns
-         * [
-         *  [ -3, 5, 5 ],
-         *  [ -3, 5, 5 ],
-         *  [ 5, -3, 5 ],
-         *  [ 5, 5, -3 ],
-         *  [ 5, -3, 5 ],
-         *  [ 5, 5, -3 ]
-         * ]
-         * all = all.map((path)=>edo.convert.intervals_to_pitches(path)) //convert the intervals into pitches
-         * let as_pitches = all.map((path)=>edo.convert.midi_to_name(path,60)) //convert the pitches into pitch names
-         * //returns
-         * [
-         *  [ 'C4', 'A3', 'D4', 'G4' ],
-         *  [ 'C4', 'A3', 'D4', 'G4' ],
-         *  [ 'C4', 'F4', 'D4', 'G4' ],
-         *  [ 'C4', 'F4', 'Bb4', 'G4' ],
-         *  [ 'C4', 'F4', 'D4', 'G4' ],
-         *  [ 'C4', 'F4', 'Bb4', 'G4' ]
-         * ]
-         *
          * */
         shortest_path: (destination, intervals = [5, -3], used = [], life_span = 10) => {
 
@@ -3376,7 +3358,7 @@ class EDO {
          * @example
          * let edo = new EDO(12) //Create a tuning context
          * edo.get.union([0,1,2],[3,4,5],[6])
-         * //returns [0,1,2,3,4,5]
+         * //returns [0,1,2,3,4,5,6]
          */
         union: (...collections) => {
             let union = []
@@ -3424,7 +3406,7 @@ class EDO {
          * let edo = new EDO(12) //Create a tuning context
          * let melody = [12,10,9,8,7,6,8,10,11,12,10,9,8,7,6,8,10,11,12,14,19,15] //syrinx
          * edo.get.without_chromatic_notes(melody)
-         * //returns [0, 12, 6, 8, 12, 6, 8, 12, 14, 19, 15]
+         * //returns [12, 6, 8, 12, 6, 8, 12, 14, 19, 15]
          */
         without_chromatic_notes: (melody)=> {
             melody = melody.filter((n,i,m)=>{
@@ -7209,99 +7191,6 @@ try {
 }
 
 
-// function test_all() {
-//      const JS = JSON.stringify
-//      let edo = new EDO(12) // define a tuning system with 12 divisions of the octave
-//
-//     const run_it = function (func_name,func,func_params, expected_return,compact=true) {
-//          const result = JS(func(...func_params))
-//         expected_return = JS(expected_return)
-//         const pass_fail = (result==expected_return)?"pass":"fail"
-//         if(pass_fail=="fail") throw new Error(func_name + " failed to pass automated test.\n Expected: " + expected_return + ", but got " + result)
-//         if(compact) console.log("Function: " + func_name + " pass/fail:", pass_fail )
-//         else console.log("Function: " + func_name +"\nparams:",func_params,"\nexpected:", expected_return,"\ngot:", result,"\npass/fail:", pass_fail )
-//     }
-//
-//
-//     let edo_convert = {
-//         cents_to_ratio:[edo.convert.cents_to_ratio,[700],1.4983070768766815],
-//         cents_to_simple_ratio:[edo.convert.cents_to_simple_ratio,[700],{"cents":1901.9550008653873,"cents_in_octave":701.9550008653873,"value":3,"diff_in_octave":-1.9550008653873192,"ratio":"3:1","original": 700}],
-//         interval_to_cents:[edo.convert.interval_to_cents,[6],600],
-//         interval_to_ratio:[edo.convert.interval_to_ratio,[7],1.4983070768766815],
-//         intervals_to_pitches:[edo.convert.intervals_to_pitches,[[2,3]],[ 0, 2, 5 ]],
-//         intervals_to_scale: [edo.convert.intervals_to_scale,[[2, 2, 1, 2, 2, 2, 1]],[0,2,4,5,7,9,11]],
-//         midi_to_intervals: [edo.convert.midi_to_intervals, [[60,64,57,61]], [ 4, -7, 4 ]],
-//         midi_to_name: [edo.convert.midi_to_name, [[60,62]],["C4","D4"]],
-//         midi_to_freq: [edo.convert.midi_to_freq,[[69,70]],[ 440, 466.1637615180899 ]],
-//         // name_to_scale: [edo.convert.name_to_scale,['12-1387']]
-//         pc_to_name:[edo.convert.pc_to_name,[4],"E"],
-//         pitches_to_PCs: [edo.convert.pitches_to_PCs,[[0,2,12,-2,7]],[0,2,0,10,7]],
-//         ratio_to_cents: [edo.convert.ratio_to_cents,[5/4],386.3137138648348],
-//         ratio_to_interval: [edo.convert.ratio_to_interval,[5/4,20],[4]],
-//         to_steps: [edo.convert.to_steps,[[0,2,4,5,7,9,11]],[ 2, 2, 1, 2, 2, 2 ]]
-//
-//     }
-//     let edo_count = {
-//         common_tones: [edo.count.common_tones, [[1,2,4],[2,3,4,5]], 2],
-//         differences: [edo.count.differences,[[0,2,3],[0,1,2],[0,2,4],[0,2,1,1,1]],[2,2,3]],
-//         pitches: [edo.count.pitches, [[0, 3, 3, 2, 4, 3, 4]],[[3,3],[4,2],[0,1],[2,1]]]
-//     }
-//     let edo_get = {
-//         angle: [edo.get.angle, [[0,3,6]],90],
-//         // best_edo_from_cents: edo.get.best_edo_from_cents([0,200,350,500,700,900,1100])
-//         coordinates: [edo.get.coordinates, [[0,3,7]],[[0,0.56418958354776],[0.56418958354776,3.454664838020213e-17],[-0.2820947917738801,-0.48860251190292314]]],
-//         contour: [edo.get.contour, [[0,4,7,12,16,7,12,16],true],[1, 1, 1, 1,-1, 1, 1]],
-//         // contour_motives: edo.get.contour_motives([7,6,7,6,7,2,5,3,0]).slice(0,4) //get first 3 motives
-//         combinations: [edo.get.combinations,[[1,3,5,7],2], [[1,3],[3,1],[1,5],[5,1],[1,7],[7,1],[3,5],[5,3],[3,7],[7,3],[5,7],[7,5]]],
-//         complementary_interval: [edo.get.complementary_interval, [3],9],
-//         complementary_set: [edo.get.complementary_set, [[0,2,4,5,7,9,11],true],[0, 2, 5, 7, 9]],
-//         // harmonic_progression: [edo.get.harmonic_progression, [[[0,3,7],[0,4,7]],[1,4,7]],[ [ 1, 4, 7 ], [ 11, 4, 7 ], [ 11, 2, 7 ], [ 10, 2, 7 ] ]],
-//         // harmonized_melody: [edo.get.harmonized_melody, [[7,4,5,2,4,0,2],[[0,4,7],[0,3,7]]],[[ 4, 7, 11 ], [ 4, 9, 0 ], [ 5, 9, 2 ], [ 7, 11, 2 ], [ 7, 0, 4 ], [ 9, 0, 4 ], [ 9, 2, 5 ]]],
-//         // harp_position_of_quality: [edo.get.harp_position_of_quality, [[0,1,2,3]], [{"strings":[6,1,7,2],"pedals":[1,-1,1,-1],"pitches":[10,11,0,1]},{"strings":[5,6,7,1],"pedals":[1,0,-1,-1],"pitches":[8,9,10,11]},{"strings":[3,4,5, 6],"pedals":[1,1,0,-1],"pitches":[5,6,7,8]},{"strings":[2,3,4,5],"pedals":[1,0,0,-1],"pitches":[3,4,5,6]},{"strings":[2,4,3,5],"pedals":[1,-1,1,-1],"pitches":[3,4,5,6]},{"strings":[6,7,1,2],"pedals":[1,0,0,-1],"pitches":[10,11,0,1]},{"strings":[1,2,3,4],"pedals":[1,0,-1,-1],"pitches":[1,2,3,4]},{"strings":[7,1,2,3],"pedals":[1,1,0,-1],"pitches":[0,1,2,3]}]],
-//         harp_pedals_to_pitches: [edo.get.harp_pedals_to_pitches, [[0,0,0,0,0,1,-1]] ,[0, 2, 4, 5, 7, 10, 10]],
-//         // harp_least_pedals_passage
-//         // fill_partial_harp_pedaling
-//         interval_class: [edo.get.interval_class, [1,8],5],
-//         n_choose_k: [edo.get.n_choose_k, [[1,3,5,7],k=3],[ [ 1, 3, 5 ], [ 1, 3, 7 ], [ 1, 5, 7 ], [ 3, 5, 7 ] ]],
-//         notes_from_cents: [edo.get.notes_from_cents,[[0,157,325,498,655,834,1027]],[{ note: 0, diff: 0 },{ note: 2, diff: 43 },{ note: 3, diff: -25 },{ note: 5, diff: 2 },{ note: 7, diff: 45 },{ note: 8, diff: -34 },{ note: 10, diff: -27 } ]],
-//         sine_pair_dissonance: [edo.get.sine_pair_dissonance, [440,475], 0.08595492117939352],
-//         resize_melody: [edo.get.resize_melody, [[0,2,4,5,7,5,4,2,-1,0],2], [0, 4, 8, 10, 14, 10, 8, 4, -2, 0]],
-//         generated_scale: [edo.get.generated_scale, [7,5],[0,2,4,7,9]],
-//         generators: [edo.get.generators,[],[1,5]],
-//         intersection: [edo.get.intersection,[[1,2,3,4],[3,4,5,6]],[3,4]],
-//         interval_traversed: [edo.get.interval_traversed, [[2,-3,4,-1]],2],
-//         interval_stack: [edo.get.interval_stack, [[3,2],3,true],[[ 0, 2, 4, 6 ],[ 0, 3, 5, 7 ],[ 0, 2, 5, 7 ],[ 0, 2, 4, 7 ],[ 0, 3, 6, 8 ],[ 0, 3, 5, 8 ],[ 0, 2, 5, 8 ],[ 0, 3, 6, 9 ] ]],
-//         inversion: [edo.get.inversion, [[0,2,4,5,7,9,11]],[0, 2,  4, 6, 7, 9, 11]],
-//         // lattice
-//         levenshtein: [edo.get.levenshtein,[[0,2,4,7,9],[0,2,4,5,7,9,11]],2],
-//         maximal_rahn_difference: [edo.get.maximal_rahn_difference,[7],126],
-//         maximal_carey_coherence_failures: [edo.get.maximal_carey_coherence_failures, [7],140],
-//         minimal_voice_leading: [edo.get.minimal_voice_leading,[[7,0,3],[4,8,11]],[8,11,4]],
-//         modes: [edo.get.modes,[[0,2,4,5,7,9,11]],[[0,2,4,5,7,9,11], [0,2,3,5,7,9,10], [0,1,3,5,7,8,10], [0,2,4,6,7,9,11], [0,2,4,5,7,9,10], [0,2,3,5,7,8,10], [0,1,3,5,6,8,10] ]],
-//         // edo.get.motives([7,6,7,6,7,2,5,3,0])
-//         necklace: [edo.get.necklace,[[2,2,1,2,2,2,1]],[ [2, 2, 2, 1, 2, 2, 1], [2, 2, 2, 2, 1, 2, 1], [2, 2, 2, 2, 2, 1, 1] ]],
-//         new_pitches: [edo.get.new_pitches,[[2,1,0,5,4,3,0,2,8,4,1,0,9,1]],[[2, 0],[1, 1],[0, 2],[5, 3],[4, 4],[3, 5],[8, 8],[9, 12], ]]
-//     }
-//
-//     console.log("Running tests for EDO.convert")
-//     let scope = edo_convert
-//     for(let func_name in scope) {
-//         run_it(func_name,scope[func_name][0],scope[func_name][1],scope[func_name][2])
-//     }
-//
-//     console.log("Running tests for EDO.count")
-//     scope = edo_count
-//     for(let func_name in scope) {
-//         run_it(func_name,scope[func_name][0],scope[func_name][1],scope[func_name][2])
-//     }
-//
-//     console.log("Running tests for EDO.get")
-//     scope = edo_get
-//     for(let func_name in scope) {
-//         run_it(func_name,scope[func_name][0],scope[func_name][1],scope[func_name][2])
-//     }
-//
-//
-// }
+
 
 
