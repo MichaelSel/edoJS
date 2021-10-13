@@ -3679,11 +3679,11 @@ class EDO {
          * @memberOf EDO#is
          * @example
          * let edo = new EDO(12) // define a tuning system
-         * edo.is.subset([2,4],[[1,2,3,4],[1,2,4]])
+         * edo.is.element_of([2,4],[[1,2,3,4],[1,2,4]])
          * //returns false (the set [2,4] is NOT equal to [1,2,3,4] or to [1,2,4])
          * @example
          * let edo = new EDO(12) // define a tuning system
-         * edo.is.subset([2,4],[[1,2,3,4],[1,2,4],[2,4]])
+         * edo.is.element_of([2,4],[[1,2,3,4],[1,2,4],[2,4]])
          * //returns true
          */
         element_of: (arr, bigger_arr) => {
@@ -3701,7 +3701,7 @@ class EDO {
          * @memberOf EDO#is
          * @example
          * let edo = new EDO(12) // define a tuning system
-         * edo.is.transposition([0,2,4,5,7,9,11],[2,4,5,7,9,11,0])
+         * edo.is.rotation([0,2,4,5,7,9,11],[2,4,5,7,9,11,0])
          * //returns true
          */
         rotation:(collection1,collection2)=> {
@@ -4821,7 +4821,7 @@ class Scale {
         },
 
         /**
-         * <p>Returns the number of Major and Minor Thirds (with a tolerance of 20 cents) in the scale</p>.
+         * <p>Returns the number of Major and Minor (sounding) Thirds (with a tolerance of 20 cents) in the scale</p>.
          *
          * <p>(To count other intervals or set a different tolerance use [Scale.count.ratio()]{@link Scale#count.ratio})</p>
          * @return {Number}
@@ -4944,7 +4944,7 @@ class Scale {
          * scale.get.coordinates() //returns 0.9549296585513847
          *
          * scale = edo.scale([0,4,7]) //major triad
-         * scale.get.coordinates() //returns 0.376564638493296
+         * scale.get.area() //returns 0.376564638493296
          */
         area: (r=0.56418958354776 /*radius of circle with area=1*/) => {
             const angle_discrete = 360/this.edo
@@ -5045,7 +5045,7 @@ class Scale {
          * @example
          * let edo = new EDO(12) //define context
          * let scale = edo.scale([0,2,4,5,7,8,10])
-         * scale.get.per_note_set_difference() //returns [0, 0, 0, 0, 0, -1, -1]
+         * scale.get.per_note_set_difference() //returns [0, 0, 0, 0, 0, 1, 1]
          */
         per_note_set_difference: (set = [0,2,4,5,7,9,11]) => {
             let pitches = this.pitches
@@ -5066,11 +5066,10 @@ class Scale {
          * let edo = new EDO(12) //define context
          * let scale = edo.scale([0,3,7]) //minor triad
          * scale.get.coordinates()
-         * //returns
-         * [
-         *  [ 0, 0.56418958354776 ],
-         *  [ 0.5043836053298857, -0.25279846688265545 ],
-         *  [ 0.26388191608137657, -0.4986744635020088 ]
+         * //returns [
+         *  [00.56418958354776]
+         *  [0.564189583547763.454664838020213e-17]
+         *  [-0.2820947917738801-0.48860251190292314]
          * ]
          */
         coordinates: (circle_center=[0,0],r=0.56418958354776) => {
@@ -5149,7 +5148,7 @@ class Scale {
          * //returns [0, 7, 9]
          *
          * scale.get.chord_quality_from_shape([1,3,4,5,7],7)
-         * //returns [11, 2, 4, 6, 9]
+         * //returns [11, 2, 4, 5, 9]
          *
          * scale.get.chord_quality_from_shape([1,7,3,13,9],5) //Get a 7,9,13 (no 5) chord, on scale degree 5, in this specific voicing.
          */
@@ -5428,7 +5427,7 @@ class Scale {
          * @example
          * let edo = new EDO(12) //define tuning
          * let scale = edo.scale([0,2,4,7,9]) //a major pentatonic scale
-         * scale.get.levenshtein([0,2,4,5,7,9,11] //returns 1
+         * scale.get.levenshtein([0,2,4,5,7,9,11]) //returns 2
          *
          * @example
          * scale.get.levenshtein([0,2,4,5,7,9,11],true) //returns 0.9230769230769231
