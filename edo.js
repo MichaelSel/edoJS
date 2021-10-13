@@ -664,7 +664,7 @@ class EDO {
             return PC[pc].trim()
         },
 
-        /** Normalizes any input to include PC only (to ignore octave displacement)
+        /** Normalizes any input to include pitch-classes only (to ignore octave displacement)
          * @param  {Array<Number>} pitches - any collection of pitches (e.g. a melody)
          * @returns {Array<Number>} the input as pitch classes
          * @memberOf EDO#convert
@@ -1008,7 +1008,7 @@ class EDO {
          * either 1 if note n is higher than n-1, 0 if note n is the same as n-1, and -1 if note n is lower than n-1
          * For instance <code>[0,0,4,7,4,7,4,0]</code> will in local mode will return <code>[0,1,1,-1,1,-1,-1]</code></p>
          *
-         * <p>If local is set to false (default), the contour of the line is expressed such that the actual pc class of the
+         * <p>If local is set to false (default), the contour of the line is expressed such that the actual pitch-class of the
          * note is removed but its relative position in regards to the entire line is kept.
          * <code>[0,4,7,12,16,7,12,16]</code> (Bach prelude in C) has 5 distinct note heights, so it will return
          * <code>[0,1,2,3, 4, 2,3, 4]</code> indicating the relative height of each note in the entire phrase</p>
@@ -1121,7 +1121,7 @@ class EDO {
             return this.edo - interval
         },
 
-        /** <p>Returns all the PCs of the EDO that the scale does not use.</p>
+        /** <p>Returns all the pitch-classes of the EDO that the scale does not use.</p>
          * @param {boolean} [from_0=false] - when true, the output will be normalized to 0.
          * @returns {Array<Number>}
          * @memberOf EDO#get
@@ -1847,7 +1847,7 @@ class EDO {
 
         /** Returns the inversion of a given set of pitches
          *
-         * @param  {Array<Number>} scale - a collection of pitches (not necessarily PCs)
+         * @param  {Array<Number>} scale - a collection of pitches (not necessarily pitch-classes)
          * @param  {Boolean} cache - if true, the result will be cached for faster retrival
          * @return {Array<Number>} The inverted input
          * @memberOf EDO#get
@@ -1973,7 +1973,7 @@ class EDO {
         //  *      E.g. If we consider C-E-G <code>(0,4,7)</code>, E and G appear as overtones of C at lower positions than C and G appear as overtones of E, and C and E as overtones of G.</p>
         //  *      <p>Note: a root can be highly dependent on context, therefore this algorithm at its current state cannot provide a decisive answer.</p>
         //  * @param  {Array<Number>} pitches - a collection of pitch classes
-        //  * @param  {Array<Number>} [limit=19] - The overtone limit by which PCs are approximated
+        //  * @param  {Array<Number>} [limit=19] - The overtone limit by which pitch-classes are approximated
         //  * @return {Number} The pitch-class of the likely root.
         //  * @memberOf EDO#get
         //  * @example
@@ -2087,7 +2087,7 @@ class EDO {
         },
 
         /** Returns the normal order of a given set of pitches
-         * @param  {Array<Number>} scale - a collection of PCs
+         * @param  {Array<Number>} scale - a collection of pitch-classes
          * @param  {Boolean} cache - if true, the result will be cached for faster retrieval
          * @return {Array<Array<Number>>}
          * @memberOf EDO#get
@@ -2302,7 +2302,7 @@ class EDO {
         },
 
         /** Returns the normal order of a given set of pitches
-         * @param  {Array<Number>} lst - a collection of PCs
+         * @param  {Array<Number>} lst - a collection of pitch-classes
          * @param  {Boolean} cache - if true, the result will be cached for faster retrival
          * @return {Array<Number>} The normal order of the input
          * @memberOf EDO#get
@@ -2396,8 +2396,8 @@ class EDO {
         },
 
         /** Returns the elements of array1, but not if they are found in array 2
-         * @param  {Array<Number>} array1 - a collection of PCs
-         * @param  {Array<Number>} array2 - a collection of PCs
+         * @param  {Array<Number>} array1 - a collection of pitch-classes
+         * @param  {Array<Number>} array2 - a collection of pitch-classes
          * @param  {Boolean} [normal=false] - when true, the returned set will be in normal order
          * @return {Array<Number>} All of the elements of array1 that are not in array2
          * @memberOf EDO#get
@@ -2572,7 +2572,7 @@ class EDO {
         /** Returns the distribution (as fractions adding up to 1) of the pitches in a set of pitches
          *
          * @param  {Array<Number>} pitches - a given array of pitches
-         * @param  {Boolean} as_PC - When true, the distribution tallies notes based on their PC rather than their absolute pitch.
+         * @param  {Boolean} as_PC - When true, the distribution tallies notes based on their pitch-class rather than their absolute pitch.
          * @returns {Array<distribution>}
          * @memberOf EDO#get
          * @example
@@ -2613,7 +2613,7 @@ class EDO {
          *
          * @param  {Array<Number>} pitches - a given array of pitches
          * @param  {Number} [size=8] - The size of the window.
-         * @param  {Boolean} [as_PC=true] - When true, notes that belong to the same PC will be counted as the same.
+         * @param  {Boolean} [as_PC=true] - When true, notes that belong to the same pitch-class will be counted as the same.
          * @param  {Boolean} [unique=false] - When true, the function does not count pitches if they are already in the window.
          * @param  {Boolean} [avoid_duplicate_windows=false] - When true, if two or more succeeding windows have the same content, the function will only return one of them.
          * @returns {Array<Array<Number>>}
@@ -2694,7 +2694,7 @@ class EDO {
          *
          * @param  {Number} [length=8] - The number of pitches in the melody
          * @param  {Array<number>} [range=[0, 12]] - the lower and upper limits (inclusive) for the melody
-         * @param  {Number} [repetition_minimal_gap=0] - number of intervening notes before a note can repeat (the same PC across different octave is not considered the same note)
+         * @param  {Number} [repetition_minimal_gap=0] - number of intervening notes before a note can repeat (the same pitch-class across different octave is not considered the same note)
          * @param  {Array<number>} [mode] - If mode is provided, the pitches returned will be only ones
          * that appear in the mode provided.
          * @param  {Number} [avoid_leaps_over=5] - The generator will attempt to avoid returning melodies that leap beyond the this IC.
@@ -2898,7 +2898,7 @@ class EDO {
 
         /** Returns the retrograde of a given set of pitches (their reversed order)
          *
-         * @param  {Array<Number>} scale - a collection of pitches (not necessarily PCs)
+         * @param  {Array<Number>} scale - a collection of pitches (not necessarily pitch-classes)
          * @return {Array<Number>} The reversed input
          * @memberOf EDO#get
          * @example
@@ -2911,7 +2911,7 @@ class EDO {
 
         /**
          * <p>Returns a given collection of pitches, rotated n times.
-         * @param  {Array<Number>} pitches - a collection of pitches (not necessarily PCs, not necessarily unique)
+         * @param  {Array<Number>} pitches - a collection of pitches (not necessarily pitch-classes, not necessarily unique)
          * @param  {Number} n - Number of rotations
          * @return {Array<Number>}
          * @memberOf EDO#get
@@ -2928,7 +2928,7 @@ class EDO {
 
         /**
          * <p>Returns all the rotations (inversions) of an array of pitches</p>
-         * @param  {Array<Number>} pitches - a collection of pitches (not necessarily PCs, not necessarily unique)
+         * @param  {Array<Number>} pitches - a collection of pitches (not necessarily pitch-classes, not necessarily unique)
          * @return {Array<Array<Number>>}
          * @memberOf EDO#get
          * @example
@@ -2946,8 +2946,8 @@ class EDO {
 
         /**
          * <p>Returns all the melodies that can be constructed without any leaps (regardless of how many notes in the melody need to be skipped until next scalar note is found)</p>
-         * @param  {Array<Number>} melody - a collection of pitches (not necessarily PCs, not necessarily unique)
-         * @param  {Array<Number>} [steps=[1,2]] - which PCs to consider as steps
+         * @param  {Array<Number>} melody - a collection of pitches (not necessarily pitch-classes, not necessarily unique)
+         * @param  {Array<Number>} [steps=[1,2]] - which pitch-classes to consider as steps
          * @param  {Boolean} [look_back=true] - When true, the algorithm creates alternate paths to already resolves melodies. When false, resolved melodies will not be considered and a new path will begin.
          * @return {Array<Object>} object with property <code>pitch</code> indicating the pitch, and property <code>index</code> representing its original position in the melody.
          * @memberOf EDO#get
@@ -3226,7 +3226,7 @@ class EDO {
         },
 
         /** Returns the given pitches, such that they are shifted to start from <code>start_at</code>.
-         * @param  {Array<Number>} pitches - an array of pitches (or PCs)
+         * @param  {Array<Number>} pitches - an array of pitches (or pitch-classes)
          * @param  {Number} start_at - The number to which everything will be shifted
          * @param  {Boolean} [as_PCs=true] - when false the shift will respect the octave, when true, the array will be returned containing only Pitch Classes
          * @return {Array<Number>}
@@ -3865,7 +3865,7 @@ class EDO {
          * @param  {Number} [length=200] - The length (or height) or the tree's "trunk".
          * @param  {Number} [angle_span=90] - the angle between branches.
          * @param  {Array<Number>} [mode=[0,2,4,5,7,9,11]] - If provided, the tree will conform to that mode.
-         * @param  {Array<Number>} [intervals=[-1,1]] - If mode is provided, each interval represents the number of scale degrees away from the current node. If mode is not provided, the intervals represent PCs away from the current node.
+         * @param  {Array<Number>} [intervals=[-1,1]] - If mode is provided, each interval represents the number of scale degrees away from the current node. If mode is not provided, the intervals represent pitch-classes away from the current node.
          * @param  {Number} [iterations=5] - The number of sub-branches on the tree
          * @param  {Number} [length_mul=0.7] - The factor by which every new sub-branch's length is to its parent.
 
@@ -3989,7 +3989,7 @@ class EDO {
          * @param  {Number} [args.radius] - The center y coordinate of the necklace (in relation to the paper object)
          * @param  {Boolean} [args.ring=true] - When false, the necklace ring will be hidden.
          * @param  {Boolean} [args.inner_strings=true] - When false, the necklace's inner strings will be hidden.
-         * @param  {Number} [args.PC_at_midnight=0] - The PC starting the necklace at the very top (midnight)
+         * @param  {Number} [args.PC_at_midnight=0] - The pitch-class starting the necklace at the very top (midnight)
          * @param  {Number} [args.string_width=1] - The width of the strings of the necklace.
          * @param  {Number} [args.node_radius] - The radius of each node on the necklace
          *
@@ -4368,7 +4368,7 @@ class Scale {
      * @example
      * //Basic usage 1:
      * let edo = new EDO(12) //create a new EDO context with 12 divisions.
-     * let scale = new Scale([0,2,4,5,7,9,11],edo) //pass the PCs and edo context to the scale
+     * let scale = new Scale([0,2,4,5,7,9,11],edo) //pass the pitch-classes and edo context to the scale
      *
      * //Basic usage 2 (preferred):
      * let edo = new EDO(12) //create a new EDO context with 12 divisions.
@@ -4411,7 +4411,7 @@ class Scale {
     count = {
 
         /**
-         * <p>Returns the number of times a certain chord (or interval) quality (specified in PCs above the root) exists in the scale.</p>
+         * <p>Returns the number of times a certain chord (or interval) quality (specified in pitch-classes above the root) exists in the scale.</p>
          * <p>E.g. <code>scale.count.chord_quality([4, 7, 11])</code> counts the number of times a major 7th (if in 12 TET) appears in a scale</p>
          * @param {Array<Number|Array<Number>>} intervals - intervals above 0
          * @return {Number}
@@ -4428,7 +4428,7 @@ class Scale {
          * @example
          * //(in 12-EDO) count how many major OR minor triads are in the diatonic scale
          * let scale = edo.scale([0,2,4,5,7,9,11]) //define new scale (Major)
-         * //count how many times in the diatonic scale, the 1st interval is a PC3 OR PC4, and the 2nd interval a PC7
+         * //count how many times in the diatonic scale, the 1st interval is a pitch-class of 3 OR PC4, and the 2nd interval a PC7
          * scale.count.chord_quality([[3,4], 7]) //returns 6
          * @memberOf Scale#count*/
         chord_quality: (intervals) => {
@@ -5118,7 +5118,7 @@ class Scale {
             return result
         },
 
-        /** <p>Returns all the PCs of the EDO that the scale does not use.</p>
+        /** <p>Returns all the pitch-classes of the EDO that the scale does not use.</p>
          * @param {boolean} [from_0=false] - when true, the output will be normalized to 0.
          * @returns {Array<Number>}
          * @memberOf Scale#get
@@ -5351,8 +5351,8 @@ class Scale {
 
         /** <p>Calculates the attraction between note1 to note2 according to Lerdahl's formula in TPS</p>
          * @see Lerdahl, F. (2004). Tonal pitch space, Oxford University Press.
-         * @param {Number} note1 - The first PC
-         * @param {Number} note2 - The second PC
+         * @param {Number} note1 - The first pitch-class
+         * @param {Number} note2 - The second pitch-class
          * @returns {Number} The value of attraction between note1 and note2
          * @memberOf Scale#get
          *
@@ -5608,7 +5608,7 @@ class Scale {
          * <p>The name of the scale in the form EDO-Code, EDO being the number of divisions of the octave in the current
          * system, and code being the binary value of the scale (see example below).</p>
          * <p>For simplicity consider a system with 4 divisions. Such a system has 4 possible pitches: <code>[0,1,2,3]</code>.<br>
-         *     The scale vector is a binary representation of the PCs used in the scale in reversed order. So the scale
+         *     The scale vector is a binary representation of the pitch-classes used in the scale in reversed order. So the scale
          *     [0,2] would have a representation of: <code>[0,1,0,1]</code><br>
          *         As such, the name for this scale will be 4-5</p>
          * @memberOf Scale#get
@@ -5761,7 +5761,7 @@ class Scale {
         },
 
         /** Returns the scale's pitches as pitch classes
-         * @returns {Array<Number>} The scale's pitches as PCs
+         * @returns {Array<Number>} The scale's pitches as pitch-classes
          * @memberOf Scale#get
          */
         pitches: () => {
@@ -5771,7 +5771,7 @@ class Scale {
         /** <p>Gets a list of intervals above a root, and returns all the positions in the scale where this
          chord quality can be created</p>
          *
-         * @returns {Array<Number>} The PCs on which the quality can be built
+         * @returns {Array<Number>} The pitch-classes on which the quality can be built
          * @memberOf Scale#get
          * @example
          * let edo = new EDO(12) //define context
@@ -5962,7 +5962,7 @@ class Scale {
 
         /** <p>Returns the sum of the roughness of every pair in the set in a certain mode or averaged across all modes</p>
          * @param {Boolean} [all_modes=false] - When true, the algorithm returns the roughness value for all of the modes
-         * @param {Number} [base_freq=440] - The frequency to associate with PC0
+         * @param {Number} [base_freq=440] - The frequency to associate with the pitch-class 0
          * @returns Number
          * @example
          * let edo = new EDO(12) //define tuning
@@ -6686,7 +6686,7 @@ class Scale {
         },
 
         /**
-         * Instead of PCs, this returns the scale represented by intervals (steps between notes)
+         * Instead of pitch-classes, this returns the scale represented by intervals (steps between notes)
          * @param {Boolean} [cache=false] - when true, the result is cached for future retrieval
          * @returns {Array<Number>}
          * @memberOf Scale#to
