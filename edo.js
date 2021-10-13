@@ -4571,7 +4571,7 @@ class Scale {
         },
 
         /**
-         * <p>Returns the number of Major Thirds (with a tolerance of 20 cents) in the scale.</p>
+         * <p>Returns the number of Major Thirds (approximations of 5:4 with a tolerance of 20 cents) in the scale.</p>
          *
          * <p>(To count other intervals or set a different tolerance use [Scale.count.ratio()]{@link Scale#count.ratio})</p>
          * @return {Number}
