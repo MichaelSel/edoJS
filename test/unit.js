@@ -14,6 +14,8 @@ function unit_tests() {
     const maj3 = edo12.scale([0,4,7]) // The major triad
     const min3 = edo12.scale([0,3,7]) // The minor triad
     const f6f7 = edo12.scale([0,2,4,5,7,8,10]) // Major scale with flat 6 and flat 7
+    const dimdim = edo12.scale([0,3,6,9]) // fully diminished
+
     describe("EDO Class Unit Tests", function () {
         describe('EDO.convert', function () {
             describe('Deterministic tests in 12EDO', function () {
@@ -222,7 +224,68 @@ function unit_tests() {
                     levenshtein: [penta.get.levenshtein,[[0,2,4,5,7,9,11]],2],
                     myhill_property: [penta.get.myhill_property,[],true],
                     modes: [penta.get.modes,[],[[ 0, 2, 4, 7, 9 ],[ 0, 2, 5, 7, 10 ],[ 0, 3, 5, 8, 10 ],[ 0, 2, 5, 7, 9 ],[ 0, 3, 5, 7, 10 ]]],
-                    
+                    // motives_diatonic: [scale.get.motives_diatonic,[[8,7,7,8,7,7,8,7,7,15,15,14,12,12,10,8,8,7,5,5]],[{ motive: [ 0 ], incidence: 9 },{ motive: [ -1 ], incidence: 6 },{ motive: [ -1, 0 ], incidence: 5 } ]],
+                    n_chords: [penta.get.n_chords,[3], [[ 0, 2, 4 ],[ 0, 2, 7 ],[ 0, 3, 5 ],[ 0, 4, 7 ],[ 0, 3, 7 ],[ 0, 2, 5 ] ]],
+                    // n_chords_diatonic: [],
+                    // name: [],
+                    neighborhood: [maj3.get.neighborhood,[1,1,true,true], [[ 0, 3, 6 ],[ 0, 3, 7 ],[ 0, 2, 7 ],[ 0, 4, 8 ],[ 0, 4, 6 ] ]],
+                    normal_order: [dia.get.normal_order,[],[0, 1, 3, 5, 6, 8, 10]],
+                    // pairwise_generic_specific_intervals: [dia.get.pairwise_generic_specific_intervals,[],[0, 1, 3, 5, 6, 8, 10]],
+                    permutations: [min3.get.permutations,[], [[0,3,7],[0,7,3],[3,0,7],[3,7,0],[7,0,3],[7,3,0]]],
+                    pitches: [dia.get.pitches,[],[0,2,4,5,7,9,11]],
+                    position_of_quality: [dia.get.position_of_quality,[[0,4,7]],[0,5,7]],
+                    prime_form: [dia.get.prime_form,[],[0, 1, 3, 5, 6, 8, 10]],
+                    product: [penta.get.product,[5,true],[ 0, 8, 9, 10, 11 ]],
+                    // quality_with_intervals: [],
+                    rotations: [min3.get.rotations,[],[[0,3,7],[3,7,0],[7,0,3]]],
+                    rothenberg_propriety: [penta.get.rothenberg_propriety,[], "strictly proper"],
+                    roughness: [penta.get.roughness,[false, 440],0.21543265646088483],
+                    sameness_quotient: [dia.get.sameness_quotient,[], 0.5555555555555556],
+                    coherence_quotient: [penta.get.coherence_quotient,[],1],
+                    scale_degree_transpositions: [dia.get.scale_degree_transpositions,[],[[ [0, 2, 4, 5, 7, 9, 11], 0 ],[ [0, 2, 4, 5, 7, 9, 10], 1 ],[ [0, 2, 4, 6, 7, 9, 11], 1 ],[ [1, 2, 4, 6, 7, 9, 11], 2 ],[ [1, 2, 4, 6, 8, 9, 11], 3 ],[ [1, 3, 4, 6, 8, 9, 11], 4 ],[ [1, 3, 4, 6, 8, 10, 11], 5 ] ]],
+                    segments: [dia.get.segments,[],[[2,2],[1],[2,2,2],[1]]],
+                    sequence_transposition: [penta.get.sequence_transposition,[[0,2,4],1], [ 2, 4, 7 ]],
+                    // shortest_path: [],
+                    stacks: [dia.get.stacks,[5,2], [[ 0, 5, 11, 4, 9 ],[ 0, 5, 10, 3, 9 ],[ 0, 5, 10, 3, 8 ],[ 0, 6, 11, 4, 9 ],[ 0, 5, 10, 4, 9 ] ]],
+                    step_sizes: [dia.get.step_sizes,[],[1,2]],
+                    steps_to_qualities: [dia.get.steps_to_qualities,[[1,1]], {"steps":[1,1],"combos":[{"quality":[0,2,4],"positions":[0,5,7]},{"quality":[0,2,3],"positions":[2,9]},{"quality":[0,1,3],"positions":[4,11]}]}],
+                    supersets: [min3.get.supersets,[[[0,1,2,3,4,5,6,7],[0,3,4,7],[0,1,2]]],[[0,1,2,3,4,5,6,7],[0,3,4,7]]],
+                    tetrachords: [penta.get.tetrachords,[],[ [ 0, 2, 4, 7 ], [ 0, 3, 5, 7 ], [ 0, 2, 5, 7 ], [ 0, 3, 5, 8 ] ]],
+                    scale_degree_roles: [penta.get.scale_degree_roles,[],[ [ 1, 2, 3, 5, 6 ]]],
+                    transposition: [penta.get.transposition,[5],[ 5, 7, 9, 0, 2 ]],
+                    transpositions_with_pitches: [dia.get.transpositions_with_pitches,[[1,4,8]], [{pitches: [9,11,1,2,4,6,8], common_tones: 4}, {pitches: [4,6,8,9,11,1,3], common_tones: 3}, {pitches: [11,1,3,4,6,8,10], common_tones: 2}  ]],
+                    trichords: [penta.get.trichords,[], [[ 0, 2, 4 ],[ 0, 2, 7 ],[ 0, 3, 5 ],[ 0, 4, 7 ],[ 0, 3, 7 ],[ 0, 2, 5 ] ]],
+                    without: [dia.get.without,[[5,11]],[0,2,4,7,9]]
+
+
+
+
+                }
+                for(let test_name in tests) {
+                    it(test_name,function(){
+                        tests[test_name][0](...tests[test_name][1]).should.be.eql(tests[test_name][2])
+                    })
+                }
+            })
+        })
+        describe('Scale.is', function () {
+            describe('Deterministic tests in 12EDO', function () {
+                let tests = {
+                    deep: [dia.is.deep,[],true],
+                    distributionally_even: [dia.is.distributionally_even,[],true],
+                    in_lower_edos: [dimdim.is.in_lower_edos,[],[4]],
+                    invertible: [dia.is.invertible,[],false],
+                    maximally_even: [dia.is.maximally_even,[],true],
+                    myhill_property: [dia.is.myhill_property,[],true],
+                    mode_of: [dia.is.mode_of,[[0,2,3,5,7,9,10]],true],
+                    MOLT: [WT.is.MOLT,[],true],
+                    normal_order: [dia.is.normal_order,[],false],
+                    one_of: [dia.is.one_of,[[[0,2,3,5,7,9,10],[0,1,2,3,4,5,6,7,8,9]]],true],
+                    prime_form: [dia.is.prime_form,[],false],
+                    subset:[dia.is.subset,[[[0,2,4,5],[7,9,11]]], false]
+
+
+
 
                 }
                 for(let test_name in tests) {

@@ -5721,10 +5721,7 @@ class Scale {
      * @memberOf Scale#get
      *
      * @example
-     * let edo = new EDO(12) //define context
-     * let scale = edo.scale([0,2,4,5,7,9,11]) //major scale
-     * scale.get.pairwise_generic_specific_intervals() //returns [0, 1, 3, 5, 6, 8, 10]
-     * @see Rahn, J. (1991). "Coordination of interval sizes in seven-tone collections." Journal of Music Theory 35(1/2): 33-60.
+         * * @see Rahn, J. (1991). "Coordination of interval sizes in seven-tone collections." Journal of Music Theory 35(1/2): 33-60.
      * */
         pairwise_generic_specific_intervals: (SD1,SD2) => {
             let mod = this.parent.mod
@@ -5852,10 +5849,7 @@ class Scale {
          * @memberOf Scale#get
          *
          * @example
-         * let edo = new EDO(12) //define context
-         * let scale = edo.scale([0,2,4,7,9]) //pentatonic scale
-         * scale.get.product(2) //returns [ 0, 4, 8, 2, 6 ]
-         * scale.get.product(5,true) //returns [ 0, 8, 9, 10, 11 ]*/
+        */
         quality_with_intervals: (intervals=[7],length) => {
             let all = []
             let TET = this.edo
@@ -5968,7 +5962,7 @@ class Scale {
          * let edo = new EDO(12) //define tuning
          * let scale = edo.scale([0,2,4,7,9]) //a major pentatonic scale
          * scale.get.roughness()
-         * //returns 0.376424315400336
+         * //returns 0.21543265646088483
          * @memberOf Scale#get
          * @see EDO#get.sine_pair_dissonance
          * */
@@ -6015,7 +6009,7 @@ class Scale {
          * @returns Number
          * @example
          * let edo = new EDO(12) //define tuning
-         * let scale = edo.scale([0,2,4,5,7,9,11]) //The diatonic scale
+         * let scale = edo.scale([0,2,4,7,9]) //The pentatonic scale
          * scale.get.coherence_quotient() //returns 1
          * @see Carey, N. (2007). "Coherence and sameness in well-formed and pairwise well-formed scales." Journal of Mathematics and Music 1(2): 79-98.
          * @memberOf Scale#get*/
@@ -6305,7 +6299,7 @@ class Scale {
          * let edo = new EDO(12) //define context
          * let scale = edo.scale([0,2,4,7,9]) //pentatonic scale
          * scale.get.scale_degree_roles()
-         * //returns [ [ 1, 2, 3, 5, 6 ], [ 1, 2, 3, 5, 7 ] ] (the last note can be interpreted as a major 6th, or a diminished 7th)
+         * //returns [ [ 1, 2, 3, 5, 6 ] ] (the last note can be interpreted as a major 6th, or a diminished 7th)
          *
          */
         scale_degree_roles: (interval_map) => {
@@ -6440,7 +6434,7 @@ class Scale {
          * @example
          * let edo = new EDO(12) //define context
          * let scale = edo.scale([0,2,4,5,7,9,11]) //major scale
-         * scale.is.deep() //returns false
+         * scale.is.deep() //returns true
          * @see Clough, J., et al. (1999). "Scales, sets, and interval cycles: A taxonomy." Music Theory Spectrum 21(1): 74-104.
          * */
         deep: () => {
@@ -6461,11 +6455,11 @@ class Scale {
          * */
         distributionally_even: () => {
             let map = {}
-            for (let i = 0; i < this.count.pitches(); i++) {
+            for (let i = 1; i < this.count.pitches(); i++) {
                 let gen = this.get.generic_intervals(i)
                 gen.forEach(interval=>(map[interval.generic])?map[interval.generic].push(interval.specific):map[interval.generic]=[interval.specific])
             }
-            for (let i = 0; i < this.count.pitches(); i++) {
+            for (let i = 1; i < this.count.pitches(); i++) {
                 if(map[String(i)].length>2) return false
             }
             return true
@@ -6533,11 +6527,11 @@ class Scale {
          * */
         maximally_even: () => {
             let map = {}
-            for (let i = 0; i < this.count.pitches(); i++) {
+            for (let i = 1; i < this.count.pitches(); i++) {
                 let gen = this.get.generic_intervals(i)
                 gen.forEach(interval=>(map[interval.generic])?map[interval.generic].push(interval.specific):map[interval.generic]=[interval.specific])
             }
-            for (let i = 0; i < this.count.pitches(); i++) {
+            for (let i = 1; i < this.count.pitches(); i++) {
                 if(map[String(i)].length>2) return false
                 if(map[String(i)].length==2) {
                     if(Math.abs(map[String(i)][0]-map[String(i)][1]) != 1) return false
