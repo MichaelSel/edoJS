@@ -15,4 +15,4 @@ jobs:
       - run: npm install
       - run: npm publish
         env:
-          NODE_AUTH_TOKEN: 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
+          NODE_AUTH_TOKEN: ${{secret.NPM_TOKEN}}
