@@ -6,9 +6,12 @@ As such, it allows to describe collections of pitches in psycho-acoustical terms
 
 This library is aimed at music theorists, musicologists, and cognitive scientists working on musical research, for the creation of stimuli for experiments, and for the analysis of musical structures.
 
+## Installation and Usage
 
-
-## Usage
+To install npm (its dependencies)
+```
+npm i edo.js
+```
 
 #### Import Library
 Client-Side
@@ -36,6 +39,19 @@ edo.count.pitches([0, 3, 3, 2, 4, 3, 4]) //returns [[3,3],[4,2], [2,1], [0,1]]
 // (3 appears 3 times, 4 appears 2 times, etc.)
  
 edo.is.subset([2,4],[1,2,3,4,5]) //returns true (the set [2,4] IS a subset of [1,2,3,4,5])
+```
+
+## Development
+
+To install development dependencies:
+```
+npm i edo.js --dev
+```
+
+To test: 
+
+```
+npm test
 ```
 
 ## Author
