@@ -340,9 +340,9 @@
         }
 
         /**
-         * Returns a new Scale Object with given pitches
+         * <p>Returns a new Scale Object with given pitches</p>
+         * <p>Remark: "pitch classes" conform to the current tuning system used. 0-11 in 12EDO, 0-16 in 17EDO, etc.</p>
          * @param  {Array<Number>} pitches - a collection of pitch classes
-         * @remarks "pitch classes" conform to the current tuning system used. 0-11 in 12EDO, 0-16 in 17EDO, etc.
          * @return {Scale}
          */
         scale(pitches) {
@@ -511,15 +511,14 @@
                 return pitches
             },
 
-            /** Gets a series of intervallic units . Returns a scale as list of pitch classes
-             *
+            /** <p>Gets a series of intervallic units . Returns a scale as list of pitch classes</p>
+             *<p>Remark: "pitch classes" conform to the current tuning system used. 0-11 in 12EDO, 0-16 in 17EDO, etc.</p>
              * @param  {Array<Number>} intervals - A list of intervals
              * @example
              * let edo = new EDO(12) // define a tuning system with 12 divisions of the octave
              * edo.convert.intervals_to_scale([2, 2, 1, 2, 2, 2, 1])
              * // returns [0,2,4,5,7,9,11]
              * @returns {Number} A scale made up by adding the intervals in order
-             * @remarks "pitch classes" according to the current tuning system used. 0-11 in 12EDO, 0-16 in 17EDO, etc.
              * @memberOf EDO#convert*/
             intervals_to_scale: (intervals) => {
                 let pcs = [0];
@@ -648,11 +647,11 @@
                 return PC[pc].trim()
             },
 
-            /** Normalizes any input to include pitch-classes only (to ignore octave displacement)
+            /** <p>Normalizes any input to include pitch-classes only (to ignore octave displacement)</p>
+             * <p>Remark: "pitch classes" conform to the current tuning system used. 0-11 in 12EDO, 0-16 in 17EDO, etc.</p>
              * @param  {Array<Number>} pitches - any collection of pitches (e.g. a melody)
              * @returns {Array<Number>} the input as pitch classes
              * @memberOf EDO#convert
-             * @remarks "pitch classes" according to the current tuning system used. 0-11 in 12EDO, 0-16 in 17EDO, etc.
              * @example
              * let edo = new EDO(12) // define a tuning system with 12 divisions of the octave
              * edo.convert.pitches_to_PCs([0,2,12,-2,7])
@@ -675,13 +674,12 @@
                 return 1200 * Math.log2(ratio)
             },
 
-            /** Returns all of the intervallic units in the EDO that equal to a given ratio (with a given tolerance in cents)
-             *
+            /** <p>Returns all of the intervallic units in the EDO that equal to a given ratio (with a given tolerance in cents)</p>
+             *<p>Remark: "intervallic units" conform to the current tuning system used. E.g., 0-11 occupy 1 octave in 12EDO, 0-16 in 17EDO, etc.</p>
              * @param  {Number} ratio - A harmonic ratio
              * @param  {Number} [tolerance=10] - a tolerance (allowed error) in cents
              * @returns {Array<Number>} Intervals that fit that ratio
              * @memberOf EDO#convert
-             * @remarks "intervallic units" are marked 0 t n-1 with n being equal to the current edo system. so 0-11 in 12EDO, and 0-16 in 17EDO
              * @example
              * let edo = new EDO(12) // define a tuning system
              * edo.convert.ratio_to_interval(3/2)
@@ -732,9 +730,9 @@
         count = {
             /**
              * Returns the number of commons tones between two collections of pitches
+             * <p>Remark: "pitches" conform to the current tuning system used. E.g., 0-11 occupy 1 octave in 12EDO, 0-16 in 17EDO, etc.</p>
              * @param  {Array<Number>} list1 - a collection of pitches (not necessarily pitch classes)
              * @param  {Array<Number>} list2 - a collection of pitches (not necessarily pitch classes)
-              * @remarks "pitches" according to the current tuning system used. 0-11 will occupy 1 octave in 12EDO, 0-16 in 17EDO, etc.
              * @return {Number} The number of common tones between the two lists
              * @memberOf EDO#count
              * @example
@@ -1109,10 +1107,10 @@
             },
 
             /** <p>Returns all the pitch-classes of the EDO that the scale does not use.</p>
+             * <p>Remark: "pitch-classes" conform to the current tuning system used. E.g., 0-11 in 12EDO, 0-16 in 17EDO, etc.</p>
              * @param {boolean} [from_0=false] - when true, the output will be normalized to 0.
              * @returns {Array<Number>}
              * @memberOf EDO#get
-             * @remarks "pitch classes" according to the current tuning system used. 0-11 in 12EDO, 0-16 in 17EDO, etc.
              * @example
              * let edo = new EDO(12) // define a tuning system
              * edo.get.complementary_set([0,2,4,5,7,9,11])
@@ -1174,7 +1172,7 @@
             },
 
             /** <p>Returns a chord progression to harmonize a given melodies with given possible chord qualities.</p>
-             * @param {<Array<Number>} melody - The melody
+             * @param {Array<Number>} melody - The melody
              * @param {Array<Array<Number>>} allowed_qualities - A list of allowed chord qualities (regardless of transposition)
              * @param {Array<Number>} starting_chord - The first chord in the progression (using exact pitches and voicing)
              * @param {Number} [common_notes_min=1] - The minimal number of notes in common between every two succeeding chords in the progression.
@@ -1459,7 +1457,7 @@
 
 
             /** <p>Returns the interval between two pitch classes.</p>
-             * @remarks "pitch classes" according to the current tuning system used. 0-11 in 12EDO, 0-16 in 17EDO, etc.
+             * <p>Remark: "pitch classes" conform to the current tuning system used. E.g., 0-11 in 12EDO, 0-16 in 17EDO, etc.</p>
              * @param {Number} PC1 - The first pitch class
              * @param {Number} PC2 - The second pitch class
              * @returns {Array<Number>}
@@ -2076,11 +2074,11 @@
             },
 
             /** Returns the normal order of a given set of pitches
+             * <p>Remark: "intervallic units" conform to the current tuning system used. E.g., 0-11 in 12EDO, 0-16 in 17EDO, etc.</p>
              * @param  {Array<Number>} scale - a collection of pitch-classes
              * @param  {Boolean} cache - if true, the result will be cached for faster retrieval
              * @return {Array<Array<Number>>}
              * @memberOf EDO#get
-             * @remarks "pitch classes" according to the current tuning system used. 0-11 in 12EDO, 0-16 in 17EDO, etc.
              * @example
              * let edo = new EDO(12) // create a tuning context
              * edo.get.modes([0,2,4,5,7,9,11]) //Major scale
@@ -2123,6 +2121,7 @@
              * <p>Extracts every possible "motive" from a given melody.</p>
              * <p>A motive can be intervalic (default) such that it looks at the intervallic units rather than the pitch classes.
              * The function also keeps track of the number of times each motive appeared.</p>
+             * <p>Remark: "intervals" conform to the current tuning system used. E.g., 0-11 occupy 1 octave in 12EDO, 0-16 in 17EDO, etc.</p>
              * @param  {Array<Number>} melody - a collection of pitches to find (in order)
              * @param  {Boolean} [intervallic=true] - looks at the intervals rather than the pitch classes.
              * @param  {Boolean} [allow_skips=true] - if false, the search will only be done on consecutive items
@@ -2130,7 +2129,6 @@
              * @return {Array<motives>}
              * @memberOf EDO#get
              * @function
-             * @remarks "intervals" conform to the current tuning system used. 0-11 occupy an octave in 12EDO, 0-16 in 17EDO, etc.
              * @example
              * let edo = new EDO(12) // define a tuning system
              * edo.get.motives([7,6,7,6,7,2,5,3,0]).slice(0,4) //get first 3 motives
@@ -2170,10 +2168,10 @@
             },
 
             /** Returns all necklaces from a given set of steps
+             * <p>Remark: "intervals" conform to the current tuning system used. E.g., 0-11 occupy 1 octave in 12EDO, 0-16 in 17EDO, etc.</p>
              * @param  {Array<Number>} lst - a set of intervals
              * @return {Array<Array<Number>>} Necklaces
              * @memberOf EDO#get
-             * @remarks "intervals" conform to the current tuning system used. 0-11 occupy 1 octave in 12EDO, 0-16 in 17EDO, etc.
              * @example
              * let edo = new EDO(12)
              * edo.get.necklace([2,2,1,2,2,2,1])
@@ -2294,11 +2292,11 @@
             },
 
             /** Returns the normal order of a given set of pitches
+             * <p>Remark: "pitch classes" conform to the current tuning system used. E.g., 0-11 in 12EDO, 0-16 in 17EDO, etc.</p>
              * @param  {Array<Number>} lst - a collection of pitch-classes
              * @param  {Boolean} cache - if true, the result will be cached for faster retrival
              * @return {Array<Number>} The normal order of the input
              * @memberOf EDO#get
-             * @remarks "pitch classes" according to the current tuning system used. 0-11 in 12EDO, 0-16 in 17EDO, etc.
              * @example
              * let edo = new EDO(12) //Create a tuning context
              * edo.get.normal_order([0,2,4,5,7,9,11])
@@ -2886,11 +2884,10 @@
             },
 
             /** Returns the retrograde of a given set of pitches (their reversed order)
-             *
+             *<p>Remark: "pitches" conform to the current tuning system used. E.g., 0-11 occupy 1 octave in 12EDO, 0-16 in 17EDO, etc.</p>
              * @param  {Array<Number>} scale - a collection of pitches (not necessarily pitch-classes)
              * @return {Array<Number>} The reversed input
              * @memberOf EDO#get
-             * @remarks "pitch" according to the current tuning system used. 0-11 will occupy 1 octave in 12EDO, 0-16 in 17EDO, etc.
              * @example
              * let edo = new EDO(12) // define a tuning system
              * edo.get.retrograde([0,2,4,5,7,9,11])
@@ -2936,12 +2933,12 @@
 
             /**
              * <p>Returns all the melodies that can be constructed without any leaps (regardless of how many notes in the melody need to be skipped until next scalar note is found)</p>
+             * <p>Remark: "intervallic units" conform to the current tuning system used. E.g., 0-11 occupy 1 octave in 12EDO, 0-16 in 17EDO, etc.</p>
              * @param  {Array<Number>} melody - a collection of pitches (not necessarily pitch-classes, not necessarily unique)
              * @param  {Array<Number>} [steps=[1,2]] - which intervallic units to consider as steps
              * @param  {Boolean} [look_back=true] - When true, the algorithm creates alternate paths to already resolves melodies. When false, resolved melodies will not be considered and a new path will begin.
              * @return {Array<Object>} object with property <code>pitch</code> indicating the pitch, and property <code>index</code> representing its original position in the melody.
              * @memberOf EDO#get
-             * @remarks "intervallic units" according to the current tuning system used. 0-11 in 12EDO, 0-16 in 17EDO, etc.
              * @example
              * let edo = new EDO(12) // define a tuning system
              * let melody = [2,2,4,2,7,6,2,2,4,2,9,7] //happy birthday song
@@ -3019,7 +3016,7 @@
             },
 
             /** Generates all possible necklaces (unique scales without their modes) based on input parameters.
-             *
+             *<p>Remark: "intervallic units" / "step sizes" conform to the current tuning system used. E.g., 0-11 in 12EDO, 0-16 in 17EDO, etc.</p>
              * @param  {Number} min_step - The smallest step size that can be used to form scales. If min_step=3, no scale will contain
              * intervallic units smaller than 3 (so no intervals of size 2, or 1 will be found in any scale)
              * @param  {Number} max_step - The largest step that can be used to form scales. If max_step=3, no scale will contain
@@ -3036,7 +3033,6 @@
              * In the case of max_sizes=2, the following scale will be excluded: [0,1,4,5,7,10,11], because it has >2 (3)
              * step sizes. step size=1 between 0 and 1, step size=2 between 5 and 7, and step size = 3 between 1 and 4.
              * @return {Array<Scale>} all the scales that abide by the criteria given
-             * @remarks "intervallic units" / "step sizes" / etc.  conform to the current tuning system used. 0-11 in 12EDO, 0-16 in 17EDO, etc.
              * @memberOf EDO#get*/
             scales: (min_step = 1, max_step = this.edo - 1, min_sizes = 1, max_sizes = this.edo, max_num_of_pitches=this.edo,EDO = this,) => {
 
@@ -3149,13 +3145,12 @@
              * <p>Note: the order of the intervals is mutable and can be jumbled up at will without harming the
              * result. In the example given, as long as there are six 3s and two -7s. the sum will be -4. So
              * there is potential for permutations.</p>
-             *
+             *<p>Remark: "intervallic units" conform to the current tuning system used. E.g., 0-11 occupy 1 octave in 12EDO, 0-16 in 17EDO, etc.</p>
              *
              * @param  {Number} destination - the destination note. This is an int that represents some interval away from 0.
              * @param  {Array<Number> | Number} intervals - the intervallic units to be used (usually at least one positive interval to move up and one negative to move down)
              * @return {Array<Array<Number>>} an sorted array of the intervals needed to reach the destination starting from 0.
              * @memberOf EDO#get
-             * @remarks "intervallic units" conform to the current tuning system used. 0-11 in 12EDO, 0-16 in 17EDO, etc.
              * @example
              * //The quickest way to get to E (from 0) moving up with P5s and down with m3s
              * let path = edo.get.shortest_path(7,[5,-3]) // returns [ -3, 5, 5 ]
@@ -3219,11 +3214,11 @@
             },
 
             /** Returns the given pitches, such that they are shifted to start from <code>start_at</code>.
+             * <p>Remark: "pitches" conform to the current tuning system used. E.g., 0-11 occupy 1 octave in 12EDO, 0-16 in 17EDO, etc.</p>
              * @param  {Array<Number>} pitches - an array of pitches (or pitch-classes)
              * @param  {Number} start_at - The number to which everything will be shifted
              * @param  {Boolean} [as_PCs=true] - when false the shift will respect the octave, when true, the array will be returned containing only Pitch Classes
              * @return {Array<Number>}
-             * @remarks "pitches" conform to the current tuning system used. 0-11 occupy an octave in 12EDO, 0-16 in 17EDO, etc.
              * @memberOf EDO#get
              *
              * @example
@@ -3326,13 +3321,12 @@
             },
 
             /** Transposes the input by a given amount
-             *
+             *<p>Remark: "a single octave" conform to the current tuning system used. E.g., 0-11 occupy 1 octave in 12EDO, 0-16 in 17EDO, etc.</p>
              * @param  {Array<Number>} pitches - a given array of pitches
              * @param  {Number} [amount=0] - the interval by which to transpose
              * @param  {Boolean} [as_PC=true] - if true, the intervals returns will conform to a single octave
              * @returns {Array<Number>}
              * @memberOf EDO#get
-             * @remarks "a single octave" conforms to the current tuning system used. 0-11 in 12EDO, 0-16 in 17EDO, etc.
              * @example
              * let edo = new EDO(12) //Create a tuning context
              * edo.get.transposition([0,2,4,5,7,9,11],7)
@@ -3558,14 +3552,13 @@
             },
 
             /** <p>Gets a midi file and chunks all notes to partitions of a certain timeframe</p>
-             *
+             *<p>Remark: "pitch classes" conform to the current tuning system used. E.g., 0-11 in 12EDO, 0-16 in 17EDO, etc.</p>
              * @param  {JSON} parsed_midi - The returned JSON from [EDO.midi.import()]{@link EDO#midi.import}
              * @param  {Number} [ticks=480] - The number of ticks for each partition (the "harmonic rhythm")
              * @param  {Boolean} [unique=true] - When true, even if a note is repeated within a given timeframe it will appear once.
              * @param  {Boolean} [as_PC=false] - When true, instead of returning the midi note number, the pitches will be returned as pitch classes
              * @param  {Boolean} [ordered=false] - When true, each chord will be sorted by pitch height (rather than the order in which it appeared in the midi file)
              * @returns {Array<Array<Number>>} The midi file returns as array of chords corresponding the to the given timeframe
-             * @remarks "pitch classes" conform to the current tuning system used. 0-11 in 12EDO, 0-16 in 17EDO, etc.
              * @example
              * let edo = new EDO(12) // define a tuning system
              * let bach = edo.midi.import('midi/Bach - Prelude1.mid') //parsing Bach prelude in C major midi file
@@ -3755,10 +3748,10 @@
 
             /**
              * Returns true the two given collections of pitches are a transposition of one another.
+             * <p>Remark: "pitches" conform to the current tuning system used. E.g., 0-11 occupy 1 octave in 12EDO, 0-16 in 17EDO, etc.</p>
              * @param  {Array<Number>} collection1 - a collection of pitches (not necessarily pitch classes)
              * @param  {Array<Number>} collection2 - a collection of pitches (not necessarily pitch classes)
              * @return {Boolean}
-             * @remarks "pitches" conform to the current tuning system used. 0-11 occupy 1 octave in 12EDO, 0-16 in 17EDO, etc.
              * @memberOf EDO#is
              * @example
              * let edo = new EDO(12) // define a tuning system
@@ -4357,9 +4350,9 @@
          *  <li> [Scale.complement()]{@link Scale#complement} returns the complement of the scale in the current EDO.</li>
          *  </ul>
          *  </p>
+         *  <p>Remark: "pitch-classes" conform to the current tuning system used. E.g., 0-11 occupy 1 octave in 12EDO, 0-16 in 17EDO, etc.</p>
          * @param {Array<number>} pitches - The pitch classes of the set.
          * @param {EDO} parent - and EDO context
-         * @remarks "pitch-classes" conform to the current tuning system used. 0-11 occupy an octave in 12EDO, 0-16 in 17EDO, etc.
          * @example
          * //Basic usage 1:
          * let edo = new EDO(12) //create a new EDO context with 12 divisions.
@@ -4408,9 +4401,9 @@
             /**
              * <p>Returns the number of times a certain chord (or interval) quality (specified in intervallic units above the root) exists in the scale.</p>
              * <p>E.g. <code>scale.count.chord_quality([4, 7, 11])</code> counts the number of times a major 7th (if in 12 EDO) appears in a scale</p>
+             * <p>Remark: "intervallic units" conform to the current tuning system used. E.g., 0-11 occupy 1 octave in 12EDO, 0-16 in 17EDO, etc.</p>
              * @param {Array<Number|Array<Number>>} intervals - intervallic units above 0
              * @return {Number}
-             * @remarks "intervallic units" conform to the current tuning system used. 0-11 occupy an octave in 12EDO, 0-16 in 17EDO, etc.
              * @example
              * let edo = new EDO(12) //Create a tuning context
              * let scale = edo.scale([0,2,4,5,7,9,11]) //define new scale (Major)
@@ -4520,10 +4513,10 @@
             /**
              * <p>Returns the number of intervals of a specified size in the scale.</p>
              * <p>When an array is passed, the function returns total amount of intervals found from the array.</p>
+             * <p>Remark: "intervallic units" conform to the current tuning system used. E.g., 0-11 occupy 1 octave in 12EDO, 0-16 in 17EDO, etc.</p>
              * @param {Number | Array<Number>} interval - some interval class.
              * @return {Number}
              * @memberOf Scale#count
-             * @remarks "intervallic units" conform to the current tuning system used. 0-11 in 12EDO, 0-16 in 17EDO, etc.
              * @example
              * let edo = new EDO(12) //Create a tuning context
              * let scale = edo.scale([0,2,4,5,7,9,11]) //define new scale (Major)
@@ -4870,9 +4863,9 @@
 
             /**
              * <p>Returns the number of elements in the scale that are not in the provided arr.</p>
+             * <p>Remark: "pitch-classes" conform to the current tuning system used. E.g., 0-11 in 12EDO, 0-16 in 17EDO, etc.</p>
              * @param  {Array<Number>} arr - a collection of pitch classes
              * @return {Array<Number>}
-             * @remarks "pitch-classes" conform to the current tuning system used. 0-11 in 12EDO, 0-16 in 17EDO, etc.
              * @function
              * @memberOf Scale#count
              *
@@ -5113,9 +5106,9 @@
             },
 
             /** <p>Returns all the pitch-classes (of the current tuning system) that the scale does not use.</p>
+             * <p>Remark: "pitch classes" conform to the current tuning system used. E.g., 0-11 in 12EDO, 0-16 in 17EDO, etc.</p>
              * @param {boolean} [from_0=false] - when true, the output will be normalized to 0.
              * @returns {Array<Number>}
-             * @remarks "pitch classes" conform to the current tuning system used. 0-11 in 12EDO, 0-16 in 17EDO, etc.
              * @memberOf Scale#get
              * @example
              * let edo = new EDO(12) // define a tuning system
@@ -5132,10 +5125,10 @@
 
             /** <p>Returns the pitch classes of a chord "shape" on a given scale degree.</p>
              * <p>for instance, in the C major scale, the shape 1,2,3,5 on 1 gives C D E G, and starting on 2, gives D E F A.</p>
+             * <p>Remark: "pitch classes" conform to the current tuning system used. E.g., 0-11 in 12EDO, 0-16 in 17EDO, etc.</p>
              * @param {Array<Number>} shape - The "shape" starting from 1.
              * @param {Number} [scale_degree=1] - The scale degree on which to apply the shape (starting from 1)
              * @returns {Array<Number>} - The resultant pitch classes from that shape on that scale degree.
-             * @remarks "pitch classes" conform to the current tuning system used. 0-11 in 12EDO, 0-16 in 17EDO, etc.
              * @memberOf Scale#get
              * @example
              * let edo = new EDO(12) // define a tuning system
@@ -5753,8 +5746,8 @@
             },
 
             /** Returns the scale's pitches as pitch classes
+             * <p>Remark: "pitch classes" conform to the current tuning system used. E.g., 0-11 in 12EDO, 0-16 in 17EDO, etc.</p>
              * @returns {Array<Number>} The scale's pitches as pitch-classes
-             * @remarks "pitch classes" conform to the current tuning system used. 0-11 in 12EDO, 0-16 in 17EDO, etc.
              * @memberOf Scale#get
              */
             pitches: () => {
@@ -5763,10 +5756,9 @@
 
             /** <p>Gets a list of intervallic units above a root, and returns all the positions in the scale where this
              chord quality can be created</p>
-             *
+             *<p>Remark: "intervallic units" conform to the current tuning system used. E.g., 0-11 occupy 1 octave in 12EDO, 0-16 in 17EDO, etc.</p>
              * @returns {Array<Number>} The pitch-classes (that appear in the scale) on which the quality can be built
              * @memberOf Scale#get
-             * @remarks "intervallic units" conform to the current tuning system used. 0-11 occupy 1 octave in 12EDO, 0-16 in 17EDO, etc.
              * @example
              * let edo = new EDO(12) //define context
              * let scale = edo.scale([0,2,4,5,7,9,11]) //major scale
@@ -5846,7 +5838,6 @@
              * "intervals" conform to the current tuning system used. 0-11 occupy 1 octave in 12EDO, 0-16 in 17EDO, etc.
              * @memberOf Scale#get
              *
-             * @example
             */
             quality_with_intervals: (intervals=[7],length) => {
                 let all = [];
@@ -6679,10 +6670,10 @@
 
             /**
              * Instead of pitch-classes, this returns the scale represented by intervals (steps between notes)
+             * <p>Remark: "steps" and "pitch classes" conform to the current tuning system used. E.g., 0-11 occupy 1 octave in 12EDO, 0-16 in 17EDO, etc.</p>
              * @param {Boolean} [cache=false] - when true, the result is cached for future retrieval
              * @returns {Array<Number>}
              * @memberOf Scale#to
-             * @remarks "steps" and "pitch classes" conform to the current tuning system used. 0-11 occupy an octave in 12EDO, 0-16 in 17EDO, etc.
              * @example
              * let edo = new EDO(12) //define context
              * let scale = edo.scale([0,2,4,5,7,9,11]) //new Scale object
