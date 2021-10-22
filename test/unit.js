@@ -295,8 +295,20 @@ function unit_tests() {
                 }
             })
         })
+        describe('Scale.to', function () {
+            describe('Deterministic tests in 12EDO', function () {
+                let tests = {
+                    cents: [dia.to.cents,[],[0,200,400,500,700,900,1100]],
+                    steps: [dia.to.steps,[],[2,2,1,2,2,2,1]]
 
-
+                }
+                for(let test_name in tests) {
+                    it(test_name,function(){
+                        tests[test_name][0](...tests[test_name][1]).should.be.eql(tests[test_name][2])
+                    })
+                }
+            })
+        })
     })
 
 
