@@ -18,18 +18,18 @@
 
 
 
-const environment = (typeof window === 'undefined') ? "server" : "browser"
+const environment = (typeof window === 'undefined') ? "server" : "browser";
 
-let fs, parseXML, midiParser
+let fs, parseXML, midiParser;
 if (environment == 'server') {
-    fs = require('fs')
+    fs = require('fs');
     parseXML = require('xml2js').parseString;
     midiParser = require('midi-parser-js');
 
 }
 
 
-let save_file
+let save_file;
 if (environment == 'server') {
     /**
      * @ignore*/
@@ -40,7 +40,7 @@ if (environment == 'server') {
             }
         });
 
-    }
+    };
 
 } else {
     /**
@@ -63,11 +63,11 @@ if (environment == 'server') {
 
         dlink.click();
         dlink.remove();
-    }
+    };
 
 }
 
-let load_file
+let load_file;
 if (environment == 'server') {
     /**
      * Handles file loading when run server-side
@@ -80,7 +80,7 @@ if (environment == 'server') {
             // {encoding:'utf8', flag:'r'}
         );
 
-    }
+    };
 
 } else {
 
@@ -99,9 +99,9 @@ if (environment == 'server') {
         selectDialogueLink.onclick = function () {
             fileSelector.click();
             return false;
-        }
-        selectDialogueLink.click()
-    }
+        };
+        selectDialogueLink.click();
+    };
 
 }
 
@@ -116,12 +116,12 @@ class FixedContentNecklace {
         */
         // Force negative numbers to zero
         for (let i = 0; i < number_list.length; i++) {
-            if (number_list[i] < 0) number_list[i] = 0
+            if (number_list[i] < 0) number_list[i] = 0;
         }
-        this.n_init = number_list
-        this.N = number_list.reduce((t, n) => n + t)
-        this.k = number_list.length
-        this.initialize()
+        this.n_init = number_list;
+        this.N = number_list.reduce((t, n) => n + t);
+        this.k = number_list.length;
+        this.initialize();
     }
 
     initialize(method = 'simple') {
@@ -130,19 +130,19 @@ class FixedContentNecklace {
 
             :param method: The name of the method/algorithm to use
         */
-        this.occurrence = [...this.n_init]
-        this.word = Array(this.N).fill(0)
-        this.alphabet = Array(this.k).fill(0)
-        this.alphabet = this.alphabet.map((el, i, arr) => i)
-        this.run = Array(this.N).fill(0)
-        this.first_letter = 0
-        this.last_letter = this.k - 1
+        this.occurrence = [...this.n_init];
+        this.word = Array(this.N).fill(0);
+        this.alphabet = Array(this.k).fill(0);
+        this.alphabet = this.alphabet.map((el, i, arr) => i);
+        this.run = Array(this.N).fill(0);
+        this.first_letter = 0;
+        this.last_letter = this.k - 1;
 
 
-        this.__set_letter_bounds(method)
+        this.__set_letter_bounds(method);
 
         if (method != 'simple') {
-            this.word = [this.word[0]].concat(Array(this.N - 1).fill(this.last_letter))
+            this.word = [this.word[0]].concat(Array(this.N - 1).fill(this.last_letter));
         }
 
     }
@@ -155,24 +155,24 @@ class FixedContentNecklace {
             :param method: The name of the method/algorithm to use
 
         */
-        let found_first_nonzero = false
+        let found_first_nonzero = false;
         for (let letter = 0; letter < this.k; letter++) {
             if (!found_first_nonzero && this.occurrence[letter] > 0) {
-                found_first_nonzero = true
-                this.occurrence[letter] -= 1
-                this.word[0] = letter
-                this.first_letter = letter
+                found_first_nonzero = true;
+                this.occurrence[letter] -= 1;
+                this.word[0] = letter;
+                this.first_letter = letter;
             }
 
             // remove any letters with zero occurrence from the alphabet so that
             // we automatically skip them
             if (method != 'simple') {
                 if (this.occurrence[letter] == 0) {
-                    this.__remove_letter(letter)
+                    this.__remove_letter(letter);
                 }
             }
         }
-        this.last_letter = (!this.alphabet) ? 0 : Math.max.apply(Math, this.alphabet)
+        this.last_letter = (!this.alphabet) ? 0 : Math.max.apply(Math, this.alphabet);
     }
 
     * execute(method = "simple") {
@@ -184,11 +184,11 @@ class FixedContentNecklace {
         */
 
 
-        this.initialize(method)
+        this.initialize(method);
         if (method == 'simple') {
-            yield* this._simple_fixed_content(2, 1)
+            yield* this._simple_fixed_content(2, 1);
         } else if (method == 'fast') {
-            yield* this._fast_fixed_content(2, 1, 2)
+            yield* this._fast_fixed_content(2, 1, 2);
         }
 
 
@@ -204,75 +204,75 @@ class FixedContentNecklace {
         */
         if (t > this.N) { // if the prenecklace is complete
             if (this.N % p == 0) { // if the prenecklace word is a necklace
-                yield [...this.word]
+                yield [...this.word];
             }
         } else {
             for (let letter = this.word[t - p - 1]; letter < this.k; letter++) {
                 if (this.occurrence[letter] > 0) {
-                    this.word[t - 1] = letter
-                    this.occurrence[letter] -= 1
+                    this.word[t - 1] = letter;
+                    this.occurrence[letter] -= 1;
                     if (letter == this.word[t - p - 1]) {
-                        yield* this._simple_fixed_content(t + 1, p)
+                        yield* this._simple_fixed_content(t + 1, p);
                     } else {
-                        yield* this._simple_fixed_content(t + 1, t)
+                        yield* this._simple_fixed_content(t + 1, t);
                     }
-                    this.occurrence[letter] += 1
+                    this.occurrence[letter] += 1;
                 }
             }
         }
     }
 
     * _fast_fixed_content(t, p, s) {
-        let i_removed
+        let i_removed;
         /*
         The fast algorithm
         */
         if (this.occurrence[this.last_letter] == this.N - t + 1) {
             if (this.occurrence[this.last_letter] == this.run[t - p - 1]) {
                 if (this.N % p == 0) {
-                    yield [...this.word]
+                    yield [...this.word];
                 }
             } else if (this.occurrence[this.last_letter] > this.run[t - p - 1]) {
-                yield [...this.word]
+                yield [...this.word];
             }
         } else if (this.occurrence[this.first_letter] != this.N - t + 1) {
-            let letter = Math.max.apply(Math, this.alphabet)
-            let i = this.alphabet.length - 1
-            let s_current = s
+            let letter = Math.max.apply(Math, this.alphabet);
+            let i = this.alphabet.length - 1;
+            let s_current = s;
             while (letter >= this.word[t - p - 1]) {
-                this.run[parseInt(s - 1)] = parseInt(t - s)
-                this.word[t - 1] = letter
-                this.occurrence[letter] -= 1
+                this.run[parseInt(s - 1)] = parseInt(t - s);
+                this.word[t - 1] = letter;
+                this.occurrence[letter] -= 1;
                 if (!this.occurrence[letter]) {
-                    i_removed = this.__remove_letter(letter)
+                    i_removed = this.__remove_letter(letter);
                 }
                 if (letter != this.last_letter) {
-                    s_current = t + 1
+                    s_current = t + 1;
                 }
                 if (letter == this.word[t - p - 1]) {
-                    yield* this._fast_fixed_content(t + 1, p, s_current)
+                    yield* this._fast_fixed_content(t + 1, p, s_current);
                 } else {
-                    yield* this._fast_fixed_content(t + 1, t, s_current)
+                    yield* this._fast_fixed_content(t + 1, t, s_current);
                 }
                 if (!this.occurrence[letter]) {
-                    this.__add_letter(i_removed, letter)
+                    this.__add_letter(i_removed, letter);
                 }
-                this.occurrence[letter] += 1
-                i -= 1
-                letter = this.__get_letter(i)
+                this.occurrence[letter] += 1;
+                i -= 1;
+                letter = this.__get_letter(i);
             }
-            this.word[t - 1] = this.last_letter
+            this.word[t - 1] = this.last_letter;
         }
     }
 
     __remove_letter(letter) {
-        let index = this.alphabet.indexOf(letter)
-        this.alphabet.splice(index, 1)
+        let index = this.alphabet.indexOf(letter);
+        this.alphabet.splice(index, 1);
         return index
     }
 
     __add_letter(index, letter) {
-        this.alphabet.splice(index, 0, letter)
+        this.alphabet.splice(index, 0, letter);
     }
 
     __get_letter(index) {
@@ -293,23 +293,22 @@ const combinations = (set, k) => {
         return set.reduce((acc, cur) => [...acc, [cur]], [])
     }
 
-    let combs = [], tail_combs = []
+    let combs = [], tail_combs = [];
 
     for (let i = 0; i <= set.length - k + 1; i++) {
-        tail_combs = combinations(set.slice(i + 1), k - 1)
+        tail_combs = combinations(set.slice(i + 1), k - 1);
         for (let j = 0; j < tail_combs.length; j++) {
-            combs.push([set[i], ...tail_combs[j]])
+            combs.push([set[i], ...tail_combs[j]]);
         }
     }
 
     return combs
-}
+};
 
 
 const rescale = (num, in_min, in_max, out_min, out_max) => {
     return (num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-}
-const GCD = (...n) => n.length === 2 ? n[1] ? GCD(n[1], n[0] % n[1]) : n[0] : n.reduce((a, c) => a = GCD(a, c));
+};
 
 /** Class representing some EDO tuning system.*/
 
@@ -347,13 +346,13 @@ class EDO {
      * //returns true (the set [2,4] IS a subset of [1,2,3,4,5])
      */
     constructor(edo = 12) {
-        this.edo = edo
-        this.cents_per_step = (12 / edo) * 100
-        this.M3s = this.convert.ratio_to_interval(5 / 4, 20)
-        this.m3s = this.convert.ratio_to_interval(6 / 5, 20)
-        this.P5s = this.convert.ratio_to_interval(3 / 2, 5)
-        this.edo_divisors = this.get.divisors(edo)
-        this.catalog = {}
+        this.edo = edo;
+        this.cents_per_step = (12 / edo) * 100;
+        this.M3s = this.convert.ratio_to_interval(5 / 4, 20);
+        this.m3s = this.convert.ratio_to_interval(6 / 5, 20);
+        this.P5s = this.convert.ratio_to_interval(3 / 2, 5);
+        this.edo_divisors = this.get.divisors(edo);
+        this.catalog = {};
 
     }
 
@@ -367,16 +366,16 @@ class EDO {
     }
 
     make_DOM_svg(container_id, width, height, clean = false) {
-        let div = document.createElement('div')
+        let div = document.createElement('div');
         div.style.width = width + "px";
         div.style.height = height + "px";
-        div.style.display = "inline"
+        div.style.display = "inline";
         let div_id = div.setAttribute("id", "paper_" + Date.now());
-        let container = document.getElementById(container_id)
-        if (clean) container.innerHTML = ""
-        container.appendChild(div)
+        let container = document.getElementById(container_id);
+        if (clean) container.innerHTML = "";
+        container.appendChild(div);
         const paper = new Raphael(div, width, height);
-        let background = paper.rect(0, 0, width, height).attr('fill', '#000000')
+        let background = paper.rect(0, 0, width, height).attr('fill', '#000000');
         return {
             div_id: div_id,
             div: div,
@@ -391,26 +390,26 @@ class EDO {
     }
 
     shuffle_array(arr_in, in_place = true) {
-        let arr
-        if (in_place) arr = arr_in
-        else arr = [...arr_in]
+        let arr;
+        if (in_place) arr = arr_in;
+        else arr = [...arr_in];
         for (let i = arr.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * i)
-            const temp = arr[i]
-            arr[i] = arr[j]
-            arr[j] = temp
+            const j = Math.floor(Math.random() * i);
+            const temp = arr[i];
+            arr[i] = arr[j];
+            arr[j] = temp;
         }
         return arr
     }
 
     sort_scales = (scales) => {
         scales = scales.sort((a, b) => {
-            let run = Math.min(a.pitches.length, b.pitches.length)
+            let run = Math.min(a.pitches.length, b.pitches.length);
             for (let i = 0; i < run; i++) {
                 if (a.pitches[i] != b.pitches[i]) return a.pitches[i] - b.pitches[i]
                 else if (a.pitches[i] == b.pitches[i] && i == run - 1) return a.pitches.length - b.pitches.length
             }
-        })
+        });
         return scales
     }
 
@@ -438,7 +437,7 @@ class EDO {
 
         cents_to_simple_ratio: (cents,limit=17) => {
             if(Array.isArray(cents)) return cents.map(c=>this.convert.cents_to_simple_ratio(c,limit))
-            cents = this.mod(cents,1200)
+            cents = this.mod(cents,1200);
             if(cents==0) {
                 return   {
                     cents: 0,
@@ -450,22 +449,22 @@ class EDO {
                 }
             }
 
-            let SR = this.get.simple_ratios(limit,true)
-            let min
+            let SR = this.get.simple_ratios(limit,true);
+            let min;
             for (let key of Object.keys(SR)) {
 
                 if(min) {
-                    let diff_in_octave = Math.abs(SR[key].cents_in_octave-cents)
-                    let diff_min = Math.abs(SR[min].cents_in_octave-cents)
-                    if(diff_in_octave<diff_min) min = key
-                } else min = key
+                    let diff_in_octave = Math.abs(SR[key].cents_in_octave-cents);
+                    let diff_min = Math.abs(SR[min].cents_in_octave-cents);
+                    if(diff_in_octave<diff_min) min = key;
+                } else min = key;
 
 
 
             }
-            SR[min].diff_in_octave = cents-SR[min].cents_in_octave
-            SR[min].ratio = min
-            SR[min].original = cents
+            SR[min].diff_in_octave = cents-SR[min].cents_in_octave;
+            SR[min].ratio = min;
+            SR[min].original = cents;
             return SR[min]
 
 
@@ -511,18 +510,18 @@ class EDO {
          * edo.convert.intervals_to_pitches([2,3])
          * //returns [ 0, 2, 5 ]*/
         intervals_to_pitches: (intervals, starting_pitch = 0, modulo = undefined) => {
-            let pitches
-            if (modulo) pitches = [mod(starting_pitch, modulo)]
-            else pitches = [starting_pitch]
+            let pitches;
+            if (modulo) pitches = [mod(starting_pitch, modulo)];
+            else pitches = [starting_pitch];
             for (let interval of intervals) {
                 if (Array.isArray(interval)) {
-                    starting_pitch = pitches.flat()[pitches.flat().length - 1]
-                    let result = this.convert.intervals_to_pitches(interval, starting_pitch)
-                    result = result.slice(1)
-                    pitches.push(result)
+                    starting_pitch = pitches.flat()[pitches.flat().length - 1];
+                    let result = this.convert.intervals_to_pitches(interval, starting_pitch);
+                    result = result.slice(1);
+                    pitches.push(result);
                 } else {
-                    if (modulo) pitches.push(mod(parseInt(pitches[pitches.length - 1]) + parseInt(interval)), modulo)
-                    else pitches.push(parseInt(pitches[pitches.length - 1]) + parseInt(interval))
+                    if (modulo) pitches.push(mod(parseInt(pitches[pitches.length - 1]) + parseInt(interval)), modulo);
+                    else pitches.push(parseInt(pitches[pitches.length - 1]) + parseInt(interval));
                 }
             }
             return pitches
@@ -538,11 +537,11 @@ class EDO {
          * @returns {Number} A scale made up by adding the intervals in order
          * @memberOf EDO#convert*/
         intervals_to_scale: (intervals) => {
-            let pcs = [0]
+            let pcs = [0];
 
             intervals.forEach((interval) => {
-                pcs.push((interval + pcs[pcs.length - 1]))
-            })
+                pcs.push((interval + pcs[pcs.length - 1]));
+            });
 
             return this.scale(pcs).pitches
         },
@@ -556,9 +555,9 @@ class EDO {
          * edo.convert.midi_to_intervals([60,64,57,61])
          * //returns [ 4, -7, 4 ]*/
         midi_to_intervals: (midi) => {
-            let intervals = []
+            let intervals = [];
             for (let i = 0; i < midi.length - 1; i++) {
-                intervals.push(midi[i + 1] - midi[i])
+                intervals.push(midi[i + 1] - midi[i]);
             }
             return intervals
         },
@@ -582,9 +581,9 @@ class EDO {
             if (Array.isArray(note_number)) {
                 return note_number.map((a) => this.convert.midi_to_name(a, offset))
             } else {
-                note_number = note_number + offset
-                let octave = Math.floor(note_number / 12) - 1
-                let note_name = this.convert.pc_to_name(this.mod(note_number, 12))
+                note_number = note_number + offset;
+                let octave = Math.floor(note_number / 12) - 1;
+                let note_name = this.convert.pc_to_name(this.mod(note_number, 12));
                 return note_name.trim() + octave
             }
 
@@ -617,20 +616,20 @@ class EDO {
          * edo.convert.name_to_scale('12-1387')
          * //returns Scale object corresponding to the diatonic scale*/
         name_to_scale: (name) => {
-            name = name.split('-')
-            let edo = name[0]
-            name = name[1]
+            name = name.split('-');
+            let edo = name[0];
+            name = name[1];
             if (edo != this.edo) return "Wrong edo"
 
-            let vector = []
+            let vector = [];
             for (let i = edo; i > 0; i--) {
-                let nw = Math.pow(2, i)
+                let nw = Math.pow(2, i);
                 if (nw > name) continue
-                vector.push(i)
-                name -= nw
+                vector.push(i);
+                name -= nw;
             }
-            vector.push(0)
-            vector.reverse()
+            vector.push(0);
+            vector.reverse();
             return this.scale(vector)
         },
 
@@ -658,7 +657,7 @@ class EDO {
                 10: 'Bb',
                 11: 'B ',
                 '*': '**'
-            }
+            };
             if (this.edo != 12) return pc
             if(Array.isArray(pc)) return pc.map(p=>this.convert.pc_to_name(p))
             return PC[pc].trim()
@@ -706,11 +705,11 @@ class EDO {
          * //returns [4]
          * */
         ratio_to_interval: (ratio, tolerance = 10) => {
-            let intervals = []
-            let cents = this.convert.ratio_to_cents(ratio)
+            let intervals = [];
+            let cents = this.convert.ratio_to_cents(ratio);
             for (let i = 0; i < this.edo; i++) {
-                let interval = this.convert.interval_to_cents(i)
-                if (Math.abs(interval - cents) <= tolerance) intervals.push(i)
+                let interval = this.convert.interval_to_cents(i);
+                if (Math.abs(interval - cents) <= tolerance) intervals.push(i);
                 else if (intervals.length > 0) break
             }
             return intervals
@@ -727,15 +726,15 @@ class EDO {
          * edo.convert.to_steps([0,2,4,5,7,9,11])
          * //returns [ 2, 2, 1, 2, 2, 2 ]*/
         to_steps: (lst, cache = false) => {
-            if (!this.catalog[String(lst)]) this.catalog[String(lst)] = {}
+            if (!this.catalog[String(lst)]) this.catalog[String(lst)] = {};
             if (this.catalog[String(lst)]['steps']) return this.catalog[String(lst)]['steps']
 
-            let s = [...lst]
-            let intervals = []
+            let s = [...lst];
+            let intervals = [];
             for (let i = 0; i < s.length - 1; i++) {
-                intervals.push(s[i + 1] - s[i])
+                intervals.push(s[i + 1] - s[i]);
             }
-            if (cache) this.catalog[String(lst)]['steps'] = intervals
+            if (cache) this.catalog[String(lst)]['steps'] = intervals;
             return intervals
         }
 
@@ -773,17 +772,17 @@ class EDO {
         differences: (...arrays) => {
             let args = arrays.map((el,i,arr)=>{
                 if(i!=arr.length-1) {
-                    let lena = arr[i].length
-                    let lenb = arr[i+1].length
-                    let minlen = Math.min(lena,lenb)
-                    let maxlen = Math.max(lena,lenb)
-                    let diff = maxlen-minlen
+                    let lena = arr[i].length;
+                    let lenb = arr[i+1].length;
+                    let minlen = Math.min(lena,lenb);
+                    let maxlen = Math.max(lena,lenb);
+                    let diff = maxlen-minlen;
                     for (let j = 0; j < minlen; j++) {
-                        if(arr[i][j]!=arr[i+1][j]) diff++
+                        if(arr[i][j]!=arr[i+1][j]) diff++;
                     }
                     return diff
                 }
-            })
+            });
             return args.slice(0,args.length-1)
 
 
@@ -800,16 +799,16 @@ class EDO {
          * @memberOf EDO#count
          */
         pitches: (pitches) => {
-            let counts = []
-            let unique = new Set(pitches)
+            let counts = [];
+            let unique = new Set(pitches);
             for (let pitch of unique) {
                 let count = pitches.reduce((t, e) => {
                     if (e == pitch) return t + 1
                     else return t
-                }, 0)
-                counts.push([pitch, count])
+                }, 0);
+                counts.push([pitch, count]);
             }
-            counts.sort((a, b) => b[1] - a[1])
+            counts.sort((a, b) => b[1] - a[1]);
             return counts
         },
 
@@ -855,24 +854,24 @@ class EDO {
                 a.setAttribute('target', '_blank');
 
                 a.dispatchEvent(evt);
-            }
+            };
 
 
-            let el = document.getElementById(container_id)
-            let svgs = el.getElementsByTagName('svg')
+            let el = document.getElementById(container_id);
+            let svgs = el.getElementsByTagName('svg');
 
             for (let svg of svgs) {
                 let bBox = svg.getBBox();
-                let width = bBox.width
-                let height = bBox.height
+                let width = bBox.width;
+                let height = bBox.height;
                 let canvas = document.createElement('canvas');
-                canvas.width = width
-                canvas.height = height
+                canvas.width = width;
+                canvas.height = height;
                 let ctx = canvas.getContext('2d');
                 let data = (new XMLSerializer()).serializeToString(svg);
                 let DOMURL = window.URL || window.webkitURL || window;
                 let img = new Image();
-                let mime_type = 'image/svg+xml;charset=utf-8'
+                let mime_type = 'image/svg+xml;charset=utf-8';
                 let svgBlob = new Blob([data], {type: mime_type});
                 let url = DOMURL.createObjectURL(svgBlob);
                 img.onload = function () {
@@ -906,10 +905,10 @@ class EDO {
          */
         svg: (container_id) => {
             if (environment == "server") return console.log("This is only support when run on client-side")
-            let el = document.getElementById(container_id)
-            let svgs = el.getElementsByTagName('svg')
+            let el = document.getElementById(container_id);
+            let svgs = el.getElementsByTagName('svg');
             for (let svg of svgs) {
-                let svgString = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + svg.outerHTML
+                let svgString = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + svg.outerHTML;
                 let a = document.createElement('a');
                 a.download = container_id + '.svg';
                 a.type = 'image/svg+xml';
@@ -936,10 +935,10 @@ class EDO {
 
          */
         angle: (triplet) => {
-            let diff1=Math.abs(triplet[0]-triplet[1])
-            diff1=(diff1>Math.ceil(this.edo/2))?this.edo-diff1:diff1
-            let diff2=Math.abs(triplet[1]-triplet[2])
-            diff2=(diff2>Math.ceil(this.edo/2))?this.edo-diff2:diff2
+            let diff1=Math.abs(triplet[0]-triplet[1]);
+            diff1=(diff1>Math.ceil(this.edo/2))?this.edo-diff1:diff1;
+            let diff2=Math.abs(triplet[1]-triplet[2]);
+            diff2=(diff2>Math.ceil(this.edo/2))?this.edo-diff2:diff2;
             return ((180-diff1/12*360)/2) + ((180-diff2/12*360)/2)
         },
 
@@ -957,19 +956,19 @@ class EDO {
          * //returns the Scale Object [0,4,7,10,14,18,22] in a 24EDO context
          */
         best_edo_from_cents: (scale_in_cents,begin_edo=scale_in_cents.length+2,end_edo=24) => {
-            let cents = scale_in_cents
-            let diff = Infinity
-            let min_edo = Infinity
+            let cents = scale_in_cents;
+            let diff = Infinity;
+            let min_edo = Infinity;
             for (let i = begin_edo; i <= end_edo; i++) {
-                let ed = new EDO(i)
-                let edo_app = ed.get.notes_from_cents(cents)
-                let edo_diff = edo_app.reduce((ag,e)=>ag+Math.abs(e.diff),0)
+                let ed = new EDO(i);
+                let edo_app = ed.get.notes_from_cents(cents);
+                let edo_diff = edo_app.reduce((ag,e)=>ag+Math.abs(e.diff),0);
                 if (edo_diff<diff) {
-                    diff = edo_diff
-                    min_edo = i
+                    diff = edo_diff;
+                    min_edo = i;
                 }
             }
-            let win_edo = new EDO(min_edo)
+            let win_edo = new EDO(min_edo);
             return win_edo.scale(win_edo.get.notes_from_cents(cents).map(e=>e.note))
         },
 
@@ -994,11 +993,11 @@ class EDO {
          */
         coordinates: (pitch,circle_center = [0,0],r=0.56418958354776	) => {
             if(Array.isArray(pitch)) return pitch.map(p=>this.get.coordinates(p,circle_center,r))
-            const angle_mult = 360/this.edo
-            pitch = this.mod(pitch,this.edo)
-            const angle = (pitch*angle_mult)*(Math.PI/180)
-            const x = (r*Math.sin(angle))+circle_center[0]
-            const y = (r*Math.cos(angle))+circle_center[1]
+            const angle_mult = 360/this.edo;
+            pitch = this.mod(pitch,this.edo);
+            const angle = (pitch*angle_mult)*(Math.PI/180);
+            const x = (r*Math.sin(angle))+circle_center[0];
+            const y = (r*Math.cos(angle))+circle_center[1];
             return [x,y]
         },
 
@@ -1029,22 +1028,22 @@ class EDO {
 
 
             if (local) {
-                let vector = []
+                let vector = [];
                 for (let i = 1; i < pitches.length; i++) {
-                    if (pitches[i] > pitches[i - 1]) vector.push(1)
-                    else if (pitches[i] == pitches[i - 1]) vector.push(0)
-                    else vector.push(-1)
+                    if (pitches[i] > pitches[i - 1]) vector.push(1);
+                    else if (pitches[i] == pitches[i - 1]) vector.push(0);
+                    else vector.push(-1);
                 }
                 return vector
             } else {
-                let catalog = {}
-                let unique_pitches = this.get.unique_elements(pitches)
-                unique_pitches = unique_pitches.sort((a, b) => a - b)
+                let catalog = {};
+                let unique_pitches = this.get.unique_elements(pitches);
+                unique_pitches = unique_pitches.sort((a, b) => a - b);
                 for (let i = 0; i < unique_pitches.length; i++) {
-                    catalog[unique_pitches[i]] = i
+                    catalog[unique_pitches[i]] = i;
                 }
 
-                let vector = pitches.map((pitch) => catalog[pitch])
+                let vector = pitches.map((pitch) => catalog[pitch]);
                 return vector
             }
 
@@ -1071,19 +1070,19 @@ class EDO {
          * ]
          */
         contour_motives: (melody, allow_skips = false,maximal_length=8) => {
-            let motives = []
-            let all_subsets = this.get.subsets(melody, allow_skips).map((subset) => this.get.contour(subset)).filter((contour) => contour.length > 1)
-            all_subsets = all_subsets.filter(sub=>sub.length<=maximal_length)
+            let motives = [];
+            let all_subsets = this.get.subsets(melody, allow_skips).map((subset) => this.get.contour(subset)).filter((contour) => contour.length > 1);
+            all_subsets = all_subsets.filter(sub=>sub.length<=maximal_length);
 
-            let unique_subsets = this.get.unique_elements(all_subsets)
+            let unique_subsets = this.get.unique_elements(all_subsets);
             motives = unique_subsets.map((subset) => {
-                let count = 0
+                let count = 0;
                 for (let i = 0; i < all_subsets.length; i++) {
-                    if (this.is.same(subset, all_subsets[i])) count++
+                    if (this.is.same(subset, all_subsets[i])) count++;
                 }
                 return {motive: subset, incidence: count}
-            })
-            motives = motives.sort((a, b) => b.incidence - a.incidence || b.motive.length - a.motive.length)
+            });
+            motives = motives.sort((a, b) => b.incidence - a.incidence || b.motive.length - a.motive.length);
             return motives
 
         },
@@ -1101,10 +1100,10 @@ class EDO {
          * [[1,3],[3,1],[1,5],[5,1],[1,7],[7,1],[3,5],[5,3],[3,7],[7,3],[5,7],[7,5]]
          */
         combinations: (set, k) => {
-            let combs = this.get.n_choose_k(set,k)
-            combs = combs.map(e=>this.get.permutations(e))
-            combs = combs.flat()
-            combs = this.get.unique_elements(combs)
+            let combs = this.get.n_choose_k(set,k);
+            combs = combs.map(e=>this.get.permutations(e));
+            combs = combs.flat();
+            combs = this.get.unique_elements(combs);
             return combs
         },
 
@@ -1134,11 +1133,11 @@ class EDO {
          * //returns [0, 2, 5, 7, 9]
          */
         complementary_set: (pitches, from_0) => {
-            let PCs = Array.from(Array(this.edo).keys())
+            let PCs = Array.from(Array(this.edo).keys());
             pitches.forEach((PC) => {
-                (PCs.indexOf(PC) != -1) ? PCs.splice(PCs.indexOf(PC), 1) : true
-            })
-            if (from_0) PCs = this.scale(PCs).pitches
+                (PCs.indexOf(PC) != -1) ? PCs.splice(PCs.indexOf(PC), 1) : true;
+            });
+            if (from_0) PCs = this.scale(PCs).pitches;
             return PCs
         },
 
@@ -1155,30 +1154,30 @@ class EDO {
          * //returns e.g. [ [ 1, 4, 7 ], [ 11, 4, 7 ], [ 11, 2, 7 ], [ 10, 2, 7 ] ]
          */
         harmonic_progression: (allowed_qualities, starting_chord,num_of_chords=4, common_notes_min=2) => {
-            let progression = [starting_chord]
-            let escape=100
+            let progression = [starting_chord];
+            let escape=100;
             while(progression.length<num_of_chords && escape>0) {
-                let last_chord = progression[progression.length-1]
-                let possibilities = []
+                let last_chord = progression[progression.length-1];
+                let possibilities = [];
                 for(let quality of allowed_qualities) {
                     for (let i = 0; i < this.edo; i++) {
-                        let trans = quality.map(n=>(n+i)%this.edo)
+                        let trans = quality.map(n=>(n+i)%this.edo);
 
-                        let in_common = this.count.common_tones(trans,last_chord)
-                        if(in_common>=common_notes_min && in_common!=last_chord.length) possibilities.push(trans)
+                        let in_common = this.count.common_tones(trans,last_chord);
+                        if(in_common>=common_notes_min && in_common!=last_chord.length) possibilities.push(trans);
                     }
                 }
-                possibilities = this.get.unique_elements(possibilities)
+                possibilities = this.get.unique_elements(possibilities);
                 if(possibilities.length==0) {
-                    escape--
+                    escape--;
                     continue
                 }
 
-                progression.push(this.shuffle_array(possibilities)[0])
+                progression.push(this.shuffle_array(possibilities)[0]);
             }
             for (let i = 1; i < progression.length; i++) {
 
-                progression[i]=this.get.minimal_voice_leading(progression[i-1],progression[i])
+                progression[i]=this.get.minimal_voice_leading(progression[i-1],progression[i]);
 
             }
             return progression
@@ -1207,36 +1206,36 @@ class EDO {
          * ]
          */
         harmonized_melody: (melody,allowed_qualities,starting_chord, common_notes_min=1) => {
-            let harmony = []
-            let melody_copy = [...melody]
-            let last_chord = starting_chord
-            allowed_qualities = allowed_qualities.map(q=>this.scale(q).get.modes()).flat()
+            let harmony = [];
+            let melody_copy = [...melody];
+            let last_chord = starting_chord;
+            allowed_qualities = allowed_qualities.map(q=>this.scale(q).get.modes()).flat();
 
             melody_copy = melody_copy.map((note,i)=>{
 
-                let options = allowed_qualities.map(q=>q.map(n=>(n+note)%this.edo).sort((a,b)=>a-b))
+                let options = allowed_qualities.map(q=>q.map(n=>(n+note)%this.edo).sort((a,b)=>a-b));
                 if(last_chord && i==0) {
-                    harmony.push(last_chord)
+                    harmony.push(last_chord);
                     return last_chord
                 }
                 if(last_chord) {
                     options = options.filter(option => {
-                        let in_common = this.count.common_tones(option,last_chord)
+                        let in_common = this.count.common_tones(option,last_chord);
                         return in_common>=common_notes_min && in_common!=last_chord.length
-                    })
+                    });
                 }
-                let chord = this.shuffle_array(options)[0]
-                harmony.push(chord)
-                last_chord=chord
+                let chord = this.shuffle_array(options)[0];
+                harmony.push(chord);
+                last_chord=chord;
                 return last_chord
-            })
+            });
 
             for (let i = 1; i < harmony.length; i++) {
                 if(harmony[i]==undefined || harmony[i-1]==undefined) continue
-                harmony[i] = this.get.minimal_voice_leading(harmony[i-1],harmony[i])
+                harmony[i] = this.get.minimal_voice_leading(harmony[i-1],harmony[i]);
             }
 
-            console.log(harmony)
+            console.log(harmony);
 
             return harmony
 
@@ -1332,41 +1331,41 @@ class EDO {
          *
          */
         harp_position_of_quality: (quality,scordatura=[0,2,4,5,7,9,11],pedal_shift = [-1,0,1]) =>{
-            let results = []
-            let strings_in_octave_norm = scordatura.map(s=>pedal_shift.map(p=>this.mod(s+p,this.edo)))
-            let configurations = this.get.partitioned_subsets(strings_in_octave_norm)
+            let results = [];
+            let strings_in_octave_norm = scordatura.map(s=>pedal_shift.map(p=>this.mod(s+p,this.edo)));
+            let configurations = this.get.partitioned_subsets(strings_in_octave_norm);
             configurations = configurations.map(c=>{
                 for (let i = 0; i < this.edo; i++) {
-                    let qual = quality.map(q=>(q+i)%this.edo)
+                    let qual = quality.map(q=>(q+i)%this.edo);
                     if(this.is.subset(qual,c)) {
-                        let positions = []
-                        let transpositions = []
-                        let pitches = []
-                        qual.forEach(qu=>positions.push(c.indexOf(qu)+1))
+                        let positions = [];
+                        let transpositions = [];
+                        let pitches = [];
+                        qual.forEach(qu=>positions.push(c.indexOf(qu)+1));
                         positions.forEach(pos=>{
 
-                            let res = -scordatura[pos-1]+c[pos-1]
+                            let res = -scordatura[pos-1]+c[pos-1];
                             if(!pedal_shift.includes(res)) {
-                                if(res<0) res = this.mod(res+this.edo,this.edo)
-                                else if (res>0) res = res-this.edo
+                                if(res<0) res = this.mod(res+this.edo,this.edo);
+                                else if (res>0) res = res-this.edo;
                             }
-                            pitches.push(c[pos-1])
-                            transpositions.push(res)
-                        })
-                        results.push({strings:positions,pedals:transpositions,pitches:pitches})
+                            pitches.push(c[pos-1]);
+                            transpositions.push(res);
+                        });
+                        results.push({strings:positions,pedals:transpositions,pitches:pitches});
                     }
                 }
 
-            })
-            results = this.get.unique_elements(results)
+            });
+            results = this.get.unique_elements(results);
             results = results.sort((a,b)=>{
-                let ap = a['pitches']
-                let bp = b['pitches']
-                let len = ap.length
+                let ap = a['pitches'];
+                let bp = b['pitches'];
+                let len = ap.length;
                 for (let i = 0; i < len; i++) {
                     if(ap[i]!=bp[i]) return ap[i]-bp[i]
                 }
-            })
+            });
             return results
         },
 
@@ -1387,44 +1386,44 @@ class EDO {
         },
 
         harp_least_pedals_passage: (pitches,scordatura=[0,2,4,5,7,9,11],pedal_shift = [-1,0,1]) => {
-            let strings_in_octave = scordatura.map(s=>pedal_shift.map(p=>this.mod(s+p,this.edo)))
-            let configurations = this.get.partitioned_subsets(strings_in_octave)
-            let paths = []
+            let strings_in_octave = scordatura.map(s=>pedal_shift.map(p=>this.mod(s+p,this.edo)));
+            let configurations = this.get.partitioned_subsets(strings_in_octave);
+            let paths = [];
 
             let recurrent = (pitches,path=[]) => {
-                let ml,mr
-                let options
+                let ml,mr;
+                let options;
                 for (let i = 0; i < pitches.length; i++) {
-                    ml = pitches.slice(0,pitches.length-i)
-                    mr = pitches.slice(pitches.length-i)
-                    let unique = this.get.unique_elements(ml.map(n=>this.mod(n,this.edo)))
-                    let uniquel = unique.length
+                    ml = pitches.slice(0,pitches.length-i);
+                    mr = pitches.slice(pitches.length-i);
+                    let unique = this.get.unique_elements(ml.map(n=>this.mod(n,this.edo)));
+                    let uniquel = unique.length;
                     if(uniquel>scordatura.length) continue
-                    options = configurations.filter(conf=>this.is.subset(unique,conf))
+                    options = configurations.filter(conf=>this.is.subset(unique,conf));
                     if(options.length>0) break
                 }
                 if(!options) return
                 options.forEach(opt=>{
-                    if(mr.length==0) paths.push([...path,opt])
-                    else recurrent(mr,[...path,opt])
-                })
+                    if(mr.length==0) paths.push([...path,opt]);
+                    else recurrent(mr,[...path,opt]);
+                });
 
 
 
 
 
-            }
-            recurrent(pitches)
+            };
+            recurrent(pitches);
 
 
             let distances = paths.map((path)=>{
                 return path.map((p,i)=>{
                     if(i==path.length-1) return 0
-                    let ar1=path[i]
-                    let ar2 = path[i+1]
-                    let dist = 0
+                    let ar1=path[i];
+                    let ar2 = path[i+1];
+                    let dist = 0;
                     for (let j = 0; j < ar2.length; j++) {
-                        if(ar1[j]!=ar2[j]) dist++
+                        if(ar1[j]!=ar2[j]) dist++;
                     }
                     return dist
                 })
@@ -1434,14 +1433,14 @@ class EDO {
 
 
 
-            }).map(path=>path.reduce((ag,e)=>ag+e,0))
-            let min = Math.min(...distances)
-            let indexes = []
+            }).map(path=>path.reduce((ag,e)=>ag+e,0));
+            let min = Math.min(...distances);
+            let indexes = [];
             distances.forEach((dist,i)=>{
-                if(dist==min) indexes.push(i)
-            })
+                if(dist==min) indexes.push(i);
+            });
 
-            paths = paths.filter((path,i)=>indexes.includes(i))
+            paths = paths.filter((path,i)=>indexes.includes(i));
             return {paths:paths,pedals:min}
 
         },
@@ -1455,14 +1454,14 @@ class EDO {
          */
         fill_partial_harp_pedaling: (qualities,harp_default=[-1,-1,-1,-1,-1,-1,-1],scordatura=[0,2,4,5,7,9,11])=> {
             qualities = qualities.map(q=>{
-                let new_pedals = [...harp_default]
+                let new_pedals = [...harp_default];
                 q.strings.forEach((str,i)=>{
-                    new_pedals[str-1]=q.pedals[i]
-                })
-                q.pedals=new_pedals
+                    new_pedals[str-1]=q.pedals[i];
+                });
+                q.pedals=new_pedals;
 
                 return q
-            })
+            });
             return qualities
         },
 
@@ -1480,7 +1479,7 @@ class EDO {
          * edo.get.interval_class(1,8) //returns 5
          */
         interval_class: (PC1,PC2) => {
-            let diff = Math.abs(PC1-PC2)
+            let diff = Math.abs(PC1-PC2);
             return (diff<Math.ceil(this.edo/2))? diff : this.edo-diff
 
         },
@@ -1495,18 +1494,18 @@ class EDO {
          * //returns [ [ 1, 3, 5 ], [ 1, 3, 7 ], [ 1, 5, 7 ], [ 3, 5, 7 ] ]
          */
         n_choose_k: (arr,k=2) =>{
-            let results = []
+            let results = [];
             const combinations = (arr,len,start_pos=0,result=Array(len)) =>{
                 if(len==0) {
-                    results.push([...result])
+                    results.push([...result]);
                     return
                 }
                 for (let i = start_pos; i <= arr.length-len ; i++) {
-                    result[result.length-len] = arr[i]
-                    combinations(arr,len-1,i+1,result)
+                    result[result.length-len] = arr[i];
+                    combinations(arr,len-1,i+1,result);
                 }
-            }
-            combinations(arr,k)
+            };
+            combinations(arr,k);
             return results
         },
 
@@ -1528,19 +1527,19 @@ class EDO {
          * ]
          */
         notes_from_cents: (cents=[]) => {
-            let step_in_cents = 1200/this.edo
+            let step_in_cents = 1200/this.edo;
             cents = cents
                 .map(c=>this.mod(c,1200))
                 .map(c=>{
-                    let min = Math.floor(c/step_in_cents)
-                    let min_in_cents = min*step_in_cents
-                    let min_diff = c-min_in_cents
-                    let max = Math.ceil(c/step_in_cents)
-                    let max_in_cents = max*step_in_cents
-                    let max_diff = max_in_cents-c
+                    let min = Math.floor(c/step_in_cents);
+                    let min_in_cents = min*step_in_cents;
+                    let min_diff = c-min_in_cents;
+                    let max = Math.ceil(c/step_in_cents);
+                    let max_in_cents = max*step_in_cents;
+                    let max_diff = max_in_cents-c;
                     if(min_diff<max_diff) return {note:min,diff:-min_diff}
                     else return {note:max,diff:max_diff}
-                })
+                });
             return cents
         },
 
@@ -1557,19 +1556,19 @@ class EDO {
          * @see Vassilakis, P. (2001). "Auditory roughness estimation of complex spectra—Roughness degrees and dissonance ratings of harmonic intervals revisited." The journal of the Acoustical Society of America 110(5): 2755-2755.
          */
         sine_pair_dissonance: (freq1,freq2,amp1=1,amp2=1) => {
-            const f_min = Math.min(freq1,freq2)
-            const f_max = Math.max(freq1,freq2)
-            const a_min = Math.min(amp1,amp2)
-            const a_max = Math.max(amp1,amp2)
-            const X = a_min*a_max
-            const Y = (2*a_min)/(a_min+a_max)
-            const b1 = 3.5
-            const b2=5.75
-            const s1 = 0.0207
-            const s2 = 18.96
-            const s = 0.24/(s1*f_min+s2)
-            const Z = Math.pow(Math.E,-1*b1*s*(f_max-f_min)) - Math.pow(Math.E,(-1*b2*s*(f_max-f_min)))
-            const R = Math.pow(X,0.1)*0.5*Math.pow(Y,3.11)*Z
+            const f_min = Math.min(freq1,freq2);
+            const f_max = Math.max(freq1,freq2);
+            const a_min = Math.min(amp1,amp2);
+            const a_max = Math.max(amp1,amp2);
+            const X = a_min*a_max;
+            const Y = (2*a_min)/(a_min+a_max);
+            const b1 = 3.5;
+            const b2=5.75;
+            const s1 = 0.0207;
+            const s2 = 18.96;
+            const s = 0.24/(s1*f_min+s2);
+            const Z = Math.pow(Math.E,-1*b1*s*(f_max-f_min)) - Math.pow(Math.E,(-1*b2*s*(f_max-f_min)));
+            const R = Math.pow(X,0.1)*0.5*Math.pow(Y,3.11)*Z;
             return R
 
         },
@@ -1659,17 +1658,17 @@ class EDO {
          * [0,1,2,2,3,2,2,1,-1,-1]
          */
         resize_melody: (melody, resize_by = 2, method = "multiply") => {
-            let note1 = melody[0]
-            melody = this.convert.to_steps(melody)
+            let note1 = melody[0];
+            melody = this.convert.to_steps(melody);
             if (method == "add") {
                 melody = melody.map((interval) => {
                     if (interval > 0) return (interval + resize_by > 0) ? interval + resize_by : 0
                     else if (interval < 0) return (interval - resize_by < 0) ? interval - resize_by : 0
                     else return 0
-                })
-            } else if (method == "multiply") melody = melody.map((interval) => Math.round(interval * resize_by))
+                });
+            } else if (method == "multiply") melody = melody.map((interval) => Math.round(interval * resize_by));
 
-            melody = this.convert.intervals_to_pitches(melody)
+            melody = this.convert.intervals_to_pitches(melody);
             return this.get.transposition(melody, note1, false)
 
 
@@ -1688,11 +1687,11 @@ class EDO {
          * @see Carey, N. and D. Clampitt (1989). "Aspects of well-formed scales." Music Theory Spectrum 11(2): 187-206.
          */
         generated_scale: (generator=7,cardinality=7,return_object=false) =>{
-            let scale = []
+            let scale = [];
             for (let i = 0; i < cardinality ; i++) {
-                scale.push(this.mod(generator*i,this.edo))
+                scale.push(this.mod(generator*i,this.edo));
             }
-            scale = this.get.normal_order(scale.sort((a,b)=>a-b))
+            scale = this.get.normal_order(scale.sort((a,b)=>a-b));
             return scale
         },
 
@@ -1710,14 +1709,14 @@ class EDO {
          * //returns [[1,11],[5,7]]
          */
         generators: (with_complement_interval = false) => {
-            let generators = []
+            let generators = [];
             for (let i = 1; i < Math.ceil(this.edo / 2); i++) {
 
-                let arr = Array.from(Array(this.edo).keys()).map((ind) => this.mod(ind * i, this.edo))
-                arr = this.get.unique_elements(arr)
-                if (arr.length == this.edo) generators.push(i)
+                let arr = Array.from(Array(this.edo).keys()).map((ind) => this.mod(ind * i, this.edo));
+                arr = this.get.unique_elements(arr);
+                if (arr.length == this.edo) generators.push(i);
             }
-            if (with_complement_interval) generators = generators.map((el) => [el, this.get.complementary_interval(el)])
+            if (with_complement_interval) generators = generators.map((el) => [el, this.get.complementary_interval(el)]);
             return generators
         },
 
@@ -1734,9 +1733,9 @@ class EDO {
          * //returns [4]
          */
         intersection: (...collections) => {
-            let first = collections[0]
+            let first = collections[0];
             for (let i = 1; i < collections.length; i++) {
-                first = first.filter(value => collections[i].includes(value))
+                first = first.filter(value => collections[i].includes(value));
             }
             return first
 
@@ -1805,42 +1804,42 @@ class EDO {
         interval_stack: (intervals, stack_size = 3, as_pitches = false) => {
             const decToBase = (n, b) => {
                 if (n == 0) return [0]
-                let digits = []
+                let digits = [];
                 while (n) {
-                    digits.push(n % b)
-                    n = Math.floor(n / b)
+                    digits.push(n % b);
+                    n = Math.floor(n / b);
                 }
-                digits.reverse()
+                digits.reverse();
                 return digits
-            }
+            };
 
-            let all_perm = []
-            intervals = this.get.unique_elements(intervals)
-            let base = intervals.length
-            let mapping = {}
-            let result = []
-            for (let i = 0; i < intervals.length; i++) mapping[i] = intervals[i]
-            let max = base ** stack_size
+            let all_perm = [];
+            intervals = this.get.unique_elements(intervals);
+            let base = intervals.length;
+            let mapping = {};
+            let result = [];
+            for (let i = 0; i < intervals.length; i++) mapping[i] = intervals[i];
+            let max = base ** stack_size;
             for (let i = 0; i < max; i++) {
-                let res = decToBase(i, base)
-                let fill_in = stack_size - res.length
-                fill_in = Array(fill_in).fill(0)
-                all_perm.push([...fill_in, ...res])
+                let res = decToBase(i, base);
+                let fill_in = stack_size - res.length;
+                fill_in = Array(fill_in).fill(0);
+                all_perm.push([...fill_in, ...res]);
             }
             for (let vector of all_perm) {
-                result.push(vector.map((el) => mapping[el]))
+                result.push(vector.map((el) => mapping[el]));
             }
-            result.sort((a, b) => a.reduce((t, e) => t + e) - b.reduce((t, e) => t + e))
+            result.sort((a, b) => a.reduce((t, e) => t + e) - b.reduce((t, e) => t + e));
             if (as_pitches) {
-                let pitches = []
+                let pitches = [];
                 for (let l of result) {
-                    let ls = [0]
+                    let ls = [0];
                     for (let item of l) {
-                        ls.push(ls[ls.length - 1] + item)
+                        ls.push(ls[ls.length - 1] + item);
                     }
-                    pitches.push(ls)
+                    pitches.push(ls);
                 }
-                result = pitches
+                result = pitches;
             }
             return result
         },
@@ -1857,15 +1856,15 @@ class EDO {
          * //returns [0, 2,  4, 6, 7, 9, 11]*/
         inversion: (scale, cache = false) => {
 
-            if (!this.catalog[String(scale)]) this.catalog[String(scale)] = {}
+            if (!this.catalog[String(scale)]) this.catalog[String(scale)] = {};
             if (this.catalog[String(scale)]['inverted']) return this.catalog[String(scale)]['inverted']
 
-            let steps = this.convert.to_steps(scale)
-            let r_steps = [...steps]
-            r_steps.reverse()
+            let steps = this.convert.to_steps(scale);
+            let r_steps = [...steps];
+            r_steps.reverse();
 
-            let i_scale = this.convert.intervals_to_scale(r_steps)
-            if (cache) this.catalog[String(scale)]['inverted'] = i_scale
+            let i_scale = this.convert.intervals_to_scale(r_steps);
+            if (cache) this.catalog[String(scale)]['inverted'] = i_scale;
             return i_scale
         },
 
@@ -1893,17 +1892,17 @@ class EDO {
          //0  3  6  9  0  3  6  9  0  3  6  9
          * @memberOf EDO#get*/
         lattice: (hor = 3, ver = 4, as_notes = false) => {
-            let lattice = ""
+            let lattice = "";
             for (let i = this.edo; i >= -this.edo; i -= ver) {
-                let line = ""
+                let line = "";
                 for (let j = 0; j < this.edo; j++) {
-                    let num = this.mod(i + (j * hor), this.edo)
-                    let note
-                    if (as_notes) note = this.convert.pc_to_name(num)
-                    else note = String(num)
-                    line += note + " ".repeat(3 - note.length)
+                    let num = this.mod(i + (j * hor), this.edo);
+                    let note;
+                    if (as_notes) note = this.convert.pc_to_name(num);
+                    else note = String(num);
+                    line += note + " ".repeat(3 - note.length);
                 }
-                lattice += line + "\n\n"
+                lattice += line + "\n\n";
             }
             return lattice
         },
@@ -1925,42 +1924,42 @@ class EDO {
 
 
 
-            let s = collection1
-            let t = collection2
+            let s = collection1;
+            let t = collection2;
 
             //initialize matrix with 0
 
-            let rows = s.length + 1
-            let cols = t.length + 1
+            let rows = s.length + 1;
+            let cols = t.length + 1;
             let distance = Array.from({length: rows}, e => Array(cols).fill(0));
-            let col
-            let row
+            let col;
+            let row;
             //Populate matrix of zeros with the indices of each character of both strings
             for (let i = 1; i < rows; i++) {
                 for (let k = 1; k < cols; k++) {
 
-                    distance[i][0] = i
-                    distance[0][k] = k
+                    distance[i][0] = i;
+                    distance[0][k] = k;
                 }
             }
 
             // Iterate over the matrix to compute the cost of deletions,insertions and/or substitutions
-            let cost = 0
+            let cost = 0;
             for (col = 1; col < cols; col++) {
                 for (row = 1; row < rows; row++) {
-                    if (s[row - 1] == t[col - 1]) cost = 0 //If the characters are the same in the two strings in a given position [i,j] then the cost is 0
+                    if (s[row - 1] == t[col - 1]) cost = 0; //If the characters are the same in the two strings in a given position [i,j] then the cost is 0
                     else {
                         // In order to align the results with those of the Python Levenshtein package, if we choose to calculate the ratio
                         // the cost of a substitution is 2. If we calculate just distance, then the cost of a substitution is 1.
-                        if (ratio_calc) cost = 2
-                        else cost = 1
+                        if (ratio_calc) cost = 2;
+                        else cost = 1;
                     }
-                    let res = Math.min.apply(Math, [distance[row - 1][col] + 1, distance[row][col - 1] + 1, distance[row - 1][col - 1] + cost])
-                    distance[row][col] = res
+                    let res = Math.min.apply(Math, [distance[row - 1][col] + 1, distance[row][col - 1] + 1, distance[row - 1][col - 1] + cost]);
+                    distance[row][col] = res;
                 }
             }
             if (ratio_calc) {
-                let Ratio = ((s.length + t.length) - distance[row - 1][col - 1]) / (s.length + t.length)
+                let Ratio = ((s.length + t.length) - distance[row - 1][col - 1]) / (s.length + t.length);
 
                 return Ratio
             } else {
@@ -2065,17 +2064,17 @@ class EDO {
          * //returns [8,11,4]
          * */
         minimal_voice_leading: (chord1, chord2) => {
-            let permutations = this.get.permutations(chord2)
+            let permutations = this.get.permutations(chord2);
             let dist = permutations.map(perm=>{
                 perm = perm.map((n,i)=>{
-                    let res = Math.abs(perm[i]-chord1[i])
-                    res = (res>Math.ceil(this.edo/2))?this.edo-res:res
+                    let res = Math.abs(perm[i]-chord1[i]);
+                    res = (res>Math.ceil(this.edo/2))?this.edo-res:res;
                     return res
-                }).reduce((a,el)=>a+el,0)
+                }).reduce((a,el)=>a+el,0);
                 return perm
-            })
-            let min = dist.reduce((min,el)=>(el<min)?el:min,Infinity)
-            let pos = dist.indexOf(min)
+            });
+            let min = dist.reduce((min,el)=>(el<min)?el:min,Infinity);
+            let pos = dist.indexOf(min);
 
         return permutations[pos]
 
@@ -2106,25 +2105,25 @@ class EDO {
          * ]
          * */
         modes: (scale, cache = false, avoid_duplications = true) => {
-            let edo = this.edo
-            if (!this.catalog[String(scale)]) this.catalog[String(scale)] = {}
+            this.edo;
+            if (!this.catalog[String(scale)]) this.catalog[String(scale)] = {};
             if (this.catalog[String(scale)]['modes']) return this.catalog[String(scale)]['modes']
 
 
-            let length = scale.length
-            let doubled = scale.concat(scale)
+            let length = scale.length;
+            let doubled = scale.concat(scale);
 
 
-            let modes = []
+            let modes = [];
 
             for (let i = 0; i < length; i++) {
-                let shift = this.edo - doubled[i]
-                let mode = doubled.slice(i, i + length)
-                mode = mode.map((el) => (el + shift) % this.edo)
-                modes.push(mode)
+                let shift = this.edo - doubled[i];
+                let mode = doubled.slice(i, i + length);
+                mode = mode.map((el) => (el + shift) % this.edo);
+                modes.push(mode);
             }
-            if (avoid_duplications) modes = this.get.unique_elements(modes)
-            if (cache) this.catalog[String(scale)]['modes'] = modes
+            if (avoid_duplications) modes = this.get.unique_elements(modes);
+            if (cache) this.catalog[String(scale)]['modes'] = modes;
 
             return modes
         },
@@ -2151,29 +2150,29 @@ class EDO {
          * ]
          */
         motives: (melody, intervalic = true, allow_skips = false,maximal_length=8) => {
-            let motives = []
+            let motives = [];
             if (!intervalic) {
-                let all_subsets = this.get.unique_elements(this.get.subsets(melody, allow_skips).filter(s=>s.length<=maximal_length))
+                let all_subsets = this.get.unique_elements(this.get.subsets(melody, allow_skips).filter(s=>s.length<=maximal_length));
                 all_subsets.forEach((subset) => {
-                    let incidence = this.get.subset_indices(subset, melody, allow_skips).length
-                    motives.push({motive: subset, incidence: incidence})
-                })
+                    let incidence = this.get.subset_indices(subset, melody, allow_skips).length;
+                    motives.push({motive: subset, incidence: incidence});
+                });
             } else {
-                let all_subsets = this.get.subsets(melody, allow_skips).filter(s=>s.length<=maximal_length).map((subset) => this.convert.to_steps(subset))
-                let unique_subsets = this.get.unique_elements(all_subsets)
+                let all_subsets = this.get.subsets(melody, allow_skips).filter(s=>s.length<=maximal_length).map((subset) => this.convert.to_steps(subset));
+                let unique_subsets = this.get.unique_elements(all_subsets);
 
                 motives = unique_subsets.map((subset) => {
-                    let count = 0
+                    let count = 0;
                     for (let i = 0; i < all_subsets.length; i++) {
-                        if (this.is.same(subset, all_subsets[i])) count++
+                        if (this.is.same(subset, all_subsets[i])) count++;
                     }
                     return {motive: subset, incidence: count}
-                })
+                });
             }
 
 
-            motives = motives.filter((motive) => motive.motive.length > 0)
-            motives = motives.sort((a, b) => b.incidence - a.incidence || b.motive.length - a.motive.length)
+            motives = motives.filter((motive) => motive.motive.length > 0);
+            motives = motives.sort((a, b) => b.incidence - a.incidence || b.motive.length - a.motive.length);
 
             return motives
         },
@@ -2194,25 +2193,25 @@ class EDO {
          * @see {@link https://en.wikipedia.org/wiki/Necklace_(combinatorics)}
          * */
         necklace: (lst) => {
-            let necklaces = []
-            let unique_steps = this.get.unique_elements(lst)
-            let map = {}
-            let n = []
+            let necklaces = [];
+            let unique_steps = this.get.unique_elements(lst);
+            let map = {};
+            let n = [];
             unique_steps.forEach((step, i) => {
-                map[i] = step
+                map[i] = step;
                 let count = lst.reduce((t, el) => {
                     return (el == step) ? t + 1 : t
-                }, 0)
-                n.push(count)
-            })
-            let mynecklace = new FixedContentNecklace(n)
+                }, 0);
+                n.push(count);
+            });
+            let mynecklace = new FixedContentNecklace(n);
 
-            let result = Array.from(mynecklace.execute('fast'))
+            let result = Array.from(mynecklace.execute('fast'));
 
             result.forEach((entry) => {
-                let new_arr = entry.map((el) => map[el])
-                necklaces.push(new_arr)
-            })
+                let new_arr = entry.map((el) => map[el]);
+                necklaces.push(new_arr);
+            });
             return necklaces
         },
 
@@ -2237,20 +2236,20 @@ class EDO {
          * ]
          * */
         new_pitches: (melody, as_PC = true) => {
-            let result = []
-            let seen = []
+            let result = [];
+            let seen = [];
 
             for (let i = 0; i < melody.length; i++) {
                 if (as_PC) {
                     if (seen.indexOf(this.mod(melody[i], this.edo)) == -1) {
-                        seen.push(melody[i])
-                        result.push([melody[i], i])
+                        seen.push(melody[i]);
+                        result.push([melody[i], i]);
                         if (seen.length == this.edo) break
                     }
                 } else {
                     if (seen.indexOf(melody[i]) == -1) {
-                        seen.push(melody[i])
-                        result.push([melody[i], i])
+                        seen.push(melody[i]);
+                        result.push([melody[i], i]);
                     }
                 }
             }
@@ -2286,16 +2285,16 @@ class EDO {
          * }
          * */
         ngrams: (melody, n = 3) => {
-            let ngrams = {}
+            let ngrams = {};
             for (; n > 1; n--) {
                 for (let i = 0; i < melody.length - (n - 1); i++) {
-                    let key = []
+                    let key = [];
                     for (let j = i; j < i + (n - 1); j++) {
-                        key.push(melody[j])
+                        key.push(melody[j]);
                     }
-                    key = key.join(' ')
-                    if (Array.isArray(ngrams[key])) ngrams[key].push(melody[i + (n - 1)])
-                    else ngrams[key] = [melody[i + (n - 1)]]
+                    key = key.join(' ');
+                    if (Array.isArray(ngrams[key])) ngrams[key].push(melody[i + (n - 1)]);
+                    else ngrams[key] = [melody[i + (n - 1)]];
                 }
             }
             return ngrams
@@ -2312,46 +2311,45 @@ class EDO {
          * //returns [ 0, 1, 3, 5, 6, 8, 10 ]*/
         normal_order: (lst, cache = false) => {
             if (lst.length == 0) return []
-            let edo = this.edo
-            if (!this.catalog[String(lst)]) this.catalog[String(lst)] = {}
+            let edo = this.edo;
+            if (!this.catalog[String(lst)]) this.catalog[String(lst)] = {};
             if (this.catalog[String(lst)]['normal_order']) return this.catalog[String(lst)]['normal_order']
 
 
-            let pitches = []
+            let pitches = [];
             lst.forEach((pitch) => {
-                pitches.push(pitch % this.edo)
-            })
+                pitches.push(pitch % this.edo);
+            });
 
 
-            pitches = this.get.unique_elements(pitches)
+            pitches = this.get.unique_elements(pitches);
 
-            pitches.sort((a, b) => a - b)
-            let modes = this.get.modes(pitches)
+            pitches.sort((a, b) => a - b);
+            let modes = this.get.modes(pitches);
             let organize = function (modes) {
-                let smallest = edo
-                let filtered_modes = []
+                let smallest = edo;
+                let filtered_modes = [];
                 modes.forEach(mode => {
-                    if (mode[mode.length - 1] < smallest) smallest = mode[mode.length - 1]
-                })
+                    if (mode[mode.length - 1] < smallest) smallest = mode[mode.length - 1];
+                });
                 modes.forEach(mode => {
-                    if (mode[mode.length - 1] == smallest) filtered_modes.push(mode)
-                })
+                    if (mode[mode.length - 1] == smallest) filtered_modes.push(mode);
+                });
                 if (filtered_modes.length == 1) return filtered_modes[0]
                 else {
-                    let last = filtered_modes[0][filtered_modes[0].length - 1]
+                    let last = filtered_modes[0][filtered_modes[0].length - 1];
                     let truncated_modes = filtered_modes.map((mode) => {
                         return mode.slice(0, -1)
-                    })
-                    let normal_order = organize(truncated_modes)
-                    normal_order.push(last)
+                    });
+                    let normal_order = organize(truncated_modes);
+                    normal_order.push(last);
                     return normal_order
                 }
-                return 0
-            }
+            };
 
-            let result = organize(modes)
+            let result = organize(modes);
             if (cache) {
-                this.catalog[String(lst)]['normal_order'] = result
+                this.catalog[String(lst)]['normal_order'] = result;
             }
             return result
         },
@@ -2371,25 +2369,24 @@ class EDO {
          * //returns [ [ 0, 4, 9, 14, 18 ], [ 0, 4, 7, 10, 14 ] ]
          * */
         stacked: (pitches, intervals,transposed_to_0=false) => {
-            let perms = this.get.permutations(pitches)
-            let available =[]
+            let perms = this.get.permutations(pitches);
+            let available =[];
             for (let perm = 0; perm < perms.length; perm++) {
-                let p = perms[perm]
+                let p = perms[perm];
                 for (let i = 0; i <p.length; i++) {
-                    if(i==0) 1+1
-                    let multiplier =1
+                    let multiplier =1;
                     while(p[i]<p[i-1]) {
-                        p.splice(i,1,p[i]+(this.edo*multiplier))
-                        multiplier++
+                        p.splice(i,1,p[i]+(this.edo*multiplier));
+                        multiplier++;
                     }
                     if(intervals.indexOf(p[i]-p[i-1])==-1 && i!=0) {
-                        p=false
+                        p=false;
                         continue
                     }
                 }
                 if(p) {
-                    if(transposed_to_0) available.push(this.get.transposition(p,p[0]*-1,false))
-                    else available.push(p)
+                    if(transposed_to_0) available.push(this.get.transposition(p,p[0]*-1,false));
+                    else available.push(p);
                 }
             }
             return available
@@ -2409,15 +2406,15 @@ class EDO {
          * edo.get.without([0,1,3,4,6,7,9,10],[0,4,9],true)
          * //returns [0,2,5,6,9]*/
         without: (array1, array2, normal = false) => {
-            let copy = [...array1]
+            let copy = [...array1];
             array2.forEach((note) => {
                 do {
                     var index = copy.indexOf(note);
                     if (index != -1) copy.splice(index, 1);
                 } while (index!=-1)
 
-            })
-            if (normal) copy = this.get.normal_order(copy)
+            });
+            if (normal) copy = this.get.normal_order(copy);
 
             return copy
         },
@@ -2435,30 +2432,30 @@ class EDO {
          */
         partitioned_subsets: (arr) => {
             arr = arr
-                .map((el) => !Array.isArray(el) ? [el] : el)
+                .map((el) => !Array.isArray(el) ? [el] : el);
 
-            let findings = []
+            let findings = [];
             const recur = function (sub) {
 
                 for (let i = 0; i < sub.length; i++) {
                     if (sub[i].length > 1) {
                         sub[i].forEach((el) => {
                             if (i < sub.length - 1) {
-                                let thing = [...sub.slice(0, i), [el], ...sub.slice(i + 1)]
-                                recur(thing)
+                                let thing = [...sub.slice(0, i), [el], ...sub.slice(i + 1)];
+                                recur(thing);
                             } else {
-                                findings.push([...sub.slice(0, i), [el]])
+                                findings.push([...sub.slice(0, i), [el]]);
                             }
-                        })
+                        });
                         break
                     } else {
-                        if (i == sub.length - 1) findings.push(sub)
+                        if (i == sub.length - 1) findings.push(sub);
                     }
                 }
-            }
+            };
 
-            recur(arr)
-            findings = findings.map((subset) => subset.map((el) => el[0]))
+            recur(arr);
+            findings = findings.map((subset) => subset.map((el) => el[0]));
             return findings
 
 
@@ -2475,34 +2472,34 @@ class EDO {
          * @return {Array<Array<Number>>} An array of all the ways possible.
          * @memberOf EDO#get*/
         path_n_steps: (destination, motives = [], n_steps = 8) => {
-            const up_motives = motives.filter((m) => this.get.interval_traversed(m) > 0)
-            const down_motives = motives.filter((m) => this.get.interval_traversed(m) < 0)
-            const static_motives = motives.filter((m) => this.get.interval_traversed(m) == 0)
-            let success = []
+            const up_motives = motives.filter((m) => this.get.interval_traversed(m) > 0);
+            const down_motives = motives.filter((m) => this.get.interval_traversed(m) < 0);
+            const static_motives = motives.filter((m) => this.get.interval_traversed(m) == 0);
+            let success = [];
             const run_it = function (used = []) {
-                let sum = used.flat().reduce((t, e) => t + e, 0)
-                let length = used.flat().length
+                let sum = used.flat().reduce((t, e) => t + e, 0);
+                let length = used.flat().length;
                 if (length > n_steps || (length == n_steps && sum != destination)) return null
                 if (length == n_steps && sum == destination) return used
                 if (sum < destination) {
                     for (let i = 0; i < up_motives.length; i++) {
-                        let result = run_it(used.concat([up_motives[i]]))
+                        let result = run_it(used.concat([up_motives[i]]));
 
-                        if (result != null) success.push(result)
+                        if (result != null) success.push(result);
                     }
                 } else if (sum > destination) {
                     for (let i = 0; i < down_motives.length; i++) {
-                        let result = run_it(used.concat([down_motives[i]]))
-                        if (result != null) success.push(result)
+                        let result = run_it(used.concat([down_motives[i]]));
+                        if (result != null) success.push(result);
                     }
                 }
                 for (let i = 0; i < static_motives.length; i++) {
-                    let result = run_it(used.concat([static_motives[i]]))
-                    if (result != null) success.push(result)
+                    let result = run_it(used.concat([static_motives[i]]));
+                    if (result != null) success.push(result);
                 }
 
-            }
-            run_it()
+            };
+            run_it();
 
             return this.get.unique_elements(success)
         },
@@ -2532,9 +2529,9 @@ class EDO {
          * @return {Array<Number>} the path
          * @memberOf EDO#get*/
         path_on_tree: (intervals, path, starting_pitch = 0) => {
-            let result = [starting_pitch]
+            let result = [starting_pitch];
             for (let branch of path) {
-                result.push(result[result.length - 1] + intervals[branch]) //adds the interval at index=branch to the last value stored.
+                result.push(result[result.length - 1] + intervals[branch]); //adds the interval at index=branch to the last value stored.
             }
             return result
         },
@@ -2554,17 +2551,17 @@ class EDO {
 
             const do_it = (arr, m = []) => {
                 if (arr.length === 0) {
-                    result.push(m)
+                    result.push(m);
                 } else {
                     for (let i = 0; i < arr.length; i++) {
                         let curr = arr.slice();
                         let next = curr.splice(i, 1);
-                        do_it(curr.slice(), m.concat(next))
+                        do_it(curr.slice(), m.concat(next));
                     }
                 }
-            }
+            };
 
-            do_it(inputArr)
+            do_it(inputArr);
 
             return result;
         },
@@ -2599,13 +2596,13 @@ class EDO {
          *
          */
         pitch_distribution: (pitches, as_PC = false) => {
-            if (as_PC) pitches = pitches.map((pitch) => this.mod(pitch, this.edo))
-            let unique = this.get.unique_elements(pitches)
+            if (as_PC) pitches = pitches.map((pitch) => this.mod(pitch, this.edo));
+            let unique = this.get.unique_elements(pitches);
 
             let dist = unique.map((el) => {
                 return {note: el, rate: pitches.filter(x => x == el).length / pitches.length}
-            })
-            dist = dist.sort((a, b) => b.rate - a.rate)
+            });
+            dist = dist.sort((a, b) => b.rate - a.rate);
             return dist
         },
 
@@ -2649,42 +2646,41 @@ class EDO {
          */
         pitch_fields: (pitches,size=8,as_PC=true, unique=false,avoid_duplicate_windows=false) => {
             if(unique) {
-                let partitions = []
-                loop1:
-                    for (let i = 0; i < pitches.length-size; i++) {
-                        let window = [(as_PC)?this.mod(pitches[i],this.edo):pitches[i]]
+                let partitions = [];
+                for (let i = 0; i < pitches.length-size; i++) {
+                        let window = [(as_PC)?this.mod(pitches[i],this.edo):pitches[i]];
                         loop2:
                             for (let j = i+1; j < pitches.length; j++) {
                                 if(window.length==size) break loop2
-                                let el
-                                if(as_PC) el = this.mod(pitches[j],this.edo)
-                                else el = pitches[j]
-                                if(window.indexOf(el)==-1) window.push(el)
+                                let el;
+                                if(as_PC) el = this.mod(pitches[j],this.edo);
+                                else el = pitches[j];
+                                if(window.indexOf(el)==-1) window.push(el);
                             }
-                        window = window.sort((a,b)=>a-b)
+                        window = window.sort((a,b)=>a-b);
                         if(avoid_duplicate_windows) {
-                            if(!this.is.same(partitions[partitions.length-1],window)) partitions.push(window)
-                        } else partitions.push(window)
+                            if(!this.is.same(partitions[partitions.length-1],window)) partitions.push(window);
+                        } else partitions.push(window);
 
 
                     }
                 return partitions
             }
             else {
-                let partitions = []
+                let partitions = [];
                 for (let i = 0; i <= pitches.length-size; i++) {
-                    partitions.push(pitches.slice(i,i+size))
+                    partitions.push(pitches.slice(i,i+size));
                 }
                 partitions = partitions.map((p)=>{
-                    if(as_PC) p = p.map((note)=>this.mod(note,this.edo))
-                    p = this.get.unique_elements(p).sort((a,b)=>a-b)
+                    if(as_PC) p = p.map((note)=>this.mod(note,this.edo));
+                    p = this.get.unique_elements(p).sort((a,b)=>a-b);
 
                     return p
                 }).filter((el,i,arr)=>{
                     if(i+1!=arr.length) {
                         return !this.is.same(arr[i],arr[i+1])
                     } else return true
-                })
+                });
                 return partitions
             }
         },
@@ -2708,38 +2704,38 @@ class EDO {
          * edo.get.random_melody(6, [0, 17], 3,[0, 2, 4, 5, 7, 9, 11],3) // returns e.g. [ 14, 16, 12, 9, 11, 14 ]
          */
         random_melody: (length = 8, range = [0, 12], repetition_minimal_gap = 4, mode, avoid_leaps_over = 5) => {
-            let counter = 0
-            let melody = []
-            let pitch_pool = []
+            let counter = 0;
+            let melody = [];
+            let pitch_pool = [];
             for (let i = range[0]; i <= range[1]; i++) {
                 if (mode) {
                     if (mode.indexOf(this.mod(i, this.edo)) == -1) continue
                 }
-                pitch_pool.push(i)
+                pitch_pool.push(i);
             }
             while (melody.length < length && counter < 1000) {
-                counter++
-                let submelody = melody.slice(Math.max(melody.length - repetition_minimal_gap, 0), melody.length)
+                counter++;
+                let submelody = melody.slice(Math.max(melody.length - repetition_minimal_gap, 0), melody.length);
                 // if(!allow_pc_repetition && submelody.length>0) submelody = this.get.normal_order(submelody) //normal order
 
                 let allow_pitches = pitch_pool.filter((pitch) => {
                     if (submelody.indexOf(pitch) == -1) return true
                     else return false
-                })
+                });
                 if (melody.length > 0) {
-                    let leapless = []
+                    let leapless = [];
                     do {
                         leapless = allow_pitches.filter((pitch) => {
                             if (Math.abs(pitch - melody[melody.length - 1]) <= avoid_leaps_over) return true
                             return false
-                        })
-                        avoid_leaps_over++
+                        });
+                        avoid_leaps_over++;
                     } while (leapless.length == 0)
-                    allow_pitches = leapless
+                    allow_pitches = leapless;
                 }
 
                 let ind = Math.floor(Math.random() * (allow_pitches.length));
-                melody.push(allow_pitches[ind])
+                melody.push(allow_pitches[ind]);
 
             }
             return melody
@@ -2760,30 +2756,30 @@ class EDO {
          * edo.get.random_melody_from_contour([0,3,1,3,2],[0,12],[0,2,4,5,7,9,11]); //returns e.g. [ 2, 11, 7, 11, 9 ]
          */
         random_melody_from_contour: (contour, range = [0, 12], mode) => {
-            let available_pitches = []
-            let used_pitches = []
-            let contour_ordered_unique = this.get.unique_elements([...contour]).sort((a, b) => a - b)
-            let len = contour_ordered_unique.length - used_pitches.length
+            let available_pitches = [];
+            let used_pitches = [];
+            let contour_ordered_unique = this.get.unique_elements([...contour]).sort((a, b) => a - b);
+            let len = contour_ordered_unique.length - used_pitches.length;
             for (let i = range[0]; i <= range[1]; i++) {
                 if (mode) {
-                    if (mode.indexOf(this.mod(i, this.edo)) != -1) available_pitches.push(i)
+                    if (mode.indexOf(this.mod(i, this.edo)) != -1) available_pitches.push(i);
                 } else {
-                    available_pitches.push(i)
+                    available_pitches.push(i);
                 }
             }
             while (used_pitches.length < len) {
-                let item_i = Math.floor(Math.random() * available_pitches.length)
-                let item = available_pitches.splice(item_i, 1)[0]
-                used_pitches.push(item)
-                len = contour_ordered_unique.length
+                let item_i = Math.floor(Math.random() * available_pitches.length);
+                let item = available_pitches.splice(item_i, 1)[0];
+                used_pitches.push(item);
+                len = contour_ordered_unique.length;
             }
-            used_pitches = used_pitches.sort((a, b) => a - b)
+            used_pitches = used_pitches.sort((a, b) => a - b);
 
-            let lexicon = {}
+            let lexicon = {};
             for (let i = 0; i < contour_ordered_unique.length; i++) {
-                lexicon[contour_ordered_unique[i]] = used_pitches[i]
+                lexicon[contour_ordered_unique[i]] = used_pitches[i];
             }
-            contour = contour.map((el) => lexicon[el])
+            contour = contour.map((el) => lexicon[el]);
             return contour
         },
 
@@ -2803,21 +2799,20 @@ class EDO {
          * @see EDO#get.ngrams
          */
         random_melody_from_ngram: (ngrams, start = [0], length = 16) => {
-            let melody = [...start]
-            let escape = 100 + length
-            loop1:
-                while (melody.length < length & escape > 0) {
+            let melody = [...start];
+            let escape = 100 + length;
+            while (melody.length < length & escape > 0) {
                     loop2:
                         for (let i = melody.length; i > 0; i--) {
-                            let sub = melody.slice(melody.length - i)
-                            let entry = ngrams[sub.join(" ")]
+                            let sub = melody.slice(melody.length - i);
+                            let entry = ngrams[sub.join(" ")];
                             if (Array.isArray(entry)) {
-                                let random_pitch = entry[Math.floor(Math.random() * entry.length)]
-                                melody.push(random_pitch)
+                                let random_pitch = entry[Math.floor(Math.random() * entry.length)];
+                                melody.push(random_pitch);
                                 break loop2;
                             }
                         }
-                    escape--
+                    escape--;
                 }
             return melody
         },
@@ -2837,14 +2832,14 @@ class EDO {
          * @see EDO#get.pitch_distribution
          */
         random_melody_from_distribution: (dist, length = 8) => {
-            let melody = []
-            dist = dist.sort((a, b) => a.rate - b.rate)
-            let multiplier = Math.floor(1 / dist[0].rate)
-            dist = dist.map((el) => [...new Array(Math.ceil(multiplier * el.rate)).fill(el.note)])
-            dist = dist.flat()
+            let melody = [];
+            dist = dist.sort((a, b) => a.rate - b.rate);
+            let multiplier = Math.floor(1 / dist[0].rate);
+            dist = dist.map((el) => [...new Array(Math.ceil(multiplier * el.rate)).fill(el.note)]);
+            dist = dist.flat();
             while (melody.length < length) {
-                let ind = Math.floor(Math.random() * (dist.length))
-                melody.push(dist[ind])
+                let ind = Math.floor(Math.random() * (dist.length));
+                melody.push(dist[ind]);
             }
             return melody
         },
@@ -2870,23 +2865,23 @@ class EDO {
          *
          */
         ratio_approximation: (interval, limit = 17) => {
-            let closest_ratio = 0
-            let closest_name = ""
-            let numeric = 0
-            let interval_in_cents = this.convert.interval_to_cents(interval)
-            let ratios = this.get.simple_ratios(limit = limit)
+            let closest_ratio = 0;
+            let closest_name = "";
+            let numeric = 0;
+            let interval_in_cents = this.convert.interval_to_cents(interval);
+            let ratios = this.get.simple_ratios(limit = limit);
             for (let ratio in ratios) {
-                let side_a = Math.abs(ratios[ratio]['cents'] - interval_in_cents)
-                let side_b = Math.abs(interval_in_cents - closest_ratio)
+                let side_a = Math.abs(ratios[ratio]['cents'] - interval_in_cents);
+                let side_b = Math.abs(interval_in_cents - closest_ratio);
                 if (side_a < side_b) {
-                    closest_ratio = ratios[ratio]['cents']
-                    closest_name = ratio
-                    numeric = ratios[ratio]['value']
+                    closest_ratio = ratios[ratio]['cents'];
+                    closest_name = ratio;
+                    numeric = ratios[ratio]['value'];
                 }
             }
-            let num_den = closest_name.split(':')
-            let numerator = num_den[0]
-            let denominator = num_den[1]
+            let num_den = closest_name.split(':');
+            num_den[0];
+            let denominator = num_den[1];
             return {
                 ratio: closest_name,
                 cents_offset: interval_in_cents - closest_ratio,
@@ -2921,7 +2916,7 @@ class EDO {
          * edo.get.rotated([0,2,4,5,7],-1) //returns [7,0,2,4,5]
          * */
         rotated: (pitches,n) => {
-            n=this.mod(n,pitches.length)
+            n=this.mod(n,pitches.length);
             return [...pitches.slice(n),...pitches].slice(0,pitches.length)
         },
 
@@ -2937,9 +2932,9 @@ class EDO {
          * //returns [ [ 0, 4, 7, 4 ], [ 4, 7, 4, 0 ], [ 7, 4, 0, 4 ], [ 4, 0, 4, 7 ] ]
          * */
         rotations: (pitches) => {
-            let rotations = []
+            let rotations = [];
             for (let i = 0; i < pitches.length; i++) {
-                rotations.push([...pitches.slice(i, pitches.length), ...pitches.slice(0, i)])
+                rotations.push([...pitches.slice(i, pitches.length), ...pitches.slice(0, i)]);
             }
             return rotations
         },
@@ -2981,49 +2976,49 @@ class EDO {
          * ]
          * */
         scalar_melodies: (melody,steps=[1,2],look_back=true)=> {
-            steps.push(0)
-            let melodies = []
+            steps.push(0);
+            let melodies = [];
             melody.forEach((note,ind)=> {
-                let in_any=false
+                let in_any=false;
                 for (let i = 0; i < melodies.length; i++) {
-                    let mel = melodies[i]
-                    let last_note = mel[mel.length-1].pitch
-                    let step_size = Math.abs(note-last_note)
-                    let scalar = this.is.element_of(step_size,steps)
+                    let mel = melodies[i];
+                    let last_note = mel[mel.length-1].pitch;
+                    let step_size = Math.abs(note-last_note);
+                    let scalar = this.is.element_of(step_size,steps);
                     if(scalar) {
-                        melodies[i].push({pitch:note,index:ind})
-                        in_any=true
+                        melodies[i].push({pitch:note,index:ind});
+                        in_any=true;
                     }
                 }
                 if(!in_any) {
-                    let possible = []
+                    let possible = [];
                     if(look_back) {
-                        let look_for=[]
+                        let look_for=[];
                         steps.forEach(s=>{
-                            look_for.push(note+s)
-                            look_for.push(note-s)
-                        })
-                        look_for=this.get.unique_elements(look_for)
+                            look_for.push(note+s);
+                            look_for.push(note-s);
+                        });
+                        look_for=this.get.unique_elements(look_for);
                         look_for.forEach((n)=>{
                             melodies.map(m=>m.map(el=>el.pitch)).forEach((m,index1)=>{
                                 if(m.includes(n)) {
-                                    let last = m.lastIndexOf(n)
-                                    possible.push([note,ind,index1,last])
+                                    let last = m.lastIndexOf(n);
+                                    possible.push([note,ind,index1,last]);
                                     // possible.push([m,m.lastIndexOf(n)])
                                 }
-                            })
-                        })
+                            });
+                        });
                         possible = possible.map(el=>{
-                            let mel = melodies[el[2]].slice(0,el[3]+1)
-                            mel = [...mel,{pitch:el[0],index:el[1]}]
+                            let mel = melodies[el[2]].slice(0,el[3]+1);
+                            mel = [...mel,{pitch:el[0],index:el[1]}];
                             return mel
-                        })
-                        melodies = [...melodies,...possible]
+                        });
+                        melodies = [...melodies,...possible];
                     }
-                    if(possible.length==0) melodies.push([{pitch:note,index:ind}])
+                    if(possible.length==0) melodies.push([{pitch:note,index:ind}]);
 
                 }
-            })
+            });
             return melodies
         },
 
@@ -3050,23 +3045,23 @@ class EDO {
 
             //get all unique combinations of size s from set of intervals set
             const calc_comb = (s, set) => {
-                let solutions = []
+                let solutions = [];
                 for (let i = 0; i < set.length; i++) {
-                    let n = set[i]
-                    let m = Math.floor(s / n) //Max times n fits in s
-                    if (s / n == m && set.length == 1) solutions.push(Array(m).fill(n))
-                    let new_set = [...set]
-                    new_set.splice(i, 1)
+                    let n = set[i];
+                    let m = Math.floor(s / n); //Max times n fits in s
+                    if (s / n == m && set.length == 1) solutions.push(Array(m).fill(n));
+                    let new_set = [...set];
+                    new_set.splice(i, 1);
                     if (new_set.length > 0) {
                         for (let k = m; k != 0; k--) {
-                            let new_sum = s - (k * n)
+                            let new_sum = s - (k * n);
                             if (new_sum > 0) {
-                                let new_result = calc_comb(new_sum, new_set)
+                                let new_result = calc_comb(new_sum, new_set);
                                 if (new_result.length > 0) {
                                     for (let r = 0; r < new_result.length; r++) {
-                                        let solution = Array(k).fill(n).concat(new_result[r].flat())
-                                        solution.sort((a, b) => a - b)
-                                        solutions.push(solution)
+                                        let solution = Array(k).fill(n).concat(new_result[r].flat());
+                                        solution.sort((a, b) => a - b);
+                                        solutions.push(solution);
                                     }
                                 }
                             }
@@ -3076,69 +3071,69 @@ class EDO {
 
                 }
                 return this.get.unique_elements(solutions)
-            }
+            };
 
             //returns all possible step sizes based on the min_step and max_step parameters
             const get_step_sizes = function (min_step, max_step) {
-                let step_sizes = []
+                let step_sizes = [];
                 for (let i = max_step; i != min_step - 1; i--) {
-                    step_sizes.push(i)
+                    step_sizes.push(i);
                 }
                 return step_sizes
-            }
+            };
 
             //returns all possible step combination between min_sizes and max_sized from step_sizes
             const get_interval_combinations = function (min_sizes, max_sizes, step_sizes) {
-                let step_combinations = []
+                let step_combinations = [];
                 for (let window_size = min_sizes; window_size <= max_sizes; window_size++) {
-                    step_combinations = step_combinations.concat(combinations(step_sizes, window_size))
+                    step_combinations = step_combinations.concat(combinations(step_sizes, window_size));
                 }
                 return step_combinations
-            }
+            };
 
             //get the unique interval partitions for each set of possible interval combinations
             const unique_for_all = function (interval_combinations) {
-                let collection = []
+                let collection = [];
                 interval_combinations.forEach((combo) => {
-                    let unique_step_combination = calc_comb(EDO.edo, combo)
+                    let unique_step_combination = calc_comb(EDO.edo, combo);
                     if (unique_step_combination.length > 0) {
-                        collection = collection.concat(unique_step_combination)
+                        collection = collection.concat(unique_step_combination);
                     }
-                })
+                });
                 return collection
-            }
+            };
 
             //make all possible necklaces out of interval combinations given in [combos]
             const make_all_necklaces = function (combos) {
-                let all_necklaces = []
+                let all_necklaces = [];
                 for (let i = 0; i < combos.length; i++) {
-                    let combo = combos[i]
-                    let necklaces = EDO.get.necklace(combo)
-                    all_necklaces = all_necklaces.concat(necklaces)
+                    let combo = combos[i];
+                    let necklaces = EDO.get.necklace(combo);
+                    all_necklaces = all_necklaces.concat(necklaces);
                 }
                 return all_necklaces
 
-            }
+            };
 
             const get_all_scales = (all_necklaces) => {
-                let all_scales = []
+                let all_scales = [];
 
                 all_necklaces.forEach((necklace) => {
-                    all_scales.push(EDO.convert.intervals_to_scale(necklace))
-                })
+                    all_scales.push(EDO.convert.intervals_to_scale(necklace));
+                });
                 return all_scales
-            }
+            };
 
-            let step_sizes = get_step_sizes(min_step, max_step)
+            let step_sizes = get_step_sizes(min_step, max_step);
 
-            let interval_combinations = get_interval_combinations(min_sizes, max_sizes, step_sizes)
-            let combos = unique_for_all(interval_combinations).filter(combo=>combo.length<=max_num_of_pitches)
-            let all_necklaces = make_all_necklaces(combos)
+            let interval_combinations = get_interval_combinations(min_sizes, max_sizes, step_sizes);
+            let combos = unique_for_all(interval_combinations).filter(combo=>combo.length<=max_num_of_pitches);
+            let all_necklaces = make_all_necklaces(combos);
 
-            let _scales = get_all_scales(all_necklaces)
-            let scales = []
-            _scales.forEach((scale) => scales.push(new Scale(scale, this).normal()))
-            scales = this.sort_scales(scales)
+            let _scales = get_all_scales(all_necklaces);
+            let scales = [];
+            _scales.forEach((scale) => scales.push(new Scale(scale, this).normal()));
+            scales = this.sort_scales(scales);
 
 
             return scales
@@ -3169,20 +3164,20 @@ class EDO {
          * */
         shortest_path: (destination, intervals = [5, -3], used = [], life_span = 10) => {
 
-            let up_interval = []
-            let down_interval = []
+            let up_interval = [];
+            let down_interval = [];
             for (let int of intervals) {
-                if (int > 0) up_interval.push(int)
-                else if (int < 0) down_interval.push(int)
+                if (int > 0) up_interval.push(int);
+                else if (int < 0) down_interval.push(int);
             }
 
-            let paths = []
+            let paths = [];
             const shortest_path_array = function (destination, up_interval = [3, 4], down_interval = [-1, -2], used = [], life_span = 10) {
                 if (life_span < 0) return null
 
-                let sum = used.reduce((a, b) => a + b, 0)
+                let sum = used.reduce((a, b) => a + b, 0);
                 if (sum == destination && (paths.length == 0 || paths.length > used.length)) {
-                    paths = [...used]
+                    paths = [...used];
                     return
                 } else if (sum == destination && (paths.length != 0 || paths.length <= used.length)) {
                     return
@@ -3190,19 +3185,19 @@ class EDO {
 
                 if (sum < destination) {
                     for (let num of up_interval) {
-                        shortest_path_array(destination, up_interval, down_interval, used.concat([num]), life_span - 1)
+                        shortest_path_array(destination, up_interval, down_interval, used.concat([num]), life_span - 1);
                     }
                 } else if (sum > destination) {
                     for (let num of down_interval) {
-                        shortest_path_array(destination, up_interval, down_interval, used.concat([num]), life_span - 1)
+                        shortest_path_array(destination, up_interval, down_interval, used.concat([num]), life_span - 1);
                     }
                 }
 
-            }
+            };
 
 
-            shortest_path_array(destination, up_interval, down_interval, used, life_span)
-            paths = paths.sort((a, b) => a - b)
+            shortest_path_array(destination, up_interval, down_interval, used, life_span);
+            paths = paths.sort((a, b) => a - b);
             return paths
 
         },
@@ -3214,12 +3209,12 @@ class EDO {
          * @memberOf EDO#get
          */
         simple_ratios: (limit = 17, cache = false) => {
-            let primes = this.get.primes_in_range(limit)
-            let ratios = {}
+            let primes = this.get.primes_in_range(limit);
+            let ratios = {};
             for (let i = 2; i < limit + 1; i++) {
                 for (let j = 1; j < i; j++) {
                     if (((primes.indexOf(i) < 0) && (primes.indexOf(j) < 0)) || (i % 2 == 0 && j % 2 == 0) || (i % j == 0 && j > 2)) continue
-                    ratios[String(i) + ':' + String(j)] = {cents: this.convert.ratio_to_cents(i / j), cents_in_octave: this.mod(this.convert.ratio_to_cents(i / j),1200), value: i / j}
+                    ratios[String(i) + ':' + String(j)] = {cents: this.convert.ratio_to_cents(i / j), cents_in_octave: this.mod(this.convert.ratio_to_cents(i / j),1200), value: i / j};
                 }
             }
             return ratios
@@ -3241,8 +3236,8 @@ class EDO {
          * //returns [2,-2,5] //Everything shifted such that the starting pitch is 2, and octave is respected
          */
         starting_at: (pitches, start_at = 0, as_PCs = true) => {
-            let shift_by = (pitches[0] * -1) + start_at
-            let result = pitches.map((pitch) => (as_PCs) ? this.mod(pitch + shift_by, this.edo) : pitch + shift_by)
+            let shift_by = (pitches[0] * -1) + start_at;
+            let result = pitches.map((pitch) => (as_PCs) ? this.mod(pitch + shift_by, this.edo) : pitch + shift_by);
             return result
         },
 
@@ -3258,37 +3253,36 @@ class EDO {
          * @memberOf EDO#get
          */
         subset_indices: (find, arr, allow_skips = true) => {
-            let paths = []
+            let paths = [];
 
             const run_it_with_skips = function (find, arr, path = [], ind = 0) {
                 if (find.length == 0) return path
-                let find_this = find[0]
+                let find_this = find[0];
                 for (let i = ind; i < arr.length; i++) {
                     if (arr[i] == find_this) {
-                        let res = run_it_with_skips(find.slice(1), arr, [...path, i], i + 1)
-                        if (res) paths.push(res)
+                        let res = run_it_with_skips(find.slice(1), arr, [...path, i], i + 1);
+                        if (res) paths.push(res);
                     }
                 }
-            }
+            };
 
             const run_it_no_skips = function (find, arr) {
                 loop1:
                     for (let i = 0; i < arr.length - (find.length - 1); i++) {
-                        loop2:
-                            for (let j = 0; j < find.length; j++) {
+                        for (let j = 0; j < find.length; j++) {
                                 if (find[j] != arr[i + j]) continue loop1
                                 if (j == find.length - 1) {
-                                    let arr = new Array(find.length).fill(0)
-                                    arr.forEach((el, ind) => arr[ind] = i + ind)
-                                    paths.push(arr)
+                                    let arr = new Array(find.length).fill(0);
+                                    arr.forEach((el, ind) => arr[ind] = i + ind);
+                                    paths.push(arr);
 
                                 }
                             }
                     }
 
-            }
-            if (allow_skips) run_it_with_skips(find, arr)
-            else run_it_no_skips(find, arr)
+            };
+            if (allow_skips) run_it_with_skips(find, arr);
+            else run_it_no_skips(find, arr);
 
             return paths
         },
@@ -3313,21 +3307,21 @@ class EDO {
                         subsets.map(set => [...set, value])
                     ),
                     [[]]
-                )
+                );
             } else {
-                let subsets = []
+                let subsets = [];
                 for (let window = 1; window < pitches.length + 1; window++) {
                     for (let i = 0; i < pitches.length - window + 1; i++) {
-                        subsets.push(pitches.slice(i, i + window))
+                        subsets.push(pitches.slice(i, i + window));
                     }
                 }
-                pitches = subsets
+                pitches = subsets;
             }
 
-            pitches = pitches.filter((el) => el.length > 0)
+            pitches = pitches.filter((el) => el.length > 0);
             if (normal) {
-                pitches = pitches.map((subset) => this.get.normal_order(subset))
-                pitches = this.get.unique_elements(pitches)
+                pitches = pitches.map((subset) => this.get.normal_order(subset));
+                pitches = this.get.unique_elements(pitches);
             }
             return pitches
         },
@@ -3345,8 +3339,8 @@ class EDO {
          * //returns [7, 9, 11, 0, 2, 4,  6]
          */
         transposition: (pitches, amount = 0, as_PC = true) => {
-            pitches = pitches.map((pitch) => pitch + amount)
-            if (as_PC) pitches = pitches.map((pitch) => this.mod(pitch, this.edo))
+            pitches = pitches.map((pitch) => pitch + amount);
+            if (as_PC) pitches = pitches.map((pitch) => this.mod(pitch, this.edo));
             return pitches
         },
 
@@ -3361,7 +3355,7 @@ class EDO {
          * //returns [0,1,2,3,4,5,6]
          */
         union: (...collections) => {
-            let union = []
+            let union = [];
             return union.concat(...collections)
         },
 
@@ -3393,7 +3387,7 @@ class EDO {
          * @see Clough, J. and J. Douthett (1991). "Maximally even sets." Journal of Music Theory 35(1/2): 93-173.
          */
         well_formed_scale: (cardinality=7) => {
-            let scale = [...Array(cardinality).keys()].map(n=>Math.floor((n*this.edo)/cardinality))
+            let scale = [...Array(cardinality).keys()].map(n=>Math.floor((n*this.edo)/cardinality));
             return scale
         },
 
@@ -3410,35 +3404,35 @@ class EDO {
          */
         without_chromatic_notes: (melody)=> {
             melody = melody.filter((n,i,m)=>{
-                let adder = 0
+                let adder = 0;
                 if(i>0) {
-                    if(m[i-1]>m[i]) adder=-1
-                    else if(m[i-1]<m[i]) adder=1
+                    if(m[i-1]>m[i]) adder=-1;
+                    else if(m[i-1]<m[i]) adder=1;
                 }
                 if(m[i]+adder==m[i+1]) return false
                 return true
 
-            })
+            });
 
             return melody
         },
 
         primes_in_range: (upper = 17, lower = 2) => {
-            let primes = []
+            let primes = [];
             for (let num = lower; num <= upper; num++) {
                 if (num > 1) {
                     for (let i = 2; i < num; i++) {
                         if (num % i == 0) break
-                        else primes.push(num)
+                        else primes.push(num);
                     }
                 }
             }
             return primes
         },
         divisors: (n) => {
-            let divisors = []
+            let divisors = [];
             for (let i = 2; i < Math.ceil(n / 2); i++) {
-                if (n % parseInt(i) == 0) divisors.push(i)
+                if (n % parseInt(i) == 0) divisors.push(i);
             }
             return divisors
         },
@@ -3457,18 +3451,18 @@ class EDO {
          */
         import: (file_path) => {
             if (environment != 'server') return alert("This is currently supported only on server-side")
-            let midi = load_file(file_path)
+            let midi = load_file(file_path);
             midi = midiParser.parse(midi);
             midi.track = midi.track.map(track=>{
                 track.event = track.event.map((e,i,all)=>{
-                    if(i==0) e.onset = e.deltaTime
+                    if(i==0) e.onset = e.deltaTime;
                     else {
-                        e.onset = all[i-1].onset+e.deltaTime
+                        e.onset = all[i-1].onset+e.deltaTime;
                     }
                     return e
-                })
+                });
                 return track
-            })
+            });
 
 
             return midi
@@ -3498,44 +3492,44 @@ class EDO {
          * ]
          */
         strip: (parsed_midi) =>{
-            let p = parsed_midi
-            let all_times = []
+            let p = parsed_midi;
+            let all_times = [];
             p.track = p.track.map(t=>{
                 t.event = t.event.filter(e=>{
                     return e.type==9
                 }).map(e=>{
-                    let el = {pitch:e.data[0],onset:e.onset}
+                    let el = {pitch:e.data[0],onset:e.onset};
                     return el
                 }).map((e,i,all)=>{
-                    let onset = e.onset
-                    if (all_times.indexOf(onset)==-1) all_times.push(onset)
+                    let onset = e.onset;
+                    if (all_times.indexOf(onset)==-1) all_times.push(onset);
 
                     return all.filter((element)=>element.onset==onset)
-                })
-                t.event = this.get.unique_elements(t.event)
+                });
+                t.event = this.get.unique_elements(t.event);
                 return t
-            })
-            all_times.sort((a,b)=>a-b)
+            });
+            all_times.sort((a,b)=>a-b);
             p.track = p.track.map(t=>{
                 t.event = t.event.map(e=>{
                     e = e.map(ev=>{
-                        ev.onset = all_times.indexOf(ev.onset)
+                        ev.onset = all_times.indexOf(ev.onset);
                         return ev
-                    })
+                    });
                     return e
-                })
+                });
                 return t
-            })
+            });
             p.track = p.track.map(t=>{
                 t = t.event.reduce((a,e)=>{
                     e.forEach(n=>{
-                        if(a[n.onset]==undefined) a[n.onset] = [n.pitch]
-                        else a[n.onset].push(n.pitch)
-                    })
+                        if(a[n.onset]==undefined) a[n.onset] = [n.pitch];
+                        else a[n.onset].push(n.pitch);
+                    });
                     return a
-                },[])
+                },[]);
                 return t
-            })
+            });
             p.track = p.track
             //     .map(t=>{
             //     t = t.map(n=>{
@@ -3545,20 +3539,20 @@ class EDO {
             // })
                 .filter(t=>{
                 return t.length>0
-            })
+            });
                 // .map(t=>{
                 //     console.log(this.convert.midi_to_name(t))
                 //     return t
                 // })
-            let all_tracks = []
+            let all_tracks = [];
             p.track.forEach((t)=>{
                 t.forEach((n,i)=>{
-                    if(all_tracks[i]==undefined) all_tracks[i]=[...n]
-                    else all_tracks[i] = [...all_tracks[i],...n]
-                })
+                    if(all_tracks[i]==undefined) all_tracks[i]=[...n];
+                    else all_tracks[i] = [...all_tracks[i],...n];
+                });
 
-            })
-            all_tracks=all_tracks.map(e=>(e.length==1)?e[0]:e)
+            });
+            all_tracks=all_tracks.map(e=>(e.length==1)?e[0]:e);
             return all_tracks
 
         },
@@ -3619,13 +3613,13 @@ class EDO {
          * @see EDO#midi.import
          */
         chordify: (parsed_midi,ticks=480,unique=true,as_PC=false,ordered=false) =>{
-            let p = parsed_midi
-            let max = 0
+            let p = parsed_midi;
+            let max = 0;
             p = p.track.map(t=>{
-                t.event = t.event.filter(e=>e.type==9) // return only note on events
-                t.event.map(e=>(e.onset>max)?max=e.onset:max=max) //gets duration of file
+                t.event = t.event.filter(e=>e.type==9); // return only note on events
+                t.event.map(e=>(e.onset>max)?max=e.onset:max=max); //gets duration of file
                 return [...t.event]
-            }).flat().sort((a,b)=>a.onset-b.onset)
+            }).flat().sort((a,b)=>a.onset-b.onset);
             let partitions = Array.from(Array(Math.ceil(max/ticks)).keys())
                 .map(e=>e*ticks)
                 .map((e,i,arr)=> {
@@ -3636,11 +3630,11 @@ class EDO {
                     e = e.map(n=>{
                         if(as_PC) return this.mod(n.data[0],this.edo)
                         return n.data[0]
-                    })
-                    if(ordered) e.sort((a,b)=>a-b)
-                    if(unique) e=this.get.unique_elements(e)
+                    });
+                    if(ordered) e.sort((a,b)=>a-b);
+                    if(unique) e=this.get.unique_elements(e);
                     return e
-                })
+                });
             return partitions
         }
 
@@ -3658,10 +3652,10 @@ class EDO {
         import: (file_path) => {
             if (environment != 'server') return alert("This is currently supported only on server-side")
 
-            var xml = load_file(file_path)
-            let parsed
+            var xml = load_file(file_path);
+            let parsed;
             parseXML(xml, function (err, result) {
-                parsed = result
+                parsed = result;
             });
             return parsed
         }
@@ -3688,8 +3682,8 @@ class EDO {
          */
         element_of: (arr, bigger_arr) => {
             if (arr.length == 0 || bigger_arr.length == 0) return false
-            arr = JSON.stringify(arr)
-            let arr2 = JSON.stringify(bigger_arr)
+            arr = JSON.stringify(arr);
+            let arr2 = JSON.stringify(bigger_arr);
             return arr2.indexOf(arr) != -1
         },
 
@@ -3705,7 +3699,7 @@ class EDO {
          * //returns true
          */
         rotation:(collection1,collection2)=> {
-            let double = [...collection2,...collection2]
+            let double = [...collection2,...collection2];
             for (let i = 0; i < collection2.length; i++) {
                 if(this.is.same(collection1,double.slice(i,i+collection2.length))) return true
             }
@@ -3730,8 +3724,8 @@ class EDO {
          * //returns true
          */
         same: (arr1, arr2) => {
-            arr1 = JSON.stringify(arr1)
-            arr2 = JSON.stringify(arr2)
+            arr1 = JSON.stringify(arr1);
+            arr2 = JSON.stringify(arr2);
             return arr1 == arr2
         },
 
@@ -3770,8 +3764,8 @@ class EDO {
          * //returns true
          */
         transposition: (collection1,collection2) => {
-            let c1 = collection1
-            let c2 = collection2
+            let c1 = collection1;
+            let c2 = collection2;
             return this.is.same(c1,c2.map(n=>this.mod(n-c2[0]-c1[0],this.edo)))
         }
     }
@@ -3806,55 +3800,55 @@ class EDO {
          * @memberOf EDO#show
          */
         contour: (container_id, pitches, replace = false, size) => {
-            let container = document.getElementById(container_id)
-            let width, height
+            let container = document.getElementById(container_id);
+            let width, height;
             if (!size) {
-                width = container.offsetWidth
-                height = container.offsetHeight
+                width = container.offsetWidth;
+                height = container.offsetHeight;
             } else {
                 if (Array.isArray(size)) {
-                    width = size[0]
-                    height = size[1]
+                    width = size[0];
+                    height = size[1];
 
                 } else {
-                    width = size
-                    height = size
+                    width = size;
+                    height = size;
                 }
             }
 
-            let div = document.createElement('div')
+            let div = document.createElement('div');
             div.style.width = width + "px";
             div.style.height = height + "px";
-            div.style.display = "inline"
-            let div_id = div.setAttribute("id", "paper_" + Date.now());
+            div.style.display = "inline";
+            div.setAttribute("id", "paper_" + Date.now());
 
-            if (replace) container.innerHTML = ""
-            container.appendChild(div)
+            if (replace) container.innerHTML = "";
+            container.appendChild(div);
             const paper = new Raphael(div, width, height);
-            let background = paper.rect(0, 0, width, height).attr('fill', '000').attr('stroke', 'white')
+            paper.rect(0, 0, width, height).attr('fill', '000').attr('stroke', 'white');
 
             const scale = (num, in_min, in_max, out_min, out_max) => {
                 return (num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-            }
+            };
 
-            let max_pitch = Math.max.apply(Math, pitches)
-            let min_pitch = Math.min.apply(Math, pitches)
-            let margin = 15
-            let scaled_pitches = pitches.map((pitch) => Math.floor(scale(pitch, min_pitch, max_pitch, height - margin, margin)))
-            let pos = margin
-            let pos_shift = Math.floor((width - (margin * 2)) / (pitches.length - 1))
-            let path_str = "M" + margin + "," + scaled_pitches[0]
-            let circle_set = paper.set()
-            let circle_r = height / 45
-            circle_set.push(paper.circle(margin, scaled_pitches[0], circle_r))
+            let max_pitch = Math.max.apply(Math, pitches);
+            let min_pitch = Math.min.apply(Math, pitches);
+            let margin = 15;
+            let scaled_pitches = pitches.map((pitch) => Math.floor(scale(pitch, min_pitch, max_pitch, height - margin, margin)));
+            let pos = margin;
+            let pos_shift = Math.floor((width - (margin * 2)) / (pitches.length - 1));
+            let path_str = "M" + margin + "," + scaled_pitches[0];
+            let circle_set = paper.set();
+            let circle_r = height / 45;
+            circle_set.push(paper.circle(margin, scaled_pitches[0], circle_r));
             for (let i = 1; i < scaled_pitches.length; i++) {
-                pos += pos_shift
-                path_str += "L" + pos + "," + scaled_pitches[i]
-                circle_set.push(paper.circle(pos, scaled_pitches[i], circle_r))
+                pos += pos_shift;
+                path_str += "L" + pos + "," + scaled_pitches[i];
+                circle_set.push(paper.circle(pos, scaled_pitches[i], circle_r));
             }
-            let path = paper.path(path_str).attr('stroke', 'red').attr('stroke-width', 2)
-            circle_set.attr('fill', 'white')
-            circle_set.toFront()
+            paper.path(path_str).attr('stroke', 'red').attr('stroke-width', 2);
+            circle_set.attr('fill', 'white');
+            circle_set.toFront();
         },
 
 
@@ -3883,87 +3877,87 @@ class EDO {
          * @memberOf EDO#show
          */
         interval_fractal_tree: (container_id, length = 200, angle_span = 90, mode = [0, 2, 4, 5, 7, 9, 11], intervals = [-1, 1], iterations = 5, length_mul = 0.7) => {
-            const self = this
-            const container = document.getElementById(container_id)
-            container.innerHTML = ""
-            const edo = this.edo
-            let width = container.offsetWidth
-            let height = container.offsetWidth
+            const self = this;
+            const container = document.getElementById(container_id);
+            container.innerHTML = "";
+            const edo = this.edo;
+            let width = container.offsetWidth;
+            let height = container.offsetWidth;
             const paper = new Raphael(container, width, height);
             const point_on_circle = function (center = [0, 0], radius = 50, angle = 90) {
                 /*Finding the x,y coordinates on circle, based on given angle*/
 
                 //center of circle, angle in degree and radius of circle
-                angle = angle * Math.PI / 180
-                let x = Math.floor(center[0] + (radius * Math.cos(angle)))
-                let y = Math.floor(center[1] + (radius * Math.sin(angle)))
+                angle = angle * Math.PI / 180;
+                let x = Math.floor(center[0] + (radius * Math.cos(angle)));
+                let y = Math.floor(center[1] + (radius * Math.sin(angle)));
 
                 return [x, y]
-            }
+            };
 
             const normalize = (num, in_min, in_max, out_min, out_max) => {
                 return (num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-            }
+            };
 
             class Branch {
                 constructor(length = 300, angle = 0, x = 0, y = 0, circle_r = 20, angle_span = 90, length_mul = 0.70, iterations = 5, intervals = [-1, 1], starting_pitch = 0, mode = null) {
-                    if (mode) this.diatonic = true
-                    else this.diatonic = false
+                    if (mode) this.diatonic = true;
+                    else this.diatonic = false;
 
-                    this.mode = mode
-                    this.iterations = iterations
-                    this.length_mul = length_mul
-                    this.angle_span = angle_span
-                    this.length = length
-                    this.angle = angle
-                    this.circle_r = circle_r
-                    this.circle_o = point_on_circle([x, y], length - (circle_r), angle - 90)
-                    this.start = [x, y]
-                    this.line_center = point_on_circle(this.start, (this.length - (this.circle_r * 2)) / 2, this.angle - 90)
-                    this.line_end = point_on_circle(this.start, this.length - (this.circle_r * 2), this.angle - 90)
-                    this.end = point_on_circle([x, y], length, angle - 90)
-                    this.sub_branches = intervals.length
-                    this.intervals = intervals
-                    this.starting_pitch = starting_pitch
+                    this.mode = mode;
+                    this.iterations = iterations;
+                    this.length_mul = length_mul;
+                    this.angle_span = angle_span;
+                    this.length = length;
+                    this.angle = angle;
+                    this.circle_r = circle_r;
+                    this.circle_o = point_on_circle([x, y], length - (circle_r), angle - 90);
+                    this.start = [x, y];
+                    this.line_center = point_on_circle(this.start, (this.length - (this.circle_r * 2)) / 2, this.angle - 90);
+                    this.line_end = point_on_circle(this.start, this.length - (this.circle_r * 2), this.angle - 90);
+                    this.end = point_on_circle([x, y], length, angle - 90);
+                    this.sub_branches = intervals.length;
+                    this.intervals = intervals;
+                    this.starting_pitch = starting_pitch;
                 }
 
                 draw_branch() {
-                    let start = this.start
-                    let end = this.line_end
-                    paper.path('M' + start.join(',') + 'L' + end.join(',')).attr('stroke', 'white')
-                    let c_center = this.circle_o
-                    let hue = Math.floor(normalize(this.starting_pitch, 0, edo - 1, 0, 360))
-                    let rgb = Raphael.hsl2rgb(hue, 100, 50)
-                    paper.circle(c_center[0], c_center[1], this.circle_r).attr('fill', rgb)
+                    let start = this.start;
+                    let end = this.line_end;
+                    paper.path('M' + start.join(',') + 'L' + end.join(',')).attr('stroke', 'white');
+                    let c_center = this.circle_o;
+                    let hue = Math.floor(normalize(this.starting_pitch, 0, edo - 1, 0, 360));
+                    let rgb = Raphael.hsl2rgb(hue, 100, 50);
+                    paper.circle(c_center[0], c_center[1], this.circle_r).attr('fill', rgb);
                     this.text = paper.text(c_center[0], c_center[1], this.starting_pitch)
                         .attr('fill', 'blue')
-                        .attr('font-size', 25)
+                        .attr('font-size', 25);
 
                     if (this.iterations > 0) {
-                        let angle_span = Math.floor(this.angle_span / 2) - this.angle_span
-                        let angle_add = this.angle_span / (this.sub_branches - 1)
-                        let new_length = this.length * this.length_mul
+                        let angle_span = Math.floor(this.angle_span / 2) - this.angle_span;
+                        let angle_add = this.angle_span / (this.sub_branches - 1);
+                        let new_length = this.length * this.length_mul;
                         for (let i = 0; i < this.sub_branches; i++) {
-                            let starting_pitch = 100
+                            let starting_pitch = 100;
                             if (this.diatonic) {
-                                let index = this.mode.indexOf(this.starting_pitch)
-                                starting_pitch = this.mode[self.mod((index + this.intervals[i]), this.mode.length)]
+                                let index = this.mode.indexOf(this.starting_pitch);
+                                starting_pitch = this.mode[self.mod((index + this.intervals[i]), this.mode.length)];
                             } else {
-                                starting_pitch = mod((this.starting_pitch + this.intervals[i]), edo)
+                                starting_pitch = mod((this.starting_pitch + this.intervals[i]), edo);
                             }
-                            let new_angle = this.angle + angle_span + (i * angle_add)
-                            let new_x = this.end[0]
-                            let new_y = this.end[1]
-                            let new_branch = new Branch(new_length, new_angle, new_x, new_y, this.circle_r, this.angle_span, this.length_mul, this.iterations - 1, this.intervals, starting_pitch, this.mode)
-                            new_branch.draw_branch()
+                            let new_angle = this.angle + angle_span + (i * angle_add);
+                            let new_x = this.end[0];
+                            let new_y = this.end[1];
+                            let new_branch = new Branch(new_length, new_angle, new_x, new_y, this.circle_r, this.angle_span, this.length_mul, this.iterations - 1, this.intervals, starting_pitch, this.mode);
+                            new_branch.draw_branch();
 
                         }
                     }
                 }
             }
 
-            paper.clear()
-            let background = paper.rect(0, 0, width, height).attr('fill', '000')
+            paper.clear();
+            paper.rect(0, 0, width, height).attr('fill', '000');
             let tree = new Branch(length = length,
                 0,
                 Math.floor(width / 2),
@@ -3974,8 +3968,8 @@ class EDO {
                 iterations,
                 intervals,
                 0,
-                mode)
-            tree.draw_branch()
+                mode);
+            tree.draw_branch();
         },
 
         /**
@@ -4007,102 +4001,102 @@ class EDO {
          * @memberOf EDO#show
          */
         necklace: (args) => {
-            args.cx = args.cx || args.paper.width / 2
-            args.cy = args.cy || args.paper.height / 2
-            args.radius = args.radius || (args.paper.width / 2) - 30
-            args.ring = (args.ring == undefined) ? true : args.ring
-            args.inner_strings = (args.inner_strings == undefined) ? true : args.inner_strings
-            args.outer_strings = (args.outer_strings == undefined) ? true : args.outer_strings
-            args.PC_at_midnight = args.PC_at_midnight || 0
-            args.string_width = args.string_width || 1
-            args.node_color = args.node_color || "black"
-            args.node_radius = args.node_radius || (args.paper.height * Math.PI / (this.edo * 4)) / 2 - 5
-            const parent = this
+            args.cx = args.cx || args.paper.width / 2;
+            args.cy = args.cy || args.paper.height / 2;
+            args.radius = args.radius || (args.paper.width / 2) - 30;
+            args.ring = (args.ring == undefined) ? true : args.ring;
+            args.inner_strings = (args.inner_strings == undefined) ? true : args.inner_strings;
+            args.outer_strings = (args.outer_strings == undefined) ? true : args.outer_strings;
+            args.PC_at_midnight = args.PC_at_midnight || 0;
+            args.string_width = args.string_width || 1;
+            args.node_color = args.node_color || "black";
+            args.node_radius = args.node_radius || (args.paper.height * Math.PI / (this.edo * 4)) / 2 - 5;
+            const parent = this;
 
             class Necklace {
                 constructor(parent, args) {
-                    this.cx = args.cx
-                    this.cy = args.cy
-                    this.radius = args.radius
-                    this.pitches = args.pitches
-                    this.PC_at_midnight = args.PC_at_midnight
-                    this.show_ring = args.ring
-                    this.show_inner_strings = args.inner_strings
-                    this.show_outer_strings = args.outer_strings
-                    this.parent = parent
-                    this.edo = parent.edo
-                    this.nodes = []
-                    this.strings = []
-                    this.paper = args.paper
-                    this.node_color = args.node_color
-                    this.node_radius = args.node_radius
-                    this.string_width = args.string_width
-                    this.draw_all()
+                    this.cx = args.cx;
+                    this.cy = args.cy;
+                    this.radius = args.radius;
+                    this.pitches = args.pitches;
+                    this.PC_at_midnight = args.PC_at_midnight;
+                    this.show_ring = args.ring;
+                    this.show_inner_strings = args.inner_strings;
+                    this.show_outer_strings = args.outer_strings;
+                    this.parent = parent;
+                    this.edo = parent.edo;
+                    this.nodes = [];
+                    this.strings = [];
+                    this.paper = args.paper;
+                    this.node_color = args.node_color;
+                    this.node_radius = args.node_radius;
+                    this.string_width = args.string_width;
+                    this.draw_all();
 
 
                 }
 
                 draw_all() {
-                    if (this.show_ring) this.draw_ring()
-                    this.draw_nodes()
-                    this.draw_strings(this.string_width)
+                    if (this.show_ring) this.draw_ring();
+                    this.draw_nodes();
+                    this.draw_strings(this.string_width);
                     for (let node of this.nodes) {
-                        node.drawing.toFront()
-                        node.text.toFront()
+                        node.drawing.toFront();
+                        node.text.toFront();
                     }
                 }
 
                 draw_ring(color = 'white', stroke_width = 3) {
-                    let paper = this.paper
+                    let paper = this.paper;
                     //if already exists, remove the old one
                     if (this.ring) {
-                        this.ring.remove()
-                        this.ring = undefined
+                        this.ring.remove();
+                        this.ring = undefined;
                     }
 
                     //draw the ring
                     this.ring = paper.circle(this.cx, this.cy, this.radius).attr('stroke', color)
-                        .attr('stroke-width', stroke_width)
+                        .attr('stroke-width', stroke_width);
                 }
 
                 draw_nodes() {
                     //remove nodes
                     for (let node of this.nodes) {
-                        node.drawing.remove()
-                        node.text.remove()
+                        node.drawing.remove();
+                        node.text.remove();
                     }
-                    this.nodes = []
-                    let node_radius = this.node_radius
-                    node_radius = Math.max(node_radius, 1)
+                    this.nodes = [];
+                    let node_radius = this.node_radius;
+                    node_radius = Math.max(node_radius, 1);
                     //node parameters
                     for (let note of this.pitches) {
-                        let angle = (note * (360 / this.edo)) - 90
-                        let rad_angle = angle * Math.PI / 180
-                        let cx = Math.floor(this.cx + (this.radius * Math.cos(rad_angle)))
-                        let cy = Math.floor(this.cy + (this.radius * Math.sin(rad_angle)))
-                        let node = new Node(this, node_radius, cx, cy, (note + this.PC_at_midnight) % this.edo)
-                        this.nodes.push(node)
+                        let angle = (note * (360 / this.edo)) - 90;
+                        let rad_angle = angle * Math.PI / 180;
+                        let cx = Math.floor(this.cx + (this.radius * Math.cos(rad_angle)));
+                        let cy = Math.floor(this.cy + (this.radius * Math.sin(rad_angle)));
+                        let node = new Node(this, node_radius, cx, cy, (note + this.PC_at_midnight) % this.edo);
+                        this.nodes.push(node);
                     }
 
 
-                    for (let node of this.nodes) node.draw()
+                    for (let node of this.nodes) node.draw();
 
                 }
 
                 draw_strings(stroke_width) {
                     //remove strings
                     for (let string of this.strings) {
-                        string.drawing.remove()
+                        string.drawing.remove();
                     }
-                    this.strings = []
+                    this.strings = [];
 
                     //draw outer strings
                     if (this.show_outer_strings) {
                         for (let i = 0; i < this.nodes.length; i++) {
-                            let node1 = this.nodes[i]
-                            let node2 = this.nodes[(i + 1) % this.nodes.length]
-                            let str = new Str(this, node1.cx, node1.cy, node2.cx, node2.cy, stroke_width)
-                            this.strings.push(str)
+                            let node1 = this.nodes[i];
+                            let node2 = this.nodes[(i + 1) % this.nodes.length];
+                            let str = new Str(this, node1.cx, node1.cy, node2.cx, node2.cy, stroke_width);
+                            this.strings.push(str);
                         }
                     }
 
@@ -4111,85 +4105,85 @@ class EDO {
                     if (this.show_inner_strings) {
                         for (let i = 0; i < this.nodes.length - 2; i++) {
                             for (let j = 2; j < this.nodes.length; j++) {
-                                let node1 = this.nodes[i]
-                                let node2 = this.nodes[j]
-                                let str = new Str(this, node1.cx, node1.cy, node2.cx, node2.cy, stroke_width)
-                                this.strings.push(str)
+                                let node1 = this.nodes[i];
+                                let node2 = this.nodes[j];
+                                let str = new Str(this, node1.cx, node1.cy, node2.cx, node2.cy, stroke_width);
+                                this.strings.push(str);
                             }
                         }
                     }
 
 
                     for (let string of this.strings) {
-                        string.draw()
+                        string.draw();
                     }
                 }
             }
 
             class Node {
                 constructor(necklace, radius, cx, cy, name) {
-                    this.necklace = necklace
-                    this.radius = radius
-                    this.cx = cx
-                    this.cy = cy
-                    this.name = name
+                    this.necklace = necklace;
+                    this.radius = radius;
+                    this.cx = cx;
+                    this.cy = cy;
+                    this.name = name;
 
                 }
 
                 draw() {
-                    let paper = this.necklace.paper
+                    let paper = this.necklace.paper;
                     //if already exists, remove the old one
                     if (this.drawing) {
-                        this.drawing.remove()
-                        this.drawing = undefined
+                        this.drawing.remove();
+                        this.drawing = undefined;
                     }
 
-                    this.drawing = paper.set()
+                    this.drawing = paper.set();
 
                     this.circle = paper.circle(this.cx, this.cy, this.radius)
                         .attr('stroke', 'white')
-                        .attr('fill', this.necklace.node_color)
-                    this.drawing.push(this.circle)
+                        .attr('fill', this.necklace.node_color);
+                    this.drawing.push(this.circle);
                     this.text = paper.text(this.cx, this.cy, this.name)
                         .attr('fill', 'white')
-                        .attr('font-size', this.radius)
+                        .attr('font-size', this.radius);
 
-                    this.drawing.push(this.text)
+                    this.drawing.push(this.text);
 
                 }
             }
 
             class Str {
                 constructor(necklace, x1, y1, x2, y2, stroke_width) {
-                    this.necklace = necklace
-                    this.x1 = x1
-                    this.y1 = y1
-                    this.x2 = x2
-                    this.y2 = y2
-                    this.length = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
-                    this.stroke_width = stroke_width
+                    this.necklace = necklace;
+                    this.x1 = x1;
+                    this.y1 = y1;
+                    this.x2 = x2;
+                    this.y2 = y2;
+                    this.length = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+                    this.stroke_width = stroke_width;
 
                 }
 
                 draw() {
-                    let paper = this.necklace.paper
+                    let paper = this.necklace.paper;
                     //if already exists, remove the old one
                     if (this.drawing) {
-                        this.drawing.remove()
-                        this.drawing = undefined
+                        this.drawing.remove();
+                        this.drawing = undefined;
                     }
 
-                    let hue = Math.floor(rescale(this.length, 0, this.necklace.radius * 2, 0, 360))
-                    let rgb = Raphael.hsl2rgb(hue, 100, 50)
+                    let hue = Math.floor(rescale(this.length, 0, this.necklace.radius * 2, 0, 360));
+                    let rgb = Raphael.hsl2rgb(hue, 100, 50);
                     this.drawing = paper.path("M" + this.x1 + "," + this.y1 + "L" + this.x2 + "," + this.y2)
                         .attr('stroke', rgb.hex)
-                        .attr('stroke-width', this.stroke_width)
+                        .attr('stroke-width', this.stroke_width);
 
                 }
 
             }
 
-            let neck = new Necklace(parent, args)
+            let neck = new Necklace(parent, args);
             return neck
         },
 
@@ -4220,18 +4214,17 @@ class EDO {
          * @memberOf EDO#show
          */
         nested_necklaces: (container_id, necklaces, replace = true, radius = 600, ring = false, min_node_radius, strings = true) => {
-            let parent = this
-            let height = radius
-            let width = radius
-            let new_necklace_radius = height / 2 - (height / 20)
-            let num_of_necklaces = necklaces.length
-            let necklace_radius_offset = Math.min(new_necklace_radius / (num_of_necklaces))
+            let height = radius;
+            let width = radius;
+            let new_necklace_radius = height / 2 - (height / 20);
+            let num_of_necklaces = necklaces.length;
+            let necklace_radius_offset = Math.min(new_necklace_radius / (num_of_necklaces));
 
-            const SVG = this.make_DOM_svg(container_id, width, height, replace)
-            const paper = SVG.paper
+            const SVG = this.make_DOM_svg(container_id, width, height, replace);
+            const paper = SVG.paper;
 
-            let node_radius = Math.min((paper.height * Math.PI / (this.edo * 4)) / 2 - 5, paper.height * Math.PI / (num_of_necklaces * num_of_necklaces * 2), (paper.height * Math.PI / (this.edo * num_of_necklaces)) / 2 - 5)
-            if (min_node_radius) node_radius = Math.max(node_radius, min_node_radius)
+            let node_radius = Math.min((paper.height * Math.PI / (this.edo * 4)) / 2 - 5, paper.height * Math.PI / (num_of_necklaces * num_of_necklaces * 2), (paper.height * Math.PI / (this.edo * num_of_necklaces)) / 2 - 5);
+            if (min_node_radius) node_radius = Math.max(node_radius, min_node_radius);
 
             for (let necklace of necklaces) {
                 let args = {
@@ -4242,9 +4235,9 @@ class EDO {
                     inner_strings: false,
                     node_radius: node_radius,
                     outer_strings: strings
-                }
-                this.show.necklace(args)
-                new_necklace_radius -= necklace_radius_offset
+                };
+                this.show.necklace(args);
+                new_necklace_radius -= necklace_radius_offset;
             }
 
         },
@@ -4278,24 +4271,24 @@ class EDO {
          */
         necklace_fractal: (args) => {
 
-            const container_id = args.container_id
-            const necklaces = args.necklaces
-            const offset_x = args.offset_x
-            const offset_y = args.offset_y || 50
-            const radius_multiplier = args.radius_multiplier || 0.5
-            const initial_radius = args.initial_radius || 250
-            const minimum_node_radius = args.minimum_node_radius || 20
-            const show_ring = (args.ring == undefined) ? true : args.ring
-            const canvas_width = args.canvas_width || 900
-            const canvas_height = args.canvas_height || 900
-            const replace = (args.replace == undefined) ? false : args.replace
+            const container_id = args.container_id;
+            const necklaces = args.necklaces;
+            const offset_x = args.offset_x;
+            const offset_y = args.offset_y || 50;
+            const radius_multiplier = args.radius_multiplier || 0.5;
+            const initial_radius = args.initial_radius || 250;
+            const minimum_node_radius = args.minimum_node_radius || 20;
+            const show_ring = (args.ring == undefined) ? true : args.ring;
+            const canvas_width = args.canvas_width || 900;
+            const canvas_height = args.canvas_height || 900;
+            const replace = (args.replace == undefined) ? false : args.replace;
 
-            const SVG = this.make_DOM_svg(container_id, canvas_width, canvas_height, replace)
-            const paper = SVG.paper
-            const parent = this
+            const SVG = this.make_DOM_svg(container_id, canvas_width, canvas_height, replace);
+            const paper = SVG.paper;
+            const parent = this;
             const necklace_nester = function (necklaces, nodes, new_radius = initial_radius) {
-                let new_necklaces = [...necklaces]
-                let necklace = new_necklaces.splice(0, 1)[0]
+                let new_necklaces = [...necklaces];
+                let necklace = new_necklaces.splice(0, 1)[0];
                 if (nodes) {
                     nodes.forEach((node) => {
                         let neck = parent.show.necklace({
@@ -4307,9 +4300,9 @@ class EDO {
                             cy: node.cy + new_radius,
                             PC_at_midnight: node.name,
                             node_radius: Math.max(new_radius / 8, minimum_node_radius)
-                        })
-                        if (new_necklaces.length > 0) necklace_nester(new_necklaces, neck.nodes, neck.radius * radius_multiplier)
-                    })
+                        });
+                        if (new_necklaces.length > 0) necklace_nester(new_necklaces, neck.nodes, neck.radius * radius_multiplier);
+                    });
                 } else {
                     let neck = parent.show.necklace({
                         cx: paper.width / 2 + offset_x,
@@ -4319,13 +4312,13 @@ class EDO {
                         pitches: necklace,
                         cy: new_radius + offset_y,
                         node_radius: Math.max(new_radius / 8, minimum_node_radius)
-                    })
+                    });
 
-                    if (new_necklaces.length > 0) necklace_nester(new_necklaces, neck.nodes, neck.radius * radius_multiplier)
+                    if (new_necklaces.length > 0) necklace_nester(new_necklaces, neck.nodes, neck.radius * radius_multiplier);
                 }
-            }
+            };
 
-            necklace_nester(necklaces)
+            necklace_nester(necklaces);
         },
 
 
@@ -4391,19 +4384,19 @@ class Scale {
      *      .get.pitches() //returns [0, 1, 3, 5, 6, 8, 10]
      */
     constructor(pitches, parent) {
-        this.parent = parent
-        this.catalog = {}
+        this.parent = parent;
+        this.catalog = {};
 
-        let smallest = Math.min.apply(Math, pitches)
-        let diff_from_zero = 0 - smallest
+        let smallest = Math.min.apply(Math, pitches);
+        let diff_from_zero = 0 - smallest;
 
-        this.pitches = pitches.map((pitch) => pitch + diff_from_zero)
-        this.edo = this.parent.edo
-        this.pitches = this.pitches.map((pitch) => pitch % parent.edo)
-        this.pitches = this.parent.get.unique_elements(this.pitches)
-        this.pitches.sort((a, b) => a - b)
-        this.length = this.count.pitches()
-        this.name = this.get.name()
+        this.pitches = pitches.map((pitch) => pitch + diff_from_zero);
+        this.edo = this.parent.edo;
+        this.pitches = this.pitches.map((pitch) => pitch % parent.edo);
+        this.pitches = this.parent.get.unique_elements(this.pitches);
+        this.pitches.sort((a, b) => a - b);
+        this.length = this.count.pitches();
+        this.name = this.get.name();
     }
 
     /**A collection of functions that return an amount
@@ -4432,19 +4425,19 @@ class Scale {
          * scale.count.chord_quality([[3,4], 7]) //returns 6
          * @memberOf Scale#count*/
         chord_quality: (intervals) => {
-            let scale = this.pitches
-            let count = 0
-            intervals = this.parent.get.partitioned_subsets(intervals)
+            this.pitches;
+            let count = 0;
+            intervals = this.parent.get.partitioned_subsets(intervals);
 
             //modes including repetitions
-            let modes = this.parent.get.modes(this.pitches, false, false)
+            let modes = this.parent.get.modes(this.pitches, false, false);
 
             modes.forEach((mode) => {
                 intervals.forEach((subset) => {
-                    subset = subset.map((note) => mode.indexOf(note) != -1)
-                    if (subset.indexOf(false) == -1) count++
-                })
-            })
+                    subset = subset.map((note) => mode.indexOf(note) != -1);
+                    if (subset.indexOf(false) == -1) count++;
+                });
+            });
 
             return count
         },
@@ -4461,22 +4454,21 @@ class Scale {
          * scale.count.consecutive_steps(2) //returns 3
          * */
         consecutive_steps: (size,) => {
-            let counts = []
-            let steps = this.to.steps()
-            steps = [...steps, ...steps]
+            let counts = [];
+            let steps = this.to.steps();
+            steps = [...steps, ...steps];
             if (steps.indexOf(size) == -1) return 0
-            let sequences = []
-            let count = 0
+            let count = 0;
             for (let step of steps) {
-                if (step == size) count++
+                if (step == size) count++;
                 else {
-                    counts.push(count)
-                    count = 0
+                    counts.push(count);
+                    count = 0;
                 }
             }
-            counts = counts.sort((a, b) => b - a)
-            let result = counts[0]
-            result = Math.min.apply(Math, [result, this.edo])
+            counts = counts.sort((a, b) => b - a);
+            let result = counts[0];
+            result = Math.min.apply(Math, [result, this.edo]);
             return result
 
         },
@@ -4498,26 +4490,26 @@ class Scale {
 
             if (this.catalog['# imperfections']) return this.catalog['# imperfections']
 
-            let scale = this.pitches
-            let imperfections = 0
-            let valid_intervals = []
-            let p5 = this.parent.convert.ratio_to_cents(3 / 2)
+            let scale = this.pitches;
+            let imperfections = 0;
+            let valid_intervals = [];
+            let p5 = this.parent.convert.ratio_to_cents(3 / 2);
             for (let i = 1; i < this.edo; i++) {
-                if (Math.abs(this.parent.convert.interval_to_cents(i) - p5) <= tolerance) valid_intervals.push(i)
+                if (Math.abs(this.parent.convert.interval_to_cents(i) - p5) <= tolerance) valid_intervals.push(i);
                 else if (valid_intervals.length > 0) break
             }
-            let octavescale = scale.map((note) => note + this.edo)
-            let doublescale = scale.concat(octavescale)
+            let octavescale = scale.map((note) => note + this.edo);
+            let doublescale = scale.concat(octavescale);
             scale.forEach((note) => {
-                let valid = false
+                let valid = false;
 
                 valid_intervals.forEach((interval) => {
-                    if (doublescale.indexOf(note + interval) != -1) valid = true
+                    if (doublescale.indexOf(note + interval) != -1) valid = true;
 
-                })
-                if (!valid) imperfections++
-            })
-            if (cache) this.catalog['# imperfections'] = imperfections
+                });
+                if (!valid) imperfections++;
+            });
+            if (cache) this.catalog['# imperfections'] = imperfections;
             return imperfections
 
         },
@@ -4538,13 +4530,13 @@ class Scale {
 
          * */
         interval: (interval) => {
-            if (!Array.isArray(interval)) interval = [interval]
-            let scale = this.pitches
-            let count = 0
+            if (!Array.isArray(interval)) interval = [interval];
+            let scale = this.pitches;
+            let count = 0;
             for (let note of scale) {
                 for (let int of interval) {
 
-                    if (scale.indexOf((note + int) % this.edo) != -1) count++
+                    if (scale.indexOf((note + int) % this.edo) != -1) count++;
                 }
             }
 
@@ -4598,8 +4590,8 @@ class Scale {
          * @see Scale#count.chord_quality
          * @see EDO#convert.ratio_to_interval*/
         major_minor_triads: () => {
-            let major = this.count.chord_quality([[...this.parent.M3s], [...this.parent.P5s]])
-            let minor = this.count.chord_quality([[...this.parent.m3s], [...this.parent.P5s]])
+            let major = this.count.chord_quality([[...this.parent.M3s], [...this.parent.P5s]]);
+            let minor = this.count.chord_quality([[...this.parent.m3s], [...this.parent.P5s]]);
 
             return major + minor
         },
@@ -4630,9 +4622,9 @@ class Scale {
          * scale.count.n_chords() //returns 15
          * */
         n_chords: () => {
-            let n_chords = 1 //1 because the collection of all pitches shuold also be counted
+            let n_chords = 1; //1 because the collection of all pitches shuold also be counted
             for (let i = 2; i < this.count.pitches(); i++) {
-                n_chords+=this.get.n_chords(i).length
+                n_chords+=this.get.n_chords(i).length;
             }
             return n_chords
         },
@@ -4675,14 +4667,14 @@ class Scale {
          * @see Scale#get.generic_intervals
          */
         rahn_differences: () => {
-            let total = 0
+            let total = 0;
             for (let i = 1; i < this.count.pitches(); i++) {
-                let gi = this.get.generic_intervals(i)
-                gi = gi.map(a=>a.instances)
+                let gi = this.get.generic_intervals(i);
+                gi = gi.map(a=>a.instances);
 
-                let nck = this.parent.get.n_choose_k(gi,2)
-                let product = nck.map(el=>el[0]*el[1]).reduce((ag,el)=>ag+el,0)
-                total+=product
+                let nck = this.parent.get.n_choose_k(gi,2);
+                let product = nck.map(el=>el[0]*el[1]).reduce((ag,el)=>ag+el,0);
+                total+=product;
             }
             return total
         },
@@ -4697,23 +4689,21 @@ class Scale {
          * @see Rahn, J. (1991). "Coordination of interval sizes in seven-tone collections." Journal of Music Theory 35(1/2): 33-60.
          */
         rahn_contradictions: () => {
-            let all = []
-            let total = 0
-            let scale_degrees = [...Array(this.pitches.length).keys()]
-            let combinations = this.parent.get.combinations(scale_degrees,2).sort((a,b)=>a[0]-b[0] || a[1]-b[1])
+            let total = 0;
+            let scale_degrees = [...Array(this.pitches.length).keys()];
+            let combinations = this.parent.get.combinations(scale_degrees,2).sort((a,b)=>a[0]-b[0] || a[1]-b[1]);
             let pairwise = combinations.map(c=>{
-                let obj = this.get.pairwise_generic_specific_intervals(c[0],c[1])
-                obj.scale_degs = c
-                obj.pitches = [this.pitches[c[0]],this.pitches[c[1]]]
+                let obj = this.get.pairwise_generic_specific_intervals(c[0],c[1]);
+                obj.scale_degs = c;
+                obj.pitches = [this.pitches[c[0]],this.pitches[c[1]]];
                 return obj
-            })
+            });
             for (let i = 0; i < pairwise.length-1; i++) {
-                let p1 = pairwise[i]
+                let p1 = pairwise[i];
                 for (let j =i+1; j < pairwise.length; j++) {
-                    let p2 = pairwise[j]
+                    let p2 = pairwise[j];
                     if((p1.generic<p2.generic && p1.specific>p2.specific) || (p2.generic<p1.generic && p2.specific>p1.specific)){
-                        all.push([p1,p2])
-                        total++
+                        total++;
                     }
                 }
             }
@@ -4736,21 +4726,21 @@ class Scale {
          * @see Scale#get.specific_intervals
          */
         rahn_ambiguities: () => {
-            let total = 0
-            let scale_degrees = [...Array(this.pitches.length).keys()]
-            let combinations = this.parent.get.combinations(scale_degrees,2).sort((a,b)=>a[0]-b[0] || a[1]-b[1])
+            let total = 0;
+            let scale_degrees = [...Array(this.pitches.length).keys()];
+            let combinations = this.parent.get.combinations(scale_degrees,2).sort((a,b)=>a[0]-b[0] || a[1]-b[1]);
             let pairwise = combinations.map(c=>{
-                let obj = this.get.pairwise_generic_specific_intervals(c[0],c[1])
-                obj.scale_degs = c
-                obj.pitches = [this.pitches[c[0]],this.pitches[c[1]]]
+                let obj = this.get.pairwise_generic_specific_intervals(c[0],c[1]);
+                obj.scale_degs = c;
+                obj.pitches = [this.pitches[c[0]],this.pitches[c[1]]];
                 return obj
-            })
+            });
             for (let i = 0; i < pairwise.length-1; i++) {
-                let p1 = pairwise[i]
+                let p1 = pairwise[i];
                 for (let j =i+1; j < pairwise.length; j++) {
-                    let p2 = pairwise[j]
+                    let p2 = pairwise[j];
                     if(p1.specific==p2.specific && p1.generic!=p2.generic ){
-                        total++
+                        total++;
                     }
                 }
             }
@@ -4766,7 +4756,7 @@ class Scale {
          * @memberOf Scale#count*/
         ratio: (ratio, tolerance = 10) => {
             /**/
-            let intervals = this.parent.convert.ratio_to_interval(ratio, tolerance)
+            let intervals = this.parent.convert.ratio_to_interval(ratio, tolerance);
             return this.count.interval(intervals)
         },
 
@@ -4793,14 +4783,14 @@ class Scale {
          *
          * */
         simple_ratios: (limit = 17, tolerance = 15) => {
-            let ratios = this.parent.get.simple_ratios(limit = limit)
-            let unique = 0
-            let total = 0
+            let ratios = this.parent.get.simple_ratios(limit = limit);
+            let unique = 0;
+            let total = 0;
             for (let ratio in ratios) {
-                let result = this.count.ratio(ratios[ratio]['value'], tolerance)
+                let result = this.count.ratio(ratios[ratio]['value'], tolerance);
                 if (result > 0) {
-                    unique++
-                    total += result
+                    unique++;
+                    total += result;
                 }
             }
             return {discrete: unique, instances: total}
@@ -4844,20 +4834,20 @@ class Scale {
          * @memberOf Scale#count*/
         transpositions: (cache = false) => {
             if (this.catalog['# transpositions']) return this.catalog['# transpositions']
-            let scale = this.pitches
-            let scales = [scale]
+            let scale = this.pitches;
+            let scales = [scale];
             for (let i = 0; i < this.parent.edo; i++) {
-                let t_scale = []
+                let t_scale = [];
                 scale.forEach((note) => {
-                    t_scale.push((note + i + 1) % this.edo)
-                })
-                t_scale.sort((a, b) => a - b)
+                    t_scale.push((note + i + 1) % this.edo);
+                });
+                t_scale.sort((a, b) => a - b);
                 if (this.parent.is.element_of(t_scale, scales)) return scales.length
-                scales.push(t_scale)
+                scales.push(t_scale);
 
             }
-            let result = scales.length
-            if (cache) this.catalog['# transpositions'] = result
+            let result = scales.length;
+            if (cache) this.catalog['# transpositions'] = result;
             return result
         },
 
@@ -4888,11 +4878,11 @@ class Scale {
          * scale.count.unique_elements([2]) //6*/
         unique_elements: (arr) => {
 
-            let p = this.pitches
-            let unique=p.length
+            let p = this.pitches;
+            let unique=p.length;
             p.forEach(n=>{
-                if(arr.indexOf(n)!=-1) unique--
-            })
+                if(arr.indexOf(n)!=-1) unique--;
+            });
             return unique
         }
 
@@ -4914,17 +4904,17 @@ class Scale {
          * scale.export.scala("my_tuning.scl") //outputs /scala/my_tuning.scl
          */
         scala: (filename, dir = "scala/",) => {
-            let scale_name = this.get.name()
-            filename = filename || scale_name + ".scl"
-            let file = "! " + filename + "\n"
-            file += "!\n" + scale_name + " " + JSON.stringify(this.get.pitches()) + "\n"
-            file += String(this.count.pitches() + 1) + "\n!\n"
-            let scale_in_cents = this.to.cents()
+            let scale_name = this.get.name();
+            filename = filename || scale_name + ".scl";
+            let file = "! " + filename + "\n";
+            file += "!\n" + scale_name + " " + JSON.stringify(this.get.pitches()) + "\n";
+            file += String(this.count.pitches() + 1) + "\n!\n";
+            let scale_in_cents = this.to.cents();
             for (let pitch of scale_in_cents) {
-                file += String(pitch) + "\n"
+                file += String(pitch) + "\n";
             }
-            file += "2/1"
-            save_file(filename, dir, file)
+            file += "2/1";
+            save_file(filename, dir, file);
         }
     }
 
@@ -4947,15 +4937,15 @@ class Scale {
          * scale.get.area() //returns 0.376564638493296
          */
         area: (r=0.56418958354776 /*radius of circle with area=1*/) => {
-            const angle_discrete = 360/this.edo
-            const coors = this.get.coordinates([0,0],r)
-            let part_a=0
-            let part_b=0
+            360/this.edo;
+            const coors = this.get.coordinates([0,0],r);
+            let part_a=0;
+            let part_b=0;
             for (let i = 0; i < coors.length; i++) {
-                part_a+=(coors[i][0]*coors[(i+1)%coors.length][1])
-                part_b+=(coors[i][1]*coors[(i+1)%coors.length][0])
+                part_a+=(coors[i][0]*coors[(i+1)%coors.length][1]);
+                part_b+=(coors[i][1]*coors[(i+1)%coors.length][0]);
             }
-            let area = Math.abs((part_a-part_b)/2)
+            let area = Math.abs((part_a-part_b)/2);
             return area
         },
 
@@ -4970,16 +4960,16 @@ class Scale {
          * scale.get.diagnostic_intervals() //returns [6]
          */
         diagnostic_intervals: () => {
-            let intervals = []
+            let intervals = [];
             for (let i = 1; i <= Math.floor(this.edo/2); i++) {
-                let specific = this.get.specific_intervals(i)
+                let specific = this.get.specific_intervals(i);
                 if(!specific) continue
                 if(specific.length==0) continue
-                let all1 = true
+                let all1 = true;
                 specific.forEach(s=>{
-                    if(s.instances!=1) all1=false
-                })
-                if(all1) intervals.push(specific[0].specific)
+                    if(s.instances!=1) all1=false;
+                });
+                if(all1) intervals.push(specific[0].specific);
             }
             return intervals
         },
@@ -5004,36 +4994,36 @@ class Scale {
          */
         set_difference: (set = [0,2,4,5,7,9,11],consider_all_modes=false,valid_diviations_max=1) =>{
 
-            let modes = (consider_all_modes)?this.count.pitches():1
-            let deltas = []
-            let valids =[]
-            let alterations=[]
-            let mode = []
+            let modes = (consider_all_modes)?this.count.pitches():1;
+            let deltas = [];
+            let valids =[];
+            let alterations=[];
+            let mode = [];
 
             for (let i = 0; i < modes; i++) {
-                let p = this.mode(i).pitches
-                let delta = []
+                let p = this.mode(i).pitches;
+                let delta = [];
                 for (let i = 0; i < p.length; i++) {
-                    delta.push(p[i]-set[i])
+                    delta.push(p[i]-set[i]);
                 }
-                let valid = delta.map(el=>Math.abs(el)<=valid_diviations_max).reduce((ag,el)=>(ag && el),true)
-                let alteration = delta.reduce((ag,el)=>(el!=0)?ag+1:ag,0)
-                deltas.push(delta)
-                valids.push(valid)
-                mode.push(i)
-                alterations.push(alteration)
+                let valid = delta.map(el=>Math.abs(el)<=valid_diviations_max).reduce((ag,el)=>(ag && el),true);
+                let alteration = delta.reduce((ag,el)=>(el!=0)?ag+1:ag,0);
+                deltas.push(delta);
+                valids.push(valid);
+                mode.push(i);
+                alterations.push(alteration);
             }
 
             for (let i = valids.length-1; i >=0 ; i--) {
                 if(!valids[i]) {
-                    valids.splice(i,1)
-                    deltas.splice(i,1)
-                    alterations.splice(i,1)
-                    mode.splice(i,1)
+                    valids.splice(i,1);
+                    deltas.splice(i,1);
+                    alterations.splice(i,1);
+                    mode.splice(i,1);
                 }
             }
-            let min_alter = Math.min(...alterations)
-            let min_ind = alterations.indexOf(min_alter)
+            let min_alter = Math.min(...alterations);
+            let min_ind = alterations.indexOf(min_alter);
             return {valid:valids[min_ind]||false,alterations:alterations[min_ind],delta:deltas[min_ind],mode:valids[min_ind]?this.mode(mode[min_ind]).pitches:undefined}
         },
 
@@ -5048,11 +5038,11 @@ class Scale {
          * scale.get.per_note_set_difference() //returns [0, 0, 0, 0, 0, 1, 1]
          */
         per_note_set_difference: (set = [0,2,4,5,7,9,11]) => {
-            let pitches = this.pitches
+            let pitches = this.pitches;
 
             let delta = pitches.map((p,i)=>{
                 return set[i]-p
-            })
+            });
             return delta
         },
 
@@ -5098,23 +5088,23 @@ class Scale {
          * ]
          */
         common_tone_transpositions: (sort) => {
-            let modes = this.get.modes()
-            let result = []
+            let modes = this.get.modes();
+            let result = [];
             this.pitches.forEach((pitch) => {
                 modes.forEach((mode, inversion) => {
-                    let transposition = mode.map((note) => this.parent.mod(note + pitch, this.edo))
-                    if(sort) transposition = transposition.sort((a, b) => a - b)
-                    let CT = this.parent.count.common_tones(this.pitches, transposition)
+                    let transposition = mode.map((note) => this.parent.mod(note + pitch, this.edo));
+                    if(sort) transposition = transposition.sort((a, b) => a - b);
+                    let CT = this.parent.count.common_tones(this.pitches, transposition);
                     result.push({
                         transposition: transposition,
                         common_tones: CT,
                         altered_tones: this.count.pitches() - CT,
                         common_tone: pitch,
                         as_scale_degree: inversion + 1
-                    })
-                })
-            })
-            result = this.parent.get.unique_elements(result)
+                    });
+                });
+            });
+            result = this.parent.get.unique_elements(result);
             return result
         },
 
@@ -5154,11 +5144,11 @@ class Scale {
          */
         chord_quality_from_shape: (shape,scale_degree=1) =>{
             shape = shape.map(note=>{
-                note = this.parent.mod(note,this.pitches.length)
+                note = this.parent.mod(note,this.pitches.length);
                 return (note==0)?this.pitches.length:note
-            })
+            });
             return shape.map(note=>{
-                let pos = this.parent.mod((note+scale_degree)-2,this.pitches.length)
+                let pos = this.parent.mod((note+scale_degree)-2,this.pitches.length);
                 return this.pitches[pos]
             })
         },
@@ -5176,18 +5166,18 @@ class Scale {
          * //returns [0, 12, 11, 7,  9, 11, 12,  0,  9, 7, -3,  5, 4]
          */
         melody_from_intervals: (intervals,starting_scale_degree=1,starting_pitch=0) => {
-            let scale_degrees = [starting_scale_degree]
+            let scale_degrees = [starting_scale_degree];
             intervals.forEach(interval=> {
-                let last_scale_degree = scale_degrees[scale_degrees.length-1]
-                scale_degrees.push(last_scale_degree+interval)
-            })
+                let last_scale_degree = scale_degrees[scale_degrees.length-1];
+                scale_degrees.push(last_scale_degree+interval);
+            });
             let melody = scale_degrees.map(s=>{
-                let pc = this.get.pitches()[this.parent.mod(s-1,this.count.pitches())]
-                let octave = Math.floor((s-1)/this.count.pitches())
+                let pc = this.get.pitches()[this.parent.mod(s-1,this.count.pitches())];
+                let octave = Math.floor((s-1)/this.count.pitches());
                 return pc + (octave*this.edo)
-            })
+            });
 
-            melody = melody.map(p=>p+(starting_pitch-melody[0]))
+            melody = melody.map(p=>p+(starting_pitch-melody[0]));
 
 
             return melody
@@ -5211,22 +5201,22 @@ class Scale {
          */
         generic_intervals: (generic_interval_size=1) => {
 
-            let arr = []
-            let g= generic_interval_size
+            let arr = [];
+            let g= generic_interval_size;
             if(g<1) return NaN
-            let mod = this.parent.mod
-            let p =this.pitches
-            let len = p.length
-            let map = {}
+            let mod = this.parent.mod;
+            let p =this.pitches;
+            let len = p.length;
+            let map = {};
             for (let i = 0; i < len; i++) {
-                let note1 = p[i]
-                let note2 = p[mod(i+g,len)]
-                let spec = mod(note2-note1,this.edo)
-                if(!map[spec]) map[spec]=[[note1,note2]]
-                else map[spec].push([note1,note2])
+                let note1 = p[i];
+                let note2 = p[mod(i+g,len)];
+                let spec = mod(note2-note1,this.edo);
+                if(!map[spec]) map[spec]=[[note1,note2]];
+                else map[spec].push([note1,note2]);
             }
             for(let key in map) {
-                arr.push({generic:g,specific:parseInt(key),instances:map[key].length,pitches:map[key]})
+                arr.push({generic:g,specific:parseInt(key),instances:map[key].length,pitches:map[key]});
             }
             return arr
         },
@@ -5248,29 +5238,28 @@ class Scale {
          * @see Scale#get.generic_intervals
          */
         specific_intervals: (specific_interval_size=1) => {
-            let arr = []
-            let s= specific_interval_size
-            let mod = this.parent.mod
-            let p =this.pitches
-            let len = p.length
-            let map = {}
-            loop1:
+            let arr = [];
+            let s= specific_interval_size;
+            let mod = this.parent.mod;
+            let p =this.pitches;
+            let len = p.length;
+            let map = {};
             for (let i = 0; i < len; i++) {
                 loop2:
                 for (let g = 1; g < len; g++) {
-                    let note1=p[i]
-                    let note2 = p[mod(i+g,len)]
+                    let note1=p[i];
+                    let note2 = p[mod(i+g,len)];
 
-                    let diff =  mod(note2-note1,this.edo)
+                    let diff =  mod(note2-note1,this.edo);
                     if(diff==s) {
-                        if(!map[g]) map[g]=[[note1,note2]]
-                        else map[g].push([note1,note2])
+                        if(!map[g]) map[g]=[[note1,note2]];
+                        else map[g].push([note1,note2]);
                         break loop2
                     } else if (diff>s) break loop2
                 }
             }
             for(let key in map) {
-                arr.push({generic:key,specific:s,pitches:map[key],instances:map[key].length})
+                arr.push({generic:key,specific:s,pitches:map[key],instances:map[key].length});
             }
             return arr
 
@@ -5289,20 +5278,20 @@ class Scale {
         interval_vector: (cache = false) => {
             if (this.catalog['interval vector']) return this.catalog['interval vector']
 
-            let scale_split = Math.floor(this.edo / 2)
-            let vector = Array.from(new Array(scale_split).fill(0))
-            let normal = this.get.normal_order()
+            let scale_split = Math.floor(this.edo / 2);
+            let vector = Array.from(new Array(scale_split).fill(0));
+            let normal = this.get.normal_order();
             for (let i = 0; i < normal.length - 1; i++) {
                 for (let j = i + 1; j < normal.length; j++) {
-                    let IC = normal[j] - normal[i]
-                    if (IC > scale_split) IC = this.edo - IC
-                    if (IC == 0) IC = scale_split
-                    vector[IC - 1]++
+                    let IC = normal[j] - normal[i];
+                    if (IC > scale_split) IC = this.edo - IC;
+                    if (IC == 0) IC = scale_split;
+                    vector[IC - 1]++;
                 }
 
             }
 
-            if (cache) this.catalog['interval vector'] = vector
+            if (cache) this.catalog['interval vector'] = vector;
             return vector
 
 
@@ -5322,8 +5311,8 @@ class Scale {
             /*Inverts the intervals of the scale*/
             if (this.catalog['inverted']) return this.catalog['inverted']
 
-            let scale = this.parent.get.inversion(this.pitches, cache = false)
-            if (cache) this.catalog['inverted'] = scale
+            let scale = this.parent.get.inversion(this.pitches, cache = false);
+            if (cache) this.catalog['inverted'] = scale;
 
             return scale
         },
@@ -5340,11 +5329,11 @@ class Scale {
          * @memberOf Scale#get*/
         least_step_multiplier: () => {
 
-            let steps = this.get.step_sizes()
+            let steps = this.get.step_sizes();
             if (steps.length == 1) return 1
-            let size = this.edo
+            let size = this.edo;
             for (let i = 0; i < steps.length - 1; i++) {
-                if (steps[i + 1] / steps[i] < size) size = steps[i + 1] / steps[i]
+                if (steps[i + 1] / steps[i] < size) size = steps[i + 1] / steps[i];
             }
             return size
         },
@@ -5362,8 +5351,8 @@ class Scale {
          * scale.get.lerdahl_attraction(1,0) //returns 4*/
         lerdahl_attraction: (note1, note2) => {
             if (note1 == note2) return 0
-            note1 = {pitch: note1}
-            note2 = {pitch: note2}
+            note1 = {pitch: note1};
+            note2 = {pitch: note2};
 
             // first we check which level each pitch belongs to:
             // 1 if C, 2 if E or G, and 3 for everything else
@@ -5374,14 +5363,14 @@ class Scale {
                     if (this.parent.P5s.indexOf(note) >= 0 || this.parent.M3s.indexOf(note) >= 0) return 3
                     else return 1
                 }
-            }
+            };
 
-            note1.anchoring = get_note_anchoring_strength(note1.pitch)
-            note2.anchoring = get_note_anchoring_strength(note2.pitch)
+            note1.anchoring = get_note_anchoring_strength(note1.pitch);
+            note2.anchoring = get_note_anchoring_strength(note2.pitch);
 
-            let dist = Math.abs(note1.pitch - note2.pitch)
-            if (dist > this.edo / 2) dist = this.edo - dist
-            dist = dist * 12 / this.edo
+            let dist = Math.abs(note1.pitch - note2.pitch);
+            if (dist > this.edo / 2) dist = this.edo - dist;
+            dist = dist * 12 / this.edo;
 
             //if neither note is more stable
             if (note2.anchoring == note1.anchoring) return 0
@@ -5403,17 +5392,17 @@ class Scale {
          * @memberOf Scale#get*/
         lerdahl_attraction_vector: () => {
 
-            let vector = []
+            let vector = [];
             for (let i = 0; i < this.pitches.length; i++) {
-                let note = this.pitches[i]
-                let ln = this.pitches[this.parent.mod(i - 1, this.pitches.length)]
-                let un = this.pitches[this.parent.mod(i + 1, this.pitches.length)]
-                ln = this.get.lerdahl_attraction(note, ln)
-                un = this.get.lerdahl_attraction(note, un)
-                if (ln < 1 && un < 1) vector.push('*')
-                else if (ln < 1 && un >= 1) vector.push('>>')
-                else if (ln >= 1 && un < 1) vector.push('<<')
-                else if (ln >= 1 && un >= 1) vector.push('<>')
+                let note = this.pitches[i];
+                let ln = this.pitches[this.parent.mod(i - 1, this.pitches.length)];
+                let un = this.pitches[this.parent.mod(i + 1, this.pitches.length)];
+                ln = this.get.lerdahl_attraction(note, ln);
+                un = this.get.lerdahl_attraction(note, un);
+                if (ln < 1 && un < 1) vector.push('*');
+                else if (ln < 1 && un >= 1) vector.push('>>');
+                else if (ln >= 1 && un < 1) vector.push('<<');
+                else if (ln >= 1 && un >= 1) vector.push('<>');
             }
             return vector
 
@@ -5448,14 +5437,14 @@ class Scale {
          * @see Clough, J. and G. Myerson (1985). "Variety and multiplicity in diatonic systems." Journal of Music Theory 29(2): 249-270.
          * */
         myhill_property: (constant = 2)=>{
-            let map = {}
-            let mod = this.parent.mod
-            let n = this.count.pitches()
-            let p = this.pitches
+            let map = {};
+            let mod = this.parent.mod;
+            let n = this.count.pitches();
+            let p = this.pitches;
             for (let i = 1; i < n; i++) {
-                map[i]=new Set()
+                map[i]=new Set();
                 for (let j = 0; j < n; j++) {
-                    map[i].add(mod(p[mod(j+i,n)]-p[j],this.edo))
+                    map[i].add(mod(p[mod(j+i,n)]-p[j],this.edo));
                     if(map[i].size>constant) return false
                 }
             }
@@ -5489,7 +5478,7 @@ class Scale {
         modes: (cache = false) => {
             if (this.catalog['modes']) return this.catalog['modes']
 
-            let modes = this.parent.get.modes(this.pitches)
+            let modes = this.parent.get.modes(this.pitches);
             if (cache) return this.catalog['modes'] = modes
             return modes
         },
@@ -5518,14 +5507,14 @@ class Scale {
          * ]
          */
         motives_diatonic: (melody, allow_skips = false,maximal_length=8) => {
-            let scale = this.pitches
-            let not_in_scale = melody.filter((note) => scale.indexOf(this.parent.mod(note, this.edo)) == -1)
+            let scale = this.pitches;
+            let not_in_scale = melody.filter((note) => scale.indexOf(this.parent.mod(note, this.edo)) == -1);
             if (not_in_scale.length > 0) return null
 
-            scale = this.parent.get.unique_elements(scale).sort((a, b) => a - b)
+            scale = this.parent.get.unique_elements(scale).sort((a, b) => a - b);
 
-            let scale_degrees = melody.map((note) => scale.indexOf(note) + 1)
-            let motives = this.parent.get.motives(scale_degrees, true, allow_skips,maximal_length)
+            let scale_degrees = melody.map((note) => scale.indexOf(note) + 1);
+            let motives = this.parent.get.motives(scale_degrees, true, allow_skips,maximal_length);
             return motives
 
         },
@@ -5556,29 +5545,29 @@ class Scale {
         n_chords: (n, normalize = true, cache = false) => {
             if (this.catalog['n_chords']) {
                 if (Array.isArray(this.catalog['n_chords'][n])) return this.catalog['n_chords'][n]
-            } else this.catalog['n_chords'] = {}
+            } else this.catalog['n_chords'] = {};
 
-            let all = []
-            let extended = [...this.pitches, ...this.pitches.slice(0, n - 1)]
+            let all = [];
+            [...this.pitches, ...this.pitches.slice(0, n - 1)];
             const run_it = (i = 0, n_chord = []) => {
                 if (n_chord.length == n) {
                     if (this.parent.get.unique_elements(n_chord).length == n_chord.length) {
-                        n_chord = n_chord.sort((a, b) => a - b)
-                        if (normalize) n_chord = this.parent.get.normal_order(n_chord)
-                        all.push(n_chord)
+                        n_chord = n_chord.sort((a, b) => a - b);
+                        if (normalize) n_chord = this.parent.get.normal_order(n_chord);
+                        all.push(n_chord);
                     }
                     return
                 }
                 for (let j = i; j < this.pitches.length + (n - 1); j++) {
 
-                    run_it(j + 1, [...n_chord, this.pitches[this.parent.mod(j, this.pitches.length)]])
+                    run_it(j + 1, [...n_chord, this.pitches[this.parent.mod(j, this.pitches.length)]]);
 
                 }
 
-            }
-            run_it()
-            all = this.parent.get.unique_elements(all)
-            if (cache) this.catalog['n_chords'][n] = all
+            };
+            run_it();
+            all = this.parent.get.unique_elements(all);
+            if (cache) this.catalog['n_chords'][n] = all;
             return all
         },
 
@@ -5589,18 +5578,18 @@ class Scale {
          * @see Scale#get.steps_to_qualities
          */
         n_chords_diatonic: (n) => {
-            let t_edo = new EDO(this.count.pitches())
-            let t_scale = t_edo.scale(Array.from(Array(this.count.pitches()).keys()))
-            let combinations = t_scale.get.n_chords(n)
-            let modes = this.get.modes()
+            let t_edo = new EDO(this.count.pitches());
+            let t_scale = t_edo.scale(Array.from(Array(this.count.pitches()).keys()));
+            let combinations = t_scale.get.n_chords(n);
+            this.get.modes();
             let n_chords = combinations.map((combo) => {
-                let steps = this.parent.convert.to_steps(combo)
+                let steps = this.parent.convert.to_steps(combo);
                 return this.get.steps_to_qualities(steps)
-            })
+            });
             n_chords = n_chords.map((chord) => {
-                chord.combos = chord.combos.sort((a, b) => a.positions.length - b.positions.length)
+                chord.combos = chord.combos.sort((a, b) => a.positions.length - b.positions.length);
                 return chord
-            })
+            });
             return n_chords
         },
 
@@ -5615,11 +5604,11 @@ class Scale {
          * */
         name: () => {
 
-            let normal = this.get.normal_order()
-            let total = 0
+            let normal = this.get.normal_order();
+            let total = 0;
             normal.forEach((i) => {
-                total += Math.pow(2, i)
-            })
+                total += Math.pow(2, i);
+            });
             return String(this.parent.edo) + "-" + String(parseInt(total))
 
 
@@ -5646,42 +5635,42 @@ class Scale {
          * ]
          */
         neighborhood: (size=1,alterations=1,normalize=true,maintain_cardinality=true) =>{
-            let card = this.count.pitches()
-            let parent = this.parent
-            let pitches = this.pitches
-            let sizes = Array.from(Array(size).keys()).map(el=>[el+1,-(el+1)]).flat()
-            let alter = Array.from(Array(alterations), () => Array.from(Array(card)).map(arr=>0))
+            let card = this.count.pitches();
+            let parent = this.parent;
+            let pitches = this.pitches;
+            let sizes = Array.from(Array(size).keys()).map(el=>[el+1,-(el+1)]).flat();
+            let alter = Array.from(Array(alterations), () => Array.from(Array(card)).map(arr=>0));
             alter = alter.map((arr,ind)=>{
-                let con = Array.from(Array(ind+1).fill(1))
-                arr = con.concat(arr).slice(0,card)
-                arr = this.parent.get.unique_elements(this.parent.get.permutations(arr))
+                let con = Array.from(Array(ind+1).fill(1));
+                arr = con.concat(arr).slice(0,card);
+                arr = this.parent.get.unique_elements(this.parent.get.permutations(arr));
                 return arr
-            }).flat()
+            }).flat();
 
             const helper = function(arr,index,sizes) {
-                let narr=[]
+                let narr=[];
                 for (let i = 0; i < sizes.length; i++) {
-                    let temp = Array.from(arr)
+                    let temp = Array.from(arr);
 
-                    temp[index] = parent.mod(temp[index]+sizes[i],parent.edo)
-                    narr.push(temp)
+                    temp[index] = parent.mod(temp[index]+sizes[i],parent.edo);
+                    narr.push(temp);
                 }
                 return narr
-            }
+            };
             alter = alter.map(a=>{
-                let new_arrays = [Array.from(pitches)]
-                let indices = a.reduce((a, e, i) => (e === 1) ? a.concat(i) : a, [])
+                let new_arrays = [Array.from(pitches)];
+                let indices = a.reduce((a, e, i) => (e === 1) ? a.concat(i) : a, []);
                 for (let i = 0; i < indices.length; i++) {
                     new_arrays = new_arrays.map(arr=>{
-                        let h = helper(arr,indices[i],sizes)
+                        let h = helper(arr,indices[i],sizes);
                         return h
-                    }).flat()
+                    }).flat();
                 }
                 return new_arrays
-            }).flat()
-            if(normalize) alter =alter.map(arr=>parent.get.normal_order(arr))
-            if(maintain_cardinality) alter =alter.filter(arr=>arr.length==card)
-            alter = parent.get.unique_elements(alter)
+            }).flat();
+            if(normalize) alter =alter.map(arr=>parent.get.normal_order(arr));
+            if(maintain_cardinality) alter =alter.filter(arr=>arr.length==card);
+            alter = parent.get.unique_elements(alter);
             return alter
         },
 
@@ -5705,10 +5694,10 @@ class Scale {
             */
             if (this.catalog['normal_order']) return this.catalog['normal_order']
 
-            let lst = this.pitches
-            let result = this.parent.get.normal_order(lst, cache = false)
+            let lst = this.pitches;
+            let result = this.parent.get.normal_order(lst, cache = false);
 
-            if (cache) this.catalog['normal_order'] = result
+            if (cache) this.catalog['normal_order'] = result;
             return result
 
         },
@@ -5724,11 +5713,11 @@ class Scale {
          * * @see Rahn, J. (1991). "Coordination of interval sizes in seven-tone collections." Journal of Music Theory 35(1/2): 33-60.
      * */
         pairwise_generic_specific_intervals: (SD1,SD2) => {
-            let mod = this.parent.mod
-            let p = this.pitches
-            let len = p.length
-            let specific = mod(p[mod(SD2,len)]-p[mod(SD1,len)],this.edo)
-            let generic = mod(SD2 - SD1,len)
+            let mod = this.parent.mod;
+            let p = this.pitches;
+            let len = p.length;
+            let specific = mod(p[mod(SD2,len)]-p[mod(SD1,len)],this.edo);
+            let generic = mod(SD2 - SD1,len);
             return {specific:specific,generic:generic}
         },
 
@@ -5776,13 +5765,13 @@ class Scale {
          * scale.get.position_of_quality([4,7]) (a major triad)
          * //returns [0,5,7] because you can construct a major triad on 0, 5, and 7*/
         position_of_quality: (intervals) => {
-            let result = []
-            let double_scale = [...this.pitches, ...this.pitches]
+            let result = [];
+            let double_scale = [...this.pitches, ...this.pitches];
 
             for (let pitch of this.pitches) {
-                let int = intervals.map((interval) => (interval + pitch) % this.edo)
-                let s = [...int]
-                if (this.parent.is.subset(s, double_scale)) result.push(pitch)
+                let int = intervals.map((interval) => (interval + pitch) % this.edo);
+                let s = [...int];
+                if (this.parent.is.subset(s, double_scale)) result.push(pitch);
             }
             return result
 
@@ -5802,23 +5791,23 @@ class Scale {
         prime_form: (cache = false) => {
             /*Returns the scale in prime form*/
             if (this.catalog['prime form']) return this.catalog['prime form']
-            let i_self = this.parent.scale(this.get.inversion())
-            let norm_ord = this.parent.scale(this.get.normal_order())
-            let i_norm_ord = this.parent.scale(i_self.get.normal_order())
-            let scale_steps = norm_ord.to.steps()
-            let i_scale_steps = i_norm_ord.to.steps()
-            let result = norm_ord.pitches
+            let i_self = this.parent.scale(this.get.inversion());
+            let norm_ord = this.parent.scale(this.get.normal_order());
+            let i_norm_ord = this.parent.scale(i_self.get.normal_order());
+            let scale_steps = norm_ord.to.steps();
+            let i_scale_steps = i_norm_ord.to.steps();
+            let result = norm_ord.pitches;
             for (let i = 0; i < scale_steps.length; i++) {
                 if (scale_steps[i] < i_scale_steps[i]) {
-                    result = norm_ord.pitches
+                    result = norm_ord.pitches;
                     break
                 } else if (scale_steps[i] > i_scale_steps[i]) {
-                    result = i_norm_ord.pitches
+                    result = i_norm_ord.pitches;
                     break
                 }
 
             }
-            if (cache) this.catalog['prime form'] = result
+            if (cache) this.catalog['prime form'] = result;
             return result
         },
 
@@ -5836,8 +5825,8 @@ class Scale {
          * scale.get.product(5,true) //returns [ 0, 8, 9, 10, 11 ]*/
         product: (multiplier,sort=false) => {
 
-            let res =  this.pitches.map(n=>this.parent.mod(n*multiplier,this.edo))
-            if(sort) res = res.sort((a,b)=>a-b)
+            let res =  this.pitches.map(n=>this.parent.mod(n*multiplier,this.edo));
+            if(sort) res = res.sort((a,b)=>a-b);
             return res
         },
 
@@ -5851,25 +5840,25 @@ class Scale {
          * @example
         */
         quality_with_intervals: (intervals=[7],length) => {
-            let all = []
-            let TET = this.edo
+            let all = [];
+            let TET = this.edo;
             let helper = function (scale, sizes,length,last) {
-                if(!length) length= scale.length
-                if(!last) last = [scale.shift()]
+                if(!length) length= scale.length;
+                if(!last) last = [scale.shift()];
                 if(last.length==length) return last
 
                 let result = sizes.map(size=>{
 
-                    let note = (last[last.length-1]+size)%TET
-                    let ind = scale.indexOf(note)
+                    let note = (last[last.length-1]+size)%TET;
+                    let ind = scale.indexOf(note);
                     if(ind==-1) return false
                     else {
-                        let new_scale = [...scale]
-                        new_scale.splice(ind,1)
-                        let new_last = [...last,note]
+                        let new_scale = [...scale];
+                        new_scale.splice(ind,1);
+                        let new_last = [...last,note];
                         return helper(new_scale,sizes,length,new_last)
                     }
-                }).reduce((ag,el)=>el?[...ag,el]:ag,[]).flat()
+                }).reduce((ag,el)=>el?[...ag,el]:ag,[]).flat();
 
                 const chunk = function(array, size) {
                     if (!array.length) {
@@ -5881,11 +5870,11 @@ class Scale {
                     return [head, ...chunk(tail, size)];
                 };
                 return chunk(result.flat(),length)
-            }
+            };
 
-            let modes = this.parent.get.rotations(this.pitches)
+            let modes = this.parent.get.rotations(this.pitches);
             for (let i = 0; i < modes.length; i++) {
-                all = all.concat(helper(modes[i],intervals,length))
+                all = all.concat(helper(modes[i],intervals,length));
             }
 
 
@@ -5903,11 +5892,11 @@ class Scale {
          * scale.get.rotations()
          * //returns [[0,3,7],[3,7,0],[7,0,3]]*/
         rotations: () => {
-            let rotations = []
-            let rotate = [...this.pitches]
+            let rotations = [];
+            let rotate = [...this.pitches];
             while (!this.parent.is.element_of(rotate, rotations)) {
-                rotations.push(rotate)
-                rotate = [...rotate.slice(1), ...rotate.slice(0, 1)]
+                rotations.push(rotate);
+                rotate = [...rotate.slice(1), ...rotate.slice(0, 1)];
             }
             return rotations
         },
@@ -5925,32 +5914,32 @@ class Scale {
         rothenberg_propriety: (cache = false) => {
             if (this.catalog['rothenberg']) return this.catalog['rothenberg']
 
-            let scale = this.pitches
-            let map = []
-            let steps = Array(scale.length - 1).fill(0).map((el, i) => i + 1)
-            let intervals = this.to.steps()
+            let scale = this.pitches;
+            let map = [];
+            let steps = Array(scale.length - 1).fill(0).map((el, i) => i + 1);
+            let intervals = this.to.steps();
             steps.forEach((step) => {
-                let double_intervals = intervals.concat(intervals)
-                let interval_classes = []
+                let double_intervals = intervals.concat(intervals);
+                let interval_classes = [];
                 for (let i = 0; i < intervals.length; i++) {
-                    let sli = double_intervals.slice(i, i + step)
-                    sli = sli.reduce((t, e) => t + e)
-                    interval_classes.push(sli)
+                    let sli = double_intervals.slice(i, i + step);
+                    sli = sli.reduce((t, e) => t + e);
+                    interval_classes.push(sli);
                 }
-                map.push({min: Math.min.apply(Math, interval_classes), max: Math.max.apply(Math, interval_classes)})
-            })
-            let strictly_proper = true
-            let proper = true
+                map.push({min: Math.min.apply(Math, interval_classes), max: Math.max.apply(Math, interval_classes)});
+            });
+            let strictly_proper = true;
+            let proper = true;
             for (let i = 1; i < map.length; i++) {
-                if (map[i]['min'] <= map[i - 1]['max']) strictly_proper = false
-                if (map[i]['min'] < map[i - 1]['max']) proper = false
+                if (map[i]['min'] <= map[i - 1]['max']) strictly_proper = false;
+                if (map[i]['min'] < map[i - 1]['max']) proper = false;
             }
 
-            let result = ""
-            if (strictly_proper) result = "strictly proper"
-            else if (proper) result = "proper"
-            else result = "improper"
-            if (cache) this.catalog['rothenberg'] = result
+            let result = "";
+            if (strictly_proper) result = "strictly proper";
+            else if (proper) result = "proper";
+            else result = "improper";
+            if (cache) this.catalog['rothenberg'] = result;
             return result
         },
 
@@ -5968,17 +5957,17 @@ class Scale {
          * */
         roughness: (all_modes=false,base_freq=440) => {
             const get_scale_roughness =function (scale) {
-                    let pairs = scale.parent.get.n_choose_k(scale.pitches,2)
+                    let pairs = scale.parent.get.n_choose_k(scale.pitches,2);
                     pairs = pairs.map(p=>scale.parent.convert.midi_to_freq(p,69,base_freq))
                         .map(p=>scale.parent.get.sine_pair_dissonance(p[0],p[1],1,1))
-                        .reduce((ag,e)=>ag+e,0)
+                        .reduce((ag,e)=>ag+e,0);
 
                     return pairs
-            }
+            };
             if(all_modes) {
-                let roughness_arr = []
+                let roughness_arr = [];
                 for (let i = 0; i < this.count.pitches(); i++) {
-                    roughness_arr.push(get_scale_roughness(this.mode(i)))
+                    roughness_arr.push(get_scale_roughness(this.mode(i)));
                 }
                 return roughness_arr
             }
@@ -6000,8 +5989,8 @@ class Scale {
          * @see Carey, N. (2007). "Coherence and sameness in well-formed and pairwise well-formed scales." Journal of Mathematics and Music 1(2): 79-98.
          * @memberOf Scale#get*/
         sameness_quotient: () => {
-            let D_S = this.count.rahn_differences()
-            let max_D = this.parent.get.maximal_rahn_difference(this.count.pitches())
+            let D_S = this.count.rahn_differences();
+            let max_D = this.parent.get.maximal_rahn_difference(this.count.pitches());
             return 1-(D_S/max_D)
         },
 
@@ -6014,10 +6003,10 @@ class Scale {
          * @see Carey, N. (2007). "Coherence and sameness in well-formed and pairwise well-formed scales." Journal of Mathematics and Music 1(2): 79-98.
          * @memberOf Scale#get*/
         coherence_quotient: () => {
-            let all_amb = this.count.rahn_ambiguities()
-            let all_cont = this.count.rahn_contradictions()
-            let total = all_amb + all_cont
-            let maximal_failures = this.parent.get.maximal_carey_coherence_failures(this.count.pitches())
+            let all_amb = this.count.rahn_ambiguities();
+            let all_cont = this.count.rahn_contradictions();
+            let total = all_amb + all_cont;
+            let maximal_failures = this.parent.get.maximal_carey_coherence_failures(this.count.pitches());
             return 1-(total/maximal_failures)
         },
 
@@ -6045,21 +6034,21 @@ class Scale {
         scale_degree_transpositions: (normalize = true) => {
 
 
-            let transpositions = []
-            let intervals = this.to.steps()
-            intervals = intervals.slice(0, -1) //removing the last step because we don't need the octave completion
+            let transpositions = [];
+            let intervals = this.to.steps();
+            intervals = intervals.slice(0, -1); //removing the last step because we don't need the octave completion
             for (let note of this.pitches) {
-                let transposition = [note]
+                let transposition = [note];
                 for (let interval of intervals) {
-                    let next_note = this.parent.mod(transposition.slice(-1)[0] + interval, this.edo)
-                    transposition.push(next_note)
+                    let next_note = this.parent.mod(transposition.slice(-1)[0] + interval, this.edo);
+                    transposition.push(next_note);
                 }
-                if (normalize) transposition.sort((a, b) => a - b)
-                let CT = this.count.pitches() - this.parent.count.common_tones(this.pitches, transposition)
-                transpositions.push([transposition, CT])
+                if (normalize) transposition.sort((a, b) => a - b);
+                let CT = this.count.pitches() - this.parent.count.common_tones(this.pitches, transposition);
+                transpositions.push([transposition, CT]);
             }
-            transpositions.sort((a, b) => a[1] - b[1])
-            transpositions = this.parent.get.unique_elements(transpositions)
+            transpositions.sort((a, b) => a[1] - b[1]);
+            transpositions = this.parent.get.unique_elements(transpositions);
             return transpositions
 
         },
@@ -6075,12 +6064,12 @@ class Scale {
          * //returns [[2,2],[1],[2,2,2],[1]]
          */
         segments: () => {
-            let steps = this.to.steps()
-            let all = []
+            let steps = this.to.steps();
+            let all = [];
             while(steps.length>0) {
-                let sub = steps.splice(0,1)
-                while(steps[0]==sub[0]) sub.push(steps.splice(0,1)[0])
-                all.push(sub)
+                let sub = steps.splice(0,1);
+                while(steps[0]==sub[0]) sub.push(steps.splice(0,1)[0]);
+                all.push(sub);
             }
             return all
         },
@@ -6096,16 +6085,16 @@ class Scale {
          * let scale = edo.scale([0,2,4,7,9]) //a major pentatonic scale
          * scale.get.sequence_transposition([0,2,4],1) //returns [ 2, 4, 7 ]*/
         sequence_transposition: (seq, transposition) => {
-            let mod = this.parent.mod
-            let new_seq = []
+            let mod = this.parent.mod;
+            let new_seq = [];
             for (let note of seq) {
-                let scale_degree = this.pitches.indexOf(mod(note, this.edo))
-                let octave_shift = Math.floor(note / this.edo)
-                scale_degree = scale_degree + transposition
-                octave_shift += Math.floor(scale_degree / this.pitches.length)
-                scale_degree = mod(scale_degree, this.pitches.length)
-                let pitch = this.pitches[scale_degree] + (this.edo * octave_shift)
-                new_seq.push(pitch)
+                let scale_degree = this.pitches.indexOf(mod(note, this.edo));
+                let octave_shift = Math.floor(note / this.edo);
+                scale_degree = scale_degree + transposition;
+                octave_shift += Math.floor(scale_degree / this.pitches.length);
+                scale_degree = mod(scale_degree, this.pitches.length);
+                let pitch = this.pitches[scale_degree] + (this.edo * octave_shift);
+                new_seq.push(pitch);
             }
             return new_seq
         },
@@ -6132,9 +6121,9 @@ class Scale {
 
             In this function the starting point is scale_degree 1
             */
-            let temp_edo = new EDO(this.count.pitches())
-            let result = temp_edo.get.shortest_path(destination_scale_degree - 1, up_steps, down_steps)
-            console.log(result)
+            let temp_edo = new EDO(this.count.pitches());
+            let result = temp_edo.get.shortest_path(destination_scale_degree - 1, up_steps, down_steps);
+            console.log(result);
 
         },
 
@@ -6162,20 +6151,20 @@ class Scale {
          * ]
          */
         stacks: (levels, skip) => {
-            let scale = this.pitches
+            this.pitches;
 
-            let diapason = ((skip + 1) * (levels - 1)) + 1
-            let modes = this.get.modes()
-            let stacks = []
+            let diapason = ((skip + 1) * (levels - 1)) + 1;
+            let modes = this.get.modes();
+            let stacks = [];
             modes.forEach((mode) => {
-                let notes = []
+                let notes = [];
                 for (let i = 0; i < diapason; i += skip + 1) {
-                    notes.push(mode[i % mode.length])
+                    notes.push(mode[i % mode.length]);
                 }
-                let temp = new Set(notes)
-                if (temp.size == levels) stacks.push(notes)
-            })
-            stacks = this.parent.get.unique_elements(stacks)
+                let temp = new Set(notes);
+                if (temp.size == levels) stacks.push(notes);
+            });
+            stacks = this.parent.get.unique_elements(stacks);
             return stacks
         },
 
@@ -6190,9 +6179,9 @@ class Scale {
         step_sizes: (cache = false) => {
 
             if (this.catalog['step sizes']) return this.catalog['step sizes']
-            let lst = this.parent.get.unique_elements(this.to.steps())
-            lst.sort((a, b) => a - b)
-            if (cache) this.catalog['step sizes'] = lst
+            let lst = this.parent.get.unique_elements(this.to.steps());
+            lst.sort((a, b) => a - b);
+            if (cache) this.catalog['step sizes'] = lst;
             return lst
 
 
@@ -6228,14 +6217,14 @@ class Scale {
          *  }
          * @memberOf Scale#get*/
         steps_to_qualities: (steps) => {
-            let modes = this.get.modes()
-            steps = this.parent.convert.intervals_to_pitches(steps)
-            let combos = modes.map((mode) => steps.map((scale_degree) => mode[scale_degree]))
-            combos = combos.map((el) => this.parent.get.normal_order(el))
-            combos = this.parent.get.unique_elements(combos)
+            let modes = this.get.modes();
+            steps = this.parent.convert.intervals_to_pitches(steps);
+            let combos = modes.map((mode) => steps.map((scale_degree) => mode[scale_degree]));
+            combos = combos.map((el) => this.parent.get.normal_order(el));
+            combos = this.parent.get.unique_elements(combos);
             combos = combos.map((cmb) => {
                 return {quality: cmb, positions: this.get.position_of_quality(cmb)}
-            })
+            });
             return {steps: this.parent.convert.to_steps(steps), combos: combos}
         },
 
@@ -6249,14 +6238,14 @@ class Scale {
          * scale.get.supersets([[0,1,2,3,4,5,6,7],[0,3,4,7],[0,1,2]])
          * //returns [[0,1,2,3,4,5,6,7],[0,3,4,7]]*/
         supersets: (scales) => {
-            let sets = []
+            let sets = [];
             for (let scale of scales) {
-                let modes = this.parent.get.modes(scale)
+                let modes = this.parent.get.modes(scale);
                 for (let mode of modes) {
-                    if (this.is.subset(mode)) sets.push(scale)
+                    if (this.is.subset(mode)) sets.push(scale);
                 }
             }
-            sets = this.parent.get.unique_elements(sets)
+            sets = this.parent.get.unique_elements(sets);
             return sets
         },
 
@@ -6284,9 +6273,9 @@ class Scale {
             */
             if (this.catalog['tetrachords']) return this.catalog['tetrachords']
 
-            let tetrachords = this.get.n_chords(4, true, cache)
+            let tetrachords = this.get.n_chords(4, true, cache);
 
-            if (cache) this.catalog['tetrachords'] = tetrachords
+            if (cache) this.catalog['tetrachords'] = tetrachords;
             return tetrachords
         },
 
@@ -6318,10 +6307,10 @@ class Scale {
                     9:[6],
                     10:[6,7],
                     11:[7]
-                }
+                };
 
             }
-            let interpretations = this.parent.get.partitioned_subsets(this.pitches.map(n=>interval_map[n]))
+            let interpretations = this.parent.get.partitioned_subsets(this.pitches.map(n=>interval_map[n]));
             return interpretations
         },
 
@@ -6353,20 +6342,20 @@ class Scale {
          *  {pitches: [11,1,3,4,6,8,10], alterations: 2} //The transposition starting on 11 ... It has 2 tones in common...
          * ]*/
         transpositions_with_pitches: (pitches) => {
-            let scales = []
+            let scales = [];
             for (let i = 0; i < this.edo; i++) {
-                let new_scale = this.parent.get.starting_at(this.pitches, i)
+                let new_scale = this.parent.get.starting_at(this.pitches, i);
                 scales.push({
                     pitches: new_scale,
                     common_tones: this.count.pitches() - this.get.levenshtein([...new_scale].sort((a, b) => a - b))
-                })
+                });
             }
             scales = scales.filter((scale) => {
-                let temp = pitches.map((pitch) => scale.pitches.indexOf(pitch) != -1)
-                temp = temp.reduce((a, el) => a * el, true)
+                let temp = pitches.map((pitch) => scale.pitches.indexOf(pitch) != -1);
+                temp = temp.reduce((a, el) => a * el, true);
                 return temp
-            })
-            scales = scales.sort((a, b) => b.common_tones - a.common_tones)
+            });
+            scales = scales.sort((a, b) => b.common_tones - a.common_tones);
             return scales
         },
 
@@ -6401,8 +6390,8 @@ class Scale {
             :return:
             */
             if (this.catalog['trichords']) return this.catalog['trichords']
-            let trichords = this.get.n_chords(3, true, cache)
-            if (cache) this.catalog['trichords'] = trichords
+            let trichords = this.get.n_chords(3, true, cache);
+            if (cache) this.catalog['trichords'] = trichords;
             return trichords
 
         },
@@ -6438,8 +6427,8 @@ class Scale {
          * @see Clough, J., et al. (1999). "Scales, sets, and interval cycles: A taxonomy." Music Theory Spectrum 21(1): 74-104.
          * */
         deep: () => {
-            let vector = this.get.interval_vector()
-            let vector_set = new Set(this.get.interval_vector())
+            let vector = this.get.interval_vector();
+            let vector_set = new Set(this.get.interval_vector());
             return vector.length==vector_set.size
         },
 
@@ -6454,10 +6443,10 @@ class Scale {
          * @see Clough, J., et al. (1999). "Scales, sets, and interval cycles: A taxonomy." Music Theory Spectrum 21(1): 74-104.
          * */
         distributionally_even: () => {
-            let map = {}
+            let map = {};
             for (let i = 1; i < this.count.pitches(); i++) {
-                let gen = this.get.generic_intervals(i)
-                gen.forEach(interval=>(map[interval.generic])?map[interval.generic].push(interval.specific):map[interval.generic]=[interval.specific])
+                let gen = this.get.generic_intervals(i);
+                gen.forEach(interval=>(map[interval.generic])?map[interval.generic].push(interval.specific):map[interval.generic]=[interval.specific]);
             }
             for (let i = 1; i < this.count.pitches(); i++) {
                 if(map[String(i)].length>2) return false
@@ -6478,19 +6467,19 @@ class Scale {
         in_lower_edos: (cache = false) => {
 
             if (this.catalog['lower EDOs']) return this.catalog['lower EDOs']
-            let scale = this.pitches
-            let edos = []
+            let scale = this.pitches;
+            let edos = [];
             for (let divisor of this.parent.edo_divisors) {
-                let valid = true
+                let valid = true;
                 for (let note of scale) {
                     if (note % divisor != 0) {
-                        valid = false
+                        valid = false;
                         break
                     }
                 }
-                if (valid) edos.push(parseInt(this.edo / divisor))
+                if (valid) edos.push(parseInt(this.edo / divisor));
             }
-            if (cache) this.catalog['lower EDOs'] = edos
+            if (cache) this.catalog['lower EDOs'] = edos;
             return edos
 
         },
@@ -6507,11 +6496,11 @@ class Scale {
         invertible: (cache = false) => {
             if (this.catalog['invertible']) return this.catalog['invertible']
 
-            let scale = this.get.normal_order()
-            let i_scale = this.parent.scale(this.get.inversion()).get.normal_order()
-            let result = true
-            if (this.parent.is.same(scale, i_scale)) result = false
-            if (cache) this.catalog['invertible'] = result
+            let scale = this.get.normal_order();
+            let i_scale = this.parent.scale(this.get.inversion()).get.normal_order();
+            let result = true;
+            if (this.parent.is.same(scale, i_scale)) result = false;
+            if (cache) this.catalog['invertible'] = result;
             return result
         },
 
@@ -6526,10 +6515,10 @@ class Scale {
          * @see Clough, J., et al. (1999). "Scales, sets, and interval cycles: A taxonomy." Music Theory Spectrum 21(1): 74-104.
          * */
         maximally_even: () => {
-            let map = {}
+            let map = {};
             for (let i = 1; i < this.count.pitches(); i++) {
-                let gen = this.get.generic_intervals(i)
-                gen.forEach(interval=>(map[interval.generic])?map[interval.generic].push(interval.specific):map[interval.generic]=[interval.specific])
+                let gen = this.get.generic_intervals(i);
+                gen.forEach(interval=>(map[interval.generic])?map[interval.generic].push(interval.specific):map[interval.generic]=[interval.specific]);
             }
             for (let i = 1; i < this.count.pitches(); i++) {
                 if(map[String(i)].length>2) return false
@@ -6569,7 +6558,7 @@ class Scale {
          * scale.is.mode_of([0,2,3,5,7,9,10]) //returns true
          * */
         mode_of: (scale) => {
-            let modes = this.parent.get.modes(scale)
+            let modes = this.parent.get.modes(scale);
             return (this.parent.is.element_of(this.pitches, modes))
         },
 
@@ -6611,9 +6600,9 @@ class Scale {
          * scale.is.one_of([[0,2,3,5,7,9,10],[0,1,2,3,4,5,6,7,8,9]]) //returns true*/
         one_of: (scales) => {
             /**/
-            let scale = this.pitches
-            let all_modes = scales.map((item) => this.parent.get.modes(item))
-            all_modes = all_modes.flat(1)
+            let scale = this.pitches;
+            let all_modes = scales.map((item) => this.parent.get.modes(item));
+            all_modes = all_modes.flat(1);
             if (this.parent.is.element_of(scale, all_modes)) return true
             return false
         },
@@ -6650,11 +6639,11 @@ class Scale {
                     if (scale2.indexOf(note) == -1) return false
                 }
                 return true
-            }
-            if (!Array.isArray(scales[0])) scales = [scales]
+            };
+            if (!Array.isArray(scales[0])) scales = [scales];
             scales = scales.map((scale) => {
                 return this.parent.scale(scale).get.modes()
-            }).flat()
+            }).flat();
             for (let scale of scales) {
                 if (is_subset_of_one(this.pitches, scale)) return true
             }
@@ -6693,8 +6682,8 @@ class Scale {
 
             if (this.catalog['steps']) return this.catalog['steps']
 
-            let intervals = this.parent.convert.to_steps(this.pitches.concat([this.edo]), cache = false)
-            if (cache) this.catalog['steps'] = intervals
+            let intervals = this.parent.convert.to_steps(this.pitches.concat([this.edo]), cache = false);
+            if (cache) this.catalog['steps'] = intervals;
             return intervals
         }
     }
@@ -6727,7 +6716,7 @@ class Scale {
          * @see /demos/fractal_tree.html
          * @memberOf Scale#show*/
         interval_fractal_tree: (container_id, length = 200, angle_span = 90, intervals = [-1, 1], iterations = 5, length_mul = 0.7) => {
-            this.parent.show.interval_fractal_tree(container_id, length, angle_span, this.pitches, intervals, iterations, length_mul)
+            this.parent.show.interval_fractal_tree(container_id, length, angle_span, this.pitches, intervals, iterations, length_mul);
         },
 
         /**
@@ -6760,8 +6749,8 @@ class Scale {
      * @returns {Scale}
      * */
     mode(n = 0) {
-        let modes = this.get.modes()
-        let mode = modes[this.parent.mod(n, modes.length)]
+        let modes = this.get.modes();
+        let mode = modes[this.parent.mod(n, modes.length)];
         return new Scale(mode, this.parent)
     }
 
@@ -6770,7 +6759,7 @@ class Scale {
      * @returns {Scale}
      * */
     invert() {
-        let pitches = this.get.inversion()
+        let pitches = this.get.inversion();
         return new Scale(pitches, this.parent)
     }
 
@@ -6779,7 +6768,7 @@ class Scale {
      * @returns {Scale}
      * */
     normal() {
-        let pitches = this.get.normal_order()
+        let pitches = this.get.normal_order();
         return new Scale(pitches, this.parent)
     }
 
@@ -6788,7 +6777,7 @@ class Scale {
      * @returns {Scale}
      * */
     prime() {
-        let pitches = this.get.prime_form()
+        let pitches = this.get.prime_form();
         return new Scale(pitches, this.parent)
     }
 
@@ -6797,7 +6786,7 @@ class Scale {
      * @returns {Scale}
      * */
     complement() {
-        let pitches = this.get.complement(true)
+        let pitches = this.get.complement(true);
         return new Scale(pitches, this.parent)
     }
 
@@ -6832,8 +6821,8 @@ class Time {
          *  [ 3, 3, 3, 3 ]
          * ]*/
         subdivisions: (num_of_beats,minimal_subdivision = 1, maximal_subdivision = num_of_beats) => {
-            let edo = new EDO(num_of_beats)
-            let scales = edo.get.scales(minimal_subdivision,maximal_subdivision).map(scale=>scale.to.steps())
+            let edo = new EDO(num_of_beats);
+            let scales = edo.get.scales(minimal_subdivision,maximal_subdivision).map(scale=>scale.to.steps());
             return scales
         },
 
@@ -6848,12 +6837,12 @@ class Time {
          * time.get.ratios(110,3)
          * //returns { '1': 110, '2': 220, '3': 330, '1/2': 55, '1/3': 36.666666666666664 } */
         ratios: (base_ratio=1,max_ratio=10) =>{
-            let beats = {}
+            let beats = {};
             for (let i = 1; i <=max_ratio ; i++) {
 
-                beats[i]=base_ratio*i
+                beats[i]=base_ratio*i;
                 if(i==1) continue
-                beats["1/"+String(i)] = base_ratio/i
+                beats["1/"+String(i)] = base_ratio/i;
             }
             return beats
         },
@@ -6882,16 +6871,16 @@ class Time {
             const do_it = function (arr,it) {
                 if(it<=1) return arr
                 else {
-                    it--
+                    it--;
                     arr = arr.map(el=>{
                         return base.map(b=>{
                             return b*el
                         })
-                    }).flat()
+                    }).flat();
                     return do_it([...arr],it)
                 }
 
-            }
+            };
             return do_it([...base],iteration)
 
 
@@ -6914,22 +6903,22 @@ class Time {
          *
          * */
         beat: (array) =>{
-            let beats = []
-            let min = Math.min(...array)
-            let max = Math.max(...array)
-            let edo = new EDO()
+            let beats = [];
+            let min = Math.min(...array);
+            let max = Math.max(...array);
+            let edo = new EDO();
             for (let i = min; i <= max; i++) {
-                let max_oc = 0
-                let intervals = edo.convert.intervals_to_pitches(array).slice(1)
+                let max_oc = 0;
+                let intervals = edo.convert.intervals_to_pitches(array).slice(1);
                 for (let j = 0; j < array.length; j++) {
-                    let len = intervals.filter(el=>Math.round(el/i)==el/i).length
-                    if(len>max_oc) max_oc=len
-                    intervals = edo.convert.intervals_to_pitches(array.slice(j)).slice(1)
+                    let len = intervals.filter(el=>Math.round(el/i)==el/i).length;
+                    if(len>max_oc) max_oc=len;
+                    intervals = edo.convert.intervals_to_pitches(array.slice(j)).slice(1);
                 }
-                if(max_oc!=0) beats.push([i,max_oc])
+                if(max_oc!=0) beats.push([i,max_oc]);
 
             }
-            beats = beats.sort((a,b)=>b[1]-a[1])
+            beats = beats.sort((a,b)=>b[1]-a[1]);
             return beats
 
         },
@@ -6964,7 +6953,7 @@ class Time {
          * @see Time#get.relational_motives
          * */
         motives: (array,maximal_length=8,show_singulars=false) => {
-            let edo = new EDO()
+            let edo = new EDO();
             return edo.get.motives(array,false,false,maximal_length)
                 .filter(el=>(el.incidence>1 || show_singulars) && el.motive.length>1)
         },
@@ -6989,14 +6978,14 @@ class Time {
          *
          * */
         relational_motives: (array,maximal_length=8,show_singular = false)=> {
-            let ratios = this.convert.beats_to_ratios(array)
-            let motives = this.get.motives(ratios,maximal_length,show_singular)
-            let edo = new EDO()
+            let ratios = this.convert.beats_to_ratios(array);
+            let motives = this.get.motives(ratios,maximal_length,show_singular);
+            let edo = new EDO();
             motives = motives.map(motive=>{
-                let position = edo.get.subset_indices(motive.motive,ratios,false).map(i=>i[0])
-                motive.position = position
+                let position = edo.get.subset_indices(motive.motive,ratios,false).map(i=>i[0]);
+                motive.position = position;
                 return motive
-            })
+            });
             return motives
         },
 
@@ -7020,12 +7009,12 @@ class Time {
         explicit: (...arrays) =>{
             arrays = arrays.map(arr=>{
                 arr = arr.map(el=>{
-                    el = [String(el),...Array.from(Array(el-1).fill("."))]
-                    el = el.map(e=>(e.length==1)?e+" ":e)
+                    el = [String(el),...Array.from(Array(el-1).fill("."))];
+                    el = el.map(e=>(e.length==1)?e+" ":e);
                     return el
-                })
+                });
                 return arr.flat().join(" ")
-            })
+            });
             return arrays
         },
 
@@ -7048,20 +7037,20 @@ class Time {
          * [1,0,0,1,1,0,0,1]
          * */
         counterpoint_cycle: (...patterns) => {
-            patterns = patterns.map(p=>(Array.isArray(p))?p:[p]).map(p=>this.convert.binary(p))
-            let lengths = patterns.map(p=>p.length)
+            patterns = patterns.map(p=>(Array.isArray(p))?p:[p]).map(p=>this.convert.binary(p));
+            let lengths = patterns.map(p=>p.length);
 
-            let product = lengths.reduce((a,e)=>a*e,1)
+            let product = lengths.reduce((a,e)=>a*e,1);
 
             // let gcd = GCD(...lengths)
-            let divisible = false
-            product=Math.max(...lengths)
+            let divisible = false;
+            product=Math.max(...lengths);
             while(!divisible) {
-                divisible = Boolean(lengths.map(l=>Number(Number.isInteger(product/l))).reduce((ar,el)=>ar*el,1))
+                divisible = Boolean(lengths.map(l=>Number(Number.isInteger(product/l))).reduce((ar,el)=>ar*el,1));
                 if(divisible) break
-                product++
+                product++;
             }
-            patterns = patterns.map(p=>this.get.repeated(p,product/p.length))
+            patterns = patterns.map(p=>this.get.repeated(p,product/p.length));
             return patterns
 
         },
@@ -7093,8 +7082,8 @@ class Time {
                     case "up":return Math.ceil(el)
                     case false: return el
                 }
-            })
-            if(remove_0s) input = input.filter(el=>el!=0)
+            });
+            if(remove_0s) input = input.filter(el=>el!=0);
 
             return input
         },
@@ -7121,8 +7110,8 @@ class Time {
         binary: (pattern) =>{
             return pattern.map(e=>{
                 if(e==0) return [0]
-                e = Array.from([...new Array(e).fill(0)])
-                e[0]=1
+                e = Array.from([...new Array(e).fill(0)]);
+                e[0]=1;
                 return e
             }).flat()
 
@@ -7176,7 +7165,4 @@ module.exports = {
     EDO: EDO,
     Scale: Scale,
     Time: Time
-}
-
-
-
+};
