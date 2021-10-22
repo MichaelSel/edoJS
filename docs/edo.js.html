@@ -6,18 +6,14 @@
     
     <title>edo.js</title>
 
-    <script src="scripts/prettify/prettify.js"></script>
-    <script src="scripts/prettify/lang-css.js"></script>
-    <script src="scripts/search.js"></script>
-    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.4.5/fuse.min.js"></script> -->
-    <script src="scripts/fuse.js"></script>
     <!--[if lt IE 9]>
       <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-    <link type="text/css" rel="stylesheet" href="styles/ionicons.min.css">
-    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/third-party/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/third-party/prettify-tomorrow.css">
     <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
-    <link type="text/css" rel="stylesheet" href="styles/clean-jsdoc-theme.css">
+    <link type="text/css" rel="stylesheet" href="styles/clean-jsdoc-theme-base.css">
+    <link type="text/css" rel="stylesheet" href="styles/clean-jsdoc-theme-light.css">
     
     
     
@@ -42,12 +38,12 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <h2><a href="index.html"><div class="text">Home</div></a></h2><div class="search-box"><input type="text" placeholder="Search..." id="search-box" /><div class="search-item-container" id="search-item-container"><ul class="search-item-ul" id="search-item-ul"></ul></div></div><div class="sidebar-list-div"><h3>Classes</h3><ul><li><a href="EDO.html">EDO</a><ul class='methods'><li data-type='method'><a href="EDO.html#scale">scale</a></li></ul></li><li><a href="Scale.html">Scale</a><ul class='methods'><li data-type='method'><a href="Scale.html#complement">complement</a></li><li data-type='method'><a href="Scale.html#invert">invert</a></li><li data-type='method'><a href="Scale.html#mode">mode</a></li><li data-type='method'><a href="Scale.html#normal">normal</a></li><li data-type='method'><a href="Scale.html#prime">prime</a></li></ul></li><li><a href="Time.html">Time</a></li></ul><h3>Namespaces</h3><ul><li><a href="EDO_convert.html">EDO#convert</a><ul class='methods'><li data-type='method'><a href="EDO_convert.html#.cents_to_ratio">cents_to_ratio</a></li><li data-type='method'><a href="EDO_convert.html#.interval_to_cents">interval_to_cents</a></li><li data-type='method'><a href="EDO_convert.html#.interval_to_ratio">interval_to_ratio</a></li><li data-type='method'><a href="EDO_convert.html#.intervals_to_pitches">intervals_to_pitches</a></li><li data-type='method'><a href="EDO_convert.html#.intervals_to_scale">intervals_to_scale</a></li><li data-type='method'><a href="EDO_convert.html#.midi_to_freq">midi_to_freq</a></li><li data-type='method'><a href="EDO_convert.html#.midi_to_intervals">midi_to_intervals</a></li><li data-type='method'><a href="EDO_convert.html#.midi_to_name">midi_to_name</a></li><li data-type='method'><a href="EDO_convert.html#.name_to_scale">name_to_scale</a></li><li data-type='method'><a href="EDO_convert.html#.pc_to_name">pc_to_name</a></li><li data-type='method'><a href="EDO_convert.html#.pitches_to_PCs">pitches_to_PCs</a></li><li data-type='method'><a href="EDO_convert.html#.ratio_to_cents">ratio_to_cents</a></li><li data-type='method'><a href="EDO_convert.html#.ratio_to_interval">ratio_to_interval</a></li><li data-type='method'><a href="EDO_convert.html#.to_steps">to_steps</a></li></ul></li><li><a href="EDO_count.html">EDO#count</a><ul class='methods'><li data-type='method'><a href="EDO_count.html#.common_tones">common_tones</a></li><li data-type='method'><a href="EDO_count.html#.differences">differences</a></li><li data-type='method'><a href="EDO_count.html#.pitches">pitches</a></li></ul></li><li><a href="EDO_export.html">EDO#export</a><ul class='methods'><li data-type='method'><a href="EDO_export.html#.png">png</a></li></ul></li><li><a href="EDO_get.html">EDO#get</a><ul class='methods'><li data-type='method'><a href="EDO_get.html#.angle">angle</a></li><li data-type='method'><a href="EDO_get.html#.combinations">combinations</a></li><li data-type='method'><a href="EDO_get.html#.complementary_interval">complementary_interval</a></li><li data-type='method'><a href="EDO_get.html#.complementary_set">complementary_set</a></li><li data-type='method'><a href="EDO_get.html#.contour">contour</a></li><li data-type='method'><a href="EDO_get.html#.contour_motives">contour_motives</a></li><li data-type='method'><a href="EDO_get.html#.coordinates">coordinates</a></li><li data-type='method'><a href="EDO_get.html#.fill_partial_harp_pedaling">fill_partial_harp_pedaling</a></li><li data-type='method'><a href="EDO_get.html#.generated_scale">generated_scale</a></li><li data-type='method'><a href="EDO_get.html#.generators">generators</a></li><li data-type='method'><a href="EDO_get.html#.harmonic_progression">harmonic_progression</a></li><li data-type='method'><a href="EDO_get.html#.harmonized_melody">harmonized_melody</a></li><li data-type='method'><a href="EDO_get.html#.harp_pedals_to_pitches">harp_pedals_to_pitches</a></li><li data-type='method'><a href="EDO_get.html#.harp_position_of_quality">harp_position_of_quality</a></li><li data-type='method'><a href="EDO_get.html#.intersection">intersection</a></li><li data-type='method'><a href="EDO_get.html#.interval_stack">interval_stack</a></li><li data-type='method'><a href="EDO_get.html#.interval_traversed">interval_traversed</a></li><li data-type='method'><a href="EDO_get.html#.inversion">inversion</a></li><li data-type='method'><a href="EDO_get.html#.lattice">lattice</a></li><li data-type='method'><a href="EDO_get.html#.levenshtein">levenshtein</a></li><li data-type='method'><a href="EDO_get.html#.maximal_carey_coherence_failures">maximal_carey_coherence_failures</a></li><li data-type='method'><a href="EDO_get.html#.maximal_rahn_difference">maximal_rahn_difference</a></li><li data-type='method'><a href="EDO_get.html#.minimal_voice_leading">minimal_voice_leading</a></li><li data-type='method'><a href="EDO_get.html#.modes">modes</a></li><li data-type='method'><a href="EDO_get.html#.motives">motives</a></li><li data-type='method'><a href="EDO_get.html#.necklace">necklace</a></li><li data-type='method'><a href="EDO_get.html#.new_pitches">new_pitches</a></li><li data-type='method'><a href="EDO_get.html#.ngrams">ngrams</a></li><li data-type='method'><a href="EDO_get.html#.normal_order">normal_order</a></li><li data-type='method'><a href="EDO_get.html#.partitioned_subsets">partitioned_subsets</a></li><li data-type='method'><a href="EDO_get.html#.path_n_steps">path_n_steps</a></li><li data-type='method'><a href="EDO_get.html#.path_on_tree">path_on_tree</a></li><li data-type='method'><a href="EDO_get.html#.permutations">permutations</a></li><li data-type='method'><a href="EDO_get.html#.pitch_distribution">pitch_distribution</a></li><li data-type='method'><a href="EDO_get.html#.pitch_fields">pitch_fields</a></li><li data-type='method'><a href="EDO_get.html#.random_melody">random_melody</a></li><li data-type='method'><a href="EDO_get.html#.random_melody_from_contour">random_melody_from_contour</a></li><li data-type='method'><a href="EDO_get.html#.random_melody_from_distribution">random_melody_from_distribution</a></li><li data-type='method'><a href="EDO_get.html#.random_melody_from_ngram">random_melody_from_ngram</a></li><li data-type='method'><a href="EDO_get.html#.ratio_approximation">ratio_approximation</a></li><li data-type='method'><a href="EDO_get.html#.retrograde">retrograde</a></li><li data-type='method'><a href="EDO_get.html#.rotated">rotated</a></li><li data-type='method'><a href="EDO_get.html#.rotations">rotations</a></li><li data-type='method'><a href="EDO_get.html#.scalar_melodies">scalar_melodies</a></li><li data-type='method'><a href="EDO_get.html#.scales">scales</a></li><li data-type='method'><a href="EDO_get.html#.shortest_path">shortest_path</a></li><li data-type='method'><a href="EDO_get.html#.simple_ratios">simple_ratios</a></li><li data-type='method'><a href="EDO_get.html#.stacked">stacked</a></li><li data-type='method'><a href="EDO_get.html#.starting_at">starting_at</a></li><li data-type='method'><a href="EDO_get.html#.subset_indices">subset_indices</a></li><li data-type='method'><a href="EDO_get.html#.subsets">subsets</a></li><li data-type='method'><a href="EDO_get.html#.transposition">transposition</a></li><li data-type='method'><a href="EDO_get.html#.union">union</a></li><li data-type='method'><a href="EDO_get.html#.unique_elements">unique_elements</a></li><li data-type='method'><a href="EDO_get.html#.well_formed_scale">well_formed_scale</a></li><li data-type='method'><a href="EDO_get.html#.without">without</a></li><li data-type='method'><a href="EDO_get.html#.without_chromatic_notes">without_chromatic_notes</a></li></ul></li><li><a href="EDO_is.html">EDO#is</a><ul class='methods'><li data-type='method'><a href="EDO_is.html#.element_of">element_of</a></li><li data-type='method'><a href="EDO_is.html#.rotation">rotation</a></li><li data-type='method'><a href="EDO_is.html#.same">same</a></li><li data-type='method'><a href="EDO_is.html#.subset">subset</a></li><li data-type='method'><a href="EDO_is.html#.transposition">transposition</a></li></ul></li><li><a href="EDO_midi.html">EDO#midi</a><ul class='methods'><li data-type='method'><a href="EDO_midi.html#.chordify">chordify</a></li><li data-type='method'><a href="EDO_midi.html#.import">import</a></li><li data-type='method'><a href="EDO_midi.html#.strip">strip</a></li></ul></li><li><a href="EDO_show.html">EDO#show</a><ul class='methods'><li data-type='method'><a href="EDO_show.html#.contour">contour</a></li><li data-type='method'><a href="EDO_show.html#.interval_fractal_tree">interval_fractal_tree</a></li><li data-type='method'><a href="EDO_show.html#.necklace">necklace</a></li><li data-type='method'><a href="EDO_show.html#.necklace_fractal">necklace_fractal</a></li><li data-type='method'><a href="EDO_show.html#.nested_necklaces">nested_necklaces</a></li></ul></li><li><a href="EDO_xml.html">EDO#xml</a></li><li><a href="Scale_count.html">Scale#count</a><ul class='methods'><li data-type='method'><a href="Scale_count.html#.chord_quality">chord_quality</a></li><li data-type='method'><a href="Scale_count.html#.consecutive_steps">consecutive_steps</a></li><li data-type='method'><a href="Scale_count.html#.imperfections">imperfections</a></li><li data-type='method'><a href="Scale_count.html#.interval">interval</a></li><li data-type='method'><a href="Scale_count.html#.M3s">M3s</a></li><li data-type='method'><a href="Scale_count.html#.m3s">m3s</a></li><li data-type='method'><a href="Scale_count.html#.major_minor_triads">major_minor_triads</a></li><li data-type='method'><a href="Scale_count.html#.modes">modes</a></li><li data-type='method'><a href="Scale_count.html#.P5s">P5s</a></li><li data-type='method'><a href="Scale_count.html#.pitches">pitches</a></li><li data-type='method'><a href="Scale_count.html#.rahn_ambiguities">rahn_ambiguities</a></li><li data-type='method'><a href="Scale_count.html#.rahn_contradictions">rahn_contradictions</a></li><li data-type='method'><a href="Scale_count.html#.rahn_differences">rahn_differences</a></li><li data-type='method'><a href="Scale_count.html#.ratio">ratio</a></li><li data-type='method'><a href="Scale_count.html#.rotational_symmetries">rotational_symmetries</a></li><li data-type='method'><a href="Scale_count.html#.simple_ratios">simple_ratios</a></li><li data-type='method'><a href="Scale_count.html#.tetrachords">tetrachords</a></li><li data-type='method'><a href="Scale_count.html#.thirds">thirds</a></li><li data-type='method'><a href="Scale_count.html#.transpositions">transpositions</a></li><li data-type='method'><a href="Scale_count.html#.trichords">trichords</a></li><li data-type='method'><a href="Scale_count.html#.unique_elements">unique_elements</a></li></ul></li><li><a href="Scale_export.html">Scale#export</a><ul class='methods'><li data-type='method'><a href="Scale_export.html#.scala">scala</a></li></ul></li><li><a href="Scale_get.html">Scale#get</a><ul class='methods'><li data-type='method'><a href="Scale_get.html#.area">area</a></li><li data-type='method'><a href="Scale_get.html#.chord_quality_from_shape">chord_quality_from_shape</a></li><li data-type='method'><a href="Scale_get.html#.coherence_quotient">coherence_quotient</a></li><li data-type='method'><a href="Scale_get.html#.common_tone_transpositions">common_tone_transpositions</a></li><li data-type='method'><a href="Scale_get.html#.complement">complement</a></li><li data-type='method'><a href="Scale_get.html#.coordinates">coordinates</a></li><li data-type='method'><a href="Scale_get.html#.generic_intervals">generic_intervals</a></li><li data-type='method'><a href="Scale_get.html#.interval_class">interval_class</a></li><li data-type='method'><a href="Scale_get.html#.interval_vector">interval_vector</a></li><li data-type='method'><a href="Scale_get.html#.inversion">inversion</a></li><li data-type='method'><a href="Scale_get.html#.least_step_multiplier">least_step_multiplier</a></li><li data-type='method'><a href="Scale_get.html#.lerdahl_attraction">lerdahl_attraction</a></li><li data-type='method'><a href="Scale_get.html#.lerdahl_attraction_vector">lerdahl_attraction_vector</a></li><li data-type='method'><a href="Scale_get.html#.levenshtein">levenshtein</a></li><li data-type='method'><a href="Scale_get.html#.modes">modes</a></li><li data-type='method'><a href="Scale_get.html#.motives_diatonic">motives_diatonic</a></li><li data-type='method'><a href="Scale_get.html#.n_choose_k">n_choose_k</a></li><li data-type='method'><a href="Scale_get.html#.n_chords">n_chords</a></li><li data-type='method'><a href="Scale_get.html#.n_chords_diatonic">n_chords_diatonic</a></li><li data-type='method'><a href="Scale_get.html#.name">name</a></li><li data-type='method'><a href="Scale_get.html#.neighborhood">neighborhood</a></li><li data-type='method'><a href="Scale_get.html#.normal_order">normal_order</a></li><li data-type='method'><a href="Scale_get.html#.pairwise_generic_specific_intervals">pairwise_generic_specific_intervals</a></li><li data-type='method'><a href="Scale_get.html#.per_note_set_difference">per_note_set_difference</a></li><li data-type='method'><a href="Scale_get.html#.permutations">permutations</a></li><li data-type='method'><a href="Scale_get.html#.pitches">pitches</a></li><li data-type='method'><a href="Scale_get.html#.position_of_quality">position_of_quality</a></li><li data-type='method'><a href="Scale_get.html#.prime_form">prime_form</a></li><li data-type='method'><a href="Scale_get.html#.product">product</a></li><li data-type='method'><a href="Scale_get.html#.quality_with_intervals">quality_with_intervals</a></li><li data-type='method'><a href="Scale_get.html#.resize_melody">resize_melody</a></li><li data-type='method'><a href="Scale_get.html#.rotations">rotations</a></li><li data-type='method'><a href="Scale_get.html#.rothenberg_propriety">rothenberg_propriety</a></li><li data-type='method'><a href="Scale_get.html#.roughness">roughness</a></li><li data-type='method'><a href="Scale_get.html#.sameness_quotient">sameness_quotient</a></li><li data-type='method'><a href="Scale_get.html#.scale_degree_roles">scale_degree_roles</a></li><li data-type='method'><a href="Scale_get.html#.scale_degree_transpositions">scale_degree_transpositions</a></li><li data-type='method'><a href="Scale_get.html#.segments">segments</a></li><li data-type='method'><a href="Scale_get.html#.sequence_transposition">sequence_transposition</a></li><li data-type='method'><a href="Scale_get.html#.set_difference">set_difference</a></li><li data-type='method'><a href="Scale_get.html#.shortest_path">shortest_path</a></li><li data-type='method'><a href="Scale_get.html#.sine_pair_dissonance">sine_pair_dissonance</a></li><li data-type='method'><a href="Scale_get.html#.specific_intervals">specific_intervals</a></li><li data-type='method'><a href="Scale_get.html#.stacks">stacks</a></li><li data-type='method'><a href="Scale_get.html#.step_sizes">step_sizes</a></li><li data-type='method'><a href="Scale_get.html#.steps_to_qualities">steps_to_qualities</a></li><li data-type='method'><a href="Scale_get.html#.supersets">supersets</a></li><li data-type='method'><a href="Scale_get.html#.tetrachords">tetrachords</a></li><li data-type='method'><a href="Scale_get.html#.transposition">transposition</a></li><li data-type='method'><a href="Scale_get.html#.transpositions_with_pitches">transpositions_with_pitches</a></li><li data-type='method'><a href="Scale_get.html#.trichords">trichords</a></li><li data-type='method'><a href="Scale_get.html#.without">without</a></li></ul></li><li><a href="Scale_is.html">Scale#is</a><ul class='methods'><li data-type='method'><a href="Scale_is.html#.deep">deep</a></li><li data-type='method'><a href="Scale_is.html#.distributionally_even">distributionally_even</a></li><li data-type='method'><a href="Scale_is.html#.in_lower_edos">in_lower_edos</a></li><li data-type='method'><a href="Scale_is.html#.invertible">invertible</a></li><li data-type='method'><a href="Scale_is.html#.maximally_even">maximally_even</a></li><li data-type='method'><a href="Scale_is.html#.mode_of">mode_of</a></li><li data-type='method'><a href="Scale_is.html#.MOLT">MOLT</a></li><li data-type='method'><a href="Scale_is.html#.myhill_property">myhill_property</a></li><li data-type='method'><a href="Scale_is.html#.normal_order">normal_order</a></li><li data-type='method'><a href="Scale_is.html#.one_of">one_of</a></li><li data-type='method'><a href="Scale_is.html#.prime_form">prime_form</a></li><li data-type='method'><a href="Scale_is.html#.subset">subset</a></li></ul></li><li><a href="Scale_show.html">Scale#show</a><ul class='methods'><li data-type='method'><a href="Scale_show.html#.interval_fractal_tree">interval_fractal_tree</a></li><li data-type='method'><a href="Scale_show.html#.necklace">necklace</a></li></ul></li><li><a href="Scale_to.html">Scale#to</a><ul class='methods'><li data-type='method'><a href="Scale_to.html#.cents">cents</a></li><li data-type='method'><a href="Scale_to.html#.steps">steps</a></li></ul></li><li><a href="Time_convert.html">Time#convert</a><ul class='methods'><li data-type='method'><a href="Time_convert.html#.beats_to_msec">beats_to_msec</a></li><li data-type='method'><a href="Time_convert.html#.beats_to_ratios">beats_to_ratios</a></li><li data-type='method'><a href="Time_convert.html#.beats_to_tempo">beats_to_tempo</a></li></ul></li><li><a href="Time_get.html">Time#get</a><ul class='methods'><li data-type='method'><a href="Time_get.html#.beat">beat</a></li><li data-type='method'><a href="Time_get.html#.counterpoint_cycle">counterpoint_cycle</a></li><li data-type='method'><a href="Time_get.html#.explicit">explicit</a></li><li data-type='method'><a href="Time_get.html#.fractal">fractal</a></li><li data-type='method'><a href="Time_get.html#.motives">motives</a></li><li data-type='method'><a href="Time_get.html#.ratios">ratios</a></li><li data-type='method'><a href="Time_get.html#.relational_motives">relational_motives</a></li><li data-type='method'><a href="Time_get.html#.repeated">repeated</a></li><li data-type='method'><a href="Time_get.html#.subdivisions">subdivisions</a></li></ul></li><li><a href="Time_resize.html">Time#resize</a><ul class='methods'><li data-type='method'><a href="Time_resize.html#.by_product">by_product</a></li><li data-type='method'><a href="Time_resize.html#.by_sum">by_sum</a></li></ul></li></ul><h3><a href="global.html">Global</a></h3><ul><li><a href="global.html#environment">environment</a></li><li><a href="global.html#myhill_property">myhill_property</a></li></ul></div>
+    <h2><a href="index.html"><div class="text">Home</div></a></h2><div class="search-box"><input type="text" placeholder="Search..." id="search-box" /><div class="search-item-container" id="search-item-container"><ul class="search-item-ul" id="search-item-ul"></ul></div></div><div class="sidebar-list-div"><h3>Classes</h3><ul><li><a href="EDO.html">EDO</a><ul class='methods'><li data-type='method'><a href="EDO.html#scale">scale</a></li></ul></li><li><a href="Scale.html">Scale</a><ul class='methods'><li data-type='method'><a href="Scale.html#complement">complement</a></li><li data-type='method'><a href="Scale.html#invert">invert</a></li><li data-type='method'><a href="Scale.html#mode">mode</a></li><li data-type='method'><a href="Scale.html#normal">normal</a></li><li data-type='method'><a href="Scale.html#prime">prime</a></li></ul></li><li><a href="Time.html">Time</a></li></ul><h3>Namespaces</h3><ul><li><a href="EDO_convert.html">convert</a><ul class='methods'><li data-type='method'><a href="EDO_convert.html#.cents_to_ratio">cents_to_ratio</a></li><li data-type='method'><a href="EDO_convert.html#.interval_to_cents">interval_to_cents</a></li><li data-type='method'><a href="EDO_convert.html#.interval_to_ratio">interval_to_ratio</a></li><li data-type='method'><a href="EDO_convert.html#.intervals_to_pitches">intervals_to_pitches</a></li><li data-type='method'><a href="EDO_convert.html#.intervals_to_scale">intervals_to_scale</a></li><li data-type='method'><a href="EDO_convert.html#.midi_to_freq">midi_to_freq</a></li><li data-type='method'><a href="EDO_convert.html#.midi_to_intervals">midi_to_intervals</a></li><li data-type='method'><a href="EDO_convert.html#.midi_to_name">midi_to_name</a></li><li data-type='method'><a href="EDO_convert.html#.name_to_scale">name_to_scale</a></li><li data-type='method'><a href="EDO_convert.html#.pc_to_name">pc_to_name</a></li><li data-type='method'><a href="EDO_convert.html#.pitches_to_PCs">pitches_to_PCs</a></li><li data-type='method'><a href="EDO_convert.html#.ratio_to_cents">ratio_to_cents</a></li><li data-type='method'><a href="EDO_convert.html#.ratio_to_interval">ratio_to_interval</a></li><li data-type='method'><a href="EDO_convert.html#.to_steps">to_steps</a></li></ul></li><li><a href="EDO_count.html">count</a><ul class='methods'><li data-type='method'><a href="EDO_count.html#.common_tones">common_tones</a></li><li data-type='method'><a href="EDO_count.html#.differences">differences</a></li><li data-type='method'><a href="EDO_count.html#.pitches">pitches</a></li></ul></li><li><a href="EDO_export.html">export</a><ul class='methods'><li data-type='method'><a href="EDO_export.html#.png">png</a></li><li data-type='method'><a href="EDO_export.html#.svg">svg</a></li></ul></li><li><a href="EDO_get.html">get</a><ul class='methods'><li data-type='method'><a href="EDO_get.html#.angle">angle</a></li><li data-type='method'><a href="EDO_get.html#.best_edo_from_cents">best_edo_from_cents</a></li><li data-type='method'><a href="EDO_get.html#.combinations">combinations</a></li><li data-type='method'><a href="EDO_get.html#.complementary_interval">complementary_interval</a></li><li data-type='method'><a href="EDO_get.html#.complementary_set">complementary_set</a></li><li data-type='method'><a href="EDO_get.html#.contour">contour</a></li><li data-type='method'><a href="EDO_get.html#.contour_motives">contour_motives</a></li><li data-type='method'><a href="EDO_get.html#.coordinates">coordinates</a></li><li data-type='method'><a href="EDO_get.html#.fill_partial_harp_pedaling">fill_partial_harp_pedaling</a></li><li data-type='method'><a href="EDO_get.html#.generated_scale">generated_scale</a></li><li data-type='method'><a href="EDO_get.html#.generators">generators</a></li><li data-type='method'><a href="EDO_get.html#.harmonic_progression">harmonic_progression</a></li><li data-type='method'><a href="EDO_get.html#.harmonized_melody">harmonized_melody</a></li><li data-type='method'><a href="EDO_get.html#.harp_pedals_to_pitches">harp_pedals_to_pitches</a></li><li data-type='method'><a href="EDO_get.html#.harp_position_of_quality">harp_position_of_quality</a></li><li data-type='method'><a href="EDO_get.html#.intersection">intersection</a></li><li data-type='method'><a href="EDO_get.html#.interval_stack">interval_stack</a></li><li data-type='method'><a href="EDO_get.html#.interval_traversed">interval_traversed</a></li><li data-type='method'><a href="EDO_get.html#.inversion">inversion</a></li><li data-type='method'><a href="EDO_get.html#.lattice">lattice</a></li><li data-type='method'><a href="EDO_get.html#.levenshtein">levenshtein</a></li><li data-type='method'><a href="EDO_get.html#.maximal_carey_coherence_failures">maximal_carey_coherence_failures</a></li><li data-type='method'><a href="EDO_get.html#.maximal_rahn_difference">maximal_rahn_difference</a></li><li data-type='method'><a href="EDO_get.html#.minimal_voice_leading">minimal_voice_leading</a></li><li data-type='method'><a href="EDO_get.html#.modes">modes</a></li><li data-type='method'><a href="EDO_get.html#.motives">motives</a></li><li data-type='method'><a href="EDO_get.html#.n_choose_k">n_choose_k</a></li><li data-type='method'><a href="EDO_get.html#.necklace">necklace</a></li><li data-type='method'><a href="EDO_get.html#.new_pitches">new_pitches</a></li><li data-type='method'><a href="EDO_get.html#.ngrams">ngrams</a></li><li data-type='method'><a href="EDO_get.html#.normal_order">normal_order</a></li><li data-type='method'><a href="EDO_get.html#.notes_from_cents">notes_from_cents</a></li><li data-type='method'><a href="EDO_get.html#.partitioned_subsets">partitioned_subsets</a></li><li data-type='method'><a href="EDO_get.html#.path_n_steps">path_n_steps</a></li><li data-type='method'><a href="EDO_get.html#.path_on_tree">path_on_tree</a></li><li data-type='method'><a href="EDO_get.html#.permutations">permutations</a></li><li data-type='method'><a href="EDO_get.html#.pitch_distribution">pitch_distribution</a></li><li data-type='method'><a href="EDO_get.html#.pitch_fields">pitch_fields</a></li><li data-type='method'><a href="EDO_get.html#.random_melody">random_melody</a></li><li data-type='method'><a href="EDO_get.html#.random_melody_from_contour">random_melody_from_contour</a></li><li data-type='method'><a href="EDO_get.html#.random_melody_from_distribution">random_melody_from_distribution</a></li><li data-type='method'><a href="EDO_get.html#.random_melody_from_ngram">random_melody_from_ngram</a></li><li data-type='method'><a href="EDO_get.html#.ratio_approximation">ratio_approximation</a></li><li data-type='method'><a href="EDO_get.html#.retrograde">retrograde</a></li><li data-type='method'><a href="EDO_get.html#.rotated">rotated</a></li><li data-type='method'><a href="EDO_get.html#.rotations">rotations</a></li><li data-type='method'><a href="EDO_get.html#.scalar_melodies">scalar_melodies</a></li><li data-type='method'><a href="EDO_get.html#.scales">scales</a></li><li data-type='method'><a href="EDO_get.html#.shortest_path">shortest_path</a></li><li data-type='method'><a href="EDO_get.html#.simple_ratios">simple_ratios</a></li><li data-type='method'><a href="EDO_get.html#.stacked">stacked</a></li><li data-type='method'><a href="EDO_get.html#.starting_at">starting_at</a></li><li data-type='method'><a href="EDO_get.html#.subset_indices">subset_indices</a></li><li data-type='method'><a href="EDO_get.html#.subsets">subsets</a></li><li data-type='method'><a href="EDO_get.html#.transposition">transposition</a></li><li data-type='method'><a href="EDO_get.html#.union">union</a></li><li data-type='method'><a href="EDO_get.html#.unique_elements">unique_elements</a></li><li data-type='method'><a href="EDO_get.html#.well_formed_scale">well_formed_scale</a></li><li data-type='method'><a href="EDO_get.html#.without">without</a></li><li data-type='method'><a href="EDO_get.html#.without_chromatic_notes">without_chromatic_notes</a></li></ul></li><li><a href="EDO_is.html">is</a><ul class='methods'><li data-type='method'><a href="EDO_is.html#.element_of">element_of</a></li><li data-type='method'><a href="EDO_is.html#.rotation">rotation</a></li><li data-type='method'><a href="EDO_is.html#.same">same</a></li><li data-type='method'><a href="EDO_is.html#.subset">subset</a></li><li data-type='method'><a href="EDO_is.html#.transposition">transposition</a></li></ul></li><li><a href="EDO_midi.html">midi</a><ul class='methods'><li data-type='method'><a href="EDO_midi.html#.chordify">chordify</a></li><li data-type='method'><a href="EDO_midi.html#.import">import</a></li><li data-type='method'><a href="EDO_midi.html#.strip">strip</a></li></ul></li><li><a href="EDO_show.html">show</a><ul class='methods'><li data-type='method'><a href="EDO_show.html#.contour">contour</a></li><li data-type='method'><a href="EDO_show.html#.interval_fractal_tree">interval_fractal_tree</a></li><li data-type='method'><a href="EDO_show.html#.necklace">necklace</a></li><li data-type='method'><a href="EDO_show.html#.necklace_fractal">necklace_fractal</a></li><li data-type='method'><a href="EDO_show.html#.nested_necklaces">nested_necklaces</a></li></ul></li><li><a href="EDO_xml.html">xml</a></li><li><a href="Scale_count.html">count</a><ul class='methods'><li data-type='method'><a href="Scale_count.html#.chord_quality">chord_quality</a></li><li data-type='method'><a href="Scale_count.html#.consecutive_steps">consecutive_steps</a></li><li data-type='method'><a href="Scale_count.html#.imperfections">imperfections</a></li><li data-type='method'><a href="Scale_count.html#.interval">interval</a></li><li data-type='method'><a href="Scale_count.html#.M3s">M3s</a></li><li data-type='method'><a href="Scale_count.html#.m3s">m3s</a></li><li data-type='method'><a href="Scale_count.html#.major_minor_triads">major_minor_triads</a></li><li data-type='method'><a href="Scale_count.html#.modes">modes</a></li><li data-type='method'><a href="Scale_count.html#.n_chords">n_chords</a></li><li data-type='method'><a href="Scale_count.html#.P5s">P5s</a></li><li data-type='method'><a href="Scale_count.html#.pitches">pitches</a></li><li data-type='method'><a href="Scale_count.html#.rahn_ambiguities">rahn_ambiguities</a></li><li data-type='method'><a href="Scale_count.html#.rahn_contradictions">rahn_contradictions</a></li><li data-type='method'><a href="Scale_count.html#.rahn_differences">rahn_differences</a></li><li data-type='method'><a href="Scale_count.html#.ratio">ratio</a></li><li data-type='method'><a href="Scale_count.html#.rotational_symmetries">rotational_symmetries</a></li><li data-type='method'><a href="Scale_count.html#.simple_ratios">simple_ratios</a></li><li data-type='method'><a href="Scale_count.html#.tetrachords">tetrachords</a></li><li data-type='method'><a href="Scale_count.html#.thirds">thirds</a></li><li data-type='method'><a href="Scale_count.html#.transpositions">transpositions</a></li><li data-type='method'><a href="Scale_count.html#.trichords">trichords</a></li><li data-type='method'><a href="Scale_count.html#.unique_elements">unique_elements</a></li></ul></li><li><a href="Scale_export.html">export</a><ul class='methods'><li data-type='method'><a href="Scale_export.html#.scala">scala</a></li></ul></li><li><a href="Scale_get.html">get</a><ul class='methods'><li data-type='method'><a href="Scale_get.html#.area">area</a></li><li data-type='method'><a href="Scale_get.html#.chord_quality_from_shape">chord_quality_from_shape</a></li><li data-type='method'><a href="Scale_get.html#.coherence_quotient">coherence_quotient</a></li><li data-type='method'><a href="Scale_get.html#.common_tone_transpositions">common_tone_transpositions</a></li><li data-type='method'><a href="Scale_get.html#.complement">complement</a></li><li data-type='method'><a href="Scale_get.html#.coordinates">coordinates</a></li><li data-type='method'><a href="Scale_get.html#.diagnostic_intervals">diagnostic_intervals</a></li><li data-type='method'><a href="Scale_get.html#.generic_intervals">generic_intervals</a></li><li data-type='method'><a href="Scale_get.html#.interval_class">interval_class</a></li><li data-type='method'><a href="Scale_get.html#.interval_vector">interval_vector</a></li><li data-type='method'><a href="Scale_get.html#.inversion">inversion</a></li><li data-type='method'><a href="Scale_get.html#.least_step_multiplier">least_step_multiplier</a></li><li data-type='method'><a href="Scale_get.html#.lerdahl_attraction">lerdahl_attraction</a></li><li data-type='method'><a href="Scale_get.html#.lerdahl_attraction_vector">lerdahl_attraction_vector</a></li><li data-type='method'><a href="Scale_get.html#.levenshtein">levenshtein</a></li><li data-type='method'><a href="Scale_get.html#.melody_from_intervals">melody_from_intervals</a></li><li data-type='method'><a href="Scale_get.html#.modes">modes</a></li><li data-type='method'><a href="Scale_get.html#.motives_diatonic">motives_diatonic</a></li><li data-type='method'><a href="Scale_get.html#.n_chords">n_chords</a></li><li data-type='method'><a href="Scale_get.html#.n_chords_diatonic">n_chords_diatonic</a></li><li data-type='method'><a href="Scale_get.html#.name">name</a></li><li data-type='method'><a href="Scale_get.html#.neighborhood">neighborhood</a></li><li data-type='method'><a href="Scale_get.html#.normal_order">normal_order</a></li><li data-type='method'><a href="Scale_get.html#.pairwise_generic_specific_intervals">pairwise_generic_specific_intervals</a></li><li data-type='method'><a href="Scale_get.html#.per_note_set_difference">per_note_set_difference</a></li><li data-type='method'><a href="Scale_get.html#.permutations">permutations</a></li><li data-type='method'><a href="Scale_get.html#.pitches">pitches</a></li><li data-type='method'><a href="Scale_get.html#.position_of_quality">position_of_quality</a></li><li data-type='method'><a href="Scale_get.html#.prime_form">prime_form</a></li><li data-type='method'><a href="Scale_get.html#.product">product</a></li><li data-type='method'><a href="Scale_get.html#.quality_with_intervals">quality_with_intervals</a></li><li data-type='method'><a href="Scale_get.html#.resize_melody">resize_melody</a></li><li data-type='method'><a href="Scale_get.html#.rotations">rotations</a></li><li data-type='method'><a href="Scale_get.html#.rothenberg_propriety">rothenberg_propriety</a></li><li data-type='method'><a href="Scale_get.html#.roughness">roughness</a></li><li data-type='method'><a href="Scale_get.html#.sameness_quotient">sameness_quotient</a></li><li data-type='method'><a href="Scale_get.html#.scale_degree_roles">scale_degree_roles</a></li><li data-type='method'><a href="Scale_get.html#.scale_degree_transpositions">scale_degree_transpositions</a></li><li data-type='method'><a href="Scale_get.html#.segments">segments</a></li><li data-type='method'><a href="Scale_get.html#.sequence_transposition">sequence_transposition</a></li><li data-type='method'><a href="Scale_get.html#.set_difference">set_difference</a></li><li data-type='method'><a href="Scale_get.html#.shortest_path">shortest_path</a></li><li data-type='method'><a href="Scale_get.html#.sine_pair_dissonance">sine_pair_dissonance</a></li><li data-type='method'><a href="Scale_get.html#.specific_intervals">specific_intervals</a></li><li data-type='method'><a href="Scale_get.html#.stacks">stacks</a></li><li data-type='method'><a href="Scale_get.html#.step_sizes">step_sizes</a></li><li data-type='method'><a href="Scale_get.html#.steps_to_qualities">steps_to_qualities</a></li><li data-type='method'><a href="Scale_get.html#.supersets">supersets</a></li><li data-type='method'><a href="Scale_get.html#.tetrachords">tetrachords</a></li><li data-type='method'><a href="Scale_get.html#.transposition">transposition</a></li><li data-type='method'><a href="Scale_get.html#.transpositions_with_pitches">transpositions_with_pitches</a></li><li data-type='method'><a href="Scale_get.html#.trichords">trichords</a></li><li data-type='method'><a href="Scale_get.html#.without">without</a></li></ul></li><li><a href="Scale_is.html">is</a><ul class='methods'><li data-type='method'><a href="Scale_is.html#.deep">deep</a></li><li data-type='method'><a href="Scale_is.html#.distributionally_even">distributionally_even</a></li><li data-type='method'><a href="Scale_is.html#.in_lower_edos">in_lower_edos</a></li><li data-type='method'><a href="Scale_is.html#.invertible">invertible</a></li><li data-type='method'><a href="Scale_is.html#.maximally_even">maximally_even</a></li><li data-type='method'><a href="Scale_is.html#.mode_of">mode_of</a></li><li data-type='method'><a href="Scale_is.html#.MOLT">MOLT</a></li><li data-type='method'><a href="Scale_is.html#.myhill_property">myhill_property</a></li><li data-type='method'><a href="Scale_is.html#.normal_order">normal_order</a></li><li data-type='method'><a href="Scale_is.html#.one_of">one_of</a></li><li data-type='method'><a href="Scale_is.html#.prime_form">prime_form</a></li><li data-type='method'><a href="Scale_is.html#.subset">subset</a></li></ul></li><li><a href="Scale_show.html">show</a><ul class='methods'><li data-type='method'><a href="Scale_show.html#.interval_fractal_tree">interval_fractal_tree</a></li><li data-type='method'><a href="Scale_show.html#.necklace">necklace</a></li></ul></li><li><a href="Scale_to.html">to</a><ul class='methods'><li data-type='method'><a href="Scale_to.html#.cents">cents</a></li><li data-type='method'><a href="Scale_to.html#.steps">steps</a></li></ul></li><li><a href="Time_convert.html">convert</a><ul class='methods'><li data-type='method'><a href="Time_convert.html#.beats_to_msec">beats_to_msec</a></li><li data-type='method'><a href="Time_convert.html#.beats_to_ratios">beats_to_ratios</a></li><li data-type='method'><a href="Time_convert.html#.beats_to_tempo">beats_to_tempo</a></li></ul></li><li><a href="Time_get.html">get</a><ul class='methods'><li data-type='method'><a href="Time_get.html#.beat">beat</a></li><li data-type='method'><a href="Time_get.html#.counterpoint_cycle">counterpoint_cycle</a></li><li data-type='method'><a href="Time_get.html#.explicit">explicit</a></li><li data-type='method'><a href="Time_get.html#.fractal">fractal</a></li><li data-type='method'><a href="Time_get.html#.motives">motives</a></li><li data-type='method'><a href="Time_get.html#.ratios">ratios</a></li><li data-type='method'><a href="Time_get.html#.relational_motives">relational_motives</a></li><li data-type='method'><a href="Time_get.html#.repeated">repeated</a></li><li data-type='method'><a href="Time_get.html#.subdivisions">subdivisions</a></li></ul></li><li><a href="Time_resize.html">resize</a><ul class='methods'><li data-type='method'><a href="Time_resize.html#.by_product">by_product</a></li><li data-type='method'><a href="Time_resize.html#.by_sum">by_sum</a></li></ul></li></ul><h3><a href="global.html">Global</a></h3><ul><li><a href="global.html#myhill_property">myhill_property</a></li></ul></div>
 </nav>
 
 <div id="main">
     
-    <h1 class="page-title">edo.js</h1>
+    <h1 id='page-title' class="page-title">edo.js</h1>
     
 
     
@@ -57,27 +53,7 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>/**
- * @author Michael Seltenreich &lt;seltenmusic@gmail.com>
- * @version 1.2.0
- * @license
- * &lt;pre>Copyright 2020 Michael Seltenreich
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.&lt;/pre>*/
-
-
-
-const environment = (typeof window === 'undefined') ? "server" : "browser"
+            <pre class="prettyprint source linenums"><code>const environment = (typeof window === 'undefined') ? "server" : "browser"
 
 let fs, parseXML, midiParser
 if (environment == 'server') {
@@ -417,7 +393,8 @@ class EDO {
     }
 
     /**
-     * Returns a new Scale Object with given pitches
+     * &lt;p>Returns a new Scale Object with given pitches&lt;/p>
+     * &lt;p>Remark: "pitch classes" conform to the current tuning system used. 0-11 in 12EDO, 0-16 in 17EDO, etc.&lt;/p>
      * @param  {Array&lt;Number>} pitches - a collection of pitch classes
      * @return {Scale}
      */
@@ -489,7 +466,45 @@ class EDO {
          * edo.convert.cents_to_ratio(700)
          * // returns 1.4983070768766815*/
         cents_to_ratio: (cents) => {
+            if(Array.isArray(cents)) {
+                return cents.map(e=>this.convert.cents_to_ratio(e))
+            }
             return Math.pow(2, cents / 1200)
+        },
+
+        cents_to_simple_ratio: (cents,limit=17) => {
+            if(Array.isArray(cents)) return cents.map(c=>this.convert.cents_to_simple_ratio(c,limit))
+            cents = this.mod(cents,1200)
+            if(cents==0) {
+                return   {
+                    cents: 0,
+                    cents_in_octave: 0,
+                    value: 1,
+                    diff_in_octave: 0,
+                    ratio: '1/1',
+                    original: 0
+                }
+            }
+
+            let SR = this.get.simple_ratios(limit,true)
+            let min
+            for (let key of Object.keys(SR)) {
+
+                if(min) {
+                    let diff_in_octave = Math.abs(SR[key].cents_in_octave-cents)
+                    let diff_min = Math.abs(SR[min].cents_in_octave-cents)
+                    if(diff_in_octave&lt;diff_min) min = key
+                } else min = key
+
+
+
+            }
+            SR[min].diff_in_octave = cents-SR[min].cents_in_octave
+            SR[min].ratio = min
+            SR[min].original = cents
+            return SR[min]
+
+
         },
 
         /** Returns a value in cents from a given interval
@@ -500,7 +515,7 @@ class EDO {
          * @example
          * let edo = new EDO(17) // define a tuning with 17 divisions of the octave
          * edo.convert.interval_to_cents(6)
-         * //returns 423.5294117647059*/
+         * //returns 600*/
         interval_to_cents: (interval) => {
             return this.cents_per_step * interval
         },
@@ -549,8 +564,8 @@ class EDO {
             return pitches
         },
 
-        /** Gets a list of intervals classes. Returns a scale as list of pitch classes.
-         *
+        /** &lt;p>Gets a series of intervallic units . Returns a scale as list of pitch classes&lt;/p>
+         *&lt;p>Remark: "pitch classes" conform to the current tuning system used. 0-11 in 12EDO, 0-16 in 17EDO, etc.&lt;/p>
          * @param  {Array&lt;Number>} intervals - A list of intervals
          * @example
          * let edo = new EDO(12) // define a tuning system with 12 divisions of the octave
@@ -562,9 +577,10 @@ class EDO {
             let pcs = [0]
 
             intervals.forEach((interval) => {
-                pcs.push(interval + pcs[pcs.length - 1])
+                pcs.push((interval + pcs[pcs.length - 1]))
             })
-            return pcs
+
+            return this.scale(pcs).pitches
         },
 
         /** Given a list of midi notes, returns a list of intervals
@@ -660,7 +676,7 @@ class EDO {
          * @memberOf EDO#convert
          * @example
          * let edo = new EDO(12) // define a tuning system with 12 divisions of the octave
-         * edo.convert.midi_to_name(4)
+         * edo.convert.pc_to_name(4)
          * //returns "E"
          * */
         pc_to_name: (pc) => {
@@ -681,10 +697,11 @@ class EDO {
             }
             if (this.edo != 12) return pc
             if(Array.isArray(pc)) return pc.map(p=>this.convert.pc_to_name(p))
-            return PC[pc]
+            return PC[pc].trim()
         },
 
-        /** Normalizes any input to include PC only (to ignore octave displacement)
+        /** &lt;p>Normalizes any input to include pitch-classes only (to ignore octave displacement)&lt;/p>
+         * &lt;p>Remark: "pitch classes" conform to the current tuning system used. 0-11 in 12EDO, 0-16 in 17EDO, etc.&lt;/p>
          * @param  {Array&lt;Number>} pitches - any collection of pitches (e.g. a melody)
          * @returns {Array&lt;Number>} the input as pitch classes
          * @memberOf EDO#convert
@@ -710,11 +727,11 @@ class EDO {
             return 1200 * Math.log2(ratio)
         },
 
-        /** Returns all of the IC in the EDO that equal to a given ratio (with a given tolerance in cents)
-         *
+        /** &lt;p>Returns all of the intervallic units in the EDO that equal to a given ratio (with a given tolerance in cents)&lt;/p>
+         *&lt;p>Remark: "intervallic units" conform to the current tuning system used. E.g., 0-11 occupy 1 octave in 12EDO, 0-16 in 17EDO, etc.&lt;/p>
          * @param  {Number} ratio - A harmonic ratio
          * @param  {Number} [tolerance=10] - a tolerance (allowed error) in cents
-         * @returns {Array&lt;Number>} Interval classes that fit that ratio
+         * @returns {Array&lt;Number>} Intervals that fit that ratio
          * @memberOf EDO#convert
          * @example
          * let edo = new EDO(12) // define a tuning system
@@ -766,6 +783,7 @@ class EDO {
     count = {
         /**
          * Returns the number of commons tones between two collections of pitches
+         * &lt;p>Remark: "pitches" conform to the current tuning system used. E.g., 0-11 occupy 1 octave in 12EDO, 0-16 in 17EDO, etc.&lt;/p>
          * @param  {Array&lt;Number>} list1 - a collection of pitches (not necessarily pitch classes)
          * @param  {Array&lt;Number>} list2 - a collection of pitches (not necessarily pitch classes)
          * @return {Number} The number of common tones between the two lists
@@ -910,6 +928,20 @@ class EDO {
         },
 
 
+        /**
+         * &lt;p>Downloads / saves an SVG file with the contents of a container&lt;/p>
+         * &lt;p>Note: all of the graphics made with this library create SVG elements, so just pass the same ID that you used to create the graphic in the first place&lt;/p>
+         *
+         * @param  {String} container_id - The ID of a container that has one or more SVG elements in it.
+         * @memberOf EDO#export
+         * @example
+         *  let edo = new EDO()
+         *  //Create a necklace graphic
+         *  edo.show.necklace('container', [0,2,4,5,7,9,11])
+         *
+         *  //Save the graphic
+         *  edo.export.svg('container') //downloads the necklace
+         */
         svg: (container_id) => {
             if (environment == "server") return console.log("This is only support when run on client-side")
             let el = document.getElementById(container_id)
@@ -933,7 +965,7 @@ class EDO {
         /** &lt;p>Returns the angle created on the necklace for a given trichord.&lt;/p>
          *
          * &lt;p>If &lt;code>a&lt;/code>, &lt;code>b&lt;/code>, and &lt;code>c&lt;/code>, are vertices of a triangle (trichord) on a necklace. This function returns the angle &lt;code>abc&lt;/code>. That is, the angle node b has with a and c.&lt;/p>
-         * @param  {Array&lt;Number>} triplet - a triplet/trichord of 3 numbers (pitch classes)
+         * @param  {Array&lt;Number>} triplet - a triplet/trichord of 3 numbers (intervallic units)
          * @returns {Number} the angle in degrees
          * @memberOf EDO#get
          * @example
@@ -949,6 +981,36 @@ class EDO {
             return ((180-diff1/12*360)/2) + ((180-diff2/12*360)/2)
         },
 
+        /** &lt;p>Given an array of scale degrees in cents, returns a Scale Object in the edo that best describes the pitches.&lt;/p>
+         *
+         * &lt;p>If &lt;code>a&lt;/code>, &lt;code>b&lt;/code>, and &lt;code>c&lt;/code>, are vertices of a triangle (trichord) on a necklace. This function returns the angle &lt;code>abc&lt;/code>. That is, the angle node b has with a and c.&lt;/p>
+         * @param  {Array&lt;Number>} scale_in_cents - The scale in question represented in cents
+         * @param  {Number} begin_edo - The smallest EDO to consider
+         * @param  {Number} end_edo - The largest EDO to consider
+         * @returns {Scale} A scale in the best fitting EDO
+         * @memberOf EDO#get
+         * @example
+         * let edo = new EDO() // define a tuning system
+         * edo.get.best_edo_from_cents([0,200,350,500,700,900,1100])
+         * //returns the Scale Object [0,4,7,10,14,18,22] in a 24EDO context
+         */
+        best_edo_from_cents: (scale_in_cents,begin_edo=scale_in_cents.length+2,end_edo=24) => {
+            let cents = scale_in_cents
+            let diff = Infinity
+            let min_edo = Infinity
+            for (let i = begin_edo; i &lt;= end_edo; i++) {
+                let ed = new EDO(i)
+                let edo_app = ed.get.notes_from_cents(cents)
+                let edo_diff = edo_app.reduce((ag,e)=>ag+Math.abs(e.diff),0)
+                if (edo_diff&lt;diff) {
+                    diff = edo_diff
+                    min_edo = i
+                }
+            }
+            let win_edo = new EDO(min_edo)
+            return win_edo.scale(win_edo.get.notes_from_cents(cents).map(e=>e.note))
+        },
+
         /** Returns the [x,y] coordinates of the nodes of the given pitches.
          * pitch
          * @param  {Array&lt;Number> | Number} pitch - A pitch, or an array of pitches
@@ -962,10 +1024,11 @@ class EDO {
          * edo.get.coordinates([0,3,7]) //minor triad
          * //returns
          * [
-         *  [ 0, 0.56418958354776 ],
-         *  [ 0.5043836053298857, -0.25279846688265545 ],
-         *  [ 0.26388191608137657, -0.4986744635020088 ]
+         *  [0,0.56418958354776],
+         *  [0.56418958354776,3.454664838020213e-17],
+         *  [-0.2820947917738801,-0.48860251190292314]
          * ]
+         *
          */
         coordinates: (pitch,circle_center = [0,0],r=0.56418958354776	) => {
             if(Array.isArray(pitch)) return pitch.map(p=>this.get.coordinates(p,circle_center,r))
@@ -983,7 +1046,7 @@ class EDO {
          * either 1 if note n is higher than n-1, 0 if note n is the same as n-1, and -1 if note n is lower than n-1
          * For instance &lt;code>[0,0,4,7,4,7,4,0]&lt;/code> will in local mode will return &lt;code>[0,1,1,-1,1,-1,-1]&lt;/code>&lt;/p>
          *
-         * &lt;p>If local is set to false (default), the contour of the line is expressed such that the actual pc class of the
+         * &lt;p>If local is set to false (default), the contour of the line is expressed such that the actual pitch-class of the
          * note is removed but its relative position in regards to the entire line is kept.
          * &lt;code>[0,4,7,12,16,7,12,16]&lt;/code> (Bach prelude in C) has 5 distinct note heights, so it will return
          * &lt;code>[0,1,2,3, 4, 2,3, 4]&lt;/code> indicating the relative height of each note in the entire phrase&lt;/p>
@@ -1073,11 +1136,7 @@ class EDO {
          * @example
          * edo.get.combinations([1,3,5,7],2)
          * //returns
-         * [
-         *   { motive: [ -1, 1 ], incidence: 2 }, //going a half-step down, then up appears twice
-         *   { motive: [ -1 ], incidence: 2 }, //going a half-step down appears twice
-         *   { motive: [ 1 ], incidence: 2 } //going a half-step up appears twice
-         * ]
+         * [[1,3],[3,1],[1,5],[5,1],[1,7],[7,1],[3,5],[5,3],[3,7],[7,3],[5,7],[7,5]]
          */
         combinations: (set, k) => {
             let combs = this.get.n_choose_k(set,k)
@@ -1100,7 +1159,8 @@ class EDO {
             return this.edo - interval
         },
 
-        /** &lt;p>Returns all the PCs of the EDO that the scale does not use.&lt;/p>
+        /** &lt;p>Returns all the pitch-classes of the EDO that the scale does not use.&lt;/p>
+         * &lt;p>Remark: "pitch-classes" conform to the current tuning system used. E.g., 0-11 in 12EDO, 0-16 in 17EDO, etc.&lt;/p>
          * @param {boolean} [from_0=false] - when true, the output will be normalized to 0.
          * @returns {Array&lt;Number>}
          * @memberOf EDO#get
@@ -1165,7 +1225,7 @@ class EDO {
         },
 
         /** &lt;p>Returns a chord progression to harmonize a given melodies with given possible chord qualities.&lt;/p>
-         * @param {&lt;Array&lt;Number>} melody - The melody
+         * @param {Array&lt;Number>} melody - The melody
          * @param {Array&lt;Array&lt;Number>>} allowed_qualities - A list of allowed chord qualities (regardless of transposition)
          * @param {Array&lt;Number>} starting_chord - The first chord in the progression (using exact pitches and voicing)
          * @param {Number} [common_notes_min=1] - The minimal number of notes in common between every two succeeding chords in the progression.
@@ -1449,7 +1509,8 @@ class EDO {
 
 
 
-        /** &lt;p>Returns the interval-class between two pitch classes.&lt;/p>
+        /** &lt;p>Returns the interval between two pitch classes.&lt;/p>
+         * &lt;p>Remark: "pitch classes" conform to the current tuning system used. E.g., 0-11 in 12EDO, 0-16 in 17EDO, etc.&lt;/p>
          * @param {Number} PC1 - The first pitch class
          * @param {Number} PC2 - The second pitch class
          * @returns {Array&lt;Number>}
@@ -1468,7 +1529,7 @@ class EDO {
          * @param {Array} arr - An array with elements
          * @param {Number} k=2 - The number of elements in each returned permutation
          * @returns {Array&lt;Number>}
-         * @memberOf Scale#get
+         * @memberOf EDO#get
          * @example
          * edo.get.n_choose_k([1,3,5,7],k=3)
          * //returns [ [ 1, 3, 5 ], [ 1, 3, 7 ], [ 1, 5, 7 ], [ 3, 5, 7 ] ]
@@ -1489,6 +1550,40 @@ class EDO {
             return results
         },
 
+        /** &lt;p>Returns the closest approximation within the current EDO from a list of pitches in cents and the difference between the EDO version to the original in cents.&lt;/p>
+         * @param {Array&lt;Number>} cents - A list of pitches as cents
+         * @returns {Array&lt;Object>}
+         * @memberOf EDO#get
+         * @example
+         * edo.get.notes_from_cents([0,157,325,498,655,834,1027])
+         * //returns
+         * [
+         *  { note: 0, diff: 0 },
+         *  { note: 2, diff: 43 },
+         *  { note: 3, diff: -25 },
+         *  { note: 5, diff: 2 },
+         *  { note: 7, diff: 45 },
+         *  { note: 8, diff: -34 },
+         *  { note: 10, diff: -27 }
+         * ]
+         */
+        notes_from_cents: (cents=[]) => {
+            let step_in_cents = 1200/this.edo
+            cents = cents
+                .map(c=>this.mod(c,1200))
+                .map(c=>{
+                    let min = Math.floor(c/step_in_cents)
+                    let min_in_cents = min*step_in_cents
+                    let min_diff = c-min_in_cents
+                    let max = Math.ceil(c/step_in_cents)
+                    let max_in_cents = max*step_in_cents
+                    let max_diff = max_in_cents-c
+                    if(min_diff&lt;max_diff) return {note:min,diff:-min_diff}
+                    else return {note:max,diff:max_diff}
+                })
+            return cents
+        },
+
         /** &lt;p>Returns the ROUGHNESS OF SINE-PAIRS based on algorithm from Vassilakis, 2001 &amp; 2005 .&lt;/p>
          * @param {Number} freq1 - the frequency of the 1st sine
          * @param {Number} freq2 - the frequency of the 2nd sine
@@ -1497,7 +1592,7 @@ class EDO {
          * @returns {Number}
          * @memberOf Scale#get
          * @example
-         * edo.get.sine_pair_dissonance(440,475) //returns 0.17190984235878704
+         * edo.get.sine_pair_dissonance(440,475) //returns 0.08595492117939352
          * @see http://www.acousticslab.org/learnmoresra/moremodel.html
          * @see Vassilakis, P. (2001). "Auditory roughness estimation of complex spectra—Roughness degrees and dissonance ratings of harmonic intervals revisited." The journal of the Acoustical Society of America 110(5): 2755-2755.
          */
@@ -1507,14 +1602,14 @@ class EDO {
             const a_min = Math.min(amp1,amp2)
             const a_max = Math.max(amp1,amp2)
             const X = a_min*a_max
-            const Y = 2*a_min/(a_min+a_max)
+            const Y = (2*a_min)/(a_min+a_max)
             const b1 = 3.5
             const b2=5.75
             const s1 = 0.0207
             const s2 = 18.96
             const s = 0.24/(s1*f_min+s2)
             const Z = Math.pow(Math.E,-1*b1*s*(f_max-f_min)) - Math.pow(Math.E,(-1*b2*s*(f_max-f_min)))
-            const R = (X^0.1)*0.5*(Y^3.11)*Z
+            const R = Math.pow(X,0.1)*0.5*Math.pow(Y,3.11)*Z
             return R
 
         },
@@ -1605,7 +1700,7 @@ class EDO {
          */
         resize_melody: (melody, resize_by = 2, method = "multiply") => {
             let note1 = melody[0]
-            melody = edo.convert.to_steps(melody)
+            melody = this.convert.to_steps(melody)
             if (method == "add") {
                 melody = melody.map((interval) => {
                     if (interval > 0) return (interval + resize_by > 0) ? interval + resize_by : 0
@@ -1614,8 +1709,8 @@ class EDO {
                 })
             } else if (method == "multiply") melody = melody.map((interval) => Math.round(interval * resize_by))
 
-            melody = edo.convert.intervals_to_pitches(melody)
-            return edo.get.transposition(melody, note1, false)
+            melody = this.convert.intervals_to_pitches(melody)
+            return this.get.transposition(melody, note1, false)
 
 
         },
@@ -1792,13 +1887,13 @@ class EDO {
 
         /** Returns the inversion of a given set of pitches
          *
-         * @param  {Array&lt;Number>} scale - a collection of pitches (not necessarily PCs)
-         * @param  {Boolean} cache - if true, the result will be cached for faster retrival
+         * @param  {Array&lt;Number>} scale - a collection of pitches (not necessarily pitch-classes)
+         * @param  {Boolean} cache - if true, the result will be cached for faster retrieval
          * @return {Array&lt;Number>} The inverted input
          * @memberOf EDO#get
          * @example
          * let edo = new EDO(12) // define a tuning system
-         * edo.get.inversion([0,2,4,5,7,9,11])
+         * edo.get.inversion([0,2,4,5,7,9,11]) //univertable collection
          * //returns [0, 2,  4, 6, 7, 9, 11]*/
         inversion: (scale, cache = false) => {
 
@@ -1861,7 +1956,7 @@ class EDO {
          * @returns {Number}
          * @example
          * let edo = new EDO(12) //define tuning
-         * edo.get.levenshtein([0,2,4,7,9],[0,2,4,5,7,9,11]) //returns 1
+         * edo.get.levenshtein([0,2,4,7,9],[0,2,4,5,7,9,11]) //returns 2
          *
          * @example
          * edo.get.levenshtein([0,2,4,7,9],[0,2,4,5,7,9,11],true) //returns 0.9230769230769231
@@ -1918,7 +2013,7 @@ class EDO {
         //  *      E.g. If we consider C-E-G &lt;code>(0,4,7)&lt;/code>, E and G appear as overtones of C at lower positions than C and G appear as overtones of E, and C and E as overtones of G.&lt;/p>
         //  *      &lt;p>Note: a root can be highly dependent on context, therefore this algorithm at its current state cannot provide a decisive answer.&lt;/p>
         //  * @param  {Array&lt;Number>} pitches - a collection of pitch classes
-        //  * @param  {Array&lt;Number>} [limit=19] - The overtone limit by which PCs are approximated
+        //  * @param  {Array&lt;Number>} [limit=19] - The overtone limit by which pitch-classes are approximated
         //  * @return {Number} The pitch-class of the likely root.
         //  * @memberOf EDO#get
         //  * @example
@@ -2032,7 +2127,8 @@ class EDO {
         },
 
         /** Returns the normal order of a given set of pitches
-         * @param  {Array&lt;Number>} scale - a collection of PCs
+         * &lt;p>Remark: "intervallic units" conform to the current tuning system used. E.g., 0-11 in 12EDO, 0-16 in 17EDO, etc.&lt;/p>
+         * @param  {Array&lt;Number>} scale - a collection of pitch-classes
          * @param  {Boolean} cache - if true, the result will be cached for faster retrieval
          * @return {Array&lt;Array&lt;Number>>}
          * @memberOf EDO#get
@@ -2076,10 +2172,11 @@ class EDO {
 
         /**
          * &lt;p>Extracts every possible "motive" from a given melody.&lt;/p>
-         * &lt;p>A motive can be intervalic (default) such that it looks at the intervals rather than the pitch classes.
+         * &lt;p>A motive can be intervalic (default) such that it looks at the intervallic units rather than the pitch classes.
          * The function also keeps track of the number of times each motive appeared.&lt;/p>
+         * &lt;p>Remark: "intervals" conform to the current tuning system used. E.g., 0-11 occupy 1 octave in 12EDO, 0-16 in 17EDO, etc.&lt;/p>
          * @param  {Array&lt;Number>} melody - a collection of pitches to find (in order)
-         * @param  {Boolean} [intervalic=true] - looks at the intervals rather than the pitch classes.
+         * @param  {Boolean} [intervallic=true] - looks at the intervals rather than the pitch classes.
          * @param  {Boolean} [allow_skips=true] - if false, the search will only be done on consecutive items
          * @param  {Number} [maximal_length=8] - Do not look for motives longer than this value
          * @return {Array&lt;motives>}
@@ -2095,9 +2192,9 @@ class EDO {
          *   { motive: [ 1 ], incidence: 2 } //going a half-step up appears twice
          * ]
          */
-        motives: (melody, intervalic = true, allow_skips = false,maximal_length=8) => {
+        motives: (melody, intervallic = true, allow_skips = false,maximal_length=8) => {
             let motives = []
-            if (!intervalic) {
+            if (!intervallic) {
                 let all_subsets = this.get.unique_elements(this.get.subsets(melody, allow_skips).filter(s=>s.length&lt;=maximal_length))
                 all_subsets.forEach((subset) => {
                     let incidence = this.get.subset_indices(subset, melody, allow_skips).length
@@ -2124,6 +2221,7 @@ class EDO {
         },
 
         /** Returns all necklaces from a given set of steps
+         * &lt;p>Remark: "intervals" conform to the current tuning system used. E.g., 0-11 occupy 1 octave in 12EDO, 0-16 in 17EDO, etc.&lt;/p>
          * @param  {Array&lt;Number>} lst - a set of intervals
          * @return {Array&lt;Array&lt;Number>>} Necklaces
          * @memberOf EDO#get
@@ -2247,14 +2345,15 @@ class EDO {
         },
 
         /** Returns the normal order of a given set of pitches
-         * @param  {Array&lt;Number>} lst - a collection of PCs
+         * &lt;p>Remark: "pitch classes" conform to the current tuning system used. E.g., 0-11 in 12EDO, 0-16 in 17EDO, etc.&lt;/p>
+         * @param  {Array&lt;Number>} lst - a collection of pitch-classes
          * @param  {Boolean} cache - if true, the result will be cached for faster retrival
          * @return {Array&lt;Number>} The normal order of the input
          * @memberOf EDO#get
          * @example
          * let edo = new EDO(12) //Create a tuning context
          * edo.get.normal_order([0,2,4,5,7,9,11])
-         * //returns [0, 1, 2, 3, 5, 6, 8, 10]*/
+         * //returns [ 0, 1, 3, 5, 6, 8, 10 ]*/
         normal_order: (lst, cache = false) => {
             if (lst.length == 0) return []
             let edo = this.edo
@@ -2301,7 +2400,7 @@ class EDO {
             return result
         },
 
-        /** Returns the given pitches, stacked with the given intervals
+        /** Returns the given pitches, stacked using the given intervals
          * @param  {Array&lt;Number>} pitches - a collection of pitches
          * @param  {Array&lt;Number>} intervals - The intervals with which to stack
          * @param  {Boolean} transposed_to_0 - When true, the returned sets will be transposed to start from 0
@@ -2341,8 +2440,8 @@ class EDO {
         },
 
         /** Returns the elements of array1, but not if they are found in array 2
-         * @param  {Array&lt;Number>} array1 - a collection of PCs
-         * @param  {Array&lt;Number>} array2 - a collection of PCs
+         * @param  {Array&lt;Number>} array1 - a collection of numbers (pitch-classes, or anything for that matter)
+         * @param  {Array&lt;Number>} array2 - a collection of numbers (PCs or any)
          * @param  {Boolean} [normal=false] - when true, the returned set will be in normal order
          * @return {Array&lt;Number>} All of the elements of array1 that are not in array2
          * @memberOf EDO#get
@@ -2517,7 +2616,7 @@ class EDO {
         /** Returns the distribution (as fractions adding up to 1) of the pitches in a set of pitches
          *
          * @param  {Array&lt;Number>} pitches - a given array of pitches
-         * @param  {Boolean} as_PC - When true, the distribution tallies notes based on their PC rather than their absolute pitch.
+         * @param  {Boolean} as_PC - When true, the distribution tallies notes based on their pitch-class rather than their absolute pitch.
          * @returns {Array&lt;distribution>}
          * @memberOf EDO#get
          * @example
@@ -2537,8 +2636,9 @@ class EDO {
          * edo.get.pitch_distribution([0,12,0,12,7,0])
          * //returns
          * [
-         *  { note: 0, rate: 0.8333333333333334 },
-         *  { note: 7, rate: 0.16666666666666666 }
+         *  {"note": 0,"rate": 0.5},
+         *  {"note": 12,"rate": 0.3333333333333333},
+         *  {"note": 7,"rate": 0.16666666666666666}
          * ]
          *
          */
@@ -2557,7 +2657,7 @@ class EDO {
          *
          * @param  {Array&lt;Number>} pitches - a given array of pitches
          * @param  {Number} [size=8] - The size of the window.
-         * @param  {Boolean} [as_PC=true] - When true, notes that belong to the same PC will be counted as the same.
+         * @param  {Boolean} [as_PC=true] - When true, notes that belong to the same pitch-class will be counted as the same.
          * @param  {Boolean} [unique=false] - When true, the function does not count pitches if they are already in the window.
          * @param  {Boolean} [avoid_duplicate_windows=false] - When true, if two or more succeeding windows have the same content, the function will only return one of them.
          * @returns {Array&lt;Array&lt;Number>>}
@@ -2638,7 +2738,7 @@ class EDO {
          *
          * @param  {Number} [length=8] - The number of pitches in the melody
          * @param  {Array&lt;number>} [range=[0, 12]] - the lower and upper limits (inclusive) for the melody
-         * @param  {Number} [repetition_minimal_gap=0] - number of intervening notes before a note can repeat (the same PC across different octave is not considered the same note)
+         * @param  {Number} [repetition_minimal_gap=0] - number of intervening notes before a note can repeat (the same pitch-class across different octave is not considered the same note)
          * @param  {Array&lt;number>} [mode] - If mode is provided, the pitches returned will be only ones
          * that appear in the mode provided.
          * @param  {Number} [avoid_leaps_over=5] - The generator will attempt to avoid returning melodies that leap beyond the this IC.
@@ -2803,11 +2903,14 @@ class EDO {
          * @example
          * let edo = new EDO(12) // create a tuning context
          * edo.get.ratio_approximation(7)
-         * //returns { ratio: '3/2', cents_offset: -1.955000865387433, decimal: 1.5 }
+         * //returns {
+         *  "cents_offset": -1.955000865387433
+         *  "decimal": 1.5
+         *  "log_position": 0.5849625007211562
+         *  "octave": 1
+         *  "ratio": "3:2"
+         *  }
          *
-         * let edo = new EDO(17) // Notice this is 17 divisions
-         * console.log(edo.get.ratio_approximation(3))
-         * //returns {ratio: '17/15', cents_offset: -4.921988887832043, decimal: 1.1333333333333333}
          *
          */
         ratio_approximation: (interval, limit = 17) => {
@@ -2825,7 +2928,7 @@ class EDO {
                     numeric = ratios[ratio]['value']
                 }
             }
-            let num_den = closest_name.split('/')
+            let num_den = closest_name.split(':')
             let numerator = num_den[0]
             let denominator = num_den[1]
             return {
@@ -2838,8 +2941,8 @@ class EDO {
         },
 
         /** Returns the retrograde of a given set of pitches (their reversed order)
-         *
-         * @param  {Array&lt;Number>} scale - a collection of pitches (not necessarily PCs)
+         *&lt;p>Remark: "pitches" conform to the current tuning system used. E.g., 0-11 occupy 1 octave in 12EDO, 0-16 in 17EDO, etc.&lt;/p>
+         * @param  {Array&lt;Number>} scale - a collection of pitches (not necessarily pitch-classes)
          * @return {Array&lt;Number>} The reversed input
          * @memberOf EDO#get
          * @example
@@ -2852,14 +2955,14 @@ class EDO {
 
         /**
          * &lt;p>Returns a given collection of pitches, rotated n times.
-         * @param  {Array&lt;Number>} pitches - a collection of pitches (not necessarily PCs, not necessarily unique)
+         * @param  {Array&lt;Number>} pitches - a collection of numbers (not necessarily pitch-classes, not necessarily unique)
          * @param  {Number} n - Number of rotations
          * @return {Array&lt;Number>}
          * @memberOf EDO#get
          * @example
          * let edo = new EDO(12) // define a tuning system
-         * edo.get.rotations([0,2,4,5,7],2) //returns [4,5,7,0,2]
-         * edo.get.rotations([0,2,4,5,7],-1) //returns [7,0,2,4,5]
+         * edo.get.rotated([0,2,4,5,7],2) //returns [4,5,7,0,2]
+         * edo.get.rotated([0,2,4,5,7],-1) //returns [7,0,2,4,5]
          * */
         rotated: (pitches,n) => {
             n=this.mod(n,pitches.length)
@@ -2869,7 +2972,7 @@ class EDO {
 
         /**
          * &lt;p>Returns all the rotations (inversions) of an array of pitches&lt;/p>
-         * @param  {Array&lt;Number>} pitches - a collection of pitches (not necessarily PCs, not necessarily unique)
+         * @param  {Array&lt;Number>} pitches - a collection of numbers (not necessarily pitch-classes, not necessarily unique)
          * @return {Array&lt;Array&lt;Number>>}
          * @memberOf EDO#get
          * @example
@@ -2887,8 +2990,9 @@ class EDO {
 
         /**
          * &lt;p>Returns all the melodies that can be constructed without any leaps (regardless of how many notes in the melody need to be skipped until next scalar note is found)&lt;/p>
-         * @param  {Array&lt;Number>} melody - a collection of pitches (not necessarily PCs, not necessarily unique)
-         * @param  {Array&lt;Number>} [steps=[1,2]] - which PCs to consider as steps
+         * &lt;p>Remark: "intervallic units" conform to the current tuning system used. E.g., 0-11 occupy 1 octave in 12EDO, 0-16 in 17EDO, etc.&lt;/p>
+         * @param  {Array&lt;Number>} melody - a collection of pitches (not necessarily pitch-classes, not necessarily unique)
+         * @param  {Array&lt;Number>} [steps=[1,2]] - which intervallic units to consider as steps
          * @param  {Boolean} [look_back=true] - When true, the algorithm creates alternate paths to already resolves melodies. When false, resolved melodies will not be considered and a new path will begin.
          * @return {Array&lt;Object>} object with property &lt;code>pitch&lt;/code> indicating the pitch, and property &lt;code>index&lt;/code> representing its original position in the melody.
          * @memberOf EDO#get
@@ -2969,19 +3073,19 @@ class EDO {
         },
 
         /** Generates all possible necklaces (unique scales without their modes) based on input parameters.
-         *
+         *&lt;p>Remark: "intervallic units" / "step sizes" conform to the current tuning system used. E.g., 0-11 in 12EDO, 0-16 in 17EDO, etc.&lt;/p>
          * @param  {Number} min_step - The smallest step size that can be used to form scales. If min_step=3, no scale will contain
-         * intervals smaller than 3 (so no intervals of size 2, or 1 will be found in any scale)
+         * intervallic units smaller than 3 (so no intervals of size 2, or 1 will be found in any scale)
          * @param  {Number} max_step - The largest step that can be used to form scales. If max_step=3, no scale will contain
-         * intervals larger than 3 (so no intervals of size >3 will be found in any scale)
+         * intervallic units larger than 3 (so no intervals of size >3 will be found in any scale)
          * @param  {Number} min_sizes - The minimal amount of variety in step size needed to make a scale. if min_sizes=2,
-         * then scales with step sizes that belong to fewer than 2 interval classes will not be included.
+         * then scales with step sizes that belong to fewer than 2 intervallic units will not be included.
          *
          * In the case of min_sizes=2, the following scales will be excluded: [0,1,2,3,4,5,6,7,8,9,10,11],
          * [0,2,4,6,8,10], [0,3,6,9], etc.
          *
          * * @param  {Number} max_sizes - The maximal amount of variety in step size allowed to make a scale.
-         * if max_sizes=2, then scales that use more than 2 step sizes will be excluded.
+         * if max_sizes=2, then scales that use more than 2 unique step sizes will be excluded.
          *
          * In the case of max_sizes=2, the following scale will be excluded: [0,1,4,5,7,10,11], because it has >2 (3)
          * step sizes. step size=1 between 0 and 1, step size=2 between 5 and 7, and step size = 3 between 1 and 4.
@@ -3098,37 +3202,15 @@ class EDO {
          * &lt;p>Note: the order of the intervals is mutable and can be jumbled up at will without harming the
          * result. In the example given, as long as there are six 3s and two -7s. the sum will be -4. So
          * there is potential for permutations.&lt;/p>
-         *
+         *&lt;p>Remark: "intervallic units" conform to the current tuning system used. E.g., 0-11 occupy 1 octave in 12EDO, 0-16 in 17EDO, etc.&lt;/p>
          *
          * @param  {Number} destination - the destination note. This is an int that represents some interval away from 0.
-         * @param  {Array&lt;Number> | Number} intervals - the interval classes to be used (usually at least one positive interval to move up and one negative to move down)
+         * @param  {Array&lt;Number> | Number} intervals - the intervallic units to be used (usually at least one positive interval to move up and one negative to move down)
          * @return {Array&lt;Array&lt;Number>>} an sorted array of the intervals needed to reach the destination starting from 0.
          * @memberOf EDO#get
          * @example
          * //The quickest way to get to E (from 0) moving up with P5s and down with m3s
          * let path = edo.get.shortest_path(7,[5,-3]) // returns [ -3, 5, 5 ]
-         * let all = edo.get.permutations(path) //all permutation of the result
-         * //returns
-         * [
-         *  [ -3, 5, 5 ],
-         *  [ -3, 5, 5 ],
-         *  [ 5, -3, 5 ],
-         *  [ 5, 5, -3 ],
-         *  [ 5, -3, 5 ],
-         *  [ 5, 5, -3 ]
-         * ]
-         * all = all.map((path)=>edo.convert.intervals_to_pitches(path)) //convert the intervals into pitches
-         * let as_pitches = all.map((path)=>edo.convert.midi_to_name(path,60)) //convert the pitches into pitch names
-         * //returns
-         * [
-         *  [ 'C4', 'A3', 'D4', 'G4' ],
-         *  [ 'C4', 'A3', 'D4', 'G4' ],
-         *  [ 'C4', 'F4', 'D4', 'G4' ],
-         *  [ 'C4', 'F4', 'Bb4', 'G4' ],
-         *  [ 'C4', 'F4', 'D4', 'G4' ],
-         *  [ 'C4', 'F4', 'Bb4', 'G4' ]
-         * ]
-         *
          * */
         shortest_path: (destination, intervals = [5, -3], used = [], life_span = 10) => {
 
@@ -3182,14 +3264,15 @@ class EDO {
             for (let i = 2; i &lt; limit + 1; i++) {
                 for (let j = 1; j &lt; i; j++) {
                     if (((primes.indexOf(i) &lt; 0) &amp;&amp; (primes.indexOf(j) &lt; 0)) || (i % 2 == 0 &amp;&amp; j % 2 == 0) || (i % j == 0 &amp;&amp; j > 2)) continue
-                    ratios[String(i) + '/' + String(j)] = {cents: this.convert.ratio_to_cents(i / j), value: i / j}
+                    ratios[String(i) + ':' + String(j)] = {cents: this.convert.ratio_to_cents(i / j), cents_in_octave: this.mod(this.convert.ratio_to_cents(i / j),1200), value: i / j}
                 }
             }
             return ratios
         },
 
         /** Returns the given pitches, such that they are shifted to start from &lt;code>start_at&lt;/code>.
-         * @param  {Array&lt;Number>} pitches - an array of pitches (or PCs)
+         * &lt;p>Remark: "pitches" conform to the current tuning system used. E.g., 0-11 occupy 1 octave in 12EDO, 0-16 in 17EDO, etc.&lt;/p>
+         * @param  {Array&lt;Number>} pitches - an array of pitches (or pitch-classes)
          * @param  {Number} start_at - The number to which everything will be shifted
          * @param  {Boolean} [as_PCs=true] - when false the shift will respect the octave, when true, the array will be returned containing only Pitch Classes
          * @return {Array&lt;Number>}
@@ -3296,7 +3379,7 @@ class EDO {
         },
 
         /** Transposes the input by a given amount
-         *
+         *&lt;p>Remark: "a single octave" conform to the current tuning system used. E.g., 0-11 occupy 1 octave in 12EDO, 0-16 in 17EDO, etc.&lt;/p>
          * @param  {Array&lt;Number>} pitches - a given array of pitches
          * @param  {Number} [amount=0] - the interval by which to transpose
          * @param  {Boolean} [as_PC=true] - if true, the intervals returns will conform to a single octave
@@ -3321,7 +3404,7 @@ class EDO {
          * @example
          * let edo = new EDO(12) //Create a tuning context
          * edo.get.union([0,1,2],[3,4,5],[6])
-         * //returns [0,1,2,3,4,5]
+         * //returns [0,1,2,3,4,5,6]
          */
         union: (...collections) => {
             let union = []
@@ -3369,7 +3452,7 @@ class EDO {
          * let edo = new EDO(12) //Create a tuning context
          * let melody = [12,10,9,8,7,6,8,10,11,12,10,9,8,7,6,8,10,11,12,14,19,15] //syrinx
          * edo.get.without_chromatic_notes(melody)
-         * //returns [0, 12, 6, 8, 12, 6, 8, 12, 14, 19, 15]
+         * //returns [12, 6, 8, 12, 6, 8, 12, 14, 19, 15]
          */
         without_chromatic_notes: (melody)=> {
             melody = melody.filter((n,i,m)=>{
@@ -3527,7 +3610,7 @@ class EDO {
         },
 
         /** &lt;p>Gets a midi file and chunks all notes to partitions of a certain timeframe&lt;/p>
-         *
+         *&lt;p>Remark: "pitch classes" conform to the current tuning system used. E.g., 0-11 in 12EDO, 0-16 in 17EDO, etc.&lt;/p>
          * @param  {JSON} parsed_midi - The returned JSON from [EDO.midi.import()]{@link EDO#midi.import}
          * @param  {Number} [ticks=480] - The number of ticks for each partition (the "harmonic rhythm")
          * @param  {Boolean} [unique=true] - When true, even if a note is repeated within a given timeframe it will appear once.
@@ -3642,11 +3725,11 @@ class EDO {
          * @memberOf EDO#is
          * @example
          * let edo = new EDO(12) // define a tuning system
-         * edo.is.subset([2,4],[[1,2,3,4],[1,2,4]])
+         * edo.is.element_of([2,4],[[1,2,3,4],[1,2,4]])
          * //returns false (the set [2,4] is NOT equal to [1,2,3,4] or to [1,2,4])
          * @example
          * let edo = new EDO(12) // define a tuning system
-         * edo.is.subset([2,4],[[1,2,3,4],[1,2,4],[2,4]])
+         * edo.is.element_of([2,4],[[1,2,3,4],[1,2,4],[2,4]])
          * //returns true
          */
         element_of: (arr, bigger_arr) => {
@@ -3664,7 +3747,7 @@ class EDO {
          * @memberOf EDO#is
          * @example
          * let edo = new EDO(12) // define a tuning system
-         * edo.is.transposition([0,2,4,5,7,9,11],[2,4,5,7,9,11,0])
+         * edo.is.rotation([0,2,4,5,7,9,11],[2,4,5,7,9,11,0])
          * //returns true
          */
         rotation:(collection1,collection2)=> {
@@ -3723,6 +3806,7 @@ class EDO {
 
         /**
          * Returns true the two given collections of pitches are a transposition of one another.
+         * &lt;p>Remark: "pitches" conform to the current tuning system used. E.g., 0-11 occupy 1 octave in 12EDO, 0-16 in 17EDO, etc.&lt;/p>
          * @param  {Array&lt;Number>} collection1 - a collection of pitches (not necessarily pitch classes)
          * @param  {Array&lt;Number>} collection2 - a collection of pitches (not necessarily pitch classes)
          * @return {Boolean}
@@ -3828,7 +3912,7 @@ class EDO {
          * @param  {Number} [length=200] - The length (or height) or the tree's "trunk".
          * @param  {Number} [angle_span=90] - the angle between branches.
          * @param  {Array&lt;Number>} [mode=[0,2,4,5,7,9,11]] - If provided, the tree will conform to that mode.
-         * @param  {Array&lt;Number>} [intervals=[-1,1]] - If mode is provided, each interval represents the number of scale degrees away from the current node. If mode is not provided, the intervals represent PCs away from the current node.
+         * @param  {Array&lt;Number>} [intervals=[-1,1]] - If mode is provided, each interval represents the number of scale degrees away from the current node. If mode is not provided, the intervals represent the interval away from the current node.
          * @param  {Number} [iterations=5] - The number of sub-branches on the tree
          * @param  {Number} [length_mul=0.7] - The factor by which every new sub-branch's length is to its parent.
 
@@ -3952,7 +4036,7 @@ class EDO {
          * @param  {Number} [args.radius] - The center y coordinate of the necklace (in relation to the paper object)
          * @param  {Boolean} [args.ring=true] - When false, the necklace ring will be hidden.
          * @param  {Boolean} [args.inner_strings=true] - When false, the necklace's inner strings will be hidden.
-         * @param  {Number} [args.PC_at_midnight=0] - The PC starting the necklace at the very top (midnight)
+         * @param  {Number} [args.PC_at_midnight=0] - The pitch-class starting the necklace at the very top (midnight)
          * @param  {Number} [args.string_width=1] - The width of the strings of the necklace.
          * @param  {Number} [args.node_radius] - The radius of each node on the necklace
          *
@@ -4294,14 +4378,14 @@ class EDO {
 
     }
 
-    mod(n, m) {
+    mod(n, m=this.edo) {
         return ((n % m) + m) % m;
     }
 
 
 }
 
-/** &lt;p>Class representing a set of pitch classes within an EDO system&lt;/p>
+/** &lt;p>Class representing a set of pitch classes within an EDO system (e.g., 0-11 in 12EDO, 0-16 in 17EDO, etc.)&lt;/p>
  * &lt;p>(This class should have been called "Set" but because Set is a reserved work in JavaScript (as in most languages), "Scale" was selected as a compromise).&lt;/p> */
 class Scale {
     /**
@@ -4325,13 +4409,13 @@ class Scale {
      *  &lt;li> [Scale.complement()]{@link Scale#complement} returns the complement of the scale in the current EDO.&lt;/li>
      *  &lt;/ul>
      *  &lt;/p>
+     *  &lt;p>Remark: "pitch-classes" conform to the current tuning system used. E.g., 0-11 occupy 1 octave in 12EDO, 0-16 in 17EDO, etc.&lt;/p>
      * @param {Array&lt;number>} pitches - The pitch classes of the set.
      * @param {EDO} parent - and EDO context
-     *
      * @example
      * //Basic usage 1:
      * let edo = new EDO(12) //create a new EDO context with 12 divisions.
-     * let scale = new Scale([0,2,4,5,7,9,11],edo) //pass the PCs and edo context to the scale
+     * let scale = new Scale([0,2,4,5,7,9,11],edo) //pass the pitch-classes and edo context to the scale
      *
      * //Basic usage 2 (preferred):
      * let edo = new EDO(12) //create a new EDO context with 12 divisions.
@@ -4365,7 +4449,7 @@ class Scale {
         this.pitches = this.pitches.map((pitch) => pitch % parent.edo)
         this.pitches = this.parent.get.unique_elements(this.pitches)
         this.pitches.sort((a, b) => a - b)
-
+        this.length = this.count.pitches()
         this.name = this.get.name()
     }
 
@@ -4374,9 +4458,10 @@ class Scale {
     count = {
 
         /**
-         * &lt;p>Returns the number of times a certain chord (or interval) quality (specified in PCs above the root) exists in the scale.&lt;/p>
-         * &lt;p>E.g. &lt;code>scale.count.chord_quality([4, 7, 11])&lt;/code> counts the number of times a major 7th (if in 12 TET) appears in a scale&lt;/p>
-         * @param {Array&lt;Number|Array&lt;Number>>} intervals - intervals above 0
+         * &lt;p>Returns the number of times a certain chord (or interval) quality (specified in intervallic units above the root) exists in the scale.&lt;/p>
+         * &lt;p>E.g. &lt;code>scale.count.chord_quality([4, 7, 11])&lt;/code> counts the number of times a major 7th (if in 12 EDO) appears in a scale&lt;/p>
+         * &lt;p>Remark: "intervallic units" conform to the current tuning system used. E.g., 0-11 occupy 1 octave in 12EDO, 0-16 in 17EDO, etc.&lt;/p>
+         * @param {Array&lt;Number|Array&lt;Number>>} intervals - intervallic units above 0
          * @return {Number}
          * @example
          * let edo = new EDO(12) //Create a tuning context
@@ -4391,7 +4476,7 @@ class Scale {
          * @example
          * //(in 12-EDO) count how many major OR minor triads are in the diatonic scale
          * let scale = edo.scale([0,2,4,5,7,9,11]) //define new scale (Major)
-         * //count how many times in the diatonic scale, the 1st interval is a PC3 OR PC4, and the 2nd interval a PC7
+         * //count how many times in the diatonic scale, the 1st interval is a pitch-class of 3 OR PC4, and the 2nd interval a PC7
          * scale.count.chord_quality([[3,4], 7]) //returns 6
          * @memberOf Scale#count*/
         chord_quality: (intervals) => {
@@ -4486,12 +4571,12 @@ class Scale {
         },
 
         /**
-         * &lt;p>Returns the number of intervals of size IC in the scale.&lt;/p>
+         * &lt;p>Returns the number of intervals of a specified size in the scale.&lt;/p>
          * &lt;p>When an array is passed, the function returns total amount of intervals found from the array.&lt;/p>
+         * &lt;p>Remark: "intervallic units" conform to the current tuning system used. E.g., 0-11 occupy 1 octave in 12EDO, 0-16 in 17EDO, etc.&lt;/p>
          * @param {Number | Array&lt;Number>} interval - some interval class.
          * @return {Number}
          * @memberOf Scale#count
-         *
          * @example
          * let edo = new EDO(12) //Create a tuning context
          * let scale = edo.scale([0,2,4,5,7,9,11]) //define new scale (Major)
@@ -4516,7 +4601,7 @@ class Scale {
         },
 
         /**
-         * &lt;p>Returns the number of Major Thirds (with a tolerance of 20 cents) in the scale.&lt;/p>
+         * &lt;p>Returns the number of Major Thirds (approximations of 5:4 with a tolerance of 20 cents) in the scale.&lt;/p>
          *
          * &lt;p>(To count other intervals or set a different tolerance use [Scale.count.ratio()]{@link Scale#count.ratio})&lt;/p>
          * @return {Number}
@@ -4584,6 +4669,23 @@ class Scale {
         },
 
         /**
+         * &lt;p>Returns the number of unique combinations that can be made from the set or subsets of it.&lt;/p>
+         * @return {Number}
+         * @memberOf Scale#count
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,7,9]) //pentatonic
+         * scale.count.n_chords() //returns 15
+         * */
+        n_chords: () => {
+            let n_chords = 1 //1 because the collection of all pitches shuold also be counted
+            for (let i = 2; i &lt; this.count.pitches(); i++) {
+                n_chords+=this.get.n_chords(i).length
+            }
+            return n_chords
+        },
+
+        /**
          * &lt;p>Returns the number of Perfect Fifths (with a tolerance of 5 cents) in the scale.&lt;/p>
          *
          * &lt;p>(To count other intervals or set a different tolerance use @Scale.count.ratio())&lt;/p>
@@ -4625,6 +4727,7 @@ class Scale {
             for (let i = 1; i &lt; this.count.pitches(); i++) {
                 let gi = this.get.generic_intervals(i)
                 gi = gi.map(a=>a.instances)
+
                 let nck = this.parent.get.n_choose_k(gi,2)
                 let product = nck.map(el=>el[0]*el[1]).reduce((ag,el)=>ag+el,0)
                 total+=product
@@ -4642,6 +4745,7 @@ class Scale {
          * @see Rahn, J. (1991). "Coordination of interval sizes in seven-tone collections." Journal of Music Theory 35(1/2): 33-60.
          */
         rahn_contradictions: () => {
+            let all = []
             let total = 0
             let scale_degrees = [...Array(this.pitches.length).keys()]
             let combinations = this.parent.get.combinations(scale_degrees,2).sort((a,b)=>a[0]-b[0] || a[1]-b[1])
@@ -4656,10 +4760,16 @@ class Scale {
                 for (let j =i+1; j &lt; pairwise.length; j++) {
                     let p2 = pairwise[j]
                     if((p1.generic&lt;p2.generic &amp;&amp; p1.specific>p2.specific) || (p2.generic&lt;p1.generic &amp;&amp; p2.specific>p1.specific)){
+                        all.push([p1,p2])
                         total++
                     }
                 }
             }
+            // all = all.sort((a,b)=>(a[0].specific==b[0].specific)?a[1].specific-b[1].specific:a[0].specific-b[0].specific)
+            // all.forEach(pair=>{
+            //     console.log(pair[1].pitches)
+            //     // console.log("Span1:",pair[0].generic,"Span2:",pair[1].generic,"Size1:",pair[0].specific,"Size2:",pair[1].specific,"int1:",pair[0].pitches,'int2:',pair[1].pitches)
+            // })
             return total
         },
 
@@ -4687,7 +4797,7 @@ class Scale {
                 let p1 = pairwise[i]
                 for (let j =i+1; j &lt; pairwise.length; j++) {
                     let p2 = pairwise[j]
-                    if((p1.generic&lt;p2.generic &amp;&amp; p1.specific==p2.specific) || (p2.generic&lt;p1.generic &amp;&amp; p2.specific==p1.specific)){
+                    if(p1.specific==p2.specific &amp;&amp; p1.generic!=p2.generic ){
                         total++
                     }
                 }
@@ -4759,7 +4869,7 @@ class Scale {
         },
 
         /**
-         * &lt;p>Returns the number of Major and Minor Thirds (with a tolerance of 20 cents) in the scale&lt;/p>.
+         * &lt;p>Returns the number of Major and Minor (sounding) Thirds (with a tolerance of 20 cents) in the scale&lt;/p>.
          *
          * &lt;p>(To count other intervals or set a different tolerance use [Scale.count.ratio()]{@link Scale#count.ratio})&lt;/p>
          * @return {Number}
@@ -4815,6 +4925,7 @@ class Scale {
 
         /**
          * &lt;p>Returns the number of elements in the scale that are not in the provided arr.&lt;/p>
+         * &lt;p>Remark: "pitch-classes" conform to the current tuning system used. E.g., 0-11 in 12EDO, 0-16 in 17EDO, etc.&lt;/p>
          * @param  {Array&lt;Number>} arr - a collection of pitch classes
          * @return {Array&lt;Number>}
          * @function
@@ -4882,7 +4993,7 @@ class Scale {
          * scale.get.coordinates() //returns 0.9549296585513847
          *
          * scale = edo.scale([0,4,7]) //major triad
-         * scale.get.coordinates() //returns 0.376564638493296
+         * scale.get.area() //returns 0.376564638493296
          */
         area: (r=0.56418958354776 /*radius of circle with area=1*/) => {
             const angle_discrete = 360/this.edo
@@ -4895,6 +5006,31 @@ class Scale {
             }
             let area = Math.abs((part_a-part_b)/2)
             return area
+        },
+
+        /** &lt;p>Returns the (specific) intervals that only occur once in the set.&lt;/p>
+         * &lt;p>For instance, in the diatonic set (0 2 4 5 7 9 11) an interval of 6 semitones only occurs once (between 5 and 11). It is therefore a "diagnostic" interval within the diatonic scale.&lt;/p>
+         * @returns {Array&lt;Number>} An array containing all diagnostic intervals (or an empty array if none are available)
+         * @memberOf Scale#get
+         * @see EDO#get.diagnostic_intervals
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //The diatonic set
+         * scale.get.diagnostic_intervals() //returns [6]
+         */
+        diagnostic_intervals: () => {
+            let intervals = []
+            for (let i = 1; i &lt;= Math.floor(this.edo/2); i++) {
+                let specific = this.get.specific_intervals(i)
+                if(!specific) continue
+                if(specific.length==0) continue
+                let all1 = true
+                specific.forEach(s=>{
+                    if(s.instances!=1) all1=false
+                })
+                if(all1) intervals.push(specific[0].specific)
+            }
+            return intervals
         },
 
         /** Returns the difference between the current scale and a given set.
@@ -4958,7 +5094,7 @@ class Scale {
          * @example
          * let edo = new EDO(12) //define context
          * let scale = edo.scale([0,2,4,5,7,8,10])
-         * scale.get.per_note_set_difference() //returns [0, 0, 0, 0, 0, -1, -1]
+         * scale.get.per_note_set_difference() //returns [0, 0, 0, 0, 0, 1, 1]
          */
         per_note_set_difference: (set = [0,2,4,5,7,9,11]) => {
             let pitches = this.pitches
@@ -4979,11 +5115,10 @@ class Scale {
          * let edo = new EDO(12) //define context
          * let scale = edo.scale([0,3,7]) //minor triad
          * scale.get.coordinates()
-         * //returns
-         * [
-         *  [ 0, 0.56418958354776 ],
-         *  [ 0.5043836053298857, -0.25279846688265545 ],
-         *  [ 0.26388191608137657, -0.4986744635020088 ]
+         * //returns [
+         *  [00.56418958354776]
+         *  [0.564189583547763.454664838020213e-17]
+         *  [-0.2820947917738801-0.48860251190292314]
          * ]
          */
         coordinates: (circle_center=[0,0],r=0.56418958354776) => {
@@ -5032,7 +5167,8 @@ class Scale {
             return result
         },
 
-        /** &lt;p>Returns all the PCs of the EDO that the scale does not use.&lt;/p>
+        /** &lt;p>Returns all the pitch-classes (of the current tuning system) that the scale does not use.&lt;/p>
+         * &lt;p>Remark: "pitch classes" conform to the current tuning system used. E.g., 0-11 in 12EDO, 0-16 in 17EDO, etc.&lt;/p>
          * @param {boolean} [from_0=false] - when true, the output will be normalized to 0.
          * @returns {Array&lt;Number>}
          * @memberOf Scale#get
@@ -5050,7 +5186,8 @@ class Scale {
         },
 
         /** &lt;p>Returns the pitch classes of a chord "shape" on a given scale degree.&lt;/p>
-         * &lt;p>for instance, in C major, the shape 1,2,3,5 on 1 gives C D E G, and starting on 2, gives D E F A.&lt;/p>
+         * &lt;p>for instance, in the C major scale, the shape 1,2,3,5 on 1 gives C D E G, and starting on 2, gives D E F A.&lt;/p>
+         * &lt;p>Remark: "pitch classes" conform to the current tuning system used. E.g., 0-11 in 12EDO, 0-16 in 17EDO, etc.&lt;/p>
          * @param {Array&lt;Number>} shape - The "shape" starting from 1.
          * @param {Number} [scale_degree=1] - The scale degree on which to apply the shape (starting from 1)
          * @returns {Array&lt;Number>} - The resultant pitch classes from that shape on that scale degree.
@@ -5062,7 +5199,7 @@ class Scale {
          * //returns [0, 7, 9]
          *
          * scale.get.chord_quality_from_shape([1,3,4,5,7],7)
-         * //returns [11, 2, 4, 6, 9]
+         * //returns [11, 2, 4, 5, 9]
          *
          * scale.get.chord_quality_from_shape([1,7,3,13,9],5) //Get a 7,9,13 (no 5) chord, on scale degree 5, in this specific voicing.
          */
@@ -5075,6 +5212,36 @@ class Scale {
                 let pos = this.parent.mod((note+scale_degree)-2,this.pitches.length)
                 return this.pitches[pos]
             })
+        },
+
+        /** &lt;p>Returns a melody by providing a list of generic intervals to traverse within the scale.&lt;/p>
+         * @param {Array&lt;Number>} intervals - A list of generic intervals (how many scale degrees away from current)
+         * @param {Number} [starting_scale_degree=1] - The first note of the melody
+         * @param {Number} [starting_pitch=0] - The first pitch of the melody
+         * @returns {Array&lt;Number>} - The a diatonic melody
+         * @memberOf Scale#get
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //major
+         * scale.get.melody_from_intervals([7,-1,-2,1,1,1,-7,5,-1,-6,5,-1]) //Over the rainbow
+         * //returns [0, 12, 11, 7,  9, 11, 12,  0,  9, 7, -3,  5, 4]
+         */
+        melody_from_intervals: (intervals,starting_scale_degree=1,starting_pitch=0) => {
+            let scale_degrees = [starting_scale_degree]
+            intervals.forEach(interval=> {
+                let last_scale_degree = scale_degrees[scale_degrees.length-1]
+                scale_degrees.push(last_scale_degree+interval)
+            })
+            let melody = scale_degrees.map(s=>{
+                let pc = this.get.pitches()[this.parent.mod(s-1,this.count.pitches())]
+                let octave = Math.floor((s-1)/this.count.pitches())
+                return pc + (octave*this.edo)
+            })
+
+            melody = melody.map(p=>p+(starting_pitch-melody[0]))
+
+
+            return melody
         },
 
         /** &lt;p>Given a generic interval ("scale degrees apart") returns all of the specific intervals.&lt;/p>
@@ -5094,8 +5261,10 @@ class Scale {
          * @see Scale#get.specific_intervals
          */
         generic_intervals: (generic_interval_size=1) => {
+
             let arr = []
             let g= generic_interval_size
+            if(g&lt;1) return NaN
             let mod = this.parent.mod
             let p =this.pitches
             let len = p.length
@@ -5108,7 +5277,7 @@ class Scale {
                 else map[spec].push([note1,note2])
             }
             for(let key in map) {
-                arr.push({generic:g,specific:parseInt(key),pitches:map[key],instances:map[key].length})
+                arr.push({generic:g,specific:parseInt(key),instances:map[key].length,pitches:map[key]})
             }
             return arr
         },
@@ -5120,7 +5289,7 @@ class Scale {
          * @example
          * let edo = new EDO(12) // define a tuning system
          * let scale = edo.scale([0,2,4,5,7,9,11])
-         * scale.get.specific_intervals(6) //3 scale-degrees apart (e.g 4ths)
+         * scale.get.specific_intervals(6)
          * //returns
          * [
          *  {"generic":"3","specific":6,"pitches":[[5,11]],"instances":1},
@@ -5233,8 +5402,8 @@ class Scale {
 
         /** &lt;p>Calculates the attraction between note1 to note2 according to Lerdahl's formula in TPS&lt;/p>
          * @see Lerdahl, F. (2004). Tonal pitch space, Oxford University Press.
-         * @param {Number} note1 - The first PC
-         * @param {Number} note2 - The second PC
+         * @param {Number} note1 - The first pitch-class
+         * @param {Number} note2 - The second pitch-class
          * @returns {Number} The value of attraction between note1 and note2
          * @memberOf Scale#get
          *
@@ -5309,7 +5478,7 @@ class Scale {
          * @example
          * let edo = new EDO(12) //define tuning
          * let scale = edo.scale([0,2,4,7,9]) //a major pentatonic scale
-         * scale.get.levenshtein([0,2,4,5,7,9,11] //returns 1
+         * scale.get.levenshtein([0,2,4,5,7,9,11]) //returns 2
          *
          * @example
          * scale.get.levenshtein([0,2,4,5,7,9,11],true) //returns 0.9230769230769231
@@ -5490,7 +5659,7 @@ class Scale {
          * &lt;p>The name of the scale in the form EDO-Code, EDO being the number of divisions of the octave in the current
          * system, and code being the binary value of the scale (see example below).&lt;/p>
          * &lt;p>For simplicity consider a system with 4 divisions. Such a system has 4 possible pitches: &lt;code>[0,1,2,3]&lt;/code>.&lt;br>
-         *     The scale vector is a binary representation of the PCs used in the scale in reversed order. So the scale
+         *     The scale vector is a binary representation of the pitch-classes used in the scale in reversed order. So the scale
          *     [0,2] would have a representation of: &lt;code>[0,1,0,1]&lt;/code>&lt;br>
          *         As such, the name for this scale will be 4-5&lt;/p>
          * @memberOf Scale#get
@@ -5603,10 +5772,7 @@ class Scale {
      * @memberOf Scale#get
      *
      * @example
-     * let edo = new EDO(12) //define context
-     * let scale = edo.scale([0,2,4,5,7,9,11]) //major scale
-     * scale.get.pairwise_generic_specific_intervals() //returns [0, 1, 3, 5, 6, 8, 10]
-     * @see Rahn, J. (1991). "Coordination of interval sizes in seven-tone collections." Journal of Music Theory 35(1/2): 33-60.
+         * * @see Rahn, J. (1991). "Coordination of interval sizes in seven-tone collections." Journal of Music Theory 35(1/2): 33-60.
      * */
         pairwise_generic_specific_intervals: (SD1,SD2) => {
             let mod = this.parent.mod
@@ -5643,17 +5809,18 @@ class Scale {
         },
 
         /** Returns the scale's pitches as pitch classes
-         * @returns {Array&lt;Number>} The scale's pitches as PCs
+         * &lt;p>Remark: "pitch classes" conform to the current tuning system used. E.g., 0-11 in 12EDO, 0-16 in 17EDO, etc.&lt;/p>
+         * @returns {Array&lt;Number>} The scale's pitches as pitch-classes
          * @memberOf Scale#get
          */
         pitches: () => {
             return this.pitches
         },
 
-        /** &lt;p>Gets a list of intervals above a root, and returns all the positions in the scale where this
+        /** &lt;p>Gets a list of intervallic units above a root, and returns all the positions in the scale where this
          chord quality can be created&lt;/p>
-         *
-         * @returns {Array&lt;Number>} The PCs on which the quality can be built
+         *&lt;p>Remark: "intervallic units" conform to the current tuning system used. E.g., 0-11 occupy 1 octave in 12EDO, 0-16 in 17EDO, etc.&lt;/p>
+         * @returns {Array&lt;Number>} The pitch-classes (that appear in the scale) on which the quality can be built
          * @memberOf Scale#get
          * @example
          * let edo = new EDO(12) //define context
@@ -5726,18 +5893,15 @@ class Scale {
             return res
         },
 
-        /** &lt;p>Returns note combination of a given length who are restricted to only using specified intervals within the scale&lt;/p>
+        /** &lt;p>Returns note combination of a given length who are restricted to only using specified intervals that are members of the scale&lt;/p>
 
          * @param {Array&lt;Number>} intervals - A list of allowed intervals
          * @param {Number} length - The length of the returned combinations. If not specific length will default to the length of the scale
          * @returns {Array&lt;Number>} The pitches after multiplication
+         * "intervals" conform to the current tuning system used. 0-11 occupy 1 octave in 12EDO, 0-16 in 17EDO, etc.
          * @memberOf Scale#get
          *
-         * @example
-         * let edo = new EDO(12) //define context
-         * let scale = edo.scale([0,2,4,7,9]) //pentatonic scale
-         * scale.get.product(2) //returns [ 0, 4, 8, 2, 6 ]
-         * scale.get.product(5,true) //returns [ 0, 8, 9, 10, 11 ]*/
+        */
         quality_with_intervals: (intervals=[7],length) => {
             let all = []
             let TET = this.edo
@@ -5842,15 +6006,15 @@ class Scale {
             return result
         },
 
-        /** &lt;p>Returns the sum of the roughness of every pair in the set, averaged across all modes&lt;/p>
+        /** &lt;p>Returns the sum of the roughness of every pair in the set in a certain mode or averaged across all modes&lt;/p>
          * @param {Boolean} [all_modes=false] - When true, the algorithm returns the roughness value for all of the modes
-         * @param {Number} [base_freq=440] - The frequency to associate with PC0
+         * @param {Number} [base_freq=440] - The frequency to associate with the pitch-class 0
          * @returns Number
          * @example
          * let edo = new EDO(12) //define tuning
          * let scale = edo.scale([0,2,4,7,9]) //a major pentatonic scale
          * scale.get.roughness()
-         * //returns 0.376424315400336
+         * //returns 0.21543265646088483
          * @memberOf Scale#get
          * @see EDO#get.sine_pair_dissonance
          * */
@@ -5860,6 +6024,7 @@ class Scale {
                     pairs = pairs.map(p=>scale.parent.convert.midi_to_freq(p,69,base_freq))
                         .map(p=>scale.parent.get.sine_pair_dissonance(p[0],p[1],1,1))
                         .reduce((ag,e)=>ag+e,0)
+
                     return pairs
             }
             if(all_modes) {
@@ -5896,7 +6061,7 @@ class Scale {
          * @returns Number
          * @example
          * let edo = new EDO(12) //define tuning
-         * let scale = edo.scale([0,2,4,5,7,9,11]) //The diatonic scale
+         * let scale = edo.scale([0,2,4,7,9]) //The pentatonic scale
          * scale.get.coherence_quotient() //returns 1
          * @see Carey, N. (2007). "Coherence and sameness in well-formed and pairwise well-formed scales." Journal of Mathematics and Music 1(2): 79-98.
          * @memberOf Scale#get*/
@@ -6186,11 +6351,11 @@ class Scale {
          * let edo = new EDO(12) //define context
          * let scale = edo.scale([0,2,4,7,9]) //pentatonic scale
          * scale.get.scale_degree_roles()
-         * //returns [ [ 1, 2, 3, 5, 6 ], [ 1, 2, 3, 5, 7 ] ] (the last note can be interpreted as a major 6th, or a diminished 7th)
+         * //returns [ [ 1, 2, 3, 5, 6 ] ] (the last note can be interpreted as a major 6th, or a diminished 7th)
          *
          */
         scale_degree_roles: (interval_map) => {
-            if(this.edo!=12 &amp;&amp; !interval_map) return
+            if(this.edo!=12 &amp;&amp; !interval_map) return []
             if(!interval_map) {
                 interval_map = {
                     0:[1],
@@ -6321,7 +6486,7 @@ class Scale {
          * @example
          * let edo = new EDO(12) //define context
          * let scale = edo.scale([0,2,4,5,7,9,11]) //major scale
-         * scale.is.deep() //returns false
+         * scale.is.deep() //returns true
          * @see Clough, J., et al. (1999). "Scales, sets, and interval cycles: A taxonomy." Music Theory Spectrum 21(1): 74-104.
          * */
         deep: () => {
@@ -6342,11 +6507,11 @@ class Scale {
          * */
         distributionally_even: () => {
             let map = {}
-            for (let i = 0; i &lt; this.count.pitches(); i++) {
+            for (let i = 1; i &lt; this.count.pitches(); i++) {
                 let gen = this.get.generic_intervals(i)
                 gen.forEach(interval=>(map[interval.generic])?map[interval.generic].push(interval.specific):map[interval.generic]=[interval.specific])
             }
-            for (let i = 0; i &lt; this.count.pitches(); i++) {
+            for (let i = 1; i &lt; this.count.pitches(); i++) {
                 if(map[String(i)].length>2) return false
             }
             return true
@@ -6414,11 +6579,11 @@ class Scale {
          * */
         maximally_even: () => {
             let map = {}
-            for (let i = 0; i &lt; this.count.pitches(); i++) {
+            for (let i = 1; i &lt; this.count.pitches(); i++) {
                 let gen = this.get.generic_intervals(i)
                 gen.forEach(interval=>(map[interval.generic])?map[interval.generic].push(interval.specific):map[interval.generic]=[interval.specific])
             }
-            for (let i = 0; i &lt; this.count.pitches(); i++) {
+            for (let i = 1; i &lt; this.count.pitches(); i++) {
                 if(map[String(i)].length>2) return false
                 if(map[String(i)].length==2) {
                     if(Math.abs(map[String(i)][0]-map[String(i)][1]) != 1) return false
@@ -6567,7 +6732,8 @@ class Scale {
         },
 
         /**
-         * Instead of PCs, this returns the scale represented by intervals (steps between notes)
+         * Instead of pitch-classes, this returns the scale represented by intervals (steps between notes)
+         * &lt;p>Remark: "steps" and "pitch classes" conform to the current tuning system used. E.g., 0-11 occupy 1 octave in 12EDO, 0-16 in 17EDO, etc.&lt;/p>
          * @param {Boolean} [cache=false] - when true, the result is cached for future retrieval
          * @returns {Array&lt;Number>}
          * @memberOf Scale#to
@@ -7056,19 +7222,18 @@ class Time {
     }
 }
 
-/**
- * For server side*/
-try {
-    module.exports = {
-        EDO: EDO,
-        Scale: Scale,
-        Time: Time
-    }
+
+
+
+module.exports = {
+    EDO: EDO,
+    Scale: Scale,
+    Time: Time
 }
-    /**
-     * For client-side*/ catch (e) {
-    1 + 1
-}</code></pre>
+
+
+
+</code></pre>
         </article>
     </section>
 
@@ -7077,16 +7242,20 @@ try {
 
 </div>
 
-<br class="clear">
-
-<footer>
+<footer id="footer">
   
 </footer>
 
+<script src="scripts/third-party/prettify.js"></script>
+<script src="scripts/third-party/lang-css.js"></script>
+<script src="scripts/search.js"></script>
+<script src="scripts/third-party/fuse.js"></script>
+
 <script>prettyPrint();</script>
 <script src="scripts/linenumber.js"></script>
+<script src="scripts/fix-code-block.js"></script>
 <script>
-var list = [{"link":"<a href=\"EDO.html\">EDO</a>"},{"title":"EDO#scale","link":"<a href=\"EDO.html#scale\">EDO &rtrif; scale</a>"},{"link":"<a href=\"Scale.html\">Scale</a>"},{"title":"Scale#complement","link":"<a href=\"Scale.html#complement\">Scale &rtrif; complement</a>"},{"title":"Scale#invert","link":"<a href=\"Scale.html#invert\">Scale &rtrif; invert</a>"},{"title":"Scale#mode","link":"<a href=\"Scale.html#mode\">Scale &rtrif; mode</a>"},{"title":"Scale#normal","link":"<a href=\"Scale.html#normal\">Scale &rtrif; normal</a>"},{"title":"Scale#prime","link":"<a href=\"Scale.html#prime\">Scale &rtrif; prime</a>"},{"link":"<a href=\"Time.html\">Time</a>"},{"link":"<a href=\"EDO_convert.html\">convert</a>"},{"title":"EDO#convert.cents_to_ratio","link":"<a href=\"EDO_convert.html#.cents_to_ratio\">EDO &rtrif; convert.cents_to_ratio</a>"},{"title":"EDO#convert.interval_to_cents","link":"<a href=\"EDO_convert.html#.interval_to_cents\">EDO &rtrif; convert.interval_to_cents</a>"},{"title":"EDO#convert.interval_to_ratio","link":"<a href=\"EDO_convert.html#.interval_to_ratio\">EDO &rtrif; convert.interval_to_ratio</a>"},{"title":"EDO#convert.intervals_to_pitches","link":"<a href=\"EDO_convert.html#.intervals_to_pitches\">EDO &rtrif; convert.intervals_to_pitches</a>"},{"title":"EDO#convert.intervals_to_scale","link":"<a href=\"EDO_convert.html#.intervals_to_scale\">EDO &rtrif; convert.intervals_to_scale</a>"},{"title":"EDO#convert.midi_to_freq","link":"<a href=\"EDO_convert.html#.midi_to_freq\">EDO &rtrif; convert.midi_to_freq</a>"},{"title":"EDO#convert.midi_to_intervals","link":"<a href=\"EDO_convert.html#.midi_to_intervals\">EDO &rtrif; convert.midi_to_intervals</a>"},{"title":"EDO#convert.midi_to_name","link":"<a href=\"EDO_convert.html#.midi_to_name\">EDO &rtrif; convert.midi_to_name</a>"},{"title":"EDO#convert.name_to_scale","link":"<a href=\"EDO_convert.html#.name_to_scale\">EDO &rtrif; convert.name_to_scale</a>"},{"title":"EDO#convert.pc_to_name","link":"<a href=\"EDO_convert.html#.pc_to_name\">EDO &rtrif; convert.pc_to_name</a>"},{"title":"EDO#convert.pitches_to_PCs","link":"<a href=\"EDO_convert.html#.pitches_to_PCs\">EDO &rtrif; convert.pitches_to_PCs</a>"},{"title":"EDO#convert.ratio_to_cents","link":"<a href=\"EDO_convert.html#.ratio_to_cents\">EDO &rtrif; convert.ratio_to_cents</a>"},{"title":"EDO#convert.ratio_to_interval","link":"<a href=\"EDO_convert.html#.ratio_to_interval\">EDO &rtrif; convert.ratio_to_interval</a>"},{"title":"EDO#convert.to_steps","link":"<a href=\"EDO_convert.html#.to_steps\">EDO &rtrif; convert.to_steps</a>"},{"link":"<a href=\"EDO_count.html\">count</a>"},{"title":"EDO#count.common_tones","link":"<a href=\"EDO_count.html#.common_tones\">EDO &rtrif; count.common_tones</a>"},{"title":"EDO#count.differences","link":"<a href=\"EDO_count.html#.differences\">EDO &rtrif; count.differences</a>"},{"title":"EDO#count.pitches","link":"<a href=\"EDO_count.html#.pitches\">EDO &rtrif; count.pitches</a>"},{"link":"<a href=\"EDO_export.html\">export</a>"},{"title":"EDO#export.png","link":"<a href=\"EDO_export.html#.png\">EDO &rtrif; export.png</a>"},{"link":"<a href=\"EDO_get.html\">get</a>"},{"title":"EDO#get.angle","link":"<a href=\"EDO_get.html#.angle\">EDO &rtrif; get.angle</a>"},{"title":"EDO#get.combinations","link":"<a href=\"EDO_get.html#.combinations\">EDO &rtrif; get.combinations</a>"},{"title":"EDO#get.complementary_interval","link":"<a href=\"EDO_get.html#.complementary_interval\">EDO &rtrif; get.complementary_interval</a>"},{"title":"EDO#get.complementary_set","link":"<a href=\"EDO_get.html#.complementary_set\">EDO &rtrif; get.complementary_set</a>"},{"title":"EDO#get.contour","link":"<a href=\"EDO_get.html#.contour\">EDO &rtrif; get.contour</a>"},{"title":"EDO#get.contour_motives","link":"<a href=\"EDO_get.html#.contour_motives\">EDO &rtrif; get.contour_motives</a>"},{"title":"EDO#get.coordinates","link":"<a href=\"EDO_get.html#.coordinates\">EDO &rtrif; get.coordinates</a>"},{"title":"EDO#get.fill_partial_harp_pedaling","link":"<a href=\"EDO_get.html#.fill_partial_harp_pedaling\">EDO &rtrif; get.fill_partial_harp_pedaling</a>"},{"title":"EDO#get.generated_scale","link":"<a href=\"EDO_get.html#.generated_scale\">EDO &rtrif; get.generated_scale</a>"},{"title":"EDO#get.generators","link":"<a href=\"EDO_get.html#.generators\">EDO &rtrif; get.generators</a>"},{"title":"EDO#get.harmonic_progression","link":"<a href=\"EDO_get.html#.harmonic_progression\">EDO &rtrif; get.harmonic_progression</a>"},{"title":"EDO#get.harmonized_melody","link":"<a href=\"EDO_get.html#.harmonized_melody\">EDO &rtrif; get.harmonized_melody</a>"},{"title":"EDO#get.harp_pedals_to_pitches","link":"<a href=\"EDO_get.html#.harp_pedals_to_pitches\">EDO &rtrif; get.harp_pedals_to_pitches</a>"},{"title":"EDO#get.harp_position_of_quality","link":"<a href=\"EDO_get.html#.harp_position_of_quality\">EDO &rtrif; get.harp_position_of_quality</a>"},{"title":"EDO#get.intersection","link":"<a href=\"EDO_get.html#.intersection\">EDO &rtrif; get.intersection</a>"},{"title":"EDO#get.interval_stack","link":"<a href=\"EDO_get.html#.interval_stack\">EDO &rtrif; get.interval_stack</a>"},{"title":"EDO#get.interval_traversed","link":"<a href=\"EDO_get.html#.interval_traversed\">EDO &rtrif; get.interval_traversed</a>"},{"title":"EDO#get.inversion","link":"<a href=\"EDO_get.html#.inversion\">EDO &rtrif; get.inversion</a>"},{"title":"EDO#get.lattice","link":"<a href=\"EDO_get.html#.lattice\">EDO &rtrif; get.lattice</a>"},{"title":"EDO#get.levenshtein","link":"<a href=\"EDO_get.html#.levenshtein\">EDO &rtrif; get.levenshtein</a>"},{"title":"EDO#get.maximal_carey_coherence_failures","link":"<a href=\"EDO_get.html#.maximal_carey_coherence_failures\">EDO &rtrif; get.maximal_carey_coherence_failures</a>"},{"title":"EDO#get.maximal_rahn_difference","link":"<a href=\"EDO_get.html#.maximal_rahn_difference\">EDO &rtrif; get.maximal_rahn_difference</a>"},{"title":"EDO#get.minimal_voice_leading","link":"<a href=\"EDO_get.html#.minimal_voice_leading\">EDO &rtrif; get.minimal_voice_leading</a>"},{"title":"EDO#get.modes","link":"<a href=\"EDO_get.html#.modes\">EDO &rtrif; get.modes</a>"},{"title":"EDO#get.motives","link":"<a href=\"EDO_get.html#.motives\">EDO &rtrif; get.motives</a>"},{"title":"EDO#get.necklace","link":"<a href=\"EDO_get.html#.necklace\">EDO &rtrif; get.necklace</a>"},{"title":"EDO#get.new_pitches","link":"<a href=\"EDO_get.html#.new_pitches\">EDO &rtrif; get.new_pitches</a>"},{"title":"EDO#get.ngrams","link":"<a href=\"EDO_get.html#.ngrams\">EDO &rtrif; get.ngrams</a>"},{"title":"EDO#get.normal_order","link":"<a href=\"EDO_get.html#.normal_order\">EDO &rtrif; get.normal_order</a>"},{"title":"EDO#get.partitioned_subsets","link":"<a href=\"EDO_get.html#.partitioned_subsets\">EDO &rtrif; get.partitioned_subsets</a>"},{"title":"EDO#get.path_n_steps","link":"<a href=\"EDO_get.html#.path_n_steps\">EDO &rtrif; get.path_n_steps</a>"},{"title":"EDO#get.path_on_tree","link":"<a href=\"EDO_get.html#.path_on_tree\">EDO &rtrif; get.path_on_tree</a>"},{"title":"EDO#get.permutations","link":"<a href=\"EDO_get.html#.permutations\">EDO &rtrif; get.permutations</a>"},{"title":"EDO#get.pitch_distribution","link":"<a href=\"EDO_get.html#.pitch_distribution\">EDO &rtrif; get.pitch_distribution</a>"},{"title":"EDO#get.pitch_fields","link":"<a href=\"EDO_get.html#.pitch_fields\">EDO &rtrif; get.pitch_fields</a>"},{"title":"EDO#get.random_melody","link":"<a href=\"EDO_get.html#.random_melody\">EDO &rtrif; get.random_melody</a>"},{"title":"EDO#get.random_melody_from_contour","link":"<a href=\"EDO_get.html#.random_melody_from_contour\">EDO &rtrif; get.random_melody_from_contour</a>"},{"title":"EDO#get.random_melody_from_distribution","link":"<a href=\"EDO_get.html#.random_melody_from_distribution\">EDO &rtrif; get.random_melody_from_distribution</a>"},{"title":"EDO#get.random_melody_from_ngram","link":"<a href=\"EDO_get.html#.random_melody_from_ngram\">EDO &rtrif; get.random_melody_from_ngram</a>"},{"title":"EDO#get.ratio_approximation","link":"<a href=\"EDO_get.html#.ratio_approximation\">EDO &rtrif; get.ratio_approximation</a>"},{"title":"EDO#get.retrograde","link":"<a href=\"EDO_get.html#.retrograde\">EDO &rtrif; get.retrograde</a>"},{"title":"EDO#get.rotated","link":"<a href=\"EDO_get.html#.rotated\">EDO &rtrif; get.rotated</a>"},{"title":"EDO#get.rotations","link":"<a href=\"EDO_get.html#.rotations\">EDO &rtrif; get.rotations</a>"},{"title":"EDO#get.scalar_melodies","link":"<a href=\"EDO_get.html#.scalar_melodies\">EDO &rtrif; get.scalar_melodies</a>"},{"title":"EDO#get.scales","link":"<a href=\"EDO_get.html#.scales\">EDO &rtrif; get.scales</a>"},{"title":"EDO#get.shortest_path","link":"<a href=\"EDO_get.html#.shortest_path\">EDO &rtrif; get.shortest_path</a>"},{"title":"EDO#get.simple_ratios","link":"<a href=\"EDO_get.html#.simple_ratios\">EDO &rtrif; get.simple_ratios</a>"},{"title":"EDO#get.stacked","link":"<a href=\"EDO_get.html#.stacked\">EDO &rtrif; get.stacked</a>"},{"title":"EDO#get.starting_at","link":"<a href=\"EDO_get.html#.starting_at\">EDO &rtrif; get.starting_at</a>"},{"title":"EDO#get.subset_indices","link":"<a href=\"EDO_get.html#.subset_indices\">EDO &rtrif; get.subset_indices</a>"},{"title":"EDO#get.subsets","link":"<a href=\"EDO_get.html#.subsets\">EDO &rtrif; get.subsets</a>"},{"title":"EDO#get.transposition","link":"<a href=\"EDO_get.html#.transposition\">EDO &rtrif; get.transposition</a>"},{"title":"EDO#get.union","link":"<a href=\"EDO_get.html#.union\">EDO &rtrif; get.union</a>"},{"title":"EDO#get.unique_elements","link":"<a href=\"EDO_get.html#.unique_elements\">EDO &rtrif; get.unique_elements</a>"},{"title":"EDO#get.well_formed_scale","link":"<a href=\"EDO_get.html#.well_formed_scale\">EDO &rtrif; get.well_formed_scale</a>"},{"title":"EDO#get.without","link":"<a href=\"EDO_get.html#.without\">EDO &rtrif; get.without</a>"},{"title":"EDO#get.without_chromatic_notes","link":"<a href=\"EDO_get.html#.without_chromatic_notes\">EDO &rtrif; get.without_chromatic_notes</a>"},{"link":"<a href=\"EDO_is.html\">is</a>"},{"title":"EDO#is.element_of","link":"<a href=\"EDO_is.html#.element_of\">EDO &rtrif; is.element_of</a>"},{"title":"EDO#is.rotation","link":"<a href=\"EDO_is.html#.rotation\">EDO &rtrif; is.rotation</a>"},{"title":"EDO#is.same","link":"<a href=\"EDO_is.html#.same\">EDO &rtrif; is.same</a>"},{"title":"EDO#is.subset","link":"<a href=\"EDO_is.html#.subset\">EDO &rtrif; is.subset</a>"},{"title":"EDO#is.transposition","link":"<a href=\"EDO_is.html#.transposition\">EDO &rtrif; is.transposition</a>"},{"link":"<a href=\"EDO_midi.html\">midi</a>"},{"title":"EDO#midi.chordify","link":"<a href=\"EDO_midi.html#.chordify\">EDO &rtrif; midi.chordify</a>"},{"title":"EDO#midi.import","link":"<a href=\"EDO_midi.html#.import\">EDO &rtrif; midi.import</a>"},{"title":"EDO#midi.strip","link":"<a href=\"EDO_midi.html#.strip\">EDO &rtrif; midi.strip</a>"},{"link":"<a href=\"EDO_show.html\">show</a>"},{"title":"EDO#show.contour","link":"<a href=\"EDO_show.html#.contour\">EDO &rtrif; show.contour</a>"},{"title":"EDO#show.interval_fractal_tree","link":"<a href=\"EDO_show.html#.interval_fractal_tree\">EDO &rtrif; show.interval_fractal_tree</a>"},{"title":"EDO#show.necklace","link":"<a href=\"EDO_show.html#.necklace\">EDO &rtrif; show.necklace</a>"},{"title":"EDO#show.necklace_fractal","link":"<a href=\"EDO_show.html#.necklace_fractal\">EDO &rtrif; show.necklace_fractal</a>"},{"title":"EDO#show.nested_necklaces","link":"<a href=\"EDO_show.html#.nested_necklaces\">EDO &rtrif; show.nested_necklaces</a>"},{"link":"<a href=\"EDO_xml.html\">xml</a>"},{"link":"<a href=\"Scale_count.html\">count</a>"},{"title":"Scale#count.chord_quality","link":"<a href=\"Scale_count.html#.chord_quality\">Scale &rtrif; count.chord_quality</a>"},{"title":"Scale#count.consecutive_steps","link":"<a href=\"Scale_count.html#.consecutive_steps\">Scale &rtrif; count.consecutive_steps</a>"},{"title":"Scale#count.imperfections","link":"<a href=\"Scale_count.html#.imperfections\">Scale &rtrif; count.imperfections</a>"},{"title":"Scale#count.interval","link":"<a href=\"Scale_count.html#.interval\">Scale &rtrif; count.interval</a>"},{"title":"Scale#count.M3s","link":"<a href=\"Scale_count.html#.M3s\">Scale &rtrif; count.M3s</a>"},{"title":"Scale#count.m3s","link":"<a href=\"Scale_count.html#.m3s\">Scale &rtrif; count.m3s</a>"},{"title":"Scale#count.major_minor_triads","link":"<a href=\"Scale_count.html#.major_minor_triads\">Scale &rtrif; count.major_minor_triads</a>"},{"title":"Scale#count.modes","link":"<a href=\"Scale_count.html#.modes\">Scale &rtrif; count.modes</a>"},{"title":"Scale#count.P5s","link":"<a href=\"Scale_count.html#.P5s\">Scale &rtrif; count.P5s</a>"},{"title":"Scale#count.pitches","link":"<a href=\"Scale_count.html#.pitches\">Scale &rtrif; count.pitches</a>"},{"title":"Scale#count.rahn_ambiguities","link":"<a href=\"Scale_count.html#.rahn_ambiguities\">Scale &rtrif; count.rahn_ambiguities</a>"},{"title":"Scale#count.rahn_contradictions","link":"<a href=\"Scale_count.html#.rahn_contradictions\">Scale &rtrif; count.rahn_contradictions</a>"},{"title":"Scale#count.rahn_differences","link":"<a href=\"Scale_count.html#.rahn_differences\">Scale &rtrif; count.rahn_differences</a>"},{"title":"Scale#count.ratio","link":"<a href=\"Scale_count.html#.ratio\">Scale &rtrif; count.ratio</a>"},{"title":"Scale#count.rotational_symmetries","link":"<a href=\"Scale_count.html#.rotational_symmetries\">Scale &rtrif; count.rotational_symmetries</a>"},{"title":"Scale#count.simple_ratios","link":"<a href=\"Scale_count.html#.simple_ratios\">Scale &rtrif; count.simple_ratios</a>"},{"title":"Scale#count.tetrachords","link":"<a href=\"Scale_count.html#.tetrachords\">Scale &rtrif; count.tetrachords</a>"},{"title":"Scale#count.thirds","link":"<a href=\"Scale_count.html#.thirds\">Scale &rtrif; count.thirds</a>"},{"title":"Scale#count.transpositions","link":"<a href=\"Scale_count.html#.transpositions\">Scale &rtrif; count.transpositions</a>"},{"title":"Scale#count.trichords","link":"<a href=\"Scale_count.html#.trichords\">Scale &rtrif; count.trichords</a>"},{"title":"Scale#count.unique_elements","link":"<a href=\"Scale_count.html#.unique_elements\">Scale &rtrif; count.unique_elements</a>"},{"link":"<a href=\"Scale_export.html\">export</a>"},{"title":"Scale#export.scala","link":"<a href=\"Scale_export.html#.scala\">Scale &rtrif; export.scala</a>"},{"link":"<a href=\"Scale_get.html\">get</a>"},{"title":"Scale#get.area","link":"<a href=\"Scale_get.html#.area\">Scale &rtrif; get.area</a>"},{"title":"Scale#get.chord_quality_from_shape","link":"<a href=\"Scale_get.html#.chord_quality_from_shape\">Scale &rtrif; get.chord_quality_from_shape</a>"},{"title":"Scale#get.coherence_quotient","link":"<a href=\"Scale_get.html#.coherence_quotient\">Scale &rtrif; get.coherence_quotient</a>"},{"title":"Scale#get.common_tone_transpositions","link":"<a href=\"Scale_get.html#.common_tone_transpositions\">Scale &rtrif; get.common_tone_transpositions</a>"},{"title":"Scale#get.complement","link":"<a href=\"Scale_get.html#.complement\">Scale &rtrif; get.complement</a>"},{"title":"Scale#get.coordinates","link":"<a href=\"Scale_get.html#.coordinates\">Scale &rtrif; get.coordinates</a>"},{"title":"Scale#get.generic_intervals","link":"<a href=\"Scale_get.html#.generic_intervals\">Scale &rtrif; get.generic_intervals</a>"},{"title":"Scale#get.interval_class","link":"<a href=\"Scale_get.html#.interval_class\">Scale &rtrif; get.interval_class</a>"},{"title":"Scale#get.interval_vector","link":"<a href=\"Scale_get.html#.interval_vector\">Scale &rtrif; get.interval_vector</a>"},{"title":"Scale#get.inversion","link":"<a href=\"Scale_get.html#.inversion\">Scale &rtrif; get.inversion</a>"},{"title":"Scale#get.least_step_multiplier","link":"<a href=\"Scale_get.html#.least_step_multiplier\">Scale &rtrif; get.least_step_multiplier</a>"},{"title":"Scale#get.lerdahl_attraction","link":"<a href=\"Scale_get.html#.lerdahl_attraction\">Scale &rtrif; get.lerdahl_attraction</a>"},{"title":"Scale#get.lerdahl_attraction_vector","link":"<a href=\"Scale_get.html#.lerdahl_attraction_vector\">Scale &rtrif; get.lerdahl_attraction_vector</a>"},{"title":"Scale#get.levenshtein","link":"<a href=\"Scale_get.html#.levenshtein\">Scale &rtrif; get.levenshtein</a>"},{"title":"Scale#get.modes","link":"<a href=\"Scale_get.html#.modes\">Scale &rtrif; get.modes</a>"},{"title":"Scale#get.motives_diatonic","link":"<a href=\"Scale_get.html#.motives_diatonic\">Scale &rtrif; get.motives_diatonic</a>"},{"title":"Scale#get.n_choose_k","link":"<a href=\"Scale_get.html#.n_choose_k\">Scale &rtrif; get.n_choose_k</a>"},{"title":"Scale#get.n_chords","link":"<a href=\"Scale_get.html#.n_chords\">Scale &rtrif; get.n_chords</a>"},{"title":"Scale#get.n_chords_diatonic","link":"<a href=\"Scale_get.html#.n_chords_diatonic\">Scale &rtrif; get.n_chords_diatonic</a>"},{"title":"Scale#get.name","link":"<a href=\"Scale_get.html#.name\">Scale &rtrif; get.name</a>"},{"title":"Scale#get.neighborhood","link":"<a href=\"Scale_get.html#.neighborhood\">Scale &rtrif; get.neighborhood</a>"},{"title":"Scale#get.normal_order","link":"<a href=\"Scale_get.html#.normal_order\">Scale &rtrif; get.normal_order</a>"},{"title":"Scale#get.pairwise_generic_specific_intervals","link":"<a href=\"Scale_get.html#.pairwise_generic_specific_intervals\">Scale &rtrif; get.pairwise_generic_specific_intervals</a>"},{"title":"Scale#get.per_note_set_difference","link":"<a href=\"Scale_get.html#.per_note_set_difference\">Scale &rtrif; get.per_note_set_difference</a>"},{"title":"Scale#get.permutations","link":"<a href=\"Scale_get.html#.permutations\">Scale &rtrif; get.permutations</a>"},{"title":"Scale#get.pitches","link":"<a href=\"Scale_get.html#.pitches\">Scale &rtrif; get.pitches</a>"},{"title":"Scale#get.position_of_quality","link":"<a href=\"Scale_get.html#.position_of_quality\">Scale &rtrif; get.position_of_quality</a>"},{"title":"Scale#get.prime_form","link":"<a href=\"Scale_get.html#.prime_form\">Scale &rtrif; get.prime_form</a>"},{"title":"Scale#get.product","link":"<a href=\"Scale_get.html#.product\">Scale &rtrif; get.product</a>"},{"title":"Scale#get.quality_with_intervals","link":"<a href=\"Scale_get.html#.quality_with_intervals\">Scale &rtrif; get.quality_with_intervals</a>"},{"title":"Scale#get.resize_melody","link":"<a href=\"Scale_get.html#.resize_melody\">Scale &rtrif; get.resize_melody</a>"},{"title":"Scale#get.rotations","link":"<a href=\"Scale_get.html#.rotations\">Scale &rtrif; get.rotations</a>"},{"title":"Scale#get.rothenberg_propriety","link":"<a href=\"Scale_get.html#.rothenberg_propriety\">Scale &rtrif; get.rothenberg_propriety</a>"},{"title":"Scale#get.roughness","link":"<a href=\"Scale_get.html#.roughness\">Scale &rtrif; get.roughness</a>"},{"title":"Scale#get.sameness_quotient","link":"<a href=\"Scale_get.html#.sameness_quotient\">Scale &rtrif; get.sameness_quotient</a>"},{"title":"Scale#get.scale_degree_roles","link":"<a href=\"Scale_get.html#.scale_degree_roles\">Scale &rtrif; get.scale_degree_roles</a>"},{"title":"Scale#get.scale_degree_transpositions","link":"<a href=\"Scale_get.html#.scale_degree_transpositions\">Scale &rtrif; get.scale_degree_transpositions</a>"},{"title":"Scale#get.segments","link":"<a href=\"Scale_get.html#.segments\">Scale &rtrif; get.segments</a>"},{"title":"Scale#get.sequence_transposition","link":"<a href=\"Scale_get.html#.sequence_transposition\">Scale &rtrif; get.sequence_transposition</a>"},{"title":"Scale#get.set_difference","link":"<a href=\"Scale_get.html#.set_difference\">Scale &rtrif; get.set_difference</a>"},{"title":"Scale#get.shortest_path","link":"<a href=\"Scale_get.html#.shortest_path\">Scale &rtrif; get.shortest_path</a>"},{"title":"Scale#get.sine_pair_dissonance","link":"<a href=\"Scale_get.html#.sine_pair_dissonance\">Scale &rtrif; get.sine_pair_dissonance</a>"},{"title":"Scale#get.specific_intervals","link":"<a href=\"Scale_get.html#.specific_intervals\">Scale &rtrif; get.specific_intervals</a>"},{"title":"Scale#get.stacks","link":"<a href=\"Scale_get.html#.stacks\">Scale &rtrif; get.stacks</a>"},{"title":"Scale#get.step_sizes","link":"<a href=\"Scale_get.html#.step_sizes\">Scale &rtrif; get.step_sizes</a>"},{"title":"Scale#get.steps_to_qualities","link":"<a href=\"Scale_get.html#.steps_to_qualities\">Scale &rtrif; get.steps_to_qualities</a>"},{"title":"Scale#get.supersets","link":"<a href=\"Scale_get.html#.supersets\">Scale &rtrif; get.supersets</a>"},{"title":"Scale#get.tetrachords","link":"<a href=\"Scale_get.html#.tetrachords\">Scale &rtrif; get.tetrachords</a>"},{"title":"Scale#get.transposition","link":"<a href=\"Scale_get.html#.transposition\">Scale &rtrif; get.transposition</a>"},{"title":"Scale#get.transpositions_with_pitches","link":"<a href=\"Scale_get.html#.transpositions_with_pitches\">Scale &rtrif; get.transpositions_with_pitches</a>"},{"title":"Scale#get.trichords","link":"<a href=\"Scale_get.html#.trichords\">Scale &rtrif; get.trichords</a>"},{"title":"Scale#get.without","link":"<a href=\"Scale_get.html#.without\">Scale &rtrif; get.without</a>"},{"link":"<a href=\"Scale_is.html\">is</a>"},{"title":"Scale#is.deep","link":"<a href=\"Scale_is.html#.deep\">Scale &rtrif; is.deep</a>"},{"title":"Scale#is.distributionally_even","link":"<a href=\"Scale_is.html#.distributionally_even\">Scale &rtrif; is.distributionally_even</a>"},{"title":"Scale#is.in_lower_edos","link":"<a href=\"Scale_is.html#.in_lower_edos\">Scale &rtrif; is.in_lower_edos</a>"},{"title":"Scale#is.invertible","link":"<a href=\"Scale_is.html#.invertible\">Scale &rtrif; is.invertible</a>"},{"title":"Scale#is.maximally_even","link":"<a href=\"Scale_is.html#.maximally_even\">Scale &rtrif; is.maximally_even</a>"},{"title":"Scale#is.mode_of","link":"<a href=\"Scale_is.html#.mode_of\">Scale &rtrif; is.mode_of</a>"},{"title":"Scale#is.MOLT","link":"<a href=\"Scale_is.html#.MOLT\">Scale &rtrif; is.MOLT</a>"},{"title":"Scale#is.myhill_property","link":"<a href=\"Scale_is.html#.myhill_property\">Scale &rtrif; is.myhill_property</a>"},{"title":"Scale#is.normal_order","link":"<a href=\"Scale_is.html#.normal_order\">Scale &rtrif; is.normal_order</a>"},{"title":"Scale#is.one_of","link":"<a href=\"Scale_is.html#.one_of\">Scale &rtrif; is.one_of</a>"},{"title":"Scale#is.prime_form","link":"<a href=\"Scale_is.html#.prime_form\">Scale &rtrif; is.prime_form</a>"},{"title":"Scale#is.subset","link":"<a href=\"Scale_is.html#.subset\">Scale &rtrif; is.subset</a>"},{"link":"<a href=\"Scale_show.html\">show</a>"},{"title":"Scale#show.interval_fractal_tree","link":"<a href=\"Scale_show.html#.interval_fractal_tree\">Scale &rtrif; show.interval_fractal_tree</a>"},{"title":"Scale#show.necklace","link":"<a href=\"Scale_show.html#.necklace\">Scale &rtrif; show.necklace</a>"},{"link":"<a href=\"Scale_to.html\">to</a>"},{"title":"Scale#to.cents","link":"<a href=\"Scale_to.html#.cents\">Scale &rtrif; to.cents</a>"},{"title":"Scale#to.steps","link":"<a href=\"Scale_to.html#.steps\">Scale &rtrif; to.steps</a>"},{"link":"<a href=\"Time_convert.html\">convert</a>"},{"title":"Time#convert.beats_to_msec","link":"<a href=\"Time_convert.html#.beats_to_msec\">Time &rtrif; convert.beats_to_msec</a>"},{"title":"Time#convert.beats_to_ratios","link":"<a href=\"Time_convert.html#.beats_to_ratios\">Time &rtrif; convert.beats_to_ratios</a>"},{"title":"Time#convert.beats_to_tempo","link":"<a href=\"Time_convert.html#.beats_to_tempo\">Time &rtrif; convert.beats_to_tempo</a>"},{"link":"<a href=\"Time_get.html\">get</a>"},{"title":"Time#get.beat","link":"<a href=\"Time_get.html#.beat\">Time &rtrif; get.beat</a>"},{"title":"Time#get.counterpoint_cycle","link":"<a href=\"Time_get.html#.counterpoint_cycle\">Time &rtrif; get.counterpoint_cycle</a>"},{"title":"Time#get.explicit","link":"<a href=\"Time_get.html#.explicit\">Time &rtrif; get.explicit</a>"},{"title":"Time#get.fractal","link":"<a href=\"Time_get.html#.fractal\">Time &rtrif; get.fractal</a>"},{"title":"Time#get.motives","link":"<a href=\"Time_get.html#.motives\">Time &rtrif; get.motives</a>"},{"title":"Time#get.ratios","link":"<a href=\"Time_get.html#.ratios\">Time &rtrif; get.ratios</a>"},{"title":"Time#get.relational_motives","link":"<a href=\"Time_get.html#.relational_motives\">Time &rtrif; get.relational_motives</a>"},{"title":"Time#get.repeated","link":"<a href=\"Time_get.html#.repeated\">Time &rtrif; get.repeated</a>"},{"title":"Time#get.subdivisions","link":"<a href=\"Time_get.html#.subdivisions\">Time &rtrif; get.subdivisions</a>"},{"link":"<a href=\"Time_resize.html\">resize</a>"},{"title":"Time#resize.by_product","link":"<a href=\"Time_resize.html#.by_product\">Time &rtrif; resize.by_product</a>"},{"title":"Time#resize.by_sum","link":"<a href=\"Time_resize.html#.by_sum\">Time &rtrif; resize.by_sum</a>"},{"title":"environment","link":"<a href=\"global.html#environment\">Global &rtrif; environment</a>"},{"title":"myhill_property","link":"<a href=\"global.html#myhill_property\">Global &rtrif; myhill_property</a>"}];
+var list = [{"title":"EDO","link":"<a href=\"EDO.html\">EDO</a>"},{"title":"EDO#scale","link":"<a href=\"EDO.html#scale\">EDO &rtrif; scale</a>"},{"title":"Scale","link":"<a href=\"Scale.html\">Scale</a>"},{"title":"Scale#complement","link":"<a href=\"Scale.html#complement\">Scale &rtrif; complement</a>"},{"title":"Scale#invert","link":"<a href=\"Scale.html#invert\">Scale &rtrif; invert</a>"},{"title":"Scale#mode","link":"<a href=\"Scale.html#mode\">Scale &rtrif; mode</a>"},{"title":"Scale#normal","link":"<a href=\"Scale.html#normal\">Scale &rtrif; normal</a>"},{"title":"Scale#prime","link":"<a href=\"Scale.html#prime\">Scale &rtrif; prime</a>"},{"title":"Time","link":"<a href=\"Time.html\">Time</a>"},{"title":"convert","link":"<a href=\"EDO_convert.html\">convert</a>"},{"title":"EDO#convert.cents_to_ratio","link":"<a href=\"EDO_convert.html#.cents_to_ratio\">EDO &rtrif; convert.cents_to_ratio</a>"},{"title":"EDO#convert.interval_to_cents","link":"<a href=\"EDO_convert.html#.interval_to_cents\">EDO &rtrif; convert.interval_to_cents</a>"},{"title":"EDO#convert.interval_to_ratio","link":"<a href=\"EDO_convert.html#.interval_to_ratio\">EDO &rtrif; convert.interval_to_ratio</a>"},{"title":"EDO#convert.intervals_to_pitches","link":"<a href=\"EDO_convert.html#.intervals_to_pitches\">EDO &rtrif; convert.intervals_to_pitches</a>"},{"title":"EDO#convert.intervals_to_scale","link":"<a href=\"EDO_convert.html#.intervals_to_scale\">EDO &rtrif; convert.intervals_to_scale</a>"},{"title":"EDO#convert.midi_to_freq","link":"<a href=\"EDO_convert.html#.midi_to_freq\">EDO &rtrif; convert.midi_to_freq</a>"},{"title":"EDO#convert.midi_to_intervals","link":"<a href=\"EDO_convert.html#.midi_to_intervals\">EDO &rtrif; convert.midi_to_intervals</a>"},{"title":"EDO#convert.midi_to_name","link":"<a href=\"EDO_convert.html#.midi_to_name\">EDO &rtrif; convert.midi_to_name</a>"},{"title":"EDO#convert.name_to_scale","link":"<a href=\"EDO_convert.html#.name_to_scale\">EDO &rtrif; convert.name_to_scale</a>"},{"title":"EDO#convert.pc_to_name","link":"<a href=\"EDO_convert.html#.pc_to_name\">EDO &rtrif; convert.pc_to_name</a>"},{"title":"EDO#convert.pitches_to_PCs","link":"<a href=\"EDO_convert.html#.pitches_to_PCs\">EDO &rtrif; convert.pitches_to_PCs</a>"},{"title":"EDO#convert.ratio_to_cents","link":"<a href=\"EDO_convert.html#.ratio_to_cents\">EDO &rtrif; convert.ratio_to_cents</a>"},{"title":"EDO#convert.ratio_to_interval","link":"<a href=\"EDO_convert.html#.ratio_to_interval\">EDO &rtrif; convert.ratio_to_interval</a>"},{"title":"EDO#convert.to_steps","link":"<a href=\"EDO_convert.html#.to_steps\">EDO &rtrif; convert.to_steps</a>"},{"title":"count","link":"<a href=\"EDO_count.html\">count</a>"},{"title":"EDO#count.common_tones","link":"<a href=\"EDO_count.html#.common_tones\">EDO &rtrif; count.common_tones</a>"},{"title":"EDO#count.differences","link":"<a href=\"EDO_count.html#.differences\">EDO &rtrif; count.differences</a>"},{"title":"EDO#count.pitches","link":"<a href=\"EDO_count.html#.pitches\">EDO &rtrif; count.pitches</a>"},{"title":"export","link":"<a href=\"EDO_export.html\">export</a>"},{"title":"EDO#export.png","link":"<a href=\"EDO_export.html#.png\">EDO &rtrif; export.png</a>"},{"title":"EDO#export.svg","link":"<a href=\"EDO_export.html#.svg\">EDO &rtrif; export.svg</a>"},{"title":"get","link":"<a href=\"EDO_get.html\">get</a>"},{"title":"EDO#get.angle","link":"<a href=\"EDO_get.html#.angle\">EDO &rtrif; get.angle</a>"},{"title":"EDO#get.best_edo_from_cents","link":"<a href=\"EDO_get.html#.best_edo_from_cents\">EDO &rtrif; get.best_edo_from_cents</a>"},{"title":"EDO#get.combinations","link":"<a href=\"EDO_get.html#.combinations\">EDO &rtrif; get.combinations</a>"},{"title":"EDO#get.complementary_interval","link":"<a href=\"EDO_get.html#.complementary_interval\">EDO &rtrif; get.complementary_interval</a>"},{"title":"EDO#get.complementary_set","link":"<a href=\"EDO_get.html#.complementary_set\">EDO &rtrif; get.complementary_set</a>"},{"title":"EDO#get.contour","link":"<a href=\"EDO_get.html#.contour\">EDO &rtrif; get.contour</a>"},{"title":"EDO#get.contour_motives","link":"<a href=\"EDO_get.html#.contour_motives\">EDO &rtrif; get.contour_motives</a>"},{"title":"EDO#get.coordinates","link":"<a href=\"EDO_get.html#.coordinates\">EDO &rtrif; get.coordinates</a>"},{"title":"EDO#get.fill_partial_harp_pedaling","link":"<a href=\"EDO_get.html#.fill_partial_harp_pedaling\">EDO &rtrif; get.fill_partial_harp_pedaling</a>"},{"title":"EDO#get.generated_scale","link":"<a href=\"EDO_get.html#.generated_scale\">EDO &rtrif; get.generated_scale</a>"},{"title":"EDO#get.generators","link":"<a href=\"EDO_get.html#.generators\">EDO &rtrif; get.generators</a>"},{"title":"EDO#get.harmonic_progression","link":"<a href=\"EDO_get.html#.harmonic_progression\">EDO &rtrif; get.harmonic_progression</a>"},{"title":"EDO#get.harmonized_melody","link":"<a href=\"EDO_get.html#.harmonized_melody\">EDO &rtrif; get.harmonized_melody</a>"},{"title":"EDO#get.harp_pedals_to_pitches","link":"<a href=\"EDO_get.html#.harp_pedals_to_pitches\">EDO &rtrif; get.harp_pedals_to_pitches</a>"},{"title":"EDO#get.harp_position_of_quality","link":"<a href=\"EDO_get.html#.harp_position_of_quality\">EDO &rtrif; get.harp_position_of_quality</a>"},{"title":"EDO#get.intersection","link":"<a href=\"EDO_get.html#.intersection\">EDO &rtrif; get.intersection</a>"},{"title":"EDO#get.interval_stack","link":"<a href=\"EDO_get.html#.interval_stack\">EDO &rtrif; get.interval_stack</a>"},{"title":"EDO#get.interval_traversed","link":"<a href=\"EDO_get.html#.interval_traversed\">EDO &rtrif; get.interval_traversed</a>"},{"title":"EDO#get.inversion","link":"<a href=\"EDO_get.html#.inversion\">EDO &rtrif; get.inversion</a>"},{"title":"EDO#get.lattice","link":"<a href=\"EDO_get.html#.lattice\">EDO &rtrif; get.lattice</a>"},{"title":"EDO#get.levenshtein","link":"<a href=\"EDO_get.html#.levenshtein\">EDO &rtrif; get.levenshtein</a>"},{"title":"EDO#get.maximal_carey_coherence_failures","link":"<a href=\"EDO_get.html#.maximal_carey_coherence_failures\">EDO &rtrif; get.maximal_carey_coherence_failures</a>"},{"title":"EDO#get.maximal_rahn_difference","link":"<a href=\"EDO_get.html#.maximal_rahn_difference\">EDO &rtrif; get.maximal_rahn_difference</a>"},{"title":"EDO#get.minimal_voice_leading","link":"<a href=\"EDO_get.html#.minimal_voice_leading\">EDO &rtrif; get.minimal_voice_leading</a>"},{"title":"EDO#get.modes","link":"<a href=\"EDO_get.html#.modes\">EDO &rtrif; get.modes</a>"},{"title":"EDO#get.motives","link":"<a href=\"EDO_get.html#.motives\">EDO &rtrif; get.motives</a>"},{"title":"EDO#get.n_choose_k","link":"<a href=\"EDO_get.html#.n_choose_k\">EDO &rtrif; get.n_choose_k</a>"},{"title":"EDO#get.necklace","link":"<a href=\"EDO_get.html#.necklace\">EDO &rtrif; get.necklace</a>"},{"title":"EDO#get.new_pitches","link":"<a href=\"EDO_get.html#.new_pitches\">EDO &rtrif; get.new_pitches</a>"},{"title":"EDO#get.ngrams","link":"<a href=\"EDO_get.html#.ngrams\">EDO &rtrif; get.ngrams</a>"},{"title":"EDO#get.normal_order","link":"<a href=\"EDO_get.html#.normal_order\">EDO &rtrif; get.normal_order</a>"},{"title":"EDO#get.notes_from_cents","link":"<a href=\"EDO_get.html#.notes_from_cents\">EDO &rtrif; get.notes_from_cents</a>"},{"title":"EDO#get.partitioned_subsets","link":"<a href=\"EDO_get.html#.partitioned_subsets\">EDO &rtrif; get.partitioned_subsets</a>"},{"title":"EDO#get.path_n_steps","link":"<a href=\"EDO_get.html#.path_n_steps\">EDO &rtrif; get.path_n_steps</a>"},{"title":"EDO#get.path_on_tree","link":"<a href=\"EDO_get.html#.path_on_tree\">EDO &rtrif; get.path_on_tree</a>"},{"title":"EDO#get.permutations","link":"<a href=\"EDO_get.html#.permutations\">EDO &rtrif; get.permutations</a>"},{"title":"EDO#get.pitch_distribution","link":"<a href=\"EDO_get.html#.pitch_distribution\">EDO &rtrif; get.pitch_distribution</a>"},{"title":"EDO#get.pitch_fields","link":"<a href=\"EDO_get.html#.pitch_fields\">EDO &rtrif; get.pitch_fields</a>"},{"title":"EDO#get.random_melody","link":"<a href=\"EDO_get.html#.random_melody\">EDO &rtrif; get.random_melody</a>"},{"title":"EDO#get.random_melody_from_contour","link":"<a href=\"EDO_get.html#.random_melody_from_contour\">EDO &rtrif; get.random_melody_from_contour</a>"},{"title":"EDO#get.random_melody_from_distribution","link":"<a href=\"EDO_get.html#.random_melody_from_distribution\">EDO &rtrif; get.random_melody_from_distribution</a>"},{"title":"EDO#get.random_melody_from_ngram","link":"<a href=\"EDO_get.html#.random_melody_from_ngram\">EDO &rtrif; get.random_melody_from_ngram</a>"},{"title":"EDO#get.ratio_approximation","link":"<a href=\"EDO_get.html#.ratio_approximation\">EDO &rtrif; get.ratio_approximation</a>"},{"title":"EDO#get.retrograde","link":"<a href=\"EDO_get.html#.retrograde\">EDO &rtrif; get.retrograde</a>"},{"title":"EDO#get.rotated","link":"<a href=\"EDO_get.html#.rotated\">EDO &rtrif; get.rotated</a>"},{"title":"EDO#get.rotations","link":"<a href=\"EDO_get.html#.rotations\">EDO &rtrif; get.rotations</a>"},{"title":"EDO#get.scalar_melodies","link":"<a href=\"EDO_get.html#.scalar_melodies\">EDO &rtrif; get.scalar_melodies</a>"},{"title":"EDO#get.scales","link":"<a href=\"EDO_get.html#.scales\">EDO &rtrif; get.scales</a>"},{"title":"EDO#get.shortest_path","link":"<a href=\"EDO_get.html#.shortest_path\">EDO &rtrif; get.shortest_path</a>"},{"title":"EDO#get.simple_ratios","link":"<a href=\"EDO_get.html#.simple_ratios\">EDO &rtrif; get.simple_ratios</a>"},{"title":"EDO#get.stacked","link":"<a href=\"EDO_get.html#.stacked\">EDO &rtrif; get.stacked</a>"},{"title":"EDO#get.starting_at","link":"<a href=\"EDO_get.html#.starting_at\">EDO &rtrif; get.starting_at</a>"},{"title":"EDO#get.subset_indices","link":"<a href=\"EDO_get.html#.subset_indices\">EDO &rtrif; get.subset_indices</a>"},{"title":"EDO#get.subsets","link":"<a href=\"EDO_get.html#.subsets\">EDO &rtrif; get.subsets</a>"},{"title":"EDO#get.transposition","link":"<a href=\"EDO_get.html#.transposition\">EDO &rtrif; get.transposition</a>"},{"title":"EDO#get.union","link":"<a href=\"EDO_get.html#.union\">EDO &rtrif; get.union</a>"},{"title":"EDO#get.unique_elements","link":"<a href=\"EDO_get.html#.unique_elements\">EDO &rtrif; get.unique_elements</a>"},{"title":"EDO#get.well_formed_scale","link":"<a href=\"EDO_get.html#.well_formed_scale\">EDO &rtrif; get.well_formed_scale</a>"},{"title":"EDO#get.without","link":"<a href=\"EDO_get.html#.without\">EDO &rtrif; get.without</a>"},{"title":"EDO#get.without_chromatic_notes","link":"<a href=\"EDO_get.html#.without_chromatic_notes\">EDO &rtrif; get.without_chromatic_notes</a>"},{"title":"is","link":"<a href=\"EDO_is.html\">is</a>"},{"title":"EDO#is.element_of","link":"<a href=\"EDO_is.html#.element_of\">EDO &rtrif; is.element_of</a>"},{"title":"EDO#is.rotation","link":"<a href=\"EDO_is.html#.rotation\">EDO &rtrif; is.rotation</a>"},{"title":"EDO#is.same","link":"<a href=\"EDO_is.html#.same\">EDO &rtrif; is.same</a>"},{"title":"EDO#is.subset","link":"<a href=\"EDO_is.html#.subset\">EDO &rtrif; is.subset</a>"},{"title":"EDO#is.transposition","link":"<a href=\"EDO_is.html#.transposition\">EDO &rtrif; is.transposition</a>"},{"title":"midi","link":"<a href=\"EDO_midi.html\">midi</a>"},{"title":"EDO#midi.chordify","link":"<a href=\"EDO_midi.html#.chordify\">EDO &rtrif; midi.chordify</a>"},{"title":"EDO#midi.import","link":"<a href=\"EDO_midi.html#.import\">EDO &rtrif; midi.import</a>"},{"title":"EDO#midi.strip","link":"<a href=\"EDO_midi.html#.strip\">EDO &rtrif; midi.strip</a>"},{"title":"show","link":"<a href=\"EDO_show.html\">show</a>"},{"title":"EDO#show.contour","link":"<a href=\"EDO_show.html#.contour\">EDO &rtrif; show.contour</a>"},{"title":"EDO#show.interval_fractal_tree","link":"<a href=\"EDO_show.html#.interval_fractal_tree\">EDO &rtrif; show.interval_fractal_tree</a>"},{"title":"EDO#show.necklace","link":"<a href=\"EDO_show.html#.necklace\">EDO &rtrif; show.necklace</a>"},{"title":"EDO#show.necklace_fractal","link":"<a href=\"EDO_show.html#.necklace_fractal\">EDO &rtrif; show.necklace_fractal</a>"},{"title":"EDO#show.nested_necklaces","link":"<a href=\"EDO_show.html#.nested_necklaces\">EDO &rtrif; show.nested_necklaces</a>"},{"title":"xml","link":"<a href=\"EDO_xml.html\">xml</a>"},{"title":"count","link":"<a href=\"Scale_count.html\">count</a>"},{"title":"Scale#count.chord_quality","link":"<a href=\"Scale_count.html#.chord_quality\">Scale &rtrif; count.chord_quality</a>"},{"title":"Scale#count.consecutive_steps","link":"<a href=\"Scale_count.html#.consecutive_steps\">Scale &rtrif; count.consecutive_steps</a>"},{"title":"Scale#count.imperfections","link":"<a href=\"Scale_count.html#.imperfections\">Scale &rtrif; count.imperfections</a>"},{"title":"Scale#count.interval","link":"<a href=\"Scale_count.html#.interval\">Scale &rtrif; count.interval</a>"},{"title":"Scale#count.M3s","link":"<a href=\"Scale_count.html#.M3s\">Scale &rtrif; count.M3s</a>"},{"title":"Scale#count.m3s","link":"<a href=\"Scale_count.html#.m3s\">Scale &rtrif; count.m3s</a>"},{"title":"Scale#count.major_minor_triads","link":"<a href=\"Scale_count.html#.major_minor_triads\">Scale &rtrif; count.major_minor_triads</a>"},{"title":"Scale#count.modes","link":"<a href=\"Scale_count.html#.modes\">Scale &rtrif; count.modes</a>"},{"title":"Scale#count.n_chords","link":"<a href=\"Scale_count.html#.n_chords\">Scale &rtrif; count.n_chords</a>"},{"title":"Scale#count.P5s","link":"<a href=\"Scale_count.html#.P5s\">Scale &rtrif; count.P5s</a>"},{"title":"Scale#count.pitches","link":"<a href=\"Scale_count.html#.pitches\">Scale &rtrif; count.pitches</a>"},{"title":"Scale#count.rahn_ambiguities","link":"<a href=\"Scale_count.html#.rahn_ambiguities\">Scale &rtrif; count.rahn_ambiguities</a>"},{"title":"Scale#count.rahn_contradictions","link":"<a href=\"Scale_count.html#.rahn_contradictions\">Scale &rtrif; count.rahn_contradictions</a>"},{"title":"Scale#count.rahn_differences","link":"<a href=\"Scale_count.html#.rahn_differences\">Scale &rtrif; count.rahn_differences</a>"},{"title":"Scale#count.ratio","link":"<a href=\"Scale_count.html#.ratio\">Scale &rtrif; count.ratio</a>"},{"title":"Scale#count.rotational_symmetries","link":"<a href=\"Scale_count.html#.rotational_symmetries\">Scale &rtrif; count.rotational_symmetries</a>"},{"title":"Scale#count.simple_ratios","link":"<a href=\"Scale_count.html#.simple_ratios\">Scale &rtrif; count.simple_ratios</a>"},{"title":"Scale#count.tetrachords","link":"<a href=\"Scale_count.html#.tetrachords\">Scale &rtrif; count.tetrachords</a>"},{"title":"Scale#count.thirds","link":"<a href=\"Scale_count.html#.thirds\">Scale &rtrif; count.thirds</a>"},{"title":"Scale#count.transpositions","link":"<a href=\"Scale_count.html#.transpositions\">Scale &rtrif; count.transpositions</a>"},{"title":"Scale#count.trichords","link":"<a href=\"Scale_count.html#.trichords\">Scale &rtrif; count.trichords</a>"},{"title":"Scale#count.unique_elements","link":"<a href=\"Scale_count.html#.unique_elements\">Scale &rtrif; count.unique_elements</a>"},{"title":"export","link":"<a href=\"Scale_export.html\">export</a>"},{"title":"Scale#export.scala","link":"<a href=\"Scale_export.html#.scala\">Scale &rtrif; export.scala</a>"},{"title":"get","link":"<a href=\"Scale_get.html\">get</a>"},{"title":"Scale#get.area","link":"<a href=\"Scale_get.html#.area\">Scale &rtrif; get.area</a>"},{"title":"Scale#get.chord_quality_from_shape","link":"<a href=\"Scale_get.html#.chord_quality_from_shape\">Scale &rtrif; get.chord_quality_from_shape</a>"},{"title":"Scale#get.coherence_quotient","link":"<a href=\"Scale_get.html#.coherence_quotient\">Scale &rtrif; get.coherence_quotient</a>"},{"title":"Scale#get.common_tone_transpositions","link":"<a href=\"Scale_get.html#.common_tone_transpositions\">Scale &rtrif; get.common_tone_transpositions</a>"},{"title":"Scale#get.complement","link":"<a href=\"Scale_get.html#.complement\">Scale &rtrif; get.complement</a>"},{"title":"Scale#get.coordinates","link":"<a href=\"Scale_get.html#.coordinates\">Scale &rtrif; get.coordinates</a>"},{"title":"Scale#get.diagnostic_intervals","link":"<a href=\"Scale_get.html#.diagnostic_intervals\">Scale &rtrif; get.diagnostic_intervals</a>"},{"title":"Scale#get.generic_intervals","link":"<a href=\"Scale_get.html#.generic_intervals\">Scale &rtrif; get.generic_intervals</a>"},{"title":"Scale#get.interval_class","link":"<a href=\"Scale_get.html#.interval_class\">Scale &rtrif; get.interval_class</a>"},{"title":"Scale#get.interval_vector","link":"<a href=\"Scale_get.html#.interval_vector\">Scale &rtrif; get.interval_vector</a>"},{"title":"Scale#get.inversion","link":"<a href=\"Scale_get.html#.inversion\">Scale &rtrif; get.inversion</a>"},{"title":"Scale#get.least_step_multiplier","link":"<a href=\"Scale_get.html#.least_step_multiplier\">Scale &rtrif; get.least_step_multiplier</a>"},{"title":"Scale#get.lerdahl_attraction","link":"<a href=\"Scale_get.html#.lerdahl_attraction\">Scale &rtrif; get.lerdahl_attraction</a>"},{"title":"Scale#get.lerdahl_attraction_vector","link":"<a href=\"Scale_get.html#.lerdahl_attraction_vector\">Scale &rtrif; get.lerdahl_attraction_vector</a>"},{"title":"Scale#get.levenshtein","link":"<a href=\"Scale_get.html#.levenshtein\">Scale &rtrif; get.levenshtein</a>"},{"title":"Scale#get.melody_from_intervals","link":"<a href=\"Scale_get.html#.melody_from_intervals\">Scale &rtrif; get.melody_from_intervals</a>"},{"title":"Scale#get.modes","link":"<a href=\"Scale_get.html#.modes\">Scale &rtrif; get.modes</a>"},{"title":"Scale#get.motives_diatonic","link":"<a href=\"Scale_get.html#.motives_diatonic\">Scale &rtrif; get.motives_diatonic</a>"},{"title":"Scale#get.n_chords","link":"<a href=\"Scale_get.html#.n_chords\">Scale &rtrif; get.n_chords</a>"},{"title":"Scale#get.n_chords_diatonic","link":"<a href=\"Scale_get.html#.n_chords_diatonic\">Scale &rtrif; get.n_chords_diatonic</a>"},{"title":"Scale#get.name","link":"<a href=\"Scale_get.html#.name\">Scale &rtrif; get.name</a>"},{"title":"Scale#get.neighborhood","link":"<a href=\"Scale_get.html#.neighborhood\">Scale &rtrif; get.neighborhood</a>"},{"title":"Scale#get.normal_order","link":"<a href=\"Scale_get.html#.normal_order\">Scale &rtrif; get.normal_order</a>"},{"title":"Scale#get.pairwise_generic_specific_intervals","link":"<a href=\"Scale_get.html#.pairwise_generic_specific_intervals\">Scale &rtrif; get.pairwise_generic_specific_intervals</a>"},{"title":"Scale#get.per_note_set_difference","link":"<a href=\"Scale_get.html#.per_note_set_difference\">Scale &rtrif; get.per_note_set_difference</a>"},{"title":"Scale#get.permutations","link":"<a href=\"Scale_get.html#.permutations\">Scale &rtrif; get.permutations</a>"},{"title":"Scale#get.pitches","link":"<a href=\"Scale_get.html#.pitches\">Scale &rtrif; get.pitches</a>"},{"title":"Scale#get.position_of_quality","link":"<a href=\"Scale_get.html#.position_of_quality\">Scale &rtrif; get.position_of_quality</a>"},{"title":"Scale#get.prime_form","link":"<a href=\"Scale_get.html#.prime_form\">Scale &rtrif; get.prime_form</a>"},{"title":"Scale#get.product","link":"<a href=\"Scale_get.html#.product\">Scale &rtrif; get.product</a>"},{"title":"Scale#get.quality_with_intervals","link":"<a href=\"Scale_get.html#.quality_with_intervals\">Scale &rtrif; get.quality_with_intervals</a>"},{"title":"Scale#get.resize_melody","link":"<a href=\"Scale_get.html#.resize_melody\">Scale &rtrif; get.resize_melody</a>"},{"title":"Scale#get.rotations","link":"<a href=\"Scale_get.html#.rotations\">Scale &rtrif; get.rotations</a>"},{"title":"Scale#get.rothenberg_propriety","link":"<a href=\"Scale_get.html#.rothenberg_propriety\">Scale &rtrif; get.rothenberg_propriety</a>"},{"title":"Scale#get.roughness","link":"<a href=\"Scale_get.html#.roughness\">Scale &rtrif; get.roughness</a>"},{"title":"Scale#get.sameness_quotient","link":"<a href=\"Scale_get.html#.sameness_quotient\">Scale &rtrif; get.sameness_quotient</a>"},{"title":"Scale#get.scale_degree_roles","link":"<a href=\"Scale_get.html#.scale_degree_roles\">Scale &rtrif; get.scale_degree_roles</a>"},{"title":"Scale#get.scale_degree_transpositions","link":"<a href=\"Scale_get.html#.scale_degree_transpositions\">Scale &rtrif; get.scale_degree_transpositions</a>"},{"title":"Scale#get.segments","link":"<a href=\"Scale_get.html#.segments\">Scale &rtrif; get.segments</a>"},{"title":"Scale#get.sequence_transposition","link":"<a href=\"Scale_get.html#.sequence_transposition\">Scale &rtrif; get.sequence_transposition</a>"},{"title":"Scale#get.set_difference","link":"<a href=\"Scale_get.html#.set_difference\">Scale &rtrif; get.set_difference</a>"},{"title":"Scale#get.shortest_path","link":"<a href=\"Scale_get.html#.shortest_path\">Scale &rtrif; get.shortest_path</a>"},{"title":"Scale#get.sine_pair_dissonance","link":"<a href=\"Scale_get.html#.sine_pair_dissonance\">Scale &rtrif; get.sine_pair_dissonance</a>"},{"title":"Scale#get.specific_intervals","link":"<a href=\"Scale_get.html#.specific_intervals\">Scale &rtrif; get.specific_intervals</a>"},{"title":"Scale#get.stacks","link":"<a href=\"Scale_get.html#.stacks\">Scale &rtrif; get.stacks</a>"},{"title":"Scale#get.step_sizes","link":"<a href=\"Scale_get.html#.step_sizes\">Scale &rtrif; get.step_sizes</a>"},{"title":"Scale#get.steps_to_qualities","link":"<a href=\"Scale_get.html#.steps_to_qualities\">Scale &rtrif; get.steps_to_qualities</a>"},{"title":"Scale#get.supersets","link":"<a href=\"Scale_get.html#.supersets\">Scale &rtrif; get.supersets</a>"},{"title":"Scale#get.tetrachords","link":"<a href=\"Scale_get.html#.tetrachords\">Scale &rtrif; get.tetrachords</a>"},{"title":"Scale#get.transposition","link":"<a href=\"Scale_get.html#.transposition\">Scale &rtrif; get.transposition</a>"},{"title":"Scale#get.transpositions_with_pitches","link":"<a href=\"Scale_get.html#.transpositions_with_pitches\">Scale &rtrif; get.transpositions_with_pitches</a>"},{"title":"Scale#get.trichords","link":"<a href=\"Scale_get.html#.trichords\">Scale &rtrif; get.trichords</a>"},{"title":"Scale#get.without","link":"<a href=\"Scale_get.html#.without\">Scale &rtrif; get.without</a>"},{"title":"is","link":"<a href=\"Scale_is.html\">is</a>"},{"title":"Scale#is.deep","link":"<a href=\"Scale_is.html#.deep\">Scale &rtrif; is.deep</a>"},{"title":"Scale#is.distributionally_even","link":"<a href=\"Scale_is.html#.distributionally_even\">Scale &rtrif; is.distributionally_even</a>"},{"title":"Scale#is.in_lower_edos","link":"<a href=\"Scale_is.html#.in_lower_edos\">Scale &rtrif; is.in_lower_edos</a>"},{"title":"Scale#is.invertible","link":"<a href=\"Scale_is.html#.invertible\">Scale &rtrif; is.invertible</a>"},{"title":"Scale#is.maximally_even","link":"<a href=\"Scale_is.html#.maximally_even\">Scale &rtrif; is.maximally_even</a>"},{"title":"Scale#is.mode_of","link":"<a href=\"Scale_is.html#.mode_of\">Scale &rtrif; is.mode_of</a>"},{"title":"Scale#is.MOLT","link":"<a href=\"Scale_is.html#.MOLT\">Scale &rtrif; is.MOLT</a>"},{"title":"Scale#is.myhill_property","link":"<a href=\"Scale_is.html#.myhill_property\">Scale &rtrif; is.myhill_property</a>"},{"title":"Scale#is.normal_order","link":"<a href=\"Scale_is.html#.normal_order\">Scale &rtrif; is.normal_order</a>"},{"title":"Scale#is.one_of","link":"<a href=\"Scale_is.html#.one_of\">Scale &rtrif; is.one_of</a>"},{"title":"Scale#is.prime_form","link":"<a href=\"Scale_is.html#.prime_form\">Scale &rtrif; is.prime_form</a>"},{"title":"Scale#is.subset","link":"<a href=\"Scale_is.html#.subset\">Scale &rtrif; is.subset</a>"},{"title":"show","link":"<a href=\"Scale_show.html\">show</a>"},{"title":"Scale#show.interval_fractal_tree","link":"<a href=\"Scale_show.html#.interval_fractal_tree\">Scale &rtrif; show.interval_fractal_tree</a>"},{"title":"Scale#show.necklace","link":"<a href=\"Scale_show.html#.necklace\">Scale &rtrif; show.necklace</a>"},{"title":"to","link":"<a href=\"Scale_to.html\">to</a>"},{"title":"Scale#to.cents","link":"<a href=\"Scale_to.html#.cents\">Scale &rtrif; to.cents</a>"},{"title":"Scale#to.steps","link":"<a href=\"Scale_to.html#.steps\">Scale &rtrif; to.steps</a>"},{"title":"convert","link":"<a href=\"Time_convert.html\">convert</a>"},{"title":"Time#convert.beats_to_msec","link":"<a href=\"Time_convert.html#.beats_to_msec\">Time &rtrif; convert.beats_to_msec</a>"},{"title":"Time#convert.beats_to_ratios","link":"<a href=\"Time_convert.html#.beats_to_ratios\">Time &rtrif; convert.beats_to_ratios</a>"},{"title":"Time#convert.beats_to_tempo","link":"<a href=\"Time_convert.html#.beats_to_tempo\">Time &rtrif; convert.beats_to_tempo</a>"},{"title":"get","link":"<a href=\"Time_get.html\">get</a>"},{"title":"Time#get.beat","link":"<a href=\"Time_get.html#.beat\">Time &rtrif; get.beat</a>"},{"title":"Time#get.counterpoint_cycle","link":"<a href=\"Time_get.html#.counterpoint_cycle\">Time &rtrif; get.counterpoint_cycle</a>"},{"title":"Time#get.explicit","link":"<a href=\"Time_get.html#.explicit\">Time &rtrif; get.explicit</a>"},{"title":"Time#get.fractal","link":"<a href=\"Time_get.html#.fractal\">Time &rtrif; get.fractal</a>"},{"title":"Time#get.motives","link":"<a href=\"Time_get.html#.motives\">Time &rtrif; get.motives</a>"},{"title":"Time#get.ratios","link":"<a href=\"Time_get.html#.ratios\">Time &rtrif; get.ratios</a>"},{"title":"Time#get.relational_motives","link":"<a href=\"Time_get.html#.relational_motives\">Time &rtrif; get.relational_motives</a>"},{"title":"Time#get.repeated","link":"<a href=\"Time_get.html#.repeated\">Time &rtrif; get.repeated</a>"},{"title":"Time#get.subdivisions","link":"<a href=\"Time_get.html#.subdivisions\">Time &rtrif; get.subdivisions</a>"},{"title":"resize","link":"<a href=\"Time_resize.html\">resize</a>"},{"title":"Time#resize.by_product","link":"<a href=\"Time_resize.html#.by_product\">Time &rtrif; resize.by_product</a>"},{"title":"Time#resize.by_sum","link":"<a href=\"Time_resize.html#.by_sum\">Time &rtrif; resize.by_sum</a>"},{"title":"myhill_property","link":"<a href=\"global.html#myhill_property\">Global &rtrif; myhill_property</a>"}];
 setupSearch(list)
 </script>
 
