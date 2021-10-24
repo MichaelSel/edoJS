@@ -1,11 +1,12 @@
 {
   "name": "edo.js",
-  "version": "1.2.14",
+  "version": "1.2.15",
   "description": "A set of functions for manipulating musical pitches within a given EDO",
-  "main": "edo.js",
+  "main": "index.js",
   "scripts": {
     "test": "mocha",
-    "build": "rollup --config"
+    "build": "rollup --config",
+    "docs": "jsdoc edo.js -c jsdoc.conf.json -r"
   },
   "keywords": [
     "music",
