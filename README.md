@@ -13,15 +13,22 @@ To install npm (its dependencies)
 npm i edo.js
 ```
 
+
+
+
+
+Similarly, you can do any type of import.
+
 #### Import Library
 Client-Side
+CDN source example - https://www.jsdelivr.com/package/npm/edo.js?version=1.2.14&path=dist
 ```xhtml
-<script src="edo.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/edo.js@1.2.14/dist/edo.js"></script>```
 ```
-
 Server-Side
 ```Javascript
-const EDO = require("./edo").EDO
+// NOTE: here no relative path so node will use the edojs installed from NPM
+const EDO = require("edo.js").EDO;
 ```
 
 #### Basic Usage
