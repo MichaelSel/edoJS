@@ -8,6 +8,21 @@
     "build": "rollup --config",
     "docs": "jsdoc edo.js -c jsdoc.conf.json -r"
   },
+  "files": [
+    "dist/*",
+    "docs/*",
+    "libs/*",
+    "test/*",
+    "CONTRIBUTING.md",
+    "edo.js",
+    "index.js",
+    "jsdoc.conf.json",
+    "LICENSE",
+    "package.json",
+    "paper.bib",
+    "paper.md",
+    "README.md"
+  ],
   "keywords": [
     "music",
     "music theory",
