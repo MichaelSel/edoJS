@@ -7170,11 +7170,11 @@ class Time {
 
 
 
-module.exports =  {
-    EDO,
-    Scale,
-    Time
-};
+module.exports = {
+    EDO: EDO,
+    Scale: Scale,
+    Time: Time
+}
 
 
 
