@@ -1,5 +1,5 @@
 function unit_tests() {
-    const EDO = require('../edo').EDO
+    const EDO = require("../index.js").EDO;
     const assert = require('assert');
     const should = require('chai').should()
     const edo12 = new EDO(12)
