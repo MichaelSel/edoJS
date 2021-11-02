@@ -52,13 +52,25 @@ edo.is.subset([2,4],[1,2,3,4,5]) //returns true (the set [2,4] IS a subset of [1
 
 To install development dependencies:
 ```
-npm i edo.js --dev
+npm install --include=dev
+```
+
+To build the project
+
+```
+npm run build
+```
+
+To regenerate the docs
+
+```
+npm run docs
 ```
 
 To test: 
 
 ```
-npm test
+npm run test
 ```
 
 ## Author
