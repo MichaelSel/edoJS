@@ -452,6 +452,29 @@ class EDO {
 
         },
 
+        /** Returns the midi_note and cents offset for a given pitch frequency in hertz
+         *
+         * @param  {Number} hz - Some frequency of a pitch
+         * @returns {Object} {midi: the midi-note number, cents: fine-tuning of note in cents}
+         * @memberOf EDO#convert
+         * @example
+         * let edo = new EDO()
+         * edo.convert.freq_to_midi(445)
+         * //returns
+         * { midi: 69, cents: 20 }
+         * */
+        freq_to_midi: (hz) => {
+            let result = (12*Math.log2(hz/440))+69
+            let midi_note = Math.floor(result)
+            let dec = result-midi_note
+            let cents = Math.round(dec*100)
+            if(cents>50) {
+                midi_note = midi_note+1
+                cents = (100-cents)*-1
+            }
+            return {midi:midi_note, cents:cents}
+        },
+
         /** Returns a value in cents from a given interval
          *
          * @param  {Number} interval - Some interval

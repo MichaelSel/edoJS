@@ -29,6 +29,7 @@ function unit_tests() {
                         "ratio": "3:1",
                         "original": 700
                     }],
+                    freq_to_midi: [edo12.convert.freq_to_midi, [445], { midi: 69, cents: 20 }],
                     interval_to_cents: [edo12.convert.interval_to_cents, [6], 600],
                     interval_to_ratio: [edo12.convert.interval_to_ratio, [7], 1.4983070768766815],
                     intervals_to_pitches: [edo12.convert.intervals_to_pitches, [[2, 3]], [0, 2, 5]],
