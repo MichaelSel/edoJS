@@ -2339,7 +2339,7 @@ class EDO {
 
             pitches.sort((a, b) => a - b)
             let modes = this.get.modes(pitches)
-            let organize = function (modes) {
+            let organize = function (modes)     {
                 let smallest = edo
                 let filtered_modes = []
                 modes.forEach(mode => {
