@@ -160,7 +160,7 @@
     }
 
     let update_page = function () {
-
+        const EDO = edo.js.EDO
         let edo = new EDO(parseInt($('#edo_input').val()))
         let scale = edo.scale($('#scale_input').val().split(' ').map((el) => parseInt(el)))
         $("#scale_info").html(scale.pitches.join(" ") + " (" + scale.get.normal_order().join(' ') +" in normal order)")
