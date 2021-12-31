@@ -6711,7 +6711,7 @@ class Scale {
         /**
          * Returns the current scale in the specified edo (if it exists in it). If this scale cannot be expressed in the desired tuning, the fundtion will return undefined.
          * @param {Number} [new_edo] - The number of equal divisions of the target tuning system
-         * @returns {<Scale>}
+         * @returns {Scale}
          * @memberOf Scale#to
          * @example
          * let edo = new EDO(12) //define context

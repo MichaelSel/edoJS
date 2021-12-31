@@ -457,6 +457,29 @@
 
             },
 
+            /** Returns the midi_note and cents offset for a given pitch frequency in hertz
+             *
+             * @param  {Number} hz - Some frequency of a pitch
+             * @returns {Object} {midi: the midi-note number, cents: fine-tuning of note in cents}
+             * @memberOf EDO#convert
+             * @example
+             * let edo = new EDO()
+             * edo.convert.freq_to_midi(445)
+             * //returns
+             * { midi: 69, cents: 20 }
+             * */
+            freq_to_midi: (hz) => {
+                let result = (12*Math.log2(hz/440))+69;
+                let midi_note = Math.floor(result);
+                let dec = result-midi_note;
+                let cents = Math.round(dec*100);
+                if(cents>50) {
+                    midi_note = midi_note+1;
+                    cents = (100-cents)*-1;
+                }
+                return {midi:midi_note, cents:cents}
+            },
+
             /** Returns a value in cents from a given interval
              *
              * @param  {Number} interval - Some interval
@@ -2321,7 +2344,7 @@
 
                 pitches.sort((a, b) => a - b);
                 let modes = this.get.modes(pitches);
-                let organize = function (modes) {
+                let organize = function (modes)     {
                     let smallest = edo;
                     let filtered_modes = [];
                     modes.forEach(mode => {
@@ -4974,6 +4997,15 @@
                 return intervals
             },
 
+            /** <p>Returns the current edo (number of equal divisions of the octave) used by the scale
+             * @memberOf Scale#get
+             * @example
+             * let edo = new EDO(12) //define context
+             * let scale = edo.scale([0,2,4,5,7,9,11]) //The diatonic set
+             * scale.get.edo() //returns 12
+             */
+            edo: () => this.edo,
+
             /** Returns the difference between the current scale and a given set.
              * @param  {Array<Number>} [set = [0,2,4,5,7,9,11]] - The set the current scale is compared to
              * @param  {Boolean} [consider_all_modes=false] - Indicates whether the algorithm should consider every possible mode of the current scale to assess which is closest to the comparison set, or whether it should only consider the current set in its current mode.
@@ -6670,6 +6702,28 @@
             cents: () => {
                 return this.pitches.map((note) => note * this.parent.cents_per_step)
             },
+
+            /**
+             * Returns the current scale in the specified edo (if it exists in it). If this scale cannot be expressed in the desired tuning, the fundtion will return undefined.
+             * @param {Number} [new_edo] - The number of equal divisions of the target tuning system
+             * @returns {<Scale>}
+             * @memberOf Scale#to
+             * @example
+             * let edo = new EDO(12) //define context
+             * let scale = edo.scale([0,2,4,5,7,9,11]) //new Scale object
+             * scale.to.EDO(24) //returns a Scale Object corresponding to [0, 4, 8, 10, 14, 18, 22] in 24EDO
+             * */
+            EDO: new_edo => {
+                let current_edo = this.get.edo();
+                let quotient = current_edo/new_edo;
+                let new_pitches = this.get.pitches().map(pitch=>pitch/quotient);
+                let valid = new_pitches.reduce((agg,pitch)=>(pitch==Math.floor(pitch)) && agg,true);
+                if(valid) {
+                    let new_system = new EDO(new_edo);
+                    return new_system.scale(new_pitches)
+                }
+            },
+
 
             /**
              * Instead of pitch-classes, this returns the scale represented by intervals (steps between notes)
