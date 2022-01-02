@@ -1149,6 +1149,38 @@ class EDO {
             return PCs
         },
 
+
+        /** <p>Returns N step constituents such that they minimize the size between the smallest and largest constituents</p>
+         * @param {Number} n - The numbers of desired steps
+         * @returns {Array<Number>}
+         * @memberOf EDO#get
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * edo.get.evenly_split(5) //returns [ 2, 2, 2, 3, 3 ]
+         * edo.get.evenly_split(6) //returns [ 2, 2, 2, 2, 2, 2 ]
+         * edo.get.evenly_split(7) //returns [ 1, 1, 2, 2, 2, 2, 2 ]
+         * edo.get.evenly_split(8) //returns [ 1, 1, 1, 1, 2, 2, 2, 2 ]
+         */
+        evenly_split: (n) => {
+            let intervals = []
+
+            let edo = this.edo
+            if (edo < n)
+                return intervals
+            else if (edo % n == 0) {
+                intervals = Array.from(Array(n).fill(edo/n))
+            } else {
+                let zp = n - (edo % n);
+                let pp = Math.floor(edo / n);
+                for (let i = 0; i < n; i++) {
+                    if (i >= zp) intervals.push((pp + 1))
+                    else intervals.push(pp)
+
+                }
+            }
+            return intervals
+        },
+
         /** <p>Returns a chord progression of length <code>num_of_chords</code> using only <code>allowed_qualities</code>, with at least <code>common_notes_min</code> notes in common between every chord.</p>
          * @param {Array<Array<Number>>} allowed_qualities - A list of allowed chord qualities (regardless of transposition)
          * @param {Array<Number>} starting_chord - The first chord in the progression (using exact pitches and voicing)
@@ -3363,6 +3395,9 @@ class EDO {
             if (as_PC) pitches = pitches.map((pitch) => this.mod(pitch, this.edo))
             return pitches
         },
+
+
+
 
         /** Returns the union of two sets
          *
@@ -6208,6 +6243,28 @@ class Scale {
             return stacks
         },
 
+
+        /** <p>Returns the mean difference between each step in the set, and an equally-dividing step-size. (In a scale of cardinality-7, the difference between each step, and the minimal step-size in 7-EDO)</p>
+         * @returns {Number} The mean difference
+         * @memberOf Scale#get
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //major scale
+         * scale.get.step_mean_error() //returns 0.4081632653061225
+         *
+         * let scale = edo.scale([0,2,4,6,8,10]) //whole-tones
+         * scale.get.step_mean_error() //returns 0
+         */
+        step_mean_error: () => {
+            let steps = this.to.steps()
+            let cardinality = this.count.pitches()
+            let mean_step = 12/cardinality
+            let step_err = steps.map(s=>Math.abs(s-mean_step))
+            let total_err = step_err.reduce((ag,e)=>ag+e,0)
+            let normalized = total_err / cardinality
+            return normalized
+        },
+
         /** <p>Returns a list of unique step sizes that appear in the scale.</p>
          * @returns {Array<Number>} The step sizes
          * @example
@@ -6434,6 +6491,65 @@ class Scale {
             if (cache) this.catalog['trichords'] = trichords
             return trichords
 
+        },
+
+        /** <p>Returns a numeric value of how unevenlyy a set's steps are distributed.</p>
+         *<p>The measure is done by splitting the set into n parts and checking by how much each part differs from an ideal even split of the set (the current edo / n).</p>
+         *<p>For example, 2 whole-steps and 2 major-3rds can be represented as [2 2 4 4], [2 ,4, 2, 4]. While the first distribution is imbalanced (the small steps are bunched together, and the big steps are bunched together), the 2nd distribution represents an even split</p>
+         * @returns {Number}
+         * @see Clough, John, and Jack Douthett. "Maximally even sets." Journal of music theory 35.1/2 (1991): 93-173.
+         * @memberOf Scale#get
+         *
+         * @example
+         * let edo = new EDO(12) //Create a tuning context
+         * edo.get.unevenness([0,2,4,5,7,9,11]) //returns 0
+         * // It returns 0 because in the universe of scale with steps [1 1 2 2 2 2 2], the scale above has the least "unevenness"
+         */
+        unevenness: (normalize = true) => {
+            let min_uneven = Infinity
+            let max_uneven = 0
+
+            if (normalize) {
+                let steps = this.to.steps()
+                let necklaces = this.parent.get.necklace(steps)
+                    .map(n => this.parent.convert.intervals_to_scale(n))
+                    .map(s => this.parent.scale(s))
+                necklaces.forEach(n => {
+                    let result = n.get.unevenness(false)
+                    if (result < min_uneven) min_uneven = result
+                    if (result > max_uneven) max_uneven = result
+                })
+            }
+
+
+            let cardinality = this.count.pitches()
+            let temp_edo = new EDO(cardinality)
+            let mode_unevenness = []
+            for (let mode_num = 0; mode_num < cardinality; mode_num++) {
+                let mode_errors = []
+
+                for (let parts = 2; parts <= Math.ceil(cardinality / 2); parts++) {
+                    let ideal_segment_size = this.edo / parts
+                    let split = temp_edo.get.evenly_split(parts)
+                    let as_steps = this.mode(mode_num).to.steps()
+                    let segments = []
+                    for (let i = 0; i < parts; i++) segments.push(as_steps.splice(0, split[i]))
+
+                    let segment_sum = segments.map(segment => segment.reduce((ag, e) => ag + e, 0))
+                    let segment_error = segment_sum.map(s => Math.abs(s - ideal_segment_size))
+                    let sum_of_errors = segment_error.reduce((agg, e) => agg + e, 0)
+                    mode_errors.push(sum_of_errors)
+                }
+                mode_unevenness.push(mode_errors.reduce((ag, e) => ag + e, 0))
+            }
+            let set_unevenness = mode_unevenness.reduce((ag, e) => ag + e, 0) / cardinality
+            if (normalize) {
+
+                if (max_uneven == 0) return 0
+                if (max_uneven == min_uneven) return 0
+                set_unevenness = (set_unevenness - min_uneven) / (max_uneven - min_uneven)
+            }
+            return set_unevenness
         },
 
         /** <p>Returns the scale without the pitches in <code>to_remove</code> array</p>
