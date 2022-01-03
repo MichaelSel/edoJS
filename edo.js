@@ -2439,6 +2439,75 @@ class EDO {
             return available
         },
 
+
+        /** Returns the maximal sum of step difference from the mean in a scale of that cardinality
+         * @param  {Number} cardinality - the number of notes in a scale
+         * @return {Number} The maximal sum of step error from the mean a scale in that cardinality can have
+         * @memberOf EDO#get
+         * @example
+         * let edo = new EDO(12) //Create a tuning context
+         * edo.get.step_maximal_mean_error_in_cardinality(7) //returns 8.571428571428571
+         * */
+        step_maximal_mean_error_in_cardinality: (cardinality) => {
+            let steps = Array.from(Array(cardinality-1).fill(1))
+            let scale = this.scale(this.convert.intervals_to_scale(steps))
+            return scale.get.step_mean_error()
+        },
+
+        /** Returns the minimal sum of step difference from the mean in a scale of that cardinality
+         * @param  {Number} cardinality - the number of notes in a scale
+         * @return {Number} The minimal sum of step error from the mean a scale in that cardinality can have
+         * @memberOf EDO#get
+         * @example
+         * let edo = new EDO(12) //Create a tuning context
+         * edo.get.step_minimal_mean_error_in_cardinality(7) //returns 2.8571428571428568
+         * */
+        step_minimal_mean_error_in_cardinality: (cardinality) => {
+            let split = this.get.evenly_split(cardinality)
+            let scale = this.scale(this.convert.intervals_to_scale(split))
+            return scale.get.step_mean_error()
+        },
+
+        /** Returns the maximal and minimal sums of step difference from the mean in a scale of that cardinality
+         * @param  {Number} cardinality - the number of notes in a scale
+         * @return {Object} The minimal and maximal sum of step error from the mean a scale in that cardinality can have
+         * @memberOf EDO#get
+         * @see EDO#get.step_minimal_mean_error_in_cardinality()
+         * @see EDO#get.step_maximal_mean_error_in_cardinality()
+         * @example
+         * let edo = new EDO(12) //Create a tuning context
+         * edo.get.step_min_max_mean_error_in_cardinality(7)
+         * //returns { min: 2.8571428571428568, max: 8.571428571428571 }
+         * */
+        step_min_max_mean_error_in_cardinality: (cardinality) => {
+            return {min:this.get.step_minimal_mean_error_in_cardinality(cardinality),max:this.get.step_maximal_mean_error_in_cardinality(cardinality)}
+        },
+
+        /** Returns the maximal and minimal sums of step difference possible in that tuning system
+         * @param  {Boolean} [cache=true] - option caching for faster retrival
+         * @return {Object} The minimal and maximal sum of step error from the mean a scale in that tuning system
+         * @memberOf EDO#get
+         * @see EDO#get.step_minimal_mean_error_in_cardinality()
+         * @see EDO#get.step_maximal_mean_error_in_cardinality()
+         * @see EDO#get.step_min_max_mean_error_in_cardinality()
+         * @example
+         * let edo = new EDO(12) //Create a tuning context
+         * edo.get.step_min_max_error_in_EDO()
+         * //returns { min: 0, max: 12 }
+         * */
+        step_min_max_error_in_EDO: (cache=true) => {
+            if(this.catalog["min_max_error_in_EDO"]) return this.catalog["min_max_error_in_EDO"]
+            let arr = []
+            for (let i = 2; i <= this.edo; i++) arr.push(this.get.step_min_max_mean_error_in_cardinality(i))
+            let min = arr.sort((a,b)=>a['min']-b['min'])[0]['min']
+            let max = arr.sort((a,b)=>b['max']-a['max'])[0]['max']
+            let result = {min:min,max:max}
+            if(cache) {
+                this.catalog["min_max_error_in_EDO"] = result
+            }
+            return result
+        },
+
         /** Returns the elements of array1, but not if they are found in array 2
          * @param  {Array<Number>} array1 - a collection of numbers (pitch-classes, or anything for that matter)
          * @param  {Array<Number>} array2 - a collection of numbers (PCs or any)
@@ -5688,6 +5757,37 @@ class Scale {
 
         },
 
+        /**
+         * <p>Returns the steps of the scale in descending order</p>
+         * @memberOf Scale#get
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,7,9]) //pentatonic scale
+         * scale.get.necklace_family() // returns [ 3, 3, 2, 2, 2 ]
+         * */
+        necklace_family: () => {
+            let steps = this.to.steps()
+            let necklace_family = steps.sort((a,b)=>b-a)
+            return necklace_family
+        },
+
+        /**
+         * <p>Returns the steps of the scale in descending order</p>
+         * @memberOf Scale#get
+         * @see Scale#get.necklace_family()
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0, 3, 5, 8, 10]) //pentatonic scale
+         * scale.get.necklace_family_members()
+         * //   [
+         *          [ 0, 3, 5, 8, 10 ],
+         *          [ 0, 3, 6, 8, 10 ]
+         *      ]
+         * */
+        necklace_family_members: () => {
+            return this.parent.get.necklace(this.get.necklace_family()).map(n=>this.parent.convert.intervals_to_scale(n))
+        },
+
         /** <p>Returns all of the sets whose constituents are at most <code>size</code> away from the original constituent, where no more than <code>alterations</code> constituents were altered.</p>
          * @param  {Number} [size=1] - Maximal alteration size (e.g. if 2, 3 can be altered into 2, 1, 4, or 5)
          * @param  {Number} [alterations=1] - Maximal number of constituents that can be altered.
@@ -6261,9 +6361,10 @@ class Scale {
             let mean_step = 12/cardinality
             let step_err = steps.map(s=>Math.abs(s-mean_step))
             let total_err = step_err.reduce((ag,e)=>ag+e,0)
-            let normalized = total_err / cardinality
-            return normalized
+            return total_err
         },
+
+
 
         /** <p>Returns a list of unique step sizes that appear in the scale.</p>
          * @returns {Array<Number>} The step sizes
