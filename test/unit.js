@@ -265,6 +265,7 @@ function unit_tests() {
                 for(let test_name in tests) {
                     it(test_name,function(){
                         tests[test_name][0](...tests[test_name][1]).should.be.eql(tests[test_name][2])
+                        console.log(edo12.catalog)
                     })
                 }
             })
@@ -311,7 +312,6 @@ function unit_tests() {
             })
         })
     })
-
 
 
     }

@@ -731,16 +731,14 @@ class EDO {
          * let edo = new EDO(12) // define a tuning system
          * edo.convert.to_steps([0,2,4,5,7,9,11])
          * //returns [ 2, 2, 1, 2, 2, 2 ]*/
-        to_steps: (lst, cache = false) => {
-            if (!this.catalog[String(lst)]) this.catalog[String(lst)] = {}
-            if (this.catalog[String(lst)]['steps']) return this.catalog[String(lst)]['steps']
-
+        to_steps: (lst, cache = true) => {
+            if(this.cat_getset(["to_steps",String(lst)])) return this.cat_getset(["to_steps",String(lst)])
             let s = [...lst]
             let intervals = []
             for (let i = 0; i < s.length - 1; i++) {
                 intervals.push(s[i + 1] - s[i])
             }
-            if (cache) this.catalog[String(lst)]['steps'] = intervals
+            if (cache) this.cat_getset(["to_steps",String(lst)],intervals)
             return intervals
         }
 
@@ -1895,17 +1893,15 @@ class EDO {
          * let edo = new EDO(12) // define a tuning system
          * edo.get.inversion([0,2,4,5,7,9,11]) //univertable collection
          * //returns [0, 2,  4, 6, 7, 9, 11]*/
-        inversion: (scale, cache = false) => {
-
-            if (!this.catalog[String(scale)]) this.catalog[String(scale)] = {}
-            if (this.catalog[String(scale)]['inverted']) return this.catalog[String(scale)]['inverted']
+        inversion: (scale, cache = true) => {
+            if(this.cat_getset(["scale_"+scale,'inverted'])) return this.cat_getset(["scale_"+scale,'inverted'])
 
             let steps = this.convert.to_steps(scale)
             let r_steps = [...steps]
             r_steps.reverse()
 
             let i_scale = this.convert.intervals_to_scale(r_steps)
-            if (cache) this.catalog[String(scale)]['inverted'] = i_scale
+            if (cache) this.cat_getset(["scale_"+scale,'inverted'],i_scale)
             return i_scale
         },
 
@@ -2146,10 +2142,10 @@ class EDO {
          *  [0,1,3,5,6,8,10]  //Locrian
          * ]
          * */
-        modes: (scale, cache = false, avoid_duplications = true) => {
+        modes: (scale, cache = true, avoid_duplications = true) => {
             let edo = this.edo
-            if (!this.catalog[String(scale)]) this.catalog[String(scale)] = {}
-            if (this.catalog[String(scale)]['modes']) return this.catalog[String(scale)]['modes']
+            if(this.cat_getset(["scale_"+scale,'modes'])) return this.cat_getset(["scale_"+scale,'modes'])
+
 
 
             let length = scale.length
@@ -2165,7 +2161,7 @@ class EDO {
                 modes.push(mode)
             }
             if (avoid_duplications) modes = this.get.unique_elements(modes)
-            if (cache) this.catalog[String(scale)]['modes'] = modes
+            if (cache) this.cat_getset(["scale_"+scale,'modes'],modes)
 
             return modes
         },
@@ -2354,11 +2350,10 @@ class EDO {
          * let edo = new EDO(12) //Create a tuning context
          * edo.get.normal_order([0,2,4,5,7,9,11])
          * //returns [ 0, 1, 3, 5, 6, 8, 10 ]*/
-        normal_order: (lst, cache = false) => {
+        normal_order: (lst, cache = true) => {
             if (lst.length == 0) return []
             let edo = this.edo
-            if (!this.catalog[String(lst)]) this.catalog[String(lst)] = {}
-            if (this.catalog[String(lst)]['normal_order']) return this.catalog[String(lst)]['normal_order']
+            if(this.cat_getset(["scale_"+lst,'normal_order'])) return this.cat_getset(["scale_"+lst,'normal_order'])
 
 
             let pitches = []
@@ -2394,9 +2389,7 @@ class EDO {
             }
 
             let result = organize(modes)
-            if (cache) {
-                this.catalog[String(lst)]['normal_order'] = result
-            }
+            if (cache) this.cat_getset(["scale_"+lst,'normal_order'],result)
             return result
         },
 
@@ -2496,15 +2489,13 @@ class EDO {
          * //returns { min: 0, max: 12 }
          * */
         step_min_max_error_in_EDO: (cache=true) => {
-            if(this.catalog["min_max_error_in_EDO"]) return this.catalog["min_max_error_in_EDO"]
+            if(this.cat_getset(["min_max_error_in_EDO"])) return this.cat_getset(["min_max_error_in_EDO"])
             let arr = []
             for (let i = 2; i <= this.edo; i++) arr.push(this.get.step_min_max_mean_error_in_cardinality(i))
             let min = arr.sort((a,b)=>a['min']-b['min'])[0]['min']
             let max = arr.sort((a,b)=>b['max']-a['max'])[0]['max']
             let result = {min:min,max:max}
-            if(cache) {
-                this.catalog["min_max_error_in_EDO"] = result
-            }
+            if(cache) this.cat_getset(["min_max_error_in_EDO"],result)
             return result
         },
 
@@ -3327,7 +3318,8 @@ class EDO {
          * @return {Object}
          * @memberOf EDO#get
          */
-        simple_ratios: (limit = 17, cache = false) => {
+        simple_ratios: (limit = 17, cache = true) => {
+            if(this.cat_getset(["simple_ratios",limit])) return this.cat_getset(["simple_ratios",limit])
             let primes = this.get.primes_in_range(limit)
             let ratios = {}
             for (let i = 2; i < limit + 1; i++) {
@@ -3336,6 +3328,7 @@ class EDO {
                     ratios[String(i) + ':' + String(j)] = {cents: this.convert.ratio_to_cents(i / j), cents_in_octave: this.mod(this.convert.ratio_to_cents(i / j),1200), value: i / j}
                 }
             }
+            if(cache) this.cat_getset(["simple_ratios",limit],ratios)
             return ratios
         },
 
@@ -4454,6 +4447,26 @@ class EDO {
         return ((n % m) + m) % m;
     }
 
+    // Get / Set cache catalog
+    cat_getset(keys,value) {
+        function getValue(obj, key,  ...rest) {
+            if (obj === undefined) return undefined
+            if (rest.length == 0 && obj.hasOwnProperty(key)) return obj[key]
+            return getValue(obj[key], ...rest)
+        }
+        function setValue(obj,value, key,  ...rest) {
+
+            if (rest.length == 0) {
+                obj[key] = value
+                return obj[key]
+            }
+            if(obj[key]===undefined) obj[key] = {}
+            return setValue(obj[key],value, ...rest)
+        }
+        if(value===undefined) return getValue(this.catalog,...keys)
+        else return setValue(this.catalog,value,...keys)
+    }
+
 
 }
 
@@ -4511,7 +4524,7 @@ class Scale {
      */
     constructor(pitches, parent) {
         this.parent = parent
-        this.catalog = {}
+
 
         let smallest = Math.min.apply(Math, pitches)
         let diff_from_zero = 0 - smallest
@@ -4522,8 +4535,10 @@ class Scale {
         this.pitches = this.parent.get.unique_elements(this.pitches)
         this.pitches.sort((a, b) => a - b)
         this.length = this.count.pitches()
-        this.name = this.get.name()
+        this.name = this.get.name(false)
     }
+
+
 
     /**A collection of functions that return an amount
      * @namespace*/
@@ -4581,15 +4596,12 @@ class Scale {
          * scale.count.consecutive_steps(2) //returns 3
          * */
         consecutive_steps: (size,cache=true) => {
-            if('consecutive_steps' in this.catalog) {
-                if(size in this.catalog['consecutive_steps']) return this.catalog['consecutive_steps'][size]
-            } else this.catalog['consecutive_steps'] = {}
+            if(this.cat_getset(['consecutive_steps',size])) return this.cat_getset(['consecutive_steps',size])
 
             let counts = []
             let steps = this.to.steps()
             steps = [...steps, ...steps]
             if (steps.indexOf(size) == -1) return 0
-            let sequences = []
             let count = 0
             for (let step of steps) {
                 if (step == size) count++
@@ -4601,7 +4613,7 @@ class Scale {
             counts = counts.sort((a, b) => b - a)
             let result = counts[0]
             result = Math.min.apply(Math, [result, this.edo])
-            if(cache) this.catalog['consecutive_steps'][size] = result
+            if(cache) this.cat_getset(['consecutive_steps',size],result)
             return result
 
         },
@@ -4619,9 +4631,9 @@ class Scale {
          * scale.count.imperfections() //returns 1
          * scale.count.imperfections(0) //returns 7
          */
-        imperfections: (tolerance = 10, cache = false) => {
+        imperfections: (tolerance = 10, cache = true) => {
 
-            if (this.catalog['# imperfections']) return this.catalog['# imperfections']
+            if(this.cat_getset('# imperfections')) return this.cat_getset('# imperfections')
 
             let scale = this.pitches
             let imperfections = 0
@@ -4642,7 +4654,7 @@ class Scale {
                 })
                 if (!valid) imperfections++
             })
-            if (cache) this.catalog['# imperfections'] = imperfections
+            if (cache) this.cat_getset('# imperfections',imperfections)
             return imperfections
 
         },
@@ -4782,12 +4794,12 @@ class Scale {
          * scale.count.n_chords() //returns 15
          * */
         n_chords: (cache=true) => {
-            if(this.catalog['n_chords']) return this.catalog['n_chords']
+            if(this.cat_getset('n_chords_count')) return this.cat_getset('n_chords_count')
             let n_chords = 1 //1 because the collection of all pitches shuold also be counted
             for (let i = 2; i < this.count.pitches(); i++) {
                 n_chords+=this.get.n_chords(i).length
             }
-            if(cache) this.catalog['n_chords'] = n_chords
+            if(cache) this.cat_getset('n_chords_count',n_chords)
             return n_chords
         },
 
@@ -4851,7 +4863,7 @@ class Scale {
          * @see Rahn, J. (1991). "Coordination of interval sizes in seven-tone collections." Journal of Music Theory 35(1/2): 33-60.
          */
         rahn_contradictions: (cache=true) => {
-            if('rahn_contradictions' in this.catalog) return this.catalog['rahn_contradictions']
+            if(this.cat_getset('rahn_contradictions')) return this.cat_getset('rahn_contradictions')
             let all = []
             let total = 0
             let scale_degrees = [...Array(this.pitches.length).keys()]
@@ -4877,7 +4889,7 @@ class Scale {
             //     console.log(pair[1].pitches)
             //     // console.log("Span1:",pair[0].generic,"Span2:",pair[1].generic,"Size1:",pair[0].specific,"Size2:",pair[1].specific,"int1:",pair[0].pitches,'int2:',pair[1].pitches)
             // })
-            if(cache) this.catalog['rahn_contradictions'] = total
+            if(cache) this.cat_getset('rahn_contradictions',total)
             return total
         },
 
@@ -4892,7 +4904,7 @@ class Scale {
          * @see Scale#get.specific_intervals
          */
         rahn_ambiguities: (cache=true) => {
-            if('rahn_ambiguities' in this.catalog) return this.catalog['rahn_ambiguities']
+            if(this.cat_getset('rahn_ambiguities')) return this.cat_getset('rahn_ambiguities')
             let total = 0
             let scale_degrees = [...Array(this.pitches.length).keys()]
             let combinations = this.parent.get.combinations(scale_degrees,2).sort((a,b)=>a[0]-b[0] || a[1]-b[1])
@@ -4911,7 +4923,7 @@ class Scale {
                     }
                 }
             }
-            if(cache) this.catalog['rahn_ambiguities'] = total
+            if(cache) this.cat_getset('rahn_ambiguities',total)
             return total
         },
 
@@ -5000,8 +5012,8 @@ class Scale {
          * @return {Number}
          * @function
          * @memberOf Scale#count*/
-        transpositions: (cache = false) => {
-            if (this.catalog['# transpositions']) return this.catalog['# transpositions']
+        transpositions: (cache = true) => {
+            if(this.cat_getset('# transpositions')) return this.cat_getset('# transpositions')
             let scale = this.pitches
             let scales = [scale]
             for (let i = 0; i < this.parent.edo; i++) {
@@ -5015,7 +5027,7 @@ class Scale {
 
             }
             let result = scales.length
-            if (cache) this.catalog['# transpositions'] = result
+            if (cache) this.cat_getset('# transpositions',result)
             return result
         },
 
@@ -5129,7 +5141,7 @@ class Scale {
          * scale.get.diagnostic_intervals() //returns [6]
          */
         diagnostic_intervals: (cache=true) => {
-            if('diagnostic_intervals' in this.catalog) return this.catalog['diagnostic_intervals']
+            if(this.cat_getset('diagnostic_intervals')) return this.cat_getset('diagnostic_intervals')
             let intervals = []
             for (let i = 1; i <= Math.floor(this.edo/2); i++) {
                 let specific = this.get.specific_intervals(i)
@@ -5141,7 +5153,7 @@ class Scale {
                 })
                 if(all1) intervals.push(specific[0].specific)
             }
-            if(cache) this.catalog['diagnostic_intervals'] = intervals
+            if(cache) this.cat_getset('diagnostic_intervals',intervals)
             return intervals
         },
 
@@ -5458,8 +5470,8 @@ class Scale {
          * let scale = edo.scale([0,2,4,5,7,9,11]) //major scale
          * scale.get.interval_vector() //returns [ 1, 5, 2, 3, 3, 1 ]
          */
-        interval_vector: (cache = false) => {
-            if (this.catalog['interval vector']) return this.catalog['interval vector']
+        interval_vector: (cache = true) => {
+            if(this.cat_getset('interval_vector')) return this.cat_getset('interval_vector')
 
             let scale_split = Math.floor(this.edo / 2)
             let vector = Array.from(new Array(scale_split).fill(0))
@@ -5474,7 +5486,7 @@ class Scale {
 
             }
 
-            if (cache) this.catalog['interval vector'] = vector
+            if (cache) this.cat_getset('interval_vector',vector)
             return vector
 
 
@@ -5490,12 +5502,12 @@ class Scale {
          * let edo = new EDO(12) //define context
          * let scale = edo.scale([0,2,4,5,7,9,11]) //major scale
          * scale.get.inversion() //returns [0, 2, 4, 6, 7, 9, 11]*/
-        inversion: (cache = false) => {
+        inversion: (cache = true) => {
             /*Inverts the intervals of the scale*/
-            if (this.catalog['inverted']) return this.catalog['inverted']
+            if(this.cat_getset('inverted')) return this.cat_getset('inverted')
 
             let scale = this.parent.get.inversion(this.pitches, cache = false)
-            if (cache) this.catalog['inverted'] = scale
+            if (cache) this.cat_getset('inverted',scale)
 
             return scale
         },
@@ -5658,11 +5670,11 @@ class Scale {
          *  [ 0, 3, 5, 7, 10 ]
          * ]
          */
-        modes: (cache = false) => {
-            if (this.catalog['modes']) return this.catalog['modes']
+        modes: (cache = true) => {
+            if(this.cat_getset('modes')) return this.cat_getset('modes')
 
             let modes = this.parent.get.modes(this.pitches)
-            if (cache) return this.catalog['modes'] = modes
+            if (cache) this.cat_getset('modes',modes)
             return modes
         },
 
@@ -5725,13 +5737,12 @@ class Scale {
          * @see Scale#get.trichords
          * @see Scale#get.tetrachords
          */
-        n_chords: (n, normalize = true, cache = false) => {
-            if (this.catalog['n_chords']) {
-                if (Array.isArray(this.catalog['n_chords'][n])) return this.catalog['n_chords'][n]
-            } else this.catalog['n_chords'] = {}
+        n_chords: (n, normalize = true, cache = true) => {
+            if(normalize) if(this.cat_getset(['n_chords','normalized',n])) return this.cat_getset(['n_chords','normalized',n])
+            else if(this.cat_getset(['n_chords','unnormalized',n])) return this.cat_getset(['n_chords','unnormalized',n])
+
 
             let all = []
-            let extended = [...this.pitches, ...this.pitches.slice(0, n - 1)]
             const run_it = (i = 0, n_chord = []) => {
                 if (n_chord.length == n) {
                     if (this.parent.get.unique_elements(n_chord).length == n_chord.length) {
@@ -5750,7 +5761,10 @@ class Scale {
             }
             run_it()
             all = this.parent.get.unique_elements(all)
-            if (cache) this.catalog['n_chords'][n] = all
+            if (cache) {
+                if(normalize) this.cat_getset(['n_chords','normalized',n],all)
+                else this.cat_getset(['n_chords','unnormalized',n],all)
+            }
             return all
         },
 
@@ -5785,14 +5799,16 @@ class Scale {
          *         As such, the name for this scale will be 4-5</p>
          * @memberOf Scale#get
          * */
-        name: () => {
-
+        name: (cache=true) => {
+            if(this.cat_getset('name')) return this.cat_getset('name')
             let normal = this.get.normal_order()
             let total = 0
             normal.forEach((i) => {
                 total += Math.pow(2, i)
             })
-            return String(this.parent.edo) + "-" + String(parseInt(total))
+            let name = String(this.parent.edo) + "-" + String(parseInt(total))
+            if(cache) this.cat_getset('name',name)
+            return name
 
 
         },
@@ -5825,9 +5841,9 @@ class Scale {
          *      ]
          * */
         necklace_family_members: (cache=true) => {
-            if('necklace_family_members' in this.catalog) return this.catalog['necklace_family_members']
+            if(this.cat_getset(['necklace_family_members'])) return this.cat_getset(['necklace_family_members'])
             let result = this.parent.get.necklace(this.get.necklace_family()).map(n=>this.parent.convert.intervals_to_scale(n))
-            if(cache) this.catalog['necklace_family_members'] = result
+            if(cache) this.cat_getset(['necklace_family_members'],result)
             return result
         },
 
@@ -5902,19 +5918,19 @@ class Scale {
          * let edo = new EDO(12) //define context
          * let scale = edo.scale([0,2,4,5,7,9,11]) //major scale
          * scale.get.normal_order() //returns [0, 1, 3, 5, 6, 8, 10] */
-        normal_order: (cache = false) => {
+        normal_order: (cache = true) => {
             /*
             Returns the scale in normal order
 
             :param cache:
             :return:
             */
-            if (this.catalog['normal_order']) return this.catalog['normal_order']
+            if(this.cat_getset(['normal_order'])) return this.cat_getset(['normal_order'])
 
             let lst = this.pitches
-            let result = this.parent.get.normal_order(lst, cache = false)
+            let result = this.parent.get.normal_order(lst, cache = cache)
 
-            if (cache) this.catalog['normal_order'] = result
+            if (cache) this.cat_getset(['normal_order'],result)
             return result
 
         },
@@ -6006,9 +6022,9 @@ class Scale {
          * let edo = new EDO(12) //define context
          * let scale = edo.scale([0,2,4,5,7,9,11]) //major scale
          * scale.get.prime_form() //returns [0, 1, 3, 5, 6, 8, 10]*/
-        prime_form: (cache = false) => {
+        prime_form: (cache = true) => {
             /*Returns the scale in prime form*/
-            if (this.catalog['prime form']) return this.catalog['prime form']
+            if(this.cat_getset(['prime_form'])) return this.cat_getset(['prime_form'])
             let i_self = this.parent.scale(this.get.inversion())
             let norm_ord = this.parent.scale(this.get.normal_order())
             let i_norm_ord = this.parent.scale(i_self.get.normal_order())
@@ -6025,7 +6041,7 @@ class Scale {
                 }
 
             }
-            if (cache) this.catalog['prime form'] = result
+            if (cache) this.cat_getset(['prime_form'],result)
             return result
         },
 
@@ -6129,9 +6145,8 @@ class Scale {
          * scale.get.rothenberg_propriety()
          * //returns "strictly proper"
          * @memberOf Scale#get*/
-        rothenberg_propriety: (cache = false) => {
-            if (this.catalog['rothenberg']) return this.catalog['rothenberg']
-
+        rothenberg_propriety: (cache = true) => {
+            if(this.cat_getset(['rothenberg'])) return this.cat_getset(['rothenberg'])
             let scale = this.pitches
             let map = []
             let steps = Array(scale.length - 1).fill(0).map((el, i) => i + 1)
@@ -6157,7 +6172,7 @@ class Scale {
             if (strictly_proper) result = "strictly proper"
             else if (proper) result = "proper"
             else result = "improper"
-            if (cache) this.catalog['rothenberg'] = result
+            if (cache) this.cat_getset(['rothenberg'],result)
             return result
         },
 
@@ -6221,13 +6236,13 @@ class Scale {
          * @see Carey, N. (2007). "Coherence and sameness in well-formed and pairwise well-formed scales." Journal of Mathematics and Music 1(2): 79-98.
          * @memberOf Scale#get*/
         coherence_quotient: (cache=true) => {
-            if('coherence_quotient' in this.catalog) return this.catalog['coherence_quotient']
+            if(this.cat_getset(['coherence_quotient'])) return this.cat_getset(['coherence_quotient'])
             let all_amb = this.count.rahn_ambiguities()
             let all_cont = this.count.rahn_contradictions()
             let total = all_amb + all_cont
             let maximal_failures = this.parent.get.maximal_carey_coherence_failures(this.count.pitches())
             let CQ = 1-(total/maximal_failures)
-            if(cache) this.catalog['coherence_quotient'] = CQ
+            if(cache) this.cat_getset(['coherence_quotient'],CQ)
             return CQ
         },
 
@@ -6406,13 +6421,13 @@ class Scale {
          * scale.get.step_mean_error() //returns 0
          */
         step_mean_error: (cache=true) => {
-            if(this.catalog['step_mean_error']) return this.catalog['step_mean_error']
+            if(this.cat_getset(['step_mean_error'])) return this.cat_getset(['step_mean_error'])
             let steps = this.to.steps()
             let cardinality = this.count.pitches()
             let mean_step = 12/cardinality
             let step_err = steps.map(s=>Math.abs(s-mean_step))
             let total_err = step_err.reduce((ag,e)=>ag+e,0)
-            if(cache) this.catalog['step_mean_error'] = total_err
+            if(cache) this.cat_getset(['step_mean_error'],total_err)
             return total_err
         },
 
@@ -6427,11 +6442,10 @@ class Scale {
          * //returns [1,2]
          * @memberOf Scale#get*/
         step_sizes: (cache = true) => {
-
-            if (this.catalog['step sizes']) return this.catalog['step sizes']
+            if(this.cat_getset(['step_sizes'])) return this.cat_getset(['step_sizes'])
             let lst = this.parent.get.unique_elements(this.to.steps())
             lst.sort((a, b) => a - b)
-            if (cache) this.catalog['step sizes'] = lst
+            if (cache) this.cat_getset(['step_sizes'],lst)
             return lst
 
 
@@ -6514,18 +6528,14 @@ class Scale {
          * @see Scale#get.trichords
          * @see Scale#get.n_chords
          */
-        tetrachords: (cache = false) => {
+        tetrachords: (cache = true) => {
             /*
             Returns a list of every tetrachord (normalized to 0) available in this scale.
 
             :param cache:
             :return:
             */
-            if (this.catalog['tetrachords']) return this.catalog['tetrachords']
-
             let tetrachords = this.get.n_chords(4, true, cache)
-
-            if (cache) this.catalog['tetrachords'] = tetrachords
             return tetrachords
         },
 
@@ -6632,16 +6642,14 @@ class Scale {
          * @see Scale#get.tetrachords
          * @see Scale#get.n_chords
          */
-        trichords: (cache = false) => {
+        trichords: (cache = true) => {
             /*
             Returns a list of every trichord (normalized to 0) available in this scale.
 
             :param cache:
             :return:
             */
-            if (this.catalog['trichords']) return this.catalog['trichords']
             let trichords = this.get.n_chords(3, true, cache)
-            if (cache) this.catalog['trichords'] = trichords
             return trichords
 
         },
@@ -6662,24 +6670,25 @@ class Scale {
          * // It returns 0 because in the universe of scale with steps [1 1 2 2 2 2 2], the scale above has the least "unevenness"
          */
         unevenness: (normalize = true, cache=true) => {
-            if('unevenness' in this.catalog) {
-                if(normalize) if('normalized' in this.catalog['unevenness']) return this.catalog['unevenness']['normalized']
-                else if('unnormalized' in this.catalog['unevenness']) return this.catalog['unevenness']['unnormalized']
-            } else this.catalog['unevenness']={}
+            if(this.cat_getset(['unevenness'])) return this.cat_getset(['unevenness'])
 
 
-            let min_uneven = Infinity
-            let max_uneven = 0
 
             if (normalize) {
+                if(this.cat_getset(['unevenness','normalized'])) return this.cat_getset(['unevenness','normalized'])
                 let fam = this.get.necklace_family_members().map(n=>this.parent.scale(n))
                 fam.forEach(s => {
                     let result = s.get.unevenness(false)
                     if (result < min_uneven) min_uneven = result
                     if (result > max_uneven) max_uneven = result
                 })
+            } else {
+                if(this.cat_getset(['unevenness','unnormalized'])) return this.cat_getset(['unevenness','unnormalized'])
             }
 
+
+            let min_uneven = Infinity
+            let max_uneven = 0
 
             let cardinality = this.count.pitches()
             let temp_edo = new EDO(cardinality)
@@ -6702,13 +6711,13 @@ class Scale {
                 mode_unevenness.push(mode_errors.reduce((ag, e) => ag + e, 0))
             }
             let set_unevenness = mode_unevenness.reduce((ag, e) => ag + e, 0) / cardinality
-            if(cache) this.catalog['unevenness']['unnormalized'] = set_unevenness
+            if(cache) this.cat_getset(['unevenness','unnormalized'],set_unevenness)
             if (normalize) {
 
                 if (max_uneven == 0) return 0
                 if (max_uneven == min_uneven) return 0
                 set_unevenness = (set_unevenness - min_uneven) / (max_uneven - min_uneven)
-                if(cache) this.catalog['unevenness']['normalized'] = set_unevenness
+                if(cache) this.cat_getset(['unevenness','normalized'],set_unevenness)
             }
             return set_unevenness
         },
@@ -6781,9 +6790,8 @@ class Scale {
          * let edo = new EDO(12) //define context
          * let scale = edo.scale([0,3,6,9]) //fully diminished chord
          * scale.is.in_lower_edos() //returns [4]*/
-        in_lower_edos: (cache = false) => {
-
-            if (this.catalog['lower EDOs']) return this.catalog['lower EDOs']
+        in_lower_edos: (cache = true) => {
+            if(this.cat_getset(['lower_EDOs'])) return this.cat_getset(['lower_EDOs'])
             let scale = this.pitches
             let edos = []
             for (let divisor of this.parent.edo_divisors) {
@@ -6796,7 +6804,7 @@ class Scale {
                 }
                 if (valid) edos.push(parseInt(this.edo / divisor))
             }
-            if (cache) this.catalog['lower EDOs'] = edos
+            if (cache) this.cat_getset(['lower_EDOs'],edos)
             return edos
 
         },
@@ -6810,14 +6818,13 @@ class Scale {
          * let edo = new EDO(12) //define context
          * let scale = edo.scale([0,2,4,5,7,9,11]) //major
          * scale.is.invertible() //returns false*/
-        invertible: (cache = false) => {
-            if (this.catalog['invertible']) return this.catalog['invertible']
-
+        invertible: (cache = true) => {
+            if(this.cat_getset(['invertible'])) return this.cat_getset(['invertible'])
             let scale = this.get.normal_order()
             let i_scale = this.parent.scale(this.get.inversion()).get.normal_order()
             let result = true
             if (this.parent.is.same(scale, i_scale)) result = false
-            if (cache) this.catalog['invertible'] = result
+            if (cache) this.cat_getset(['invertible'],result)
             return result
         },
 
@@ -7019,11 +7026,9 @@ class Scale {
          * scale.to.steps() //returns [2,2,1,2,2,2,1]
          * */
         steps: (cache = true) => {
-
-            if (this.catalog['steps']) return this.catalog['steps']
-
+            if(this.cat_getset(['steps'])) return this.cat_getset(['steps'])
             let intervals = this.parent.convert.to_steps(this.pitches.concat([this.edo]), cache = false)
-            if (cache) this.catalog['steps'] = intervals
+            if (cache) this.cat_getset(['steps'],intervals)
             return intervals
         }
     }
@@ -7130,6 +7135,30 @@ class Scale {
         return new Scale(pitches, this.parent)
     }
 
+
+
+    // Get / Set cache catalog
+    cat_getset(keys,value) {
+        if(!Array.isArray(keys)) keys = [keys]
+        let main_key = "scale_" + String(this.pitches)
+        keys = [main_key,...keys]
+        function getValue(obj, key,  ...rest) {
+            if (obj === undefined) return undefined
+            if (rest.length == 0 && obj.hasOwnProperty(key)) return obj[key]
+            return getValue(obj[key], ...rest)
+        }
+        function setValue(obj,value, key,  ...rest) {
+
+            if (rest.length == 0) {
+                obj[key] = value
+                return obj[key]
+            }
+            if(obj[key]===undefined) obj[key] = {}
+            return setValue(obj[key],value, ...rest)
+        }
+        if(value===undefined) return getValue(this.parent.catalog,...keys)
+        else return setValue(this.parent.catalog,value,...keys)
+    }
 
 }
 
