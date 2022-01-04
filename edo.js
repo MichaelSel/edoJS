@@ -4580,7 +4580,11 @@ class Scale {
          * let scale = edo.scale([0,2,4,5,7,9,11]) //define new scale (Major)
          * scale.count.consecutive_steps(2) //returns 3
          * */
-        consecutive_steps: (size,) => {
+        consecutive_steps: (size,cache=true) => {
+            if('consecutive_steps' in this.catalog) {
+                if(size in this.catalog['consecutive_steps']) return this.catalog['consecutive_steps'][size]
+            } else this.catalog['consecutive_steps'] = {}
+
             let counts = []
             let steps = this.to.steps()
             steps = [...steps, ...steps]
@@ -4597,6 +4601,7 @@ class Scale {
             counts = counts.sort((a, b) => b - a)
             let result = counts[0]
             result = Math.min.apply(Math, [result, this.edo])
+            if(cache) this.catalog['consecutive_steps'][size] = result
             return result
 
         },
@@ -4705,6 +4710,33 @@ class Scale {
         },
 
         /**
+         * <p>Returns the min/max number of unique combinations that can be made from the set of this necklace family.</p>
+         * @return {Number}
+         * @see Scale#count.n_chords()
+         * @memberOf Scale#count
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,7,9]) //pentatonic
+         * scale.count.n_chords() //returns 15
+         * */
+        min_max_n_chords_in_necklace: () => {
+            if(this.catalog['min_max_n_chords_in_necklace']) return this.catalog['min_max_n_chords_in_necklace']
+
+            let min = Infinity
+            let max = 0
+
+            let scales = this.get.necklace_family_members().map(n=>this.parent.scale(n))
+            scales.forEach(s=>{
+                let count = s.count.n_chords()
+                if(count>max) max = count
+                if(count<min) min = count
+            })
+
+            this.catalog['min_max_n_chords_in_necklace'] = {min,max}
+            return {min,max}
+        },
+
+        /**
          * <p>Returns the number of major and minor (sounding) triads in the scale.</p>
          *
          * <p>For other chord qualities use a combination of [Scale.count.chord_quality()]{@link Scale#count.chord_quality} and [EDO.convert.ratio_to_interval()]{@link EDO#convert.ratio_to_interval}</p>
@@ -4749,11 +4781,13 @@ class Scale {
          * let scale = edo.scale([0,2,4,7,9]) //pentatonic
          * scale.count.n_chords() //returns 15
          * */
-        n_chords: () => {
+        n_chords: (cache=true) => {
+            if(this.catalog['n_chords']) return this.catalog['n_chords']
             let n_chords = 1 //1 because the collection of all pitches shuold also be counted
             for (let i = 2; i < this.count.pitches(); i++) {
                 n_chords+=this.get.n_chords(i).length
             }
+            if(cache) this.catalog['n_chords'] = n_chords
             return n_chords
         },
 
@@ -4816,7 +4850,8 @@ class Scale {
          * scale.count.rahn_contradictions() //returns 0
          * @see Rahn, J. (1991). "Coordination of interval sizes in seven-tone collections." Journal of Music Theory 35(1/2): 33-60.
          */
-        rahn_contradictions: () => {
+        rahn_contradictions: (cache=true) => {
+            if('rahn_contradictions' in this.catalog) return this.catalog['rahn_contradictions']
             let all = []
             let total = 0
             let scale_degrees = [...Array(this.pitches.length).keys()]
@@ -4842,6 +4877,7 @@ class Scale {
             //     console.log(pair[1].pitches)
             //     // console.log("Span1:",pair[0].generic,"Span2:",pair[1].generic,"Size1:",pair[0].specific,"Size2:",pair[1].specific,"int1:",pair[0].pitches,'int2:',pair[1].pitches)
             // })
+            if(cache) this.catalog['rahn_contradictions'] = total
             return total
         },
 
@@ -4855,7 +4891,8 @@ class Scale {
          * @see Rahn, J. (1991). "Coordination of interval sizes in seven-tone collections." Journal of Music Theory 35(1/2): 33-60.
          * @see Scale#get.specific_intervals
          */
-        rahn_ambiguities: () => {
+        rahn_ambiguities: (cache=true) => {
+            if('rahn_ambiguities' in this.catalog) return this.catalog['rahn_ambiguities']
             let total = 0
             let scale_degrees = [...Array(this.pitches.length).keys()]
             let combinations = this.parent.get.combinations(scale_degrees,2).sort((a,b)=>a[0]-b[0] || a[1]-b[1])
@@ -4874,6 +4911,7 @@ class Scale {
                     }
                 }
             }
+            if(cache) this.catalog['rahn_ambiguities'] = total
             return total
         },
 
@@ -5090,7 +5128,8 @@ class Scale {
          * let scale = edo.scale([0,2,4,5,7,9,11]) //The diatonic set
          * scale.get.diagnostic_intervals() //returns [6]
          */
-        diagnostic_intervals: () => {
+        diagnostic_intervals: (cache=true) => {
+            if('diagnostic_intervals' in this.catalog) return this.catalog['diagnostic_intervals']
             let intervals = []
             for (let i = 1; i <= Math.floor(this.edo/2); i++) {
                 let specific = this.get.specific_intervals(i)
@@ -5102,6 +5141,7 @@ class Scale {
                 })
                 if(all1) intervals.push(specific[0].specific)
             }
+            if(cache) this.catalog['diagnostic_intervals'] = intervals
             return intervals
         },
 
@@ -5784,8 +5824,11 @@ class Scale {
          *          [ 0, 3, 6, 8, 10 ]
          *      ]
          * */
-        necklace_family_members: () => {
-            return this.parent.get.necklace(this.get.necklace_family()).map(n=>this.parent.convert.intervals_to_scale(n))
+        necklace_family_members: (cache=true) => {
+            if('necklace_family_members' in this.catalog) return this.catalog['necklace_family_members']
+            let result = this.parent.get.necklace(this.get.necklace_family()).map(n=>this.parent.convert.intervals_to_scale(n))
+            if(cache) this.catalog['necklace_family_members'] = result
+            return result
         },
 
         /** <p>Returns all of the sets whose constituents are at most <code>size</code> away from the original constituent, where no more than <code>alterations</code> constituents were altered.</p>
@@ -6177,12 +6220,15 @@ class Scale {
          * scale.get.coherence_quotient() //returns 1
          * @see Carey, N. (2007). "Coherence and sameness in well-formed and pairwise well-formed scales." Journal of Mathematics and Music 1(2): 79-98.
          * @memberOf Scale#get*/
-        coherence_quotient: () => {
+        coherence_quotient: (cache=true) => {
+            if('coherence_quotient' in this.catalog) return this.catalog['coherence_quotient']
             let all_amb = this.count.rahn_ambiguities()
             let all_cont = this.count.rahn_contradictions()
             let total = all_amb + all_cont
             let maximal_failures = this.parent.get.maximal_carey_coherence_failures(this.count.pitches())
-            return 1-(total/maximal_failures)
+            let CQ = 1-(total/maximal_failures)
+            if(cache) this.catalog['coherence_quotient'] = CQ
+            return CQ
         },
 
         /** Returns all the transpositions of the scale that are constructed on the scale degrees of the original scale,
@@ -6359,12 +6405,14 @@ class Scale {
          * let scale = edo.scale([0,2,4,6,8,10]) //whole-tones
          * scale.get.step_mean_error() //returns 0
          */
-        step_mean_error: () => {
+        step_mean_error: (cache=true) => {
+            if(this.catalog['step_mean_error']) return this.catalog['step_mean_error']
             let steps = this.to.steps()
             let cardinality = this.count.pitches()
             let mean_step = 12/cardinality
             let step_err = steps.map(s=>Math.abs(s-mean_step))
             let total_err = step_err.reduce((ag,e)=>ag+e,0)
+            if(cache) this.catalog['step_mean_error'] = total_err
             return total_err
         },
 
@@ -6378,7 +6426,7 @@ class Scale {
          * scale.get.step_sizes()
          * //returns [1,2]
          * @memberOf Scale#get*/
-        step_sizes: (cache = false) => {
+        step_sizes: (cache = true) => {
 
             if (this.catalog['step sizes']) return this.catalog['step sizes']
             let lst = this.parent.get.unique_elements(this.to.steps())
@@ -6613,7 +6661,13 @@ class Scale {
          * edo.get.unevenness([0,2,4,5,7,9,11]) //returns 0
          * // It returns 0 because in the universe of scale with steps [1 1 2 2 2 2 2], the scale above has the least "unevenness"
          */
-        unevenness: (normalize = true) => {
+        unevenness: (normalize = true, cache=true) => {
+            if('unevenness' in this.catalog) {
+                if(normalize) if('normalized' in this.catalog['unevenness']) return this.catalog['unevenness']['normalized']
+                else if('unnormalized' in this.catalog['unevenness']) return this.catalog['unevenness']['unnormalized']
+            } else this.catalog['unevenness']={}
+
+
             let min_uneven = Infinity
             let max_uneven = 0
 
@@ -6648,11 +6702,13 @@ class Scale {
                 mode_unevenness.push(mode_errors.reduce((ag, e) => ag + e, 0))
             }
             let set_unevenness = mode_unevenness.reduce((ag, e) => ag + e, 0) / cardinality
+            if(cache) this.catalog['unevenness']['unnormalized'] = set_unevenness
             if (normalize) {
 
                 if (max_uneven == 0) return 0
                 if (max_uneven == min_uneven) return 0
                 set_unevenness = (set_unevenness - min_uneven) / (max_uneven - min_uneven)
+                if(cache) this.catalog['unevenness']['normalized'] = set_unevenness
             }
             return set_unevenness
         },
@@ -6962,7 +7018,7 @@ class Scale {
          * let scale = edo.scale([0,2,4,5,7,9,11]) //new Scale object
          * scale.to.steps() //returns [2,2,1,2,2,2,1]
          * */
-        steps: (cache = false) => {
+        steps: (cache = true) => {
 
             if (this.catalog['steps']) return this.catalog['steps']
 
