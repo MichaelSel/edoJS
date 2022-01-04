@@ -6229,7 +6229,7 @@ class Scale {
         },
 
         /** Returns the scale as steps, broken to their repetitive segments.
-
+         * @param  {Boolean} [minimize=false] - when true, the scale will be rotated to the mode that minimizes the number of segments
          * @returns {Array<Array<Number>>} An array containing the scale's steps in segments
          * @memberOf Scale#get
          * @example
@@ -6237,11 +6237,15 @@ class Scale {
          * let scale = edo.scale([0,2,4,5,7,9,11]) //major scale
          * scale.get.segments()
          * //returns [[2,2],[1],[2,2,2],[1]]
+         *
+         * let scale2 = edo.scale([0,2,4,7,10])
+         * scale2.get.segments(true) // returns [[3,3],[2,2,2]] (rather than [[2,2],[3,3],[2]] without minimizing)
          */
-        segments: () => {
+        segments: (minimize=false) => {
             let steps = this.to.steps()
+            if (minimize) while (steps[0]==steps[steps.length-1]) steps = steps.concat(steps).slice(1, 1+steps.length)
             let all = []
-            while(steps.length>0) {
+            while(steps.length>0){
                 let sub = steps.splice(0,1)
                 while(steps[0]==sub[0]) sub.push(steps.splice(0,1)[0])
                 all.push(sub)
@@ -6597,8 +6601,11 @@ class Scale {
         /** <p>Returns a numeric value of how unevenlyy a set's steps are distributed.</p>
          *<p>The measure is done by splitting the set into n parts and checking by how much each part differs from an ideal even split of the set (the current edo / n).</p>
          *<p>For example, 2 whole-steps and 2 major-3rds can be represented as [2 2 4 4], [2 ,4, 2, 4]. While the first distribution is imbalanced (the small steps are bunched together, and the big steps are bunched together), the 2nd distribution represents an even split</p>
+         *<p>The normalization occures within the necklace family. 1 for the most uneven necklace, and 0 for the most even necklace within that necklace family</p>
          * @returns {Number}
          * @see Clough, John, and Jack Douthett. "Maximally even sets." Journal of music theory 35.1/2 (1991): 93-173.
+         * @see Scale#get.necklace_family()
+         * @see Scale#get.necklace_family_members()
          * @memberOf Scale#get
          *
          * @example
@@ -6611,12 +6618,9 @@ class Scale {
             let max_uneven = 0
 
             if (normalize) {
-                let steps = this.to.steps()
-                let necklaces = this.parent.get.necklace(steps)
-                    .map(n => this.parent.convert.intervals_to_scale(n))
-                    .map(s => this.parent.scale(s))
-                necklaces.forEach(n => {
-                    let result = n.get.unevenness(false)
+                let fam = this.get.necklace_family_members().map(n=>this.parent.scale(n))
+                fam.forEach(s => {
+                    let result = s.get.unevenness(false)
                     if (result < min_uneven) min_uneven = result
                     if (result > max_uneven) max_uneven = result
                 })
