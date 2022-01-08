@@ -1,4 +1,6 @@
 const environment = (typeof window === 'undefined') ? "server" : "browser"
+// import { createRequire } from "module";
+// const require = createRequire(import.meta.url);
 
 let fs, parseXML, midiParser
 if (environment == 'server') {
@@ -87,7 +89,7 @@ if (environment == 'server') {
 
 
 class FixedContentNecklace {
-    constructor(number_list) {
+    constructor(number_list,method="fast") {
         /*
         Class FixedContentNecklace Init Method
 
@@ -101,10 +103,10 @@ class FixedContentNecklace {
         this.n_init = number_list
         this.N = number_list.reduce((t, n) => n + t)
         this.k = number_list.length
-        this.initialize()
+        this.initialize(method)
     }
 
-    initialize(method = 'simple') {
+    initialize(method) {
         /*
         Determines what method algorithm to use in the generation
 
@@ -335,6 +337,7 @@ class EDO {
         this.edo_divisors = this.get.divisors(edo)
         this.catalog = {}
 
+
     }
 
     /**
@@ -343,8 +346,8 @@ class EDO {
      * @param  {Array<Number>} pitches - a collection of pitch classes
      * @return {Scale}
      */
-    scale(pitches) {
-        return new Scale(pitches, this)
+    scale(pitches,cache = this.cache) {
+        return new Scale(pitches, this, cache)
     }
 
     make_DOM_svg(container_id, width, height, clean = false) {
@@ -394,6 +397,8 @@ class EDO {
         })
         return scales
     }
+
+
 
 
 
@@ -548,7 +553,7 @@ class EDO {
                 pcs.push((interval + pcs[pcs.length - 1]))
             })
 
-            return this.scale(pcs).pitches
+            return this.scale(pcs,false).pitches
         },
 
         /** Given a list of midi notes, returns a list of intervals
@@ -635,7 +640,7 @@ class EDO {
             }
             vector.push(0)
             vector.reverse()
-            return this.scale(vector)
+            return this.scale(vector, false)
         },
 
         /** Returns the name of a note from a given pitch class (supports only 12-edo)
@@ -732,11 +737,11 @@ class EDO {
          * edo.convert.to_steps([0,2,4,5,7,9,11])
          * //returns [ 2, 2, 1, 2, 2, 2 ]*/
         to_steps: (lst, cache = true) => {
+            if(lst.length<=1) return []
             if(this.cat_getset(["to_steps",String(lst)])) return this.cat_getset(["to_steps",String(lst)])
-            let s = [...lst]
             let intervals = []
-            for (let i = 0; i < s.length - 1; i++) {
-                intervals.push(s[i + 1] - s[i])
+            for (let i = 0; i < lst.length - 1; i++) {
+                intervals.push(lst[i + 1] - lst[i])
             }
             if (cache) this.cat_getset(["to_steps",String(lst)],intervals)
             return intervals
@@ -1143,7 +1148,7 @@ class EDO {
             pitches.forEach((PC) => {
                 (PCs.indexOf(PC) != -1) ? PCs.splice(PCs.indexOf(PC), 1) : true
             })
-            if (from_0) PCs = this.scale(PCs).pitches
+            if (from_0) PCs = this.scale(PCs, false).pitches
             return PCs
         },
 
@@ -1247,7 +1252,7 @@ class EDO {
             let harmony = []
             let melody_copy = [...melody]
             let last_chord = starting_chord
-            allowed_qualities = allowed_qualities.map(q=>this.scale(q).get.modes()).flat()
+            allowed_qualities = allowed_qualities.map(q=>this.scale(q, false).get.modes()).flat()
 
             melody_copy = melody_copy.map((note,i)=>{
 
@@ -2409,6 +2414,7 @@ class EDO {
          * */
         stacked: (pitches, intervals,transposed_to_0=false) => {
             let perms = this.get.permutations(pitches)
+
             let available =[]
             for (let perm = 0; perm < perms.length; perm++) {
                 let p = perms[perm]
@@ -2443,7 +2449,7 @@ class EDO {
          * */
         step_maximal_mean_error_in_cardinality: (cardinality) => {
             let steps = Array.from(Array(cardinality-1).fill(1))
-            let scale = this.scale(this.convert.intervals_to_scale(steps))
+            let scale = this.scale(this.convert.intervals_to_scale(steps), false)
             return scale.get.step_mean_error()
         },
 
@@ -2457,7 +2463,7 @@ class EDO {
          * */
         step_minimal_mean_error_in_cardinality: (cardinality) => {
             let split = this.get.evenly_split(cardinality)
-            let scale = this.scale(this.convert.intervals_to_scale(split))
+            let scale = this.scale(this.convert.intervals_to_scale(split), false)
             return scale.get.step_mean_error()
         },
 
@@ -2652,8 +2658,9 @@ class EDO {
          * @return {Array<Array<Number>>}
          * @memberOf EDO#get
          */
-        permutations: (inputArr) => {
-
+        permutations: (inputArr,cache=true) => {
+            inputArr = inputArr.sort((a,b)=>a-b)
+            if(this.cat_getset(['permutations',String(inputArr)])) return this.cat_getset(['permutations',String(inputArr)])
             let result = [];
 
             const do_it = (arr, m = []) => {
@@ -2669,7 +2676,7 @@ class EDO {
             }
 
             do_it(inputArr)
-
+            if(cache) this.cat_getset(['permutations',String(inputArr)],result)
             return result;
         },
 
@@ -3151,8 +3158,9 @@ class EDO {
          * step sizes. step size=1 between 0 and 1, step size=2 between 5 and 7, and step size = 3 between 1 and 4.
          * @return {Array<Scale>} all the scales that abide by the criteria given
          * @memberOf EDO#get*/
-        scales: (min_step = 1, max_step = this.edo - 1, min_sizes = 1, max_sizes = this.edo, max_num_of_pitches=this.edo,EDO = this,) => {
-
+        scales: (min_step = 1, max_step = this.edo - 1, min_sizes = 1, max_sizes =4, max_num_of_pitches=this.edo,cache = false) => {
+            // TODO: allow to choose minimum amount of pitches per scale
+            let EDO = this
             //get all unique combinations of size s from set of intervals set
             const calc_comb = (s, set) => {
                 let solutions = []
@@ -3242,7 +3250,7 @@ class EDO {
 
             let _scales = get_all_scales(all_necklaces)
             let scales = []
-            _scales.forEach((scale) => scales.push(new Scale(scale, this).normal()))
+            _scales.forEach((scale) => scales.push(new Scale(scale, this,cache).normal()))
             scales = this.sort_scales(scales)
 
 
@@ -4451,7 +4459,11 @@ class EDO {
     cat_getset(keys,value) {
         function getValue(obj, key,  ...rest) {
             if (obj === undefined) return undefined
-            if (rest.length == 0 && obj.hasOwnProperty(key)) return obj[key]
+            if (rest.length == 0 && obj.hasOwnProperty(key)) {
+                if(Array.isArray(obj[key])) JSON.parse(JSON.stringify(obj[key]))
+                if(typeof obj[key] === 'object' ) return JSON.parse(JSON.stringify(obj[key]))
+                return obj[key]
+            }
             return getValue(obj[key], ...rest)
         }
         function setValue(obj,value, key,  ...rest) {
@@ -4464,9 +4476,17 @@ class EDO {
             return setValue(obj[key],value, ...rest)
         }
         if(value===undefined) return getValue(this.catalog,...keys)
-        else return setValue(this.catalog,value,...keys)
+        else {
+            if(Array.isArray(value)) value=Array.from(value)
+            else if(typeof value === 'object' ) return JSON.parse(JSON.stringify(value))
+            return setValue(this.catalog,value,...keys)
+        }
     }
 
+    // empty cache catalog
+    purge_cache() {
+        this.catalog={}
+    }
 
 }
 
@@ -4522,7 +4542,7 @@ class Scale {
      *      .prime() //in prime form
      *      .get.pitches() //returns [0, 1, 3, 5, 6, 8, 10]
      */
-    constructor(pitches, parent) {
+    constructor(pitches, parent, cache=true) {
         this.parent = parent
 
 
@@ -4536,6 +4556,7 @@ class Scale {
         this.pitches.sort((a, b) => a - b)
         this.length = this.count.pitches()
         this.name = this.get.name(false)
+        this.cache=cache
     }
 
 
@@ -4595,7 +4616,7 @@ class Scale {
          * let scale = edo.scale([0,2,4,5,7,9,11]) //define new scale (Major)
          * scale.count.consecutive_steps(2) //returns 3
          * */
-        consecutive_steps: (size,cache=true) => {
+        consecutive_steps: (size,cache = this.cache) => {
             if(this.cat_getset(['consecutive_steps',size])) return this.cat_getset(['consecutive_steps',size])
 
             let counts = []
@@ -4621,7 +4642,7 @@ class Scale {
         /**
          * Returns the number of imperfections (notes that do not have a P5 above them) in the scale.
          * @param {Number} [tolerance=10] - allowed tolerance in cents (away from pure P5)
-         * @param {Boolean} [cache=false] - when true, the result will be cached for faster retrieval.
+         * @param {Boolean} [cache] - when true, the result will be cached for faster retrieval.
          * @return {Number}
          * @memberOf Scale#count
          *
@@ -4631,7 +4652,7 @@ class Scale {
          * scale.count.imperfections() //returns 1
          * scale.count.imperfections(0) //returns 7
          */
-        imperfections: (tolerance = 10, cache = true) => {
+        imperfections: (tolerance = 10, cache = this.cache) => {
 
             if(this.cat_getset('# imperfections')) return this.cat_getset('# imperfections')
 
@@ -4724,15 +4745,13 @@ class Scale {
         /**
          * <p>Returns the min/max number of unique combinations that can be made from the set of this necklace family.</p>
          * @return {Number}
-         * @see Scale#count.n_chords()
          * @memberOf Scale#count
-         * @example
-         * let edo = new EDO(12) //define context
-         * let scale = edo.scale([0,2,4,7,9]) //pentatonic
-         * scale.count.n_chords() //returns 15
          * */
-        min_max_n_chords_in_necklace: () => {
-            if(this.catalog['min_max_n_chords_in_necklace']) return this.catalog['min_max_n_chords_in_necklace']
+        //TODO: Make better caching here
+        min_max_n_chords_in_necklace: (cache = this.cache) => {
+
+            let family = this.get.necklace_family()
+            if(this.parent.cat_getset(['necklace_family',String(family)])) return this.parent.cat_getset(['necklace_family',String(family)])
 
             let min = Infinity
             let max = 0
@@ -4744,7 +4763,9 @@ class Scale {
                 if(count<min) min = count
             })
 
-            this.catalog['min_max_n_chords_in_necklace'] = {min,max}
+            // This is now accessible to other family members
+            if(cache) this.parent.cat_getset(['necklace_family',String(family)],{min,max})
+
             return {min,max}
         },
 
@@ -4793,13 +4814,15 @@ class Scale {
          * let scale = edo.scale([0,2,4,7,9]) //pentatonic
          * scale.count.n_chords() //returns 15
          * */
-        n_chords: (cache=true) => {
-            if(this.cat_getset('n_chords_count')) return this.cat_getset('n_chords_count')
-            let n_chords = 1 //1 because the collection of all pitches shuold also be counted
+        n_chords: (prime_form=false,cache = this.cache) => {
+            if(this.cat_getset(['n_chords_count',(prime_form)?"prime_form":"regular"])) return this.cat_getset(['n_chords_count',(prime_form)?"prime_form":"regular"])
+            let n_chords = 1 //1 because the collection of all pitches should also be counted
             for (let i = 2; i < this.count.pitches(); i++) {
-                n_chords+=this.get.n_chords(i).length
+                // Consideration: It's possible to pass the cache of the main object, but this results in a serious memory leak in big projects.
+                //Perhaps cache should be passed as false (as it is now)
+                n_chords+=this.get.n_chords(i,true,prime_form,false).length
             }
-            if(cache) this.cat_getset('n_chords_count',n_chords)
+            if(cache) this.cat_getset(['n_chords_count',(prime_form)?"prime_form":"regular"],n_chords)
             return n_chords
         },
 
@@ -4862,7 +4885,7 @@ class Scale {
          * scale.count.rahn_contradictions() //returns 0
          * @see Rahn, J. (1991). "Coordination of interval sizes in seven-tone collections." Journal of Music Theory 35(1/2): 33-60.
          */
-        rahn_contradictions: (cache=true) => {
+        rahn_contradictions: (cache = this.cache) => {
             if(this.cat_getset('rahn_contradictions')) return this.cat_getset('rahn_contradictions')
             let all = []
             let total = 0
@@ -4903,7 +4926,7 @@ class Scale {
          * @see Rahn, J. (1991). "Coordination of interval sizes in seven-tone collections." Journal of Music Theory 35(1/2): 33-60.
          * @see Scale#get.specific_intervals
          */
-        rahn_ambiguities: (cache=true) => {
+        rahn_ambiguities: (cache = this.cache) => {
             if(this.cat_getset('rahn_ambiguities')) return this.cat_getset('rahn_ambiguities')
             let total = 0
             let scale_degrees = [...Array(this.pitches.length).keys()]
@@ -5008,11 +5031,11 @@ class Scale {
 
         /**
          * Returns number of unique transpositions available for the scale.
-         * @param {Boolean} [cache=false] - when true, the result will be cached for faster retrieval.
+         * @param {Boolean} [cache] - when true, the result will be cached for faster retrieval.
          * @return {Number}
          * @function
          * @memberOf Scale#count*/
-        transpositions: (cache = true) => {
+        transpositions: (cache = this.cache) => {
             if(this.cat_getset('# transpositions')) return this.cat_getset('# transpositions')
             let scale = this.pitches
             let scales = [scale]
@@ -5130,6 +5153,99 @@ class Scale {
             return area
         },
 
+        //TODO: Write documentation
+        /** <p>Documentation missing.</p>
+         * @memberOf Scale#get
+         * @see EDO#get.unevenness()
+         */
+        binary_unevenness: (collapsed=true) => {
+            function get_errors(scale, level=1) {
+                let even_split = scale.edo/2
+                let as_steps = scale.to.steps()
+                let cardinal_edo = new EDO(scale.count.pitches())
+                let best_split = cardinal_edo.get.evenly_split(2) //Best split within the context of the EDO
+                let segments = [as_steps.slice(0,best_split[0]),as_steps.slice(best_split[0])]
+                let segment_sum = segments.map(segment => segment.reduce((ag, e) => ag + e, 0))
+                let segment_error = segment_sum.map(s => Math.abs(s - even_split))
+                let sum_of_errors = segment_error.reduce((agg, e) => agg + e, 0)
+                let mean_of_sum_of_errors = sum_of_errors/2
+                let segment_errors = []
+                for (let i = 0; i < segments.length; i++) {
+
+                    if(segments[i].length>=2) {
+                        let segment = segments[i]
+                        let segment_span = segment.reduce((ag, e) => ag + e, 0)
+                        let segment_edo = new EDO(segment_span)
+                        let segment_scale = segment_edo.scale(segment_edo.convert.intervals_to_scale(segment),false)
+                        let result = get_errors(segment_scale,level+1)
+                        segment_errors.push(result)
+                    }
+                }
+                let segment_sums = segments.map(segment=>segment.reduce((ag, e) => ag + e, 0))
+                if(segment_errors.length==0) return {this_level_segments: segment_sums, this_level_mean_error:mean_of_sum_of_errors, level:level}
+                else return {this_level_segments: segment_sums, this_level_mean_error:mean_of_sum_of_errors,lower_levels:segment_errors,level:level}
+
+            }
+            let modes = []
+            for (let i = 0; i < this.count.pitches(); i++) {
+                let mode = this.mode(i)
+                let result = get_errors(mode)
+
+                modes.push({mode: mode.pitches, level:0,lower_levels:[result]})
+            }
+
+            function collapse(obj) {
+                let flattened = {}
+                function do_collapse(part) {
+                    let level = part['level']
+                    if(!(level in flattened)) flattened[level] = []
+                    flattened[level].push(part['this_level_mean_error'])
+                    if('lower_levels' in part) {
+                        part['lower_levels'].forEach(segment=> {
+                            do_collapse(segment)
+                        })
+                    }
+                }
+                modes.forEach(mode=>{
+                    do_collapse(mode)
+                })
+                delete flattened['0']
+                for (let key in flattened) {
+                    flattened[key] = flattened[key].reduce((ag,e)=>ag+e,0)/flattened[key].length
+                }
+                let sums = []
+                for (let key in flattened) sums.push(flattened[key])
+                return sums.reduce((ag,e)=>ag+e,0)/sums.length
+            }
+
+
+
+            if(collapsed) return collapse(modes)
+            else return modes
+
+        },
+
+
+        /** <p>Returns the intervals and combinations of intervals that only occur once in the set.</p>
+         * <p>For instance, in the diatonic set (0 2 4 5 7 9 11) an interval of 6 semitones only occurs once (between 5 and 11). It is therefore a "diagnostic" interval within the diatonic scale.</p>
+         * @returns {Array<Array<Number>>} An array containing all diagnostic combinations
+         * @memberOf Scale#get
+         * @see EDO#get.diagnostic_intervals
+         */
+        diagnostic_combinations: (cache = this.cache) => {
+            if(this.cat_getset('diagnostic_combinations')) return this.cat_getset('diagnostic_combinations')
+            let combinations = []
+            for (let i = 2; i < this.count.pitches(); i++) {
+                let n_chords = this.get.n_chords(i)
+                n_chords = n_chords.map(n=>[n,this.get.position_of_quality(n).length])
+                n_chords.forEach(n=>{
+                    if(n[1]==1) combinations.push(n[0])
+                })
+            }
+            if(cache) this.cat_getset('diagnostic_combinations',combinations)
+            return combinations
+        },
+
         /** <p>Returns the (specific) intervals that only occur once in the set.</p>
          * <p>For instance, in the diatonic set (0 2 4 5 7 9 11) an interval of 6 semitones only occurs once (between 5 and 11). It is therefore a "diagnostic" interval within the diatonic scale.</p>
          * @returns {Array<Number>} An array containing all diagnostic intervals (or an empty array if none are available)
@@ -5140,7 +5256,7 @@ class Scale {
          * let scale = edo.scale([0,2,4,5,7,9,11]) //The diatonic set
          * scale.get.diagnostic_intervals() //returns [6]
          */
-        diagnostic_intervals: (cache=true) => {
+        diagnostic_intervals: (cache = this.cache) => {
             if(this.cat_getset('diagnostic_intervals')) return this.cat_getset('diagnostic_intervals')
             let intervals = []
             for (let i = 1; i <= Math.floor(this.edo/2); i++) {
@@ -5470,7 +5586,7 @@ class Scale {
          * let scale = edo.scale([0,2,4,5,7,9,11]) //major scale
          * scale.get.interval_vector() //returns [ 1, 5, 2, 3, 3, 1 ]
          */
-        interval_vector: (cache = true) => {
+        interval_vector: (cache = this.cache) => {
             if(this.cat_getset('interval_vector')) return this.cat_getset('interval_vector')
 
             let scale_split = Math.floor(this.edo / 2)
@@ -5494,7 +5610,7 @@ class Scale {
 
         /** <p>Returns the scale's inversion</p>
 
-         * @param {Boolean} [cache=false] - When true, the result will be cached for future retrieval
+         * @param {Boolean} [cache] - When true, the result will be cached for future retrieval
          * @returns {Array<Number>} the inverted pitches
          * @memberOf Scale#get
          *
@@ -5502,11 +5618,11 @@ class Scale {
          * let edo = new EDO(12) //define context
          * let scale = edo.scale([0,2,4,5,7,9,11]) //major scale
          * scale.get.inversion() //returns [0, 2, 4, 6, 7, 9, 11]*/
-        inversion: (cache = true) => {
+        inversion: (cache = this.cache) => {
             /*Inverts the intervals of the scale*/
             if(this.cat_getset('inverted')) return this.cat_getset('inverted')
 
-            let scale = this.parent.get.inversion(this.pitches, cache = false)
+            let scale = this.parent.get.inversion(this.pitches, cache = cache)
             if (cache) this.cat_getset('inverted',scale)
 
             return scale
@@ -5670,7 +5786,7 @@ class Scale {
          *  [ 0, 3, 5, 7, 10 ]
          * ]
          */
-        modes: (cache = true) => {
+        modes: (cache = this.cache) => {
             if(this.cat_getset('modes')) return this.cat_getset('modes')
 
             let modes = this.parent.get.modes(this.pitches)
@@ -5717,7 +5833,8 @@ class Scale {
         /** <p>Returns every n_chord (bichord (<code>n=2</code>), trichord (<code>n=3</code>), tetrachord (<code>n=4</code>), etc.) available in this scale</p>
          * @param  {Number} n - Number of pitches in every chord
          * @param  {Boolean} [normalize=true] - When true, the function will return n_chords in normal order. otherwise it will return them as they appear in the scale
-         * @param  {Boolean} [cache=false] - When true, the result will be cached for faster retrieval
+         * @param  {Boolean} [prime_form=false] - When true, the function will return n_chords in prime form
+         * @param  {Boolean} [cache] - When true, the result will be cached for faster retrieval
          * @returns {Array<Number>} An array containing all n_chords
          * @memberOf Scale#get
          *
@@ -5737,36 +5854,89 @@ class Scale {
          * @see Scale#get.trichords
          * @see Scale#get.tetrachords
          */
-        n_chords: (n, normalize = true, cache = true) => {
-            if(normalize) if(this.cat_getset(['n_chords','normalized',n])) return this.cat_getset(['n_chords','normalized',n])
-            else if(this.cat_getset(['n_chords','unnormalized',n])) return this.cat_getset(['n_chords','unnormalized',n])
+        n_chords: (n,normalize = true, prime_form=false,cache = this.cache) => {
+            if((!normalize) && prime_form) return undefined
+            if(this.cat_getset(['n_chords',(normalize)?'normalized':'unnormalized',(prime_form)?"prime":"not_prime",n])) {
+                return this.cat_getset(['n_chords',(normalize)?'normalized':'unnormalized',(prime_form)?"prime":"not_prime",n])
+            }
+
+            let unique = this.parent.get.unique_elements
+            let p = this.parent
 
 
-            let all = []
-            const run_it = (i = 0, n_chord = []) => {
-                if (n_chord.length == n) {
-                    if (this.parent.get.unique_elements(n_chord).length == n_chord.length) {
-                        n_chord = n_chord.sort((a, b) => a - b)
-                        if (normalize) n_chord = this.parent.get.normal_order(n_chord)
-                        all.push(n_chord)
+            const combine = function(a, how_many) {
+                const fn = function(n, src, got, all) {
+                    if (n == 0) {
+                        if (got.length > 0) {
+                            all[all.length] = got;
+                        }
+                        return;
                     }
-                    return
+                    for (let j = 0; j < src.length; j++) {
+                        fn(n - 1, src.slice(j + 1), got.concat([src[j]]), all);
+                    }
+                    return;
                 }
-                for (let j = i; j < this.pitches.length + (n - 1); j++) {
+                let all = [];
+                fn(how_many, a, [], all);
 
-                    run_it(j + 1, [...n_chord, this.pitches[this.parent.mod(j, this.pitches.length)]])
-
-                }
-
+                return all;
             }
-            run_it()
-            all = this.parent.get.unique_elements(all)
+
+            let regular = combine(this.get.pitches(),n)
+
+            let normal = unique(regular.map(r=>p.get.normal_order(r,cache)))
+            let prime =  unique(normal.map(r=>p.scale(r).prime().pitches))
             if (cache) {
-                if(normalize) this.cat_getset(['n_chords','normalized',n],all)
-                else this.cat_getset(['n_chords','unnormalized',n],all)
+                this.cat_getset(['n_chords','unnormalized',"not_prime",n],regular)
+                this.cat_getset(['n_chords','normalized',"not_prime",n],normal)
+                this.cat_getset(['n_chords','normalized',"prime",n],prime)
             }
-            return all
+            if(prime_form) return prime
+            if(normalize) return normal
+
+            return regular
         },
+        // n_chords: (n, normalize = true, prime_form=false,cache = false) => {
+        //     let iasd = 0
+        //     if((!normalize) && prime_form) return undefined
+        //     if(this.cat_getset(['n_chords',(normalize)?'normalized':'unnormalized',(prime_form)?"prime":"not_prime",n])) {
+        //         return this.cat_getset(['n_chords',(normalize)?'normalized':'unnormalized',(prime_form)?"prime":"not_prime",n])
+        //     }
+        //     let unique = this.parent.get.unique_elements
+        //     let mod = this.parent.mod
+        //     let p = this.parent
+        //     let regular = []
+        //
+        //     const run_it = (i = 0, n_chord = []) => {
+        //         iasd++
+        //         if (n_chord.length == n) {
+        //             if (unique(n_chord).length == n_chord.length) regular.push(n_chord.sort((a, b) => a - b))
+        //             return
+        //         }
+        //         for (let j = i; j < this.pitches.length + (n - 1); j++) {
+        //             run_it(j + 1, [...n_chord, this.pitches[mod(j, this.pitches.length)]])
+        //         }
+        //     }
+        //     run_it()
+        //
+        //     regular = unique(regular)
+        //
+        //     let normal = unique(regular.map(r=>p.get.normal_order(r)))
+        //     let prime =  unique(normal.map(r=>p.scale(r).prime().pitches))
+        //     console.log(iasd)
+        //     if (cache) {
+        //         this.cat_getset(['n_chords','unnormalized',"not_prime",n],regular)
+        //         this.cat_getset(['n_chords','normalized',"not_prime",n],normal)
+        //         this.cat_getset(['n_chords','normalized',"prime",n],prime)
+        //     }
+        //     if(prime_form) return prime
+        //     if(normalize) return normal
+        //
+        //     return regular
+        // },
+
+
 
         /** <p>Return every quality available in the scale for a combination of <code>n</code> scale degrees.</p>
          * @param  {Number} n - Number of pitches in every chord
@@ -5799,7 +5969,7 @@ class Scale {
          *         As such, the name for this scale will be 4-5</p>
          * @memberOf Scale#get
          * */
-        name: (cache=true) => {
+        name: (cache = this.cache) => {
             if(this.cat_getset('name')) return this.cat_getset('name')
             let normal = this.get.normal_order()
             let total = 0
@@ -5821,9 +5991,11 @@ class Scale {
          * let scale = edo.scale([0,2,4,7,9]) //pentatonic scale
          * scale.get.necklace_family() // returns [ 3, 3, 2, 2, 2 ]
          * */
-        necklace_family: () => {
-            let steps = this.to.steps()
+        necklace_family: (cache = this.cache) => {
+            if(this.cat_getset('necklace_family')) return this.cat_getset('necklace_family')
+            let steps = this.to.steps(cache)
             let necklace_family = steps.sort((a,b)=>b-a)
+            if(cache) this.cat_getset('necklace_family',necklace_family)
             return necklace_family
         },
 
@@ -5840,9 +6012,9 @@ class Scale {
          *          [ 0, 3, 6, 8, 10 ]
          *      ]
          * */
-        necklace_family_members: (cache=true) => {
+        necklace_family_members: (cache = this.cache) => {
             if(this.cat_getset(['necklace_family_members'])) return this.cat_getset(['necklace_family_members'])
-            let result = this.parent.get.necklace(this.get.necklace_family()).map(n=>this.parent.convert.intervals_to_scale(n))
+            let result = this.parent.get.necklace(this.get.necklace_family(false)).map(n=>this.parent.convert.intervals_to_scale(n))
             if(cache) this.cat_getset(['necklace_family_members'],result)
             return result
         },
@@ -5910,7 +6082,7 @@ class Scale {
 
         /** <p>Returns the scale's pitches in normal order</p>
 
-         * @param {Boolean} [cache=false] - When true, the result will be cached for future retrieval
+         * @param {Boolean} [cache] - When true, the result will be cached for future retrieval
          * @returns {Array<Number>} The pitches in normal order
          * @memberOf Scale#get
          *
@@ -5918,7 +6090,7 @@ class Scale {
          * let edo = new EDO(12) //define context
          * let scale = edo.scale([0,2,4,5,7,9,11]) //major scale
          * scale.get.normal_order() //returns [0, 1, 3, 5, 6, 8, 10] */
-        normal_order: (cache = true) => {
+        normal_order: (cache = this.cache) => {
             /*
             Returns the scale in normal order
 
@@ -5998,23 +6170,22 @@ class Scale {
          * let scale = edo.scale([0,2,4,5,7,9,11]) //major scale
          * scale.get.position_of_quality([4,7]) (a major triad)
          * //returns [0,5,7] because you can construct a major triad on 0, 5, and 7*/
-        position_of_quality: (intervals) => {
+        position_of_quality: (intervals,cache = this.cache) => {
+            if(this.cat_getset(["position_of_quality",String(intervals)])) return this.cat_getset(["position_of_quality",String(intervals)])
             let result = []
             let double_scale = [...this.pitches, ...this.pitches]
-
             for (let pitch of this.pitches) {
                 let int = intervals.map((interval) => (interval + pitch) % this.edo)
                 let s = [...int]
                 if (this.parent.is.subset(s, double_scale)) result.push(pitch)
             }
+            if(cache) this.cat_getset(["position_of_quality",String(intervals)],result)
             return result
-
-
         },
 
         /** <p>Returns the scale's pitches in prime form</p>
          * (Notice, the prime form calculation conforms to Rahn's prime form rather than Forte's)
-         * @param {Boolean} [cache=false] - When true, the result will be cached for future retrieval
+         * @param {Boolean} [cache] - When true, the result will be cached for future retrieval
          * @returns {Array<Number>} The pitches in prime form
          * @memberOf Scale#get
          *
@@ -6022,7 +6193,7 @@ class Scale {
          * let edo = new EDO(12) //define context
          * let scale = edo.scale([0,2,4,5,7,9,11]) //major scale
          * scale.get.prime_form() //returns [0, 1, 3, 5, 6, 8, 10]*/
-        prime_form: (cache = true) => {
+        prime_form: (cache = this.cache) => {
             /*Returns the scale in prime form*/
             if(this.cat_getset(['prime_form'])) return this.cat_getset(['prime_form'])
             let i_self = this.parent.scale(this.get.inversion())
@@ -6137,7 +6308,7 @@ class Scale {
 
         /** <p>Returns the Rothenberg Propriety value for this scale</p>
          * @see Rothenberg, D. (1977). "A model for pattern perception with musical applications part I: Pitch structures as order-preserving maps." Mathematical Systems Theory 11(1): 199-234.
-         * @param {Boolean} [cache=false] - When true, the result will be cached for future retrieval.
+         * @param {Boolean} [cache] - When true, the result will be cached for future retrieval.
          * @returns {('strictly proper'|'proper'|'improper')} The step sizes
          * @example
          * let edo = new EDO(12) //define tuning
@@ -6145,7 +6316,7 @@ class Scale {
          * scale.get.rothenberg_propriety()
          * //returns "strictly proper"
          * @memberOf Scale#get*/
-        rothenberg_propriety: (cache = true) => {
+        rothenberg_propriety: (cache = this.cache) => {
             if(this.cat_getset(['rothenberg'])) return this.cat_getset(['rothenberg'])
             let scale = this.pitches
             let map = []
@@ -6235,7 +6406,7 @@ class Scale {
          * scale.get.coherence_quotient() //returns 1
          * @see Carey, N. (2007). "Coherence and sameness in well-formed and pairwise well-formed scales." Journal of Mathematics and Music 1(2): 79-98.
          * @memberOf Scale#get*/
-        coherence_quotient: (cache=true) => {
+        coherence_quotient: (cache = this.cache) => {
             if(this.cat_getset(['coherence_quotient'])) return this.cat_getset(['coherence_quotient'])
             let all_amb = this.count.rahn_ambiguities()
             let all_cont = this.count.rahn_contradictions()
@@ -6302,15 +6473,33 @@ class Scale {
          * let scale2 = edo.scale([0,2,4,7,10])
          * scale2.get.segments(true) // returns [[3,3],[2,2,2]] (rather than [[2,2],[3,3],[2]] without minimizing)
          */
-        segments: (minimize=false) => {
+        segments: (minimize=false, cache = this.cache) => {
+            if(this.cat_getset(["segments",(minimize)?"minimized":"unminimized"])) return this.cat_getset(["segments",(minimize)?"minimized":"unminimized"])
             let steps = this.to.steps()
-            if (minimize) while (steps[0]==steps[steps.length-1]) steps = steps.concat(steps).slice(1, 1+steps.length)
+            if (minimize) {
+                let step_set = new Set(steps)
+                if(step_set.size==1) {}
+                else {
+                    while (steps[0]==steps[steps.length-1]) steps = steps.concat(steps).slice(1, 1+steps.length)
+                }
+
+            }
             let all = []
             while(steps.length>0){
                 let sub = steps.splice(0,1)
                 while(steps[0]==sub[0]) sub.push(steps.splice(0,1)[0])
                 all.push(sub)
             }
+
+            if(cache) {
+                let modes = this.get.modes()
+                modes.forEach(mode=>{
+                    let main_key = "scale_" + String(mode)
+                    let keys = [main_key,"segments",(minimize)?"minimized":"unminimized"]
+                    this.parent.cat_getset(keys,all)
+                })
+            }
+
             return all
         },
 
@@ -6420,7 +6609,7 @@ class Scale {
          * let scale = edo.scale([0,2,4,6,8,10]) //whole-tones
          * scale.get.step_mean_error() //returns 0
          */
-        step_mean_error: (cache=true) => {
+        step_mean_error: (cache = this.cache) => {
             if(this.cat_getset(['step_mean_error'])) return this.cat_getset(['step_mean_error'])
             let steps = this.to.steps()
             let cardinality = this.count.pitches()
@@ -6441,7 +6630,7 @@ class Scale {
          * scale.get.step_sizes()
          * //returns [1,2]
          * @memberOf Scale#get*/
-        step_sizes: (cache = true) => {
+        step_sizes: (cache = this.cache) => {
             if(this.cat_getset(['step_sizes'])) return this.cat_getset(['step_sizes'])
             let lst = this.parent.get.unique_elements(this.to.steps())
             lst.sort((a, b) => a - b)
@@ -6528,14 +6717,14 @@ class Scale {
          * @see Scale#get.trichords
          * @see Scale#get.n_chords
          */
-        tetrachords: (cache = true) => {
+        tetrachords: (cache = this.cache) => {
             /*
             Returns a list of every tetrachord (normalized to 0) available in this scale.
 
             :param cache:
             :return:
             */
-            let tetrachords = this.get.n_chords(4, true, cache)
+            let tetrachords = this.get.n_chords(4, true,false, cache)
             return tetrachords
         },
 
@@ -6642,14 +6831,14 @@ class Scale {
          * @see Scale#get.tetrachords
          * @see Scale#get.n_chords
          */
-        trichords: (cache = true) => {
+        trichords: (cache = this.cache) => {
             /*
             Returns a list of every trichord (normalized to 0) available in this scale.
 
             :param cache:
             :return:
             */
-            let trichords = this.get.n_chords(3, true, cache)
+            let trichords = this.get.n_chords(3, true,false, cache)
             return trichords
 
         },
@@ -6657,7 +6846,7 @@ class Scale {
         /** <p>Returns a numeric value of how unevenlyy a set's steps are distributed.</p>
          *<p>The measure is done by splitting the set into n parts and checking by how much each part differs from an ideal even split of the set (the current edo / n).</p>
          *<p>For example, 2 whole-steps and 2 major-3rds can be represented as [2 2 4 4], [2 ,4, 2, 4]. While the first distribution is imbalanced (the small steps are bunched together, and the big steps are bunched together), the 2nd distribution represents an even split</p>
-         *<p>The normalization occures within the necklace family. 1 for the most uneven necklace, and 0 for the most even necklace within that necklace family</p>
+         *<p>The normalization occurs within the current EDO and cardinality. 1 for the most uneven set in the tuning context with the same number of notes; and 0 for the most even set within that context</p>
          * @returns {Number}
          * @see Clough, John, and Jack Douthett. "Maximally even sets." Journal of music theory 35.1/2 (1991): 93-173.
          * @see Scale#get.necklace_family()
@@ -6669,51 +6858,51 @@ class Scale {
          * edo.get.unevenness([0,2,4,5,7,9,11]) //returns 0
          * // It returns 0 because in the universe of scale with steps [1 1 2 2 2 2 2], the scale above has the least "unevenness"
          */
-        unevenness: (normalize = true, cache=true) => {
-            if(this.cat_getset(['unevenness'])) return this.cat_getset(['unevenness'])
-
-
-
-            if (normalize) {
-                if(this.cat_getset(['unevenness','normalized'])) return this.cat_getset(['unevenness','normalized'])
-                let fam = this.get.necklace_family_members().map(n=>this.parent.scale(n))
-                fam.forEach(s => {
-                    let result = s.get.unevenness(false)
-                    if (result < min_uneven) min_uneven = result
-                    if (result > max_uneven) max_uneven = result
-                })
-            } else {
-                if(this.cat_getset(['unevenness','unnormalized'])) return this.cat_getset(['unevenness','unnormalized'])
-            }
+        unevenness: (normalize = false, cache = this.cache) => {
+            if(this.cat_getset(['unevenness',(normalize)?'normalized':'unnormalized'])) return this.cat_getset(['unevenness',(normalize)?'normalized':'unnormalized'])
 
 
             let min_uneven = Infinity
             let max_uneven = 0
 
+            if (normalize) {
+                let minimally_even_set = Array.from(Array(this.count.pitches()).keys())
+                max_uneven = this.parent.scale(minimally_even_set).get.unevenness(false)
+
+                let maximally_even_family = this.parent.scale(this.parent.convert.intervals_to_scale(this.parent.get.evenly_split(this.count.pitches()))).get.necklace_family_members()
+                maximally_even_family.forEach(m=>{
+                    let u = this.parent.scale(m).get.unevenness()
+                    if(u<min_uneven) min_uneven=u
+                })
+
+            }
+
+
             let cardinality = this.count.pitches()
             let temp_edo = new EDO(cardinality)
             let mode_unevenness = []
+
             for (let mode_num = 0; mode_num < cardinality; mode_num++) {
                 let mode_errors = []
-
                 for (let parts = 2; parts <= Math.ceil(cardinality / 2); parts++) {
-                    let ideal_segment_size = this.edo / parts
-                    let split = temp_edo.get.evenly_split(parts)
-                    let as_steps = this.mode(mode_num).to.steps()
+
+                    let ideal_segment_size = this.edo / parts //Ideal perfect splitting to n segments
+                    let split = temp_edo.get.evenly_split(parts) //Best split within the context of the EDO
+                    let as_steps = this.mode(mode_num).to.steps() // The scale as steps
                     let segments = []
                     for (let i = 0; i < parts; i++) segments.push(as_steps.splice(0, split[i]))
-
                     let segment_sum = segments.map(segment => segment.reduce((ag, e) => ag + e, 0))
                     let segment_error = segment_sum.map(s => Math.abs(s - ideal_segment_size))
                     let sum_of_errors = segment_error.reduce((agg, e) => agg + e, 0)
-                    mode_errors.push(sum_of_errors)
+                    let mean_of_sum_of_errors = sum_of_errors/parts
+                    mode_errors.push(mean_of_sum_of_errors)
                 }
                 mode_unevenness.push(mode_errors.reduce((ag, e) => ag + e, 0))
             }
+
             let set_unevenness = mode_unevenness.reduce((ag, e) => ag + e, 0) / cardinality
             if(cache) this.cat_getset(['unevenness','unnormalized'],set_unevenness)
             if (normalize) {
-
                 if (max_uneven == 0) return 0
                 if (max_uneven == min_uneven) return 0
                 set_unevenness = (set_unevenness - min_uneven) / (max_uneven - min_uneven)
@@ -6721,6 +6910,8 @@ class Scale {
             }
             return set_unevenness
         },
+
+
 
         /** <p>Returns the scale without the pitches in <code>to_remove</code> array</p>
          * @param  {Array<Number>} to_remove - The pitches to be removed from the original scale
@@ -6790,7 +6981,7 @@ class Scale {
          * let edo = new EDO(12) //define context
          * let scale = edo.scale([0,3,6,9]) //fully diminished chord
          * scale.is.in_lower_edos() //returns [4]*/
-        in_lower_edos: (cache = true) => {
+        in_lower_edos: (cache = this.cache) => {
             if(this.cat_getset(['lower_EDOs'])) return this.cat_getset(['lower_EDOs'])
             let scale = this.pitches
             let edos = []
@@ -6810,7 +7001,7 @@ class Scale {
         },
 
         /**<p>Returns true if the scale is invertible and false if it isn't</p>
-         * @param {Boolean} [cache=false] - when true, the result will be cached for future retrieval
+         * @param {Boolean} [cache] - when true, the result will be cached for future retrieval
          * @returns {Boolean}
          * @memberOf Scale#is
          *
@@ -6818,7 +7009,7 @@ class Scale {
          * let edo = new EDO(12) //define context
          * let scale = edo.scale([0,2,4,5,7,9,11]) //major
          * scale.is.invertible() //returns false*/
-        invertible: (cache = true) => {
+        invertible: (cache = this.cache) => {
             if(this.cat_getset(['invertible'])) return this.cat_getset(['invertible'])
             let scale = this.get.normal_order()
             let i_scale = this.parent.scale(this.get.inversion()).get.normal_order()
@@ -7017,7 +7208,7 @@ class Scale {
         /**
          * Instead of pitch-classes, this returns the scale represented by intervals (steps between notes)
          * <p>Remark: "steps" and "pitch classes" conform to the current tuning system used. E.g., 0-11 occupy 1 octave in 12EDO, 0-16 in 17EDO, etc.</p>
-         * @param {Boolean} [cache=false] - when true, the result is cached for future retrieval
+         * @param {Boolean} [cache] - when true, the result is cached for future retrieval
          * @returns {Array<Number>}
          * @memberOf Scale#to
          * @example
@@ -7025,9 +7216,10 @@ class Scale {
          * let scale = edo.scale([0,2,4,5,7,9,11]) //new Scale object
          * scale.to.steps() //returns [2,2,1,2,2,2,1]
          * */
-        steps: (cache = true) => {
+        steps: (cache = this.cache) => {
             if(this.cat_getset(['steps'])) return this.cat_getset(['steps'])
-            let intervals = this.parent.convert.to_steps(this.pitches.concat([this.edo]), cache = false)
+            let intervals = this.parent.convert.to_steps([...this.pitches,this.edo], cache = cache)
+            // let intervals = [1,1,1,3,4,5]
             if (cache) this.cat_getset(['steps'],intervals)
             return intervals
         }
@@ -7096,7 +7288,7 @@ class Scale {
     mode(n = 0) {
         let modes = this.get.modes()
         let mode = modes[this.parent.mod(n, modes.length)]
-        return new Scale(mode, this.parent)
+        return new Scale(mode, this.parent, this.cache)
     }
 
     /**
@@ -7105,7 +7297,7 @@ class Scale {
      * */
     invert() {
         let pitches = this.get.inversion()
-        return new Scale(pitches, this.parent)
+        return new Scale(pitches, this.parent, this.cache)
     }
 
     /**
@@ -7114,7 +7306,7 @@ class Scale {
      * */
     normal() {
         let pitches = this.get.normal_order()
-        return new Scale(pitches, this.parent)
+        return new Scale(pitches, this.parent, this.cache)
     }
 
     /**
@@ -7123,7 +7315,7 @@ class Scale {
      * */
     prime() {
         let pitches = this.get.prime_form()
-        return new Scale(pitches, this.parent)
+        return new Scale(pitches, this.parent, this.cache)
     }
 
     /**
@@ -7132,7 +7324,7 @@ class Scale {
      * */
     complement() {
         let pitches = this.get.complement(true)
-        return new Scale(pitches, this.parent)
+        return new Scale(pitches, this.parent, this.cache)
     }
 
 
@@ -7144,20 +7336,28 @@ class Scale {
         keys = [main_key,...keys]
         function getValue(obj, key,  ...rest) {
             if (obj === undefined) return undefined
-            if (rest.length == 0 && obj.hasOwnProperty(key)) return obj[key]
+            if (rest.length == 0 && obj.hasOwnProperty(key)) {
+                if(Array.isArray(obj[key])) return JSON.parse(JSON.stringify(obj[key]))
+                if(typeof obj[key] === 'object' ) return JSON.parse(JSON.stringify(obj[key]))
+                return obj[key]
+            }
             return getValue(obj[key], ...rest)
         }
         function setValue(obj,value, key,  ...rest) {
-
+            if(Array.isArray(value)) value = Array.from(value)
             if (rest.length == 0) {
                 obj[key] = value
-                return obj[key]
+                return undefined
             }
             if(obj[key]===undefined) obj[key] = {}
             return setValue(obj[key],value, ...rest)
         }
         if(value===undefined) return getValue(this.parent.catalog,...keys)
-        else return setValue(this.parent.catalog,value,...keys)
+        else {
+            if(Array.isArray(value)) value=Array.from(value)
+            else if(typeof value === 'object' ) return JSON.parse(JSON.stringify(value))
+            return setValue(this.parent.catalog, value, ...keys)
+        }
     }
 
 }

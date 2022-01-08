@@ -229,7 +229,7 @@ function unit_tests() {
                     n_chords: [penta.get.n_chords,[3], [[ 0, 2, 4 ],[ 0, 2, 7 ],[ 0, 3, 5 ],[ 0, 4, 7 ],[ 0, 3, 7 ],[ 0, 2, 5 ] ]],
                     // n_chords_diatonic: [],
                     // name: [],
-                    neighborhood: [maj3.get.neighborhood,[1,1,true,true], [[ 0, 3, 6 ],[ 0, 3, 7 ],[ 0, 2, 7 ],[ 0, 4, 8 ],[ 0, 4, 6 ] ]],
+                    neighborhood: [maj3.get.neighborhood,[1,1,true,true], [[ 0, 4, 8 ],[ 0, 4, 6 ],[ 0, 2, 7 ],[ 0, 3, 7 ],[ 0, 3, 6 ] ]],
                     normal_order: [dia.get.normal_order,[],[0, 1, 3, 5, 6, 8, 10]],
                     // pairwise_generic_specific_intervals: [dia.get.pairwise_generic_specific_intervals,[],[0, 1, 3, 5, 6, 8, 10]],
                     permutations: [min3.get.permutations,[], [[0,3,7],[0,7,3],[3,0,7],[3,7,0],[7,0,3],[7,3,0]]],
@@ -265,7 +265,6 @@ function unit_tests() {
                 for(let test_name in tests) {
                     it(test_name,function(){
                         tests[test_name][0](...tests[test_name][1]).should.be.eql(tests[test_name][2])
-                        console.log(edo12.catalog)
                     })
                 }
             })
