@@ -3158,9 +3158,13 @@ class EDO {
          * step sizes. step size=1 between 0 and 1, step size=2 between 5 and 7, and step size = 3 between 1 and 4.
          * @return {Array<Scale>} all the scales that abide by the criteria given
          * @memberOf EDO#get*/
-        scales: (min_step = 1, max_step = this.edo - 1, min_sizes = 1, max_sizes =4, max_num_of_pitches=this.edo,cache = false) => {
+        scales: (min_step = 1, max_step = this.edo - 1, min_sizes = 1, max_sizes = 12, max_num_of_pitches=this.edo, min_num_of_pitches=2,cache = false) => {
             // TODO: allow to choose minimum amount of pitches per scale
             let EDO = this
+
+            min_step = min_step%EDO.edo
+            max_step = (max_step>=EDO.edo)?EDO.edo-1:max_step
+
             //get all unique combinations of size s from set of intervals set
             const calc_comb = (s, set) => {
                 let solutions = []
@@ -3221,6 +3225,35 @@ class EDO {
                 return collection
             }
 
+            // Get all combinations with given steps summing to an octave
+            function get_necklace_families (steps,max_sizes,min_notes,max_notes,edo=EDO.edo) {
+                let all = []
+                function run_it(elements,goal, tally=Array.from(Array(elements.length).fill(0)),index=0) {
+                    let current = tally.reduce((ag,e,i)=>(e*elements[i])+ag,0)
+                    let num_of_notes = tally.reduce((ag,e)=>e+ag,0)
+                    let num_of_sizes = tally.filter((e)=>e>0).length
+                    if(num_of_sizes>max_sizes) return
+                    if(num_of_notes>max_notes) return
+                    if(current==goal && num_of_sizes>=min_sizes && num_of_notes>=min_notes) all.push(tally)
+                    if(index==tally.length) return
+
+                    let temp_current = current
+                    let value = 0
+                    while (temp_current<goal) {
+                        let temp = Array.from(tally)
+                        temp[index]= value
+                        value++
+                        temp_current = temp.reduce((ag,e,i)=>(e*elements[i])+ag,0)
+                        run_it(elements,goal,temp,index+1)
+                    }
+
+                }
+
+                run_it(steps,edo)
+                all = all.map(arr=>arr.map((n,i)=>Array(n).fill(steps[i])).flat())
+                return all
+            }
+
             //make all possible necklaces out of interval combinations given in [combos]
             const make_all_necklaces = function (combos) {
                 let all_necklaces = []
@@ -3244,8 +3277,11 @@ class EDO {
 
             let step_sizes = get_step_sizes(min_step, max_step)
 
-            let interval_combinations = get_interval_combinations(min_sizes, max_sizes, step_sizes)
-            let combos = unique_for_all(interval_combinations).filter(combo=>combo.length<=max_num_of_pitches)
+            // let interval_combinations = get_interval_combinations(min_sizes, max_sizes, step_sizes)
+            let combos = get_necklace_families(step_sizes,max_sizes,min_num_of_pitches,max_num_of_pitches)
+
+
+            // let combos = unique_for_all(interval_combinations).filter(combo=>combo.length<=max_num_of_pitches)
             let all_necklaces = make_all_necklaces(combos)
 
             let _scales = get_all_scales(all_necklaces)
@@ -4823,6 +4859,27 @@ class Scale {
                 n_chords+=this.get.n_chords(i,true,prime_form,false).length
             }
             if(cache) this.cat_getset(['n_chords_count',(prime_form)?"prime_form":"regular"],n_chords)
+            return n_chords
+        },
+
+        /**
+         * <p>Returns the number of unique (with regards to diatonicity) n_chords that can be made from the set or subsets of it.</p>
+         * @return {Number}
+         * @memberOf Scale#count
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,7,9]) //pentatonic
+         * scale.count.n_chords_diatonic() //returns 15
+         * */
+        n_chords_diatonic: (cache = this.cache) => {
+            if(this.cat_getset(['n_chords_diatonic_count'])) return this.cat_getset(['n_chords_diatonic_count'])
+            let n_chords = 1 //1 because the collection of all pitches should also be counted
+            for (let n = 2; n < this.pitches.length; n++) {
+                let combo = this.get.n_chords_diatonic(n)
+                combo = combo.map(d=>d.combos.length).reduce((ag,e)=>ag+e,0)
+                n_chords+=combo
+            }
+            if(cache) this.cat_getset(['n_chords_diatonic_count'],n_chords)
             return n_chords
         },
 
@@ -7193,13 +7250,17 @@ class Scale {
          * let scale = edo.scale([0,2,4,5,7,9,11]) //new Scale object
          * scale.to.EDO(24) //returns a Scale Object corresponding to [0, 4, 8, 10, 14, 18, 22] in 24EDO
          * */
-        EDO: new_edo => {
+        EDO: (new_edo, force=false) => {
             let current_edo = this.get.edo()
             let quotient = current_edo/new_edo
             let new_pitches = this.get.pitches().map(pitch=>pitch/quotient)
+            let new_system = new EDO(new_edo)
+            if(force) {
+                return new_system.scale(new_pitches)
+            }
             let valid = new_pitches.reduce((agg,pitch)=>(pitch==Math.floor(pitch)) && agg,true)
+
             if(valid) {
-                let new_system = new EDO(new_edo)
                 return new_system.scale(new_pitches)
             }
         },
