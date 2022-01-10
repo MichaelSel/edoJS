@@ -287,6 +287,7 @@ const combinations = (set, k) => {
     return combs
 }
 
+const unique_in_array = (base) => [...new Set(base)]
 
 const rescale = (num, in_min, in_max, out_min, out_max) => {
     return (num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
@@ -3521,6 +3522,7 @@ class EDO {
         },
 
         /** Gets an array that may have duplications and returns the array without duplications
+         * This should only be used for Arrays with nested Arrays or nested Objects. 1-dimensional arrays should use unique_in_array
          *
          * @param  {Array<number|Array<Number>>} list - an array with duplications
          * @returns {Array<Number>} an array without duplications
@@ -5921,21 +5923,15 @@ class Scale {
             let p = this.parent
 
 
-            const combine = function(a, how_many) {
-                const fn = function(n, src, got, all) {
-                    if (n == 0) {
-                        if (got.length > 0) {
-                            all[all.length] = got;
-                        }
-                        return;
+            const combine = function(pitches, n) {
+                function fn (p,c=[]) {
+                    if(c.length==n) all.push(c)
+                    else {
+                        for (let i = 0; i < p.length; i++) if(c.length<n) fn([...p.slice(i+1)],[...c,p[i]])
                     }
-                    for (let j = 0; j < src.length; j++) {
-                        fn(n - 1, src.slice(j + 1), got.concat([src[j]]), all);
-                    }
-                    return;
                 }
                 let all = [];
-                fn(how_many, a, [], all);
+                fn(pitches);
 
                 return all;
             }
