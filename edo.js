@@ -417,7 +417,9 @@ class EDO {
          * edo.convert.cents_to_interval(6)
          * //returns 2*/
         cents_to_interval: (cents, round=true) => {
-             return cents / this.cents_per_step
+            let result = cents / this.cents_per_step
+            if(round) result  = Math.round(result)
+             return result
         },
 
         /** Returns a ratio as a decimal number from an interval represented in cents
