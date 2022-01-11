@@ -406,6 +406,19 @@ class EDO {
     /**A collection of functions that convert an input into other equivalent representations
      * @namespace EDO#convert*/
     convert = {
+        /** Expresses cents as intervallic unit (in given EDO)
+         *
+         * @param  {Number} interval - cents
+         * @param  {Boolean} [round=true] - whether to round the decimals in case not a round number
+         * @returns {Number} An equivilant value represented in intervallic units
+         * @memberOf EDO#convert
+         * @example
+         * let edo = new EDO(24) // define a tuning with 24 divisions of the octave
+         * edo.convert.cents_to_interval(6)
+         * //returns 2*/
+        cents_to_interval: (cents, round=true) => {
+             return cents / this.cents_per_step
+        },
 
         /** Returns a ratio as a decimal number from an interval represented in cents
          *
@@ -489,7 +502,7 @@ class EDO {
          * @example
          * let edo = new EDO(17) // define a tuning with 17 divisions of the octave
          * edo.convert.interval_to_cents(6)
-         * //returns 600*/
+         * //returns 423.5294117647059*/
         interval_to_cents: (interval) => {
             return this.cents_per_step * interval
         },
