@@ -5299,6 +5299,31 @@ class Scale {
 
         },
 
+        /**<p>returns the ratio of cardinality to variety as described by Clough and Myerson (see citation) </p>
+         * <p>In the paper the concept of cardinality equals variety which is a maximally even set property. other scales may have a higher variety than cardinality and vice a versa.</p>
+         * @returns {Boolean}
+         * @memberOf Scale#get
+         * @see Clough, J. and G. Myerson (1985). "Variety and multiplicity in diatonic systems." Journal of music theory 29(2): 249-270.
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //major scale
+         * scale.is.cardinality_variety_ratio() //returns 1
+         *
+         * let scale = edo.scale([0,1,4,5,7,9,10]) //major scale
+         * scale.is.cardinality_variety_ratio() //returns 0.7104978354978355
+         * */
+        cardinality_variety_ratio: () => {
+            let ratio = []
+            for (let cardinality = 2; cardinality < this.count.pitches(); cardinality++) {
+                let n_chords = this.get.n_chords_diatonic(cardinality)
+                let variety = n_chords.map(c=>c.combos.length)
+                variety = variety.reduce((a,b)=>a+b)/variety.length
+                ratio.push(cardinality/variety)
+            }
+            ratio = ratio.reduce((a,b)=>a+b)/ratio.length
+            return ratio
+        },
+
 
         /** <p>Returns the intervals and combinations of intervals that only occur once in the set.</p>
          * <p>For instance, in the diatonic set (0 2 4 5 7 9 11) an interval of 6 semitones only occurs once (between 5 and 11). It is therefore a "diagnostic" interval within the diatonic scale.</p>
@@ -5355,6 +5380,40 @@ class Scale {
          * scale.get.edo() //returns 12
          */
         edo: () => this.edo,
+
+
+        /** <p>Returns a measure of evenness of spread, where 1 is perfectly even, and 0 is a minimally even scale.</p>
+         * <p>This measure is normalized for comparison across different EDOs</p>
+         * @returns {Number}
+         * @memberOf Scale#get
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //major scale
+         * scale.get.evenness_of_spread() //returns 0.8911564625850339
+         *
+         * let scale = edo.scale([0,2,4,6,8,10]) //whole-tones
+         * scale.get.step_mean_error() //returns 1
+         *
+         * let scale = edo.scale([0,1,2])
+         * scale.get.step_mean_error() //returns 0.3333333333333333
+         *
+         * let scale = edo.scale([0,1])
+         * scale.get.step_mean_error() //returns 0.375
+         */
+        evenness_of_spread: () => {
+            let cardinality = this.count.pitches();
+            let norm_errors =[]
+            let ideal_step = 1200/cardinality;
+            let ideal_scale = [...Array(cardinality).keys()].map(s=>s*ideal_step);
+            for (let i = 0; i < this.count.pitches(); i++) {
+                let scale_in_cents = this.mode(i).to.cents();
+                let errors = scale_in_cents.map((s,i)=>Math.abs(s-ideal_scale[i]));
+                let mean_error = errors.reduce((a,b)=>a+b,0)/cardinality;
+                let norm = 1-(mean_error/400);
+                norm_errors.push(norm)
+            }
+            return norm_errors.reduce((a,b)=>a+b,0)/this.count.pitches()
+        },
 
         /** Returns the difference between the current scale and a given set.
          * @param  {Array<Number>} [set = [0,2,4,5,7,9,11]] - The set the current scale is compared to
@@ -6681,12 +6740,67 @@ class Scale {
             if(this.cat_getset(['step_mean_error'])) return this.cat_getset(['step_mean_error'])
             let steps = this.to.steps()
             let cardinality = this.count.pitches()
-            let mean_step = 12/cardinality
+            let mean_step = this.edo/cardinality
             let step_err = steps.map(s=>Math.abs(s-mean_step))
             let total_err = step_err.reduce((ag,e)=>ag+e,0)
-            if(cache) this.cat_getset(['step_mean_error'],total_err)
-            return total_err
+            let mean_err = total_err/cardinality
+            if(cache) this.cat_getset(['step_mean_error'],mean_err)
+            return mean_err
         },
+
+        /** <p>returns a measure of self similarity in the scale's steps. The more similar the steps are to one another the closer the value is to 1. The less similar the steps are to one another, the closer they are to 0.</p>
+         * @returns {Number} The self-similarity measure
+         * @memberOf Scale#get
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //major scale
+         * scale.get.step_similarity() //returns 0.9319727891156463
+         *
+         * let scale = edo.scale([0,2,4,6,8,10]) //whole-tones
+         * scale.get.step_similarity() //returns 1
+         *
+         * let scale = edo.scale([0,1]) //
+         * scale.get.step_similarity() //returns 0.16666666666666663
+         */
+        step_similarity: (cache = this.cache) => {
+            if(this.cat_getset(['step_similarity'])) return this.cat_getset(['step_similarity'])
+            let steps = this.to.steps()
+            let mean_step = this.edo/steps.length
+            let step_err = steps.map(s=>Math.abs(s-mean_step))
+            let total_err = step_err.reduce((ag,e)=>ag+e,0)
+            let mean_err = total_err/steps.length
+            let norm_err = 1-(mean_err/this.edo)*2
+            if(cache) this.cat_getset(['step_similarity'],norm_err)
+            return norm_err
+        },
+
+        /** <p>returns a measure of self similarity in the scale's steps sizes (not to be confused with Scale#get.step_similarity() which takes all steps into account). The more similar the sizes are to one another the closer the value is to 1. The less similar the sizes are to one another, the closer they are to 0.</p>
+         * @returns {Number} The self-similarity measure
+         * @memberOf Scale#get
+         * @see Scale#get.step_similarity()
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //major scale
+         * scale.get.constituent_similarity() //returns 0.9166666666666666
+         *
+         * let scale = edo.scale([0,2,4,6,8,10]) //whole-tones
+         * scale.get.constituent_similarity() //returns 1
+         *
+         * let scale = edo.scale([0,1]) //
+         * scale.get.constituent_similarity() //returns 0.16666666666666663
+         */
+        constituent_similarity: (cache = this.cache) => {
+            if(this.cat_getset(['constituent_similarity'])) return this.cat_getset(['constituent_similarity'])
+            let steps = this.get.step_sizes()
+            let avg_step = steps.reduce((a,b)=>a+b,0)/steps.length
+            let step_err = steps.map(s=>Math.abs(s-avg_step))
+            let total_err = step_err.reduce((ag,e)=>ag+e,0)
+            let mean_err = total_err/steps.length
+            let norm_err = 1-(mean_err/this.edo)*2
+            if(cache) this.cat_getset(['constituent_similarity'],norm_err)
+            return norm_err
+        },
+
 
 
 
