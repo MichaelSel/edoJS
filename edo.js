@@ -631,7 +631,6 @@ class EDO {
             else return Math.pow(2,((midi+offset)-69)/12)*A
         },
 
-
         /** Gets a scale's name, and returns it as a Scale object
          *
          * @param  {String} name - a scale's name (based on this API's naming formula)
@@ -687,6 +686,17 @@ class EDO {
             if (this.edo != 12) return pc
             if(Array.isArray(pc)) return pc.map(p=>this.convert.pc_to_name(p))
             return PC[pc].trim()
+        },
+
+        /** Returns the frequency of the given notes
+         * @param  {Array<Number>|Number} note_number - a set of pitches
+         * @param  {Number} [freq_0=440] - The frequency of note 0
+         * @returns {Array<Number>|Number} the frequency of the notes
+         * @memberOf EDO#convert*/
+        pitches_to_freq: (pitches,freq_0=440) => {
+            let edo = this.edo
+            let freqs = pitches.map(p=>Math.pow(2,p/edo)*freq_0)
+            return freqs
         },
 
         /** <p>Normalizes any input to include pitch-classes only (to ignore octave displacement)</p>
@@ -6489,7 +6499,7 @@ class Scale {
         roughness: (all_modes=false,base_freq=440) => {
             const get_scale_roughness =function (scale) {
                     let pairs = scale.parent.get.n_choose_k(scale.pitches,2)
-                    pairs = pairs.map(p=>scale.parent.convert.midi_to_freq(p,69,base_freq))
+                    pairs = pairs.map(p=>scale.parent.convert.pitches_to_freq(p,base_freq))
                         .map(p=>scale.parent.get.sine_pair_dissonance(p[0],p[1],1,1))
                         .reduce((ag,e)=>ag+e,0)
 
