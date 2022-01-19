@@ -294,6 +294,9 @@ const rescale = (num, in_min, in_max, out_min, out_max) => {
 }
 const GCD = (...n) => n.length === 2 ? n[1] ? GCD(n[1], n[0] % n[1]) : n[0] : n.reduce((a, c) => a = GCD(a, c));
 
+
+
+
 /** Class representing some EDO tuning system.*/
 
 class EDO {
@@ -399,7 +402,18 @@ class EDO {
         return scales
     }
 
+    float_to_rat(x,tolerance = 1.0E-3) {
+        let h1=1, h2=0, k1=0, k2=1;
+        let b = x;
+        do {
+            let a = Math.floor(b);
+            let aux = h1; h1 = a*h1+h2; h2 = aux;
+            aux = k1; k1 = a*k1+k2; k2 = aux;
+            b = 1/(b-a);
+        } while (Math.abs(x-h1/k1) > x*tolerance);
 
+        return h1+"/"+k1;
+    }
 
 
 
@@ -5340,12 +5354,13 @@ class Scale {
          * @returns {Array<Array<Number>>} An array containing all diagnostic combinations
          * @memberOf Scale#get
          * @see EDO#get.diagnostic_intervals
+         * @see EDO#get.minimal_diagnostic_combination
          */
         diagnostic_combinations: (cache = this.cache) => {
             if(this.cat_getset('diagnostic_combinations')) return this.cat_getset('diagnostic_combinations')
             let combinations = []
             for (let i = 2; i < this.count.pitches(); i++) {
-                let n_chords = this.get.n_chords(i)
+                let n_chords = this.get.n_chords(i,false)
                 n_chords = n_chords.map(n=>[n,this.get.position_of_quality(n).length])
                 n_chords.forEach(n=>{
                     if(n[1]==1) combinations.push(n[0])
@@ -5355,11 +5370,33 @@ class Scale {
             return combinations
         },
 
+        /** <p>Returns the smallest combination of interval that identifies the mode and transposition of the scale. That is, given some specific set (say, the diatonic), what are the least amount of information that is neccesary to know which transposition and mode of the diatonic the set manifests in.</p>
+         * @returns {Array<Array<Number>>} An array containing all diagnostic combinations of the lowest possible cardinality
+         * @memberOf Scale#get
+         * @see EDO#get.diagnostic_intervals
+         * @see EDO#get.diagnostic_combinations
+         */
+        minimal_diagnostic_combination: (cache = this.cache) => {
+            if(this.cat_getset('minimal_diagnostic_combination')) return this.cat_getset('diagnostic_combinations')
+            let combinations = []
+            for (let i = 2; i < this.count.pitches(); i++) {
+                let n_chords = this.get.n_chords(i,false)
+                n_chords = n_chords.map(n=>[n,this.get.position_of_quality(n).length])
+                n_chords.forEach(n=>{
+                    if(n[1]==1) combinations.push(n[0])
+                })
+                if(combinations.length>0) break
+            }
+            if(cache) this.cat_getset('minimal_diagnostic_combination',combinations)
+            return combinations
+        },
+
         /** <p>Returns the (specific) intervals that only occur once in the set.</p>
          * <p>For instance, in the diatonic set (0 2 4 5 7 9 11) an interval of 6 semitones only occurs once (between 5 and 11). It is therefore a "diagnostic" interval within the diatonic scale.</p>
          * @returns {Array<Number>} An array containing all diagnostic intervals (or an empty array if none are available)
          * @memberOf Scale#get
-         * @see EDO#get.diagnostic_intervals
+         * @see EDO#get.minimal_diagnostic_combination
+         * @see EDO#get.diagnostic_combinations
          * @example
          * let edo = new EDO(12) //define context
          * let scale = edo.scale([0,2,4,5,7,9,11]) //The diatonic set
@@ -5937,6 +5974,40 @@ class Scale {
             return modes
         },
 
+
+        /** Returns a measure in cents of how different on average are the different modes from one another. 0 means all modes are exactly the same (there's no varience between the modes / there are no modes).
+         * @param  {Boolean} cache - When true, the result will be cached for faster retrieval
+         * @returns {Number}
+         * @memberOf Scale#get
+         *
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,6,8,10]) //Wholetones
+         * scale.get.mode_variance() // returns 0
+         *
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //Diatonic
+         * scale.get.mode_variance() // returns 42.857142857142854
+         *
+         * let scale = edo.scale([0,1,2,3,4]) //chromatic tetrachord
+         * scale.get.mode_variance() // returns 280
+         */
+        mode_variance: () => {
+            let SD = []
+            let cardinality = this.count.pitches()
+            let modes_count = this.count.modes()
+            for (let i = 0; i < cardinality; i++) SD.push([])
+            for (let i = 0; i < modes_count; i++) {
+                let pitches = this.mode(i).to.cents()
+                for (let j = 0; j < cardinality; j++) SD[j].push(pitches[j])
+            }
+            for (let i = 0; i < cardinality; i++) {
+                let min = Math.min(...SD[i])
+                SD[i] = SD[i].map(p=>p-min).reduce((a,b)=>a+b,0)/cardinality
+            }
+            SD = SD.reduce((a,b)=>a+b)/cardinality
+            return SD
+        },
+
         /**
          * <p>Same as [EDO.get.motives()]{@link EDO#get.motives} only instead of considering pitches as pitch classes, it looks at them as scale degrees.</p>
          * <p>As such, in the scale <code>[0,2,4,5,7,9,11]</code>, <code>[0,2,4]</code> and <code>[2,4,5]</code> are considered the same motive
@@ -6081,11 +6152,11 @@ class Scale {
          * @memberOf Scale#get
          * @see Scale#get.steps_to_qualities
          */
-        n_chords_diatonic: (n) => {
+        n_chords_diatonic: (n, prime=false) => {
             let t_edo = new EDO(this.count.pitches())
             let t_scale = t_edo.scale(Array.from(Array(this.count.pitches()).keys()))
             let combinations = t_scale.get.n_chords(n)
-            let modes = this.get.modes()
+            // let modes = this.get.modes()
             let n_chords = combinations.map((combo) => {
                 let steps = this.parent.convert.to_steps(combo)
                 return this.get.steps_to_qualities(steps)
@@ -6311,6 +6382,7 @@ class Scale {
             if(this.cat_getset(["position_of_quality",String(intervals)])) return this.cat_getset(["position_of_quality",String(intervals)])
             let result = []
             let double_scale = [...this.pitches, ...this.pitches]
+            intervals = this.parent.scale(intervals).pitches
             for (let pitch of this.pitches) {
                 let int = intervals.map((interval) => (interval + pitch) % this.edo)
                 let s = [...int]
@@ -7400,6 +7472,13 @@ class Scale {
             }
         },
 
+        ratios: () => {
+            return this.to.cents().map(c=>this.parent.convert.cents_to_ratio(c))
+        },
+
+        simple_ratios: (tolerence=0.01) => {
+            return this.to.cents().map(c=>this.parent.convert.cents_to_ratio(c)).map(r=>this.parent.float_to_rat(r,tolerence))
+        },
 
         /**
          * Instead of pitch-classes, this returns the scale represented by intervals (steps between notes)
