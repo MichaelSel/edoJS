@@ -1528,6 +1528,11 @@ class EDO {
 
         },
 
+        //TODO: Write documentation (relation to scale.get.mixture())
+        scales_from_mixture: (mixture) => {
+            return this.get.partitioned_subsets(mixture).filter(e=>e.length==(new Set(e).size))
+        },
+
         /** <p>Fills in the missing pedals to the output of [EDO.get.harp_position_of_quality()]{@link EDO#get.harp_position_of_quality}.</p>
          * @param {Array<Object>} qualities - The output of @link EDO#get.harp_position_of_quality
          * @param {Array<Number>} [harp_default=[-1,-1,-1,-1,-1,-1,-1]] - The default configuration of the pedals
@@ -2165,6 +2170,41 @@ class EDO {
 
 
 
+        },
+
+        //TODO: Write better documentation
+        /**
+         * <p>Returns all the possible scale combinations within a certain cardinality where each scale-degree option has no gaps.</p>
+         * @param  {Number} cardinality - The cardinality of the desired mixture
+         * @returns {Array<Array<Number>>}
+         * @memberOf EDO#get
+         * @see Scale#get.mixture
+         * */
+        mixture_in_cardinality: (cardinality,collapse=true, max_options=3,cache=true) => {
+            if(this.cat_getset(['mixture_in_cardinality',cardinality,(collapse)?"collapsed":"uncollapsed",max_options])) return this.cat_getset(['mixture_in_cardinality',cardinality,(collapse)?"collapsed":"uncollapsed",max_options])
+            let scales = this.get.unique_elements(this.get.scales(1,this.edo,1,this.edo,cardinality,cardinality)
+                .map(s=>s.get.mixture()))
+                .filter(m=>{
+                    for (let i = 0; i < m.length; i++) {
+                        if(m[i].length>3) return false
+                        for (let j = 1; j <m[i].length ; j++) {
+                            if(m[i][j]-m[i][j-1]!=1) return false
+                        }
+                    }
+                    return true
+                });
+            let mixture;
+            if(collapse) {
+                mixture = [...Array(cardinality)].map(e=>[]);
+                scales.forEach(scale=>{
+                    for (let i = 0; i < cardinality; i++) {
+                        mixture[i] = [...mixture[i],...scale[i]];
+                    }
+                });
+                mixture = mixture.map(cell=>Array.from(new Set(cell)).sort((a,b)=>a-b).slice(-max_options));
+            } else mixture = scales.map(scale=>scale.map(cell=>cell.slice(-max_options)));
+            this.cat_getset(['mixture_in_cardinality',cardinality,(collapse)?"collapsed":"uncollapsed",max_options],mixture)
+            return mixture
         },
 
         /** Returns the normal order of a given set of pitches
@@ -5348,7 +5388,6 @@ class Scale {
             return ratio
         },
 
-
         /** <p>Returns the intervals and combinations of intervals that only occur once in the set.</p>
          * <p>For instance, in the diatonic set (0 2 4 5 7 9 11) an interval of 6 semitones only occurs once (between 5 and 11). It is therefore a "diagnostic" interval within the diatonic scale.</p>
          * @returns {Array<Array<Number>>} An array containing all diagnostic combinations
@@ -5430,7 +5469,10 @@ class Scale {
 
 
         /** <p>Returns a measure of evenness of spread, where 1 is perfectly even, and 0 is a minimally even scale.</p>
+         * <p>The value is calculated by measuring how much this set differs from a theoretical set that splits the octave evenly. </p>
          * <p>This measure is normalized for comparison across different EDOs</p>
+         * <p>This funciton can operate at the set level, as well as on the particular mode level. </p>
+         * @param  {Number} [set_level = true] - When set to true, the returned value reflects the evenness of spread of the set as a whole. When false, only the current mode is examined and the returned value reflects how different the mode is from a theoretical scale splitting the octave evenly.
          * @returns {Number}
          * @memberOf Scale#get
          * @example
@@ -5439,27 +5481,30 @@ class Scale {
          * scale.get.evenness_of_spread() //returns 0.8911564625850339
          *
          * let scale = edo.scale([0,2,4,6,8,10]) //whole-tones
-         * scale.get.step_mean_error() //returns 1
+         * scale.get.evenness_of_spread() //returns 1
          *
          * let scale = edo.scale([0,1,2])
-         * scale.get.step_mean_error() //returns 0.3333333333333333
+         * scale.get.evenness_of_spread() //returns 0.3333333333333333
          *
          * let scale = edo.scale([0,1])
-         * scale.get.step_mean_error() //returns 0.375
+         * scale.get.evenness_of_spread() //returns 0.375
          */
-        evenness_of_spread: () => {
+        evenness_of_spread: (set_level=true) => {
             let cardinality = this.count.pitches();
             let norm_errors =[]
             let ideal_step = 1200/cardinality;
             let ideal_scale = [...Array(cardinality).keys()].map(s=>s*ideal_step);
-            for (let i = 0; i < this.count.pitches(); i++) {
+            let run_all
+            if(set_level) run_all = this.count.pitches()
+            else run_all = 1
+            for (let i = 0; i < run_all; i++) {
                 let scale_in_cents = this.mode(i).to.cents();
                 let errors = scale_in_cents.map((s,i)=>Math.abs(s-ideal_scale[i]));
                 let mean_error = errors.reduce((a,b)=>a+b,0)/cardinality;
                 let norm = 1-(mean_error/400);
                 norm_errors.push(norm)
             }
-            return norm_errors.reduce((a,b)=>a+b,0)/this.count.pitches()
+            return norm_errors.reduce((a,b)=>a+b,0)/run_all
         },
 
         /** Returns the difference between the current scale and a given set.
@@ -5513,6 +5558,19 @@ class Scale {
             let min_alter = Math.min(...alterations)
             let min_ind = alterations.indexOf(min_alter)
             return {valid:valids[min_ind]||false,alterations:alterations[min_ind],delta:deltas[min_ind],mode:valids[min_ind]?this.mode(mode[min_ind]).pitches:undefined}
+        },
+
+        //TODO: Write documentation
+        step_distribution: () => {
+            //From https://math.stackexchange.com/questions/4371073/how-well-are-are-nodes-of-a-with-given-distances-are-distributed-within-the-neck/4371092#4371092
+            let sizes = this.get.step_sizes()
+            let S = this.to.steps()
+            let A = sizes.map(el=>S.reduce((a, e, i) => (e === el) ? a.concat(i) : a, []))
+            let U = A.map((a)=>
+                a.map((el, i, arr) => Math.min(Math.abs(arr[i] - arr[(i + 1) % arr.length]), S.length - Math.abs(arr[i] - arr[(i + 1) % arr.length]))).reduce((ag,e)=>ag+e))
+                .reduce((ag,e)=>ag+e)/S.length
+            U = U/sizes.length
+            return U
         },
 
         /** Returns a vector indicating the delta between two different sets of the same cardinality.
@@ -5643,6 +5701,14 @@ class Scale {
             })
         },
 
+        /** <p>Returns the mean of the scale's pitches. This is useful if you need to quantify how sharp/flat a scale is.</p>
+         * @returns {Number} - The mean of the pitches
+         * @memberOf Scale#get
+         */
+        mean: () => {
+            return this.pitches.reduce((ag,e)=>ag+e,0)/this.count.pitches()
+        },
+
         /** <p>Returns a melody by providing a list of generic intervals to traverse within the scale.</p>
          * @param {Array<Number>} intervals - A list of generic intervals (how many scale degrees away from current)
          * @param {Number} [starting_scale_degree=1] - The first note of the melody
@@ -5671,6 +5737,28 @@ class Scale {
 
 
             return melody
+        },
+
+        //TODO: Write documentation
+        mixture: (expand_by=0) => {
+            let mixture = [...Array(this.count.pitches())].map(e=>[])
+            let modes = this.get.modes()
+            modes.forEach(mode=>{
+                mode.forEach((pitch,i)=>{
+                    mixture[i].push(pitch)
+                })
+            })
+            mixture = mixture.map(m=>Array.from(new Set(m)).sort((a,b)=>a-b))
+            if(expand_by>0) {
+                for (let i = 1; i < mixture.length; i++) {
+                    let min = mixture[i][0]
+                    let max = mixture[i][mixture[i].length-1]
+                    let new_high_keys = [...Array(expand_by).keys()].map(key=>max+(key+1)).filter(el=>(el<this.edo))
+                    let new_low_keys = [...Array(expand_by).keys()].map(key=>min-(key+1)).filter(el=>(el>0))
+                    mixture[i] = [...new_low_keys,...mixture[i],...new_high_keys]
+                }
+            }
+            return mixture
         },
 
         /** <p>Given a generic interval ("scale degrees apart") returns all of the specific intervals.</p>
@@ -5975,7 +6063,7 @@ class Scale {
         },
 
 
-        /** Returns a measure in cents of how different on average are the different modes from one another. 0 means all modes are exactly the same (there's no varience between the modes / there are no modes).
+        /** Returns a measure in cents of how different on average are the different modes from one another. 0 means all modes are exactly the same (there's no variance between the modes = there are no modes).
          * @param  {Boolean} cache - When true, the result will be cached for faster retrieval
          * @returns {Number}
          * @memberOf Scale#get
@@ -7143,8 +7231,10 @@ class Scale {
 
 
             let cardinality = this.count.pitches()
+
             let temp_edo = new EDO(cardinality)
             let mode_unevenness = []
+
 
             for (let mode_num = 0; mode_num < cardinality; mode_num++) {
                 let mode_errors = []
@@ -7175,7 +7265,21 @@ class Scale {
             return set_unevenness
         },
 
+        //TODO: Write documentation
+        virtual_cardinality: () => {
+            for (let j = this.count.pitches(); j <= this.edo; j++) {
+                let mixture = this.parent.get.mixture_in_cardinality(j,true,Infinity)
+                let interval_map = {
 
+                }
+                for (let i = 0; i < this.edo ; i++) {
+                    interval_map[i] = mixture.map(SD=>SD.indexOf(i)!=-1).map((el,i)=>(el)?i+1:undefined).filter(el=>el!=undefined)
+                }
+                let possibilities = this.get.scale_degree_roles(interval_map)
+                let exists_in_cardinality = possibilities.map(pos=>Array.from(new Set(pos)).length==this.count.pitches()).filter(el=>el).length>0
+                if(exists_in_cardinality) return j
+            }
+        },
 
         /** <p>Returns the scale without the pitches in <code>to_remove</code> array</p>
          * @param  {Array<Number>} to_remove - The pitches to be removed from the original scale
@@ -7401,6 +7505,29 @@ class Scale {
             return this.parent.is.same(this.pitches, this.get.prime_form())
         },
 
+        /**
+         * <p>Returns True if the scale is sharper than another scale (if on average it has higher pitches).</p>
+         * @returns {Boolean}
+         * @memberOf Scale#is
+         *
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //major
+         * //Is the major sharper than lydian?
+         * scale.is.sharper([0,2,4,6,7,9,11]) //returns false
+         *
+         * //Is the major sharper than itself?
+         * scale.is.sharper([0,2,4,5,7,9,11]) //returns false
+         *
+         * //Is the major sharper than mixolydian?
+         * scale.is.sharper([0,2,4,5,7,9,10]) //returns true
+         * */
+        sharper: (comparison_pitches) => {
+            let this_mean = this.pitches.reduce((ag,e)=>ag+e)
+            let compare_mean = comparison_pitches.reduce((ag,e)=>ag+e)
+            return this_mean>compare_mean
+        },
+
         /**<p>Returns true if the scale is a subset of one of multiple scales provided.</p>
          * @param {Array<Number>|Array<Array<Number>>} scales - another scale, or a collection of scales
          * @param {Boolean} [include_modes=true] - When true, the function will return true also when the scale is a subset of one of the modes of the scales in question. When false, the scale must appear verbatim to return true
@@ -7428,6 +7555,7 @@ class Scale {
             }
             return false
         },
+
     }
 
     /**A collection of functions that convert data from one representation to another
