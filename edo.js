@@ -1,6 +1,6 @@
 const environment = (typeof window === 'undefined') ? "server" : "browser"
-// import { createRequire } from "module";
-// const require = createRequire(import.meta.url);
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
 
 let fs, parseXML, midiParser
 if (environment == 'server') {
@@ -1528,6 +1528,27 @@ class EDO {
 
         },
 
+        //TODO: Write documentation
+        scale_fragments: (frag_max_length=4,min_step=1,max_step=this.edo,cache=true) => {
+            if(this.cat_getset(["scale_fragments",frag_max_length,min_step,max_step,cache])) return this.cat_getset(["scale_fragments",frag_max_length,min_step,max_step,cache])
+            let possible_steps = [...Array((max_step-min_step)+1).keys()].map(k=>k+min_step)
+            let possible_fragments = this.get.partitioned_subsets(Array(frag_max_length).fill(possible_steps))
+
+            let fragments = []
+            for (let i = 1; i <= frag_max_length; i++) {
+                fragments.push(...this.get.unique_elements(possible_fragments.map(s=>s.slice(0,i))))
+            }
+
+            fragments = fragments.map(p=>{
+                let span=p.reduce((ag,e)=>ag+e)
+                let repeat = this.edo/span
+                let v_cardinality = p.length*repeat
+                return {fragment:p,cardinality:v_cardinality}
+            }).sort((a,b)=>b.fragment.length-a.fragment.length || a.cardinality-b.cardinality)
+            if(cache) this.cat_getset(["scale_fragments",frag_max_length,min_step,max_step,cache],fragments)
+            return fragments
+        },
+
         //TODO: Write documentation (relation to scale.get.mixture())
         scales_from_mixture: (mixture) => {
             return this.get.partitioned_subsets(mixture).filter(e=>e.length==(new Set(e).size))
@@ -2296,7 +2317,7 @@ class EDO {
 
 
             motives = motives.filter((motive) => motive.motive.length > 0)
-            motives = motives.sort((a, b) => b.incidence - a.incidence || b.motive.length - a.motive.length)
+            motives = motives.sort((a, b) => b.motive.length - a.motive.length || b.incidence - a.incidence)
 
             return motives
         },
@@ -3987,11 +4008,7 @@ class EDO {
          * //returns false (the set [2,4] is NOT a subset of [1,2,3,5])
          */
         subset: (thing, thing2) => {
-
-            for (let note of thing) {
-                if (!thing2.includes(note)) return false
-            }
-            return true
+            return thing.every(note=>thing2.includes(note))
         },
 
         /**
@@ -4924,6 +4941,10 @@ class Scale {
 
         /**
          * <p>Returns the number of unique combinations that can be made from the set or subsets of it.</p>
+         * @param {Object} options
+         * @param {Boolean} [options.prime_form = false] Whether the count should consider n_chords that have the same prime form as similar
+         * @param {Array<Number>} [options.n = [2, # of pitches]] [minimum n for n_chord, maximum n for n_chord]
+         * @param {Boolean} [options.cache=set at Class level] whether to cache the results
          * @return {Number}
          * @memberOf Scale#count
          * @example
@@ -4931,15 +4952,19 @@ class Scale {
          * let scale = edo.scale([0,2,4,7,9]) //pentatonic
          * scale.count.n_chords() //returns 15
          * */
-        n_chords: (prime_form=false,cache = this.cache) => {
-            if(this.cat_getset(['n_chords_count',(prime_form)?"prime_form":"regular"])) return this.cat_getset(['n_chords_count',(prime_form)?"prime_form":"regular"])
-            let n_chords = 1 //1 because the collection of all pitches should also be counted
-            for (let i = 2; i < this.count.pitches(); i++) {
-                // Consideration: It's possible to pass the cache of the main object, but this results in a serious memory leak in big projects.
-                //Perhaps cache should be passed as false (as it is now)
-                n_chords+=this.get.n_chords(i,true,prime_form,false).length
+        n_chords: (o) => {
+            o = Object.assign({
+                prime_form:false,
+                n:[2,this.count.pitches()],
+                cache:this.cache
+            },o)
+
+            if(this.cat_getset(['n_chords_count',...Object.values(o)])) return this.cat_getset(['n_chords_count',...Object.values(o)])
+            let n_chords = 0
+            for (let i = o.n[0]; i <= o.n[1]; i++) {
+                n_chords+=this.get.n_chords(i,true,o.prime_form,false).length
             }
-            if(cache) this.cat_getset(['n_chords_count',(prime_form)?"prime_form":"regular"],n_chords)
+            if(o.cache) this.cat_getset(['n_chords_count',...Object.values(o)],n_chords)
             return n_chords
         },
 
@@ -4954,8 +4979,8 @@ class Scale {
          * */
         n_chords_diatonic: (cache = this.cache) => {
             if(this.cat_getset(['n_chords_diatonic_count'])) return this.cat_getset(['n_chords_diatonic_count'])
-            let n_chords = 1 //1 because the collection of all pitches should also be counted
-            for (let n = 2; n < this.pitches.length; n++) {
+            let n_chords = 0
+            for (let n = 2; n <= this.pitches.length; n++) {
                 let combo = this.get.n_chords_diatonic(n)
                 combo = combo.map(d=>d.combos.length).reduce((ag,e)=>ag+e,0)
                 n_chords+=combo
@@ -5467,6 +5492,13 @@ class Scale {
          */
         edo: () => this.edo,
 
+        entropy: (combination) => {
+            let transpositions = this.count.transpositions()
+            let manifestations = this.get.position_of_quality(combination).length
+            let p = manifestations/transpositions
+            let I = Math.log2(1/p)
+            return I
+        },
 
         /** <p>Returns a measure of evenness of spread, where 1 is perfectly even, and 0 is a minimally even scale.</p>
          * <p>The value is calculated by measuring how much this set differs from a theoretical set that splits the octave evenly. </p>
@@ -5568,7 +5600,8 @@ class Scale {
             let A = sizes.map(el=>S.reduce((a, e, i) => (e === el) ? a.concat(i) : a, []))
             let U = A.map((a)=>
                 a.map((el, i, arr) => Math.min(Math.abs(arr[i] - arr[(i + 1) % arr.length]), S.length - Math.abs(arr[i] - arr[(i + 1) % arr.length]))).reduce((ag,e)=>ag+e))
-                .reduce((ag,e)=>ag+e)/S.length
+            U = U.reduce((ag,e)=>ag+e)
+            U = U/S.length
             U = U/sizes.length
             return U
         },
@@ -5699,6 +5732,53 @@ class Scale {
                 let pos = this.parent.mod((note+scale_degree)-2,this.pitches.length)
                 return this.pitches[pos]
             })
+        },
+
+        //TODO: Write documentation
+        //This returns the mode(s) of the scale that present the intervals in the order of most common step size --> least common step size
+        in_tally_order: () => {
+            let tally = this.get.step_tally()
+            let step_order = tally.map(t=>t[0])
+            let modes = []
+            for (let i = 0; i < this.count.modes(); i++) {
+                let mode_order = Array.from(new Set(this.mode(i).to.steps()))
+                if(this.parent.is.same(mode_order,step_order)) modes.push(this.mode(i).pitches)
+            }
+            return modes
+
+
+        },
+
+        //TODO: Write documentation
+        fragments: (max_fragment_length = Math.ceil(this.count.pitches()/2),cache=this.cache) => {
+            if(this.cat_getset(['fragments',max_fragment_length])) return this.cat_getset(['fragments',max_fragment_length])
+
+            let steps = this.to.steps()
+            let fragments = this.parent.get.scale_fragments(max_fragment_length,Math.min(...steps),Math.max(...steps),cache)
+            let parsed = []
+            let unparsed = [...steps]
+            while(unparsed.length>0) {
+                loop1:
+                for (let i = max_fragment_length; i >0 ; i--) {
+                    let slice = unparsed.slice(0,i)
+                    loop2:
+                    for (let j = 0; j < fragments.length; j++) {
+                        if(fragments[j].fragment.length<slice.length) break loop1
+                        if(fragments[j].fragment.length>slice.length) continue loop2
+                        if(this.parent.is.same(slice,fragments[j].fragment)) {
+                            unparsed.splice(0,slice.length)
+                            parsed.push(fragments[j])
+
+                            break loop1
+
+                        }
+                    }
+                }
+            }
+            let shared_fragment = parsed.sort((a,b)=>b.fragment.length-a.fragment.length).reduce((ag,e,i,a)=>this.parent.is.same(e.fragment,a[0].fragment.slice(0,e.fragment.length)) && ag,true)
+            let cardinality = parsed.reduce((ag,e)=>ag+e.cardinality,0)/parsed.length
+
+            return {pitches:this.pitches,cardinality,shared_fragment,fragments:parsed}
         },
 
         /** <p>Returns the mean of the scale's pitches. This is useful if you need to quantify how sharp/flat a scale is.</p>
@@ -5844,6 +5924,21 @@ class Scale {
 
         },
 
+        //TODO: Write documentation
+        identity_fragment: () => {
+            let results = []
+            for (let i = 0; i < this.count.modes(); i++) {
+                let mode = this.mode(i)
+                let DC = mode.get.diagnostic_combinations()
+                let IF = (DC.length>0)? this.parent.get.intersection(...DC): []
+                if(IF[0]!==0 || !this.parent.scale(IF).is.normal_order()) continue
+                if(IF.length>1) {
+                    results.push({set: this.pitches,mode: mode.pitches,fragment: IF, is_diagnostic: this.parent.is.element_of(IF,DC)})
+                }
+            }
+            return results
+        },
+
         /** Returns the interval vector of the scale.
          * @param  {Boolean} cache - When true, the result will be cached for faster retrieval
          * @returns {Array<Number>} An array representing the vector
@@ -5895,6 +5990,7 @@ class Scale {
 
             return scale
         },
+
 
         /** <p>Returns the smallest multiplier between the sizes of steps</p>
          * @returns {Number} The step sizes
@@ -6062,7 +6158,11 @@ class Scale {
             return modes
         },
 
-
+        //TODO: Write documentation
+        modes_with_notes: (notes = [], cache = this.cache) => {
+            let modes = this.get.modes()
+            return modes.filter(m=>this.parent.is.subset(notes,m))
+        },
         /** Returns a measure in cents of how different on average are the different modes from one another. 0 means all modes are exactly the same (there's no variance between the modes = there are no modes).
          * @param  {Boolean} cache - When true, the result will be cached for faster retrieval
          * @returns {Number}
@@ -6156,7 +6256,7 @@ class Scale {
          * @see Scale#get.trichords
          * @see Scale#get.tetrachords
          */
-        n_chords: (n,normalize = true, prime_form=false,cache = this.cache) => {
+        n_chords: (n,normalize = true, prime_form=false, cache = this.cache) => {
             if((!normalize) && prime_form) return undefined
             if(this.cat_getset(['n_chords',(normalize)?'normalized':'unnormalized',(prime_form)?"prime":"not_prime",n])) {
                 return this.cat_getset(['n_chords',(normalize)?'normalized':'unnormalized',(prime_form)?"prime":"not_prime",n])
@@ -6164,18 +6264,17 @@ class Scale {
 
             let unique = this.parent.get.unique_elements
             let p = this.parent
-
-
             const combine = function(pitches, n) {
                 function fn (p,c=[]) {
                     if(c.length==n) all.push(c)
                     else {
-                        for (let i = 0; i < p.length; i++) if(c.length<n) fn([...p.slice(i+1)],[...c,p[i]])
+                        for (let i = 0; i < p.length; i++) {
+                            if(c.length<n) fn([...p.slice(i+1)],[...c,p[i]])
+                        }
                     }
                 }
                 let all = [];
                 fn(pitches);
-
                 return all;
             }
 
@@ -6193,34 +6292,41 @@ class Scale {
 
             return regular
         },
-        // n_chords: (n, normalize = true, prime_form=false,cache = false) => {
-        //     let iasd = 0
+        // n_chords: (n,normalize = true, prime_form=false, cache = this.cache) => {
         //     if((!normalize) && prime_form) return undefined
         //     if(this.cat_getset(['n_chords',(normalize)?'normalized':'unnormalized',(prime_form)?"prime":"not_prime",n])) {
         //         return this.cat_getset(['n_chords',(normalize)?'normalized':'unnormalized',(prime_form)?"prime":"not_prime",n])
         //     }
+        //
         //     let unique = this.parent.get.unique_elements
-        //     let mod = this.parent.mod
         //     let p = this.parent
-        //     let regular = []
+        //     let edo = this.edo
+        //     let half_circle = Math.ceil(edo/2)
+        //     const combine = function(pitches, n) {
+        //         function fn (p,c=[]) {
+        //             if(c.length==n) all.push(c.map(e=>e%edo).sort((a,b)=>a-b))
+        //             else {
+        //                 for (let i = 0; i < p.length; i++) {
+        //                     if(c.length<n) {
+        //                         if(c.length==0 && p[i]<edo) fn([...p.slice(i+1)],[...c,p[i]])
+        //                         else if (c[0]+edo>p[i] && p[i]-c[c.length-1]<Math.floor(edo/2)+1) {
+        //                             fn([...p.slice(i+1)],[...c,p[i]])
+        //                         }
         //
-        //     const run_it = (i = 0, n_chord = []) => {
-        //         iasd++
-        //         if (n_chord.length == n) {
-        //             if (unique(n_chord).length == n_chord.length) regular.push(n_chord.sort((a, b) => a - b))
-        //             return
+        //                     }
+        //                 }
+        //             }
         //         }
-        //         for (let j = i; j < this.pitches.length + (n - 1); j++) {
-        //             run_it(j + 1, [...n_chord, this.pitches[mod(j, this.pitches.length)]])
-        //         }
+        //         let all = [];
+        //         fn(pitches);
+        //         all = p.get.unique_elements(all)
+        //         return all;
         //     }
-        //     run_it()
         //
-        //     regular = unique(regular)
+        //     let regular = combine([...this.get.pitches(),...this.get.pitches().map(p=>p+edo)],n)
         //
-        //     let normal = unique(regular.map(r=>p.get.normal_order(r)))
+        //     let normal = unique(regular.map(r=>p.get.normal_order(r,cache)))
         //     let prime =  unique(normal.map(r=>p.scale(r).prime().pitches))
-        //     console.log(iasd)
         //     if (cache) {
         //         this.cat_getset(['n_chords','unnormalized',"not_prime",n],regular)
         //         this.cat_getset(['n_chords','normalized',"not_prime",n],normal)
@@ -6800,6 +6906,23 @@ class Scale {
             return all
         },
 
+        self_similarity: (min_n=2,max_n=this.count.pitches(), cache = this.cache) => {
+            if(this.cat_getset(["segments",min_n,max_n])) return this.cat_getset(["segments",min_n,max_n])
+            let manifestations = 0
+            let distinct = 0
+            for (let i = min_n; i <= max_n ; i++) {
+                let distinct_n_chords = this.get.n_chords(i)
+                distinct+=distinct_n_chords.length
+                distinct_n_chords.forEach(b=>{
+                    let pos_o_q = this.get.position_of_quality(b).length
+                    manifestations+=pos_o_q
+                })
+            }
+            let result = ((manifestations/distinct)-1)/(this.count.pitches()-1)
+            if(cache) this.cat_getset(["segments",min_n,max_n],result)
+            return result
+        },
+
         /** <p>Transposes a melody within the scale by a given number of scale degrees</p>
          * @param {Array<Number>} seq - The original melody / sequence to be "transposed"
          * @param {Number} transposition - The number of scale degrees (up or down) by which to shift the melody.
@@ -6990,6 +7113,21 @@ class Scale {
             return lst
 
 
+        },
+
+        //TODO: Write documentation
+        //[step,occurences]
+        step_tally: (cache = this.cache) =>{
+            if(this.cat_getset(['step_tally'])) return this.cat_getset(['step_tally'])
+            let step_sizes = this.get.step_sizes(cache)
+            let tally = []
+            let as_steps = this.to.steps()
+            step_sizes.forEach(s=>{
+                tally.push([s,as_steps.filter(x => x === s).length])
+            })
+            tally = tally.sort((a,b)=>b[1]-a[1])
+            if(cache) this.cat_getset(['step_tally'],tally)
+            return tally
         },
 
         /**
