@@ -1,6 +1,6 @@
 const environment = (typeof window === 'undefined') ? "server" : "browser"
-import { createRequire } from "module";
-const require = createRequire(import.meta.url);
+// import { createRequire } from "module";
+// const require = createRequire(import.meta.url);
 
 let fs, parseXML, midiParser
 if (environment == 'server') {
@@ -1528,29 +1528,71 @@ class EDO {
 
         },
 
-        //TODO: Write documentation
-        scale_fragments: (frag_max_length=4,min_step=1,max_step=this.edo,cache=true) => {
-            if(this.cat_getset(["scale_fragments",frag_max_length,min_step,max_step,cache])) return this.cat_getset(["scale_fragments",frag_max_length,min_step,max_step,cache])
+        /** <p>Returns the full list of {frag_max_length} steps that span a given {span}.</p>
+         * @param {Object} options
+         * @param {Number} [options.max_length=4] - The maximal number of members in each fragment
+         * @param {Number} [options.min_length=4] - The minimal number of members in each fragment
+         * @param {Number} [options.min_step=1] - The smallest step size used in each fragment
+         * @param {Number} [options.max_step=1] - The largest step size used in each fragment
+         * @param {Number} [options.span=1] - The span of each fragment specified in the current EDO's intervallic units.
+         * @param {Boolean} [cache=true] - Whether to cache the result for faster retrieval.
+         * @returns {Array<Object>} - Returns an array of object, with each specifying a fragment, and its "virtual cardinality".
+         * The virtual cardinality in this case refers to how many notes are needed to fill an octave by repeatly filling it with the fragment.
+         * So in 12-EDO, the fragment [1,1,1,1] will have a cardinality of 12, because you need 12 notes ([1,1,1,1][1,1,1,1][1,1,1,1]) to span an octave.
+         * The fragment [2,1,2,1] will have a cardinality of 8, because you need 8 notes ([2,1,2,1][2,1,2,1]) to span an octave.
+         * Importantly, the fragment [2,1,2] will have a cardinality of 7.2, because more than 2Xfragment is needed, and less than 3Xfragment ([2,1,2][2,1,2][2...)
+         * The actual calculation is: (EDO/span)*fragment_length
+         * @memberOf EDO#get
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * edo.get.scale_fragments({span:5,max_length:3,min_length:3}) //All of the fragments that span a perfect 4th (5) with 3 members (i.e., 4 notes). This returns all of the possible scalar tetrachords in 12-EDO
+         * //returns
+         * [
+         *   { fragment: [ 1, 1, 3 ], cardinality: 7.199999999999999 },
+         *   { fragment: [ 1, 2, 2 ], cardinality: 7.199999999999999 },
+         *   { fragment: [ 1, 3, 1 ], cardinality: 7.199999999999999 },
+         *   { fragment: [ 2, 1, 2 ], cardinality: 7.199999999999999 },
+         *   { fragment: [ 2, 2, 1 ], cardinality: 7.199999999999999 },
+         *   { fragment: [ 3, 1, 1 ], cardinality: 7.199999999999999 },
+         *   { fragment: [ 1, 1, 2 ], cardinality: 9 },
+         *   { fragment: [ 1, 2, 1 ], cardinality: 9 },
+         *   { fragment: [ 2, 1, 1 ], cardinality: 9 },
+         *   { fragment: [ 1, 1, 1 ], cardinality: 12 }
+         * ]
+
+         */
+        scale_fragments: ({max_length = 4,min_length = 1, min_step = 1, max_step = this.edo, span = this.edo},cache=true) => {
+            if(this.cat_getset(["scale_fragments",max_length,min_length,min_step,max_step,cache])) return this.cat_getset(["scale_fragments",max_length,min_length,min_step,max_step,cache])
             let possible_steps = [...Array((max_step-min_step)+1).keys()].map(k=>k+min_step)
-            let possible_fragments = this.get.partitioned_subsets(Array(frag_max_length).fill(possible_steps))
+            let possible_fragments = this.get.partitioned_subsets(Array(max_length).fill(possible_steps))
+                .filter (f=>f.reduce((ag,e)=>ag+e)<=span)
 
             let fragments = []
-            for (let i = 1; i <= frag_max_length; i++) {
+            for (let i = min_length; i <= max_length; i++) {
                 fragments.push(...this.get.unique_elements(possible_fragments.map(s=>s.slice(0,i))))
             }
-
             fragments = fragments.map(p=>{
                 let span=p.reduce((ag,e)=>ag+e)
                 let repeat = this.edo/span
                 let v_cardinality = p.length*repeat
                 return {fragment:p,cardinality:v_cardinality}
             }).sort((a,b)=>b.fragment.length-a.fragment.length || a.cardinality-b.cardinality)
-            if(cache) this.cat_getset(["scale_fragments",frag_max_length,min_step,max_step,cache],fragments)
+            if(cache) this.cat_getset(["scale_fragments",max_length,min_length,min_step,max_step,cache],fragments)
             return fragments
         },
 
-        //TODO: Write documentation (relation to scale.get.mixture())
-        scales_from_mixture: (mixture) => {
+        /** <p>Returns every scale that can be constructed, given some mixture (as returned by {@link Scale#get.mixture}, for instance)</p>
+         * @param {Array<Array<Number>>} mixture - [[possibilities for step 1], [possibilities for step 2],...,[possibilities for step n]] in a scale with n steps.
+         * @returns {Array<Array<Number>>} - Returns all of the sets that can be constructed with the mixture provided
+         * @memberOf EDO#get
+         * @see Scale#get.mixture
+         * @see EDO#get.mixture_in_cardinality
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * edo.get.sets_from_mixture([  [0], [3,4], [7,8]  ])
+         * //returns [ [ 0, 3, 7 ], [ 0, 3, 8 ], [ 0, 4, 7 ], [ 0, 4, 8 ] ]
+         */
+        sets_from_mixture: (mixture) => {
             return this.get.partitioned_subsets(mixture).filter(e=>e.length==(new Set(e).size))
         },
 
@@ -3260,7 +3302,6 @@ class EDO {
          * @return {Array<Scale>} all the scales that abide by the criteria given
          * @memberOf EDO#get*/
         scales: (min_step = 1, max_step = this.edo - 1, min_sizes = 1, max_sizes = 12, max_num_of_pitches=this.edo, min_num_of_pitches=2,cache = false) => {
-            // TODO: allow to choose minimum amount of pitches per scale
             let EDO = this
 
             min_step = min_step%EDO.edo
@@ -5317,7 +5358,7 @@ class Scale {
         },
 
         //TODO: Write documentation
-        /** <p>Documentation missing.</p>
+         /** <p>Documentation missing.</p>
          * @memberOf Scale#get
          * @see EDO#get.unevenness()
          */
@@ -5500,43 +5541,96 @@ class Scale {
             return I
         },
 
-        /** <p>Returns a measure of evenness of spread, where 1 is perfectly even, and 0 is a minimally even scale.</p>
-         * <p>The value is calculated by measuring how much this set differs from a theoretical set that splits the octave evenly. </p>
+        /** <p>Returns a measure of evenness of spread (variance from perfect distribution), where 0 is perfectly even (all the steps are distributed evenely as possibly around the octave), and any number higher than that represents the amount of varience from that ideal.</p>
          * <p>This measure is normalized for comparison across different EDOs</p>
-         * <p>This funciton can operate at the set level, as well as on the particular mode level. </p>
-         * @param  {Number} [set_level = true] - When set to true, the returned value reflects the evenness of spread of the set as a whole. When false, only the current mode is examined and the returned value reflects how different the mode is from a theoretical scale splitting the octave evenly.
          * @returns {Number}
          * @memberOf Scale#get
          * @example
          * let edo = new EDO(12) //define context
          * let scale = edo.scale([0,2,4,5,7,9,11]) //major scale
-         * scale.get.evenness_of_spread() //returns 0.8911564625850339
+         * scale.get.evenness_of_spread() //returns 0.0005668934240362809
          *
          * let scale = edo.scale([0,2,4,6,8,10]) //whole-tones
-         * scale.get.evenness_of_spread() //returns 1
-         *
-         * let scale = edo.scale([0,1,2])
-         * scale.get.evenness_of_spread() //returns 0.3333333333333333
+         * scale.get.evenness_of_spread() //returns 1.71193772834421e-33 (actually 0)
          *
          * let scale = edo.scale([0,1])
-         * scale.get.evenness_of_spread() //returns 0.375
+         * scale.get.evenness_of_spread() //returns 0.04340277777777778
          */
         evenness_of_spread: (set_level=true) => {
-            let cardinality = this.count.pitches();
-            let norm_errors =[]
-            let ideal_step = 1200/cardinality;
-            let ideal_scale = [...Array(cardinality).keys()].map(s=>s*ideal_step);
-            let run_all
-            if(set_level) run_all = this.count.pitches()
-            else run_all = 1
-            for (let i = 0; i < run_all; i++) {
-                let scale_in_cents = this.mode(i).to.cents();
-                let errors = scale_in_cents.map((s,i)=>Math.abs(s-ideal_scale[i]));
-                let mean_error = errors.reduce((a,b)=>a+b,0)/cardinality;
-                let norm = 1-(mean_error/400);
-                norm_errors.push(norm)
+            let scale = this.pitches.map(s=>s/this.edo)
+            const ideal = [...Array(scale.length).keys()].map(e=>e*(12/scale.length/12))
+            const diff = scale.map((e,i)=>e-ideal[i])
+            const mean = diff.reduce((ag,e)=>ag+e)/diff.length
+            const diff_from_mean = diff.map(e=>e-mean)
+            const variance_2 = diff_from_mean.map(e=>Math.pow(e,2)).reduce((ag,e)=>ag+e)/diff.length
+            return variance_2
+        },
+
+        /**
+         * @typedef {Object} Symmetricalness
+         * @property {Number} manifestations: - The total number of pitch combinations found
+         * @property {Number} distinct - The number of distinct pitch combinations from the total number
+         * @property {Number} ratio - The ratio of manifestation to distinct
+         * @property {Number} normalized: - A normalized value: 1 being perfectly symmetrical and 0 being fully-non-symmetrical
+         * */
+
+        /**
+         * @typedef {Object} Symmetricalness_verbose
+         * @property {Array<Number>} fragment: - A fragment found in the set
+         * @property {Number} manifestations: - The number of time this fragment manifests in the set
+         * */
+
+        /** <p>Returns a measure of how geometrically symmetrical (self-similar) the structure is.</p>
+         * <p>This done by counting the total number of pitch combinations, and dividing them by the number of distinct pitch combinations</p>
+         * @param  {Object} [options] - An object with optional parameters
+         * @param  {Number} [options.min_n=2] - The function will only consider combinations with min_n members or more
+         * @param  {Number} [options.max_n=carinality] - The function will only consider combinations at most max_n members
+         * @param  {Number} [options.verbose] - The function will only consider combinations at most max_n members
+         * @returns {Symmetricalness | Symmetricalness_verbose}
+         * @memberOf Scale#get
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,3,6,9])
+         * scale.get.Symmetricalness() // returns { distinct: 4, manifestations: 16, ratio: 4, normalized: 1 }
+         *
+         * let scale = edo.scale([0,1,6,7])
+         * scale.get.Symmetricalness() // returns { distinct: 6, manifestations: 14, ratio: 2.3333333333333335, normalized: 0.4444444444444445}
+         *
+         * let scale = edo.scale([0,2,6,8])
+         * scale.get.Symmetricalness() // returns { distinct: 8, manifestations: 14, ratio: 1.75, normalized: 0.25 }
+         *
+         * let scale = edo.scale([0,2,4,6,8])
+         * scale.get.Symmetricalness({min_n:3,max_n:4,verbose:true})
+         * // returns [
+         *   { fragment: [ 0, 2, 4 ], manifestations: 3 },
+         *   { fragment: [ 0, 2, 6 ], manifestations: 3 },
+         *   { fragment: [ 0, 4, 6 ], manifestations: 3 },
+         *   { fragment: [ 0, 4, 8 ], manifestations: 3 },
+         *   { fragment: [ 0, 2, 4, 6 ], manifestations: 2 },
+         *   { fragment: [ 0, 2, 4, 8 ], manifestations: 2 },
+         *   { fragment: [ 0, 2, 6, 8 ], manifestations: 2 }
+         * ]
+         */
+        symmetricalness: ({min_n = 2,max_n =this.count.pitches(),verbose =false} = {},cache=this.cache) => {
+            if(this.cat_getset(["self_similarity",min_n,max_n,verbose])) return this.cat_getset(["self_similarity",min_n,max_n,verbose])
+            let manifestations = 0
+            let distinct = 0
+            let distinct_collection = []
+            for (let i = min_n; i <= max_n ; i++) {
+                let distinct_n_chords = this.get.n_chords(i)
+                distinct+=distinct_n_chords.length
+                distinct_n_chords = distinct_n_chords.map(e=> {
+                    let occurrences = this.get.position_of_quality(e).length
+                    manifestations+=occurrences
+                    return {fragment: e, manifestations:occurrences}
+                })
+                distinct_collection.push(...distinct_n_chords)
             }
-            return norm_errors.reduce((a,b)=>a+b,0)/run_all
+            let result
+            if(verbose) result = distinct_collection
+            else result = {distinct, manifestations, ratio: manifestations/distinct, normalized: ((manifestations/distinct)-1)/(this.count.pitches()-1)}
+            if(cache) this.cat_getset(["self_similarity",min_n,max_n,verbose],result)
+            return result
         },
 
         /** Returns the difference between the current scale and a given set.
@@ -5592,19 +5686,20 @@ class Scale {
             return {valid:valids[min_ind]||false,alterations:alterations[min_ind],delta:deltas[min_ind],mode:valids[min_ind]?this.mode(mode[min_ind]).pitches:undefined}
         },
 
-        //TODO: Write documentation
-        step_distribution: () => {
-            //From https://math.stackexchange.com/questions/4371073/how-well-are-are-nodes-of-a-with-given-distances-are-distributed-within-the-neck/4371092#4371092
-            let sizes = this.get.step_sizes()
-            let S = this.to.steps()
-            let A = sizes.map(el=>S.reduce((a, e, i) => (e === el) ? a.concat(i) : a, []))
-            let U = A.map((a)=>
-                a.map((el, i, arr) => Math.min(Math.abs(arr[i] - arr[(i + 1) % arr.length]), S.length - Math.abs(arr[i] - arr[(i + 1) % arr.length]))).reduce((ag,e)=>ag+e))
-            U = U.reduce((ag,e)=>ag+e)
-            U = U/S.length
-            U = U/sizes.length
-            return U
-        },
+        // //TODO: Write documentation
+        // This has been replaced by evenness_of_spread
+        // step_distribution: () => {
+        //     //From https://math.stackexchange.com/questions/4371073/how-well-are-are-nodes-of-a-with-given-distances-are-distributed-within-the-neck/4371092#4371092
+        //     let sizes = this.get.step_sizes()
+        //     let S = this.to.steps()
+        //     let A = sizes.map(el=>S.reduce((a, e, i) => (e === el) ? a.concat(i) : a, []))
+        //     let U = A.map((a)=>
+        //         a.map((el, i, arr) => Math.min(Math.abs(arr[i] - arr[(i + 1) % arr.length]), S.length - Math.abs(arr[i] - arr[(i + 1) % arr.length]))).reduce((ag,e)=>ag+e))
+        //     U = U.reduce((ag,e)=>ag+e)
+        //     U = U/S.length
+        //     U = U/sizes.length
+        //     return U
+        // },
 
         /** Returns a vector indicating the delta between two different sets of the same cardinality.
          * @param  {Array<Number>} [set = [0,2,4,5,7,9,11]] - The set the current scale is compared to
@@ -5735,10 +5830,12 @@ class Scale {
         },
 
         //TODO: Write documentation
+        //TODO: This has a bug: [0,3,6,9,11] fails. Needs to deal with sitautions where there's the same number of multiple step sizes
         //This returns the mode(s) of the scale that present the intervals in the order of most common step size --> least common step size
         in_tally_order: () => {
             let tally = this.get.step_tally()
             let step_order = tally.map(t=>t[0])
+            console.log(step_order)
             let modes = []
             for (let i = 0; i < this.count.modes(); i++) {
                 let mode_order = Array.from(new Set(this.mode(i).to.steps()))
@@ -5750,11 +5847,12 @@ class Scale {
         },
 
         //TODO: Write documentation
-        fragments: (max_fragment_length = Math.ceil(this.count.pitches()/2),cache=this.cache) => {
+        fragments: ({max_fragment_length = Math.ceil(this.count.pitches() / 2), min_step = 1, max_step = this.edo}={},cache=this.cache) => {
             if(this.cat_getset(['fragments',max_fragment_length])) return this.cat_getset(['fragments',max_fragment_length])
 
             let steps = this.to.steps()
-            let fragments = this.parent.get.scale_fragments(max_fragment_length,Math.min(...steps),Math.max(...steps),cache)
+            let span = this.get.generic_intervals(max_fragment_length).reduce((ag,e)=>(e.specific>ag)?e.specific:ag,0)
+            let fragments = this.parent.get.scale_fragments({max_fragment_length:max_fragment_length,min_step:Math.min(...steps), max_step:Math.max(...steps), span:span},cache)
             let parsed = []
             let unparsed = [...steps]
             while(unparsed.length>0) {
@@ -5819,7 +5917,27 @@ class Scale {
             return melody
         },
 
-        //TODO: Write documentation
+        /** <p>Returns the substitution possibilities available by "borrowing" notes from other modes of the set.
+         * This follows the basic concept of mixture, wherein one might explain the ascending melodic minor scale as a major scale, with a flattened 3 "borrowed from the natural minor"
+         * </p>
+         * @param {Number} expand_by - A number by which to expend the possible mixture possibilities in every direciton.
+         * @returns {Array<Array<Number>>} - The mixture
+         * @memberOf Scale#get
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * let scale = edo.scale([0,2,4,7,9]) // The pentatonic
+         * scale.get.mixture()
+         * //returns [ [ 0 ], [ 2, 3 ], [ 4, 5 ], [ 7, 8 ], [ 9, 10 ] ]
+         *
+         * scale.get.mixture(1)
+         * //returns [
+         *   [ 0 ],
+         *   [ 1, 2, 3, 4 ],
+         *   [ 3, 4, 5, 6 ],
+         *   [ 6, 7, 8, 9 ],
+         *   [ 8, 9, 10, 11 ]
+         * ]
+         */
         mixture: (expand_by=0) => {
             let mixture = [...Array(this.count.pitches())].map(e=>[])
             let modes = this.get.modes()
@@ -5924,7 +6042,34 @@ class Scale {
 
         },
 
-        //TODO: Write documentation
+        /**
+         * @typedef {Object} Identity_Fragment
+         * @property {Array<number>} set - The original set used
+         * @property {Array<number>} mode - The mode of that set which normalizes the identity fragment to 0.
+         * @property {Array<number>} fragment - The fragment
+         * @property {Boolean} is_diagnostic - Whether the fragment is in itself a diagnostic combination
+         * */
+
+        /** <p>Returns the Identity Fragments of the given set.</p>
+         * <p>An identity fragment is a combination of pitches from the set, that appear in ALL of the set's  {@link Scale#get.diagnostic_combinations}[diagnostic combinations].</p>
+         *
+         * @returns {Identity_Fragment} - An array of objects. Each object contains
+         * @memberOf Scale#get
+         * @example
+         * let edo = new EDO(12) // define a tuning system
+         * let scale = edo.scale([0,2,5,7,10])
+         * scale.get.identity_fragment()
+         * //returns
+         * [
+         *   {
+         *     set: [ 0, 2, 5, 7, 10 ],
+         *     mode: [ 0, 2, 4, 7, 9 ],
+         *     fragment: [ 0, 4 ],
+         *     is_diagnostic: true
+         *   }
+         * ]
+         * @see Scale#get.diagnostic_combinations
+         */
         identity_fragment: () => {
             let results = []
             for (let i = 0; i < this.count.modes(); i++) {
@@ -6158,11 +6303,26 @@ class Scale {
             return modes
         },
 
-        //TODO: Write documentation
-        modes_with_notes: (notes = [], cache = this.cache) => {
+        /** Returns all the modes of the set that contain the specified notes
+         * @returns {Array<Array<Number>>} An array of the different modes
+         * @memberOf Scale#get
+
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,7,9]) //pentatonic scale
+         * scale.get.modes_with_notes([2,5])
+         * //returns
+         * [
+         *  [ 0, 2, 5, 7, 10 ],
+         *  [ 0, 2, 5, 7, 9 ],
+         * ]
+         */
+        modes_with_notes: (notes = []) => {
             let modes = this.get.modes()
             return modes.filter(m=>this.parent.is.subset(notes,m))
         },
+
+
         /** Returns a measure in cents of how different on average are the different modes from one another. 0 means all modes are exactly the same (there's no variance between the modes = there are no modes).
          * @param  {Boolean} cache - When true, the result will be cached for faster retrieval
          * @returns {Number}
@@ -6906,22 +7066,7 @@ class Scale {
             return all
         },
 
-        self_similarity: (min_n=2,max_n=this.count.pitches(), cache = this.cache) => {
-            if(this.cat_getset(["segments",min_n,max_n])) return this.cat_getset(["segments",min_n,max_n])
-            let manifestations = 0
-            let distinct = 0
-            for (let i = min_n; i <= max_n ; i++) {
-                let distinct_n_chords = this.get.n_chords(i)
-                distinct+=distinct_n_chords.length
-                distinct_n_chords.forEach(b=>{
-                    let pos_o_q = this.get.position_of_quality(b).length
-                    manifestations+=pos_o_q
-                })
-            }
-            let result = ((manifestations/distinct)-1)/(this.count.pitches()-1)
-            if(cache) this.cat_getset(["segments",min_n,max_n],result)
-            return result
-        },
+
 
         /** <p>Transposes a melody within the scale by a given number of scale degrees</p>
          * @param {Array<Number>} seq - The original melody / sequence to be "transposed"
@@ -7115,8 +7260,18 @@ class Scale {
 
         },
 
-        //TODO: Write documentation
-        //[step,occurences]
+
+
+        /** <p>Returns and array with every step size appearing in the set, with the number of times it occurs.</p>
+         * @param {Boolean} [cache] - When true, the result will be cached for future retrieval
+         * @returns {Array<Array<Number>>} The step tally in the form of [[step_size,# occurances],[ST,#],...]
+         * @memberOf Scale#get
+         * @example
+         * let edo = new EDO(12) //define tuning
+         * let scale = edo.scale([0,1,4,5,7,9,11])
+         * scale.get.step_tally()
+         * //returns [ [ 1, 3 ], [ 2, 3 ], [ 3, 1 ] ] //step size 1 occures 3 times, step size 2 occues 3 times, step size 3, occures 1 time.
+         */
         step_tally: (cache = this.cache) =>{
             if(this.cat_getset(['step_tally'])) return this.cat_getset(['step_tally'])
             let step_sizes = this.get.step_sizes(cache)
