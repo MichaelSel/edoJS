@@ -1,6 +1,6 @@
 const environment = (typeof window === 'undefined') ? "server" : "browser"
-// import { createRequire } from "module";
-// const require = createRequire(import.meta.url);
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
 
 let fs, parseXML, midiParser
 if (environment == 'server') {
@@ -5533,6 +5533,19 @@ class Scale {
          */
         edo: () => this.edo,
 
+        /** <p>Returns the entropy (in bits) representing how much the space of possible transpositions of this scale are narrowed down given this combination of pitches.</p>
+         * <p>For instance, in the set [0,2,4,7,9] the combination [0 5] can appear in 4 combinations: [10,0,2,5,7], [8,10,0,3,5], [5,7,9,0,2], and [3,5,7,10,0]
+         * Therefore, the combination narrows down the space of possible transposition from 12 to 4, which is a factor of 3, or 1.584962500721156 bits of entropy</p>
+         * <p>Similarly, [0,2] cuts the space by a factor of 4, or 2 bits.<p/>
+         *
+         * @returns {Number}
+         * @memberOf Scale#get
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,7,9])
+         * scale.get.entropy([0,4]) // returns 3.584962500721156
+         * scale.get.entropy([0,3,5]) // returns 2.584962500721156
+         */
         entropy: (combination) => {
             let transpositions = this.count.transpositions()
             let manifestations = this.get.position_of_quality(combination).length
@@ -5541,29 +5554,38 @@ class Scale {
             return I
         },
 
-        /** <p>Returns a measure of evenness of spread (variance from perfect distribution), where 0 is perfectly even (all the steps are distributed evenely as possibly around the octave), and any number higher than that represents the amount of varience from that ideal.</p>
+        /** <p>Returns a normalized measure of evenness of spread , where 1 is perfectly even (all the steps are distributed evenely as possibly around the octave), and 0 is maximally uneven (as if all the notes of the set (at the given cardinality) are infinitly close together).</p>
          * <p>This measure is normalized for comparison across different EDOs</p>
          * @returns {Number}
+         * @see https://math.stackexchange.com/questions/4371073/quantifying-the-evenness-of-distribution-of-nodes-within-a-necklace
          * @memberOf Scale#get
          * @example
          * let edo = new EDO(12) //define context
          * let scale = edo.scale([0,2,4,5,7,9,11]) //major scale
-         * scale.get.evenness_of_spread() //returns 0.0005668934240362809
+         * scale.get.evenness_of_spread() //returns 0.9930555555555556
          *
          * let scale = edo.scale([0,2,4,6,8,10]) //whole-tones
-         * scale.get.evenness_of_spread() //returns 1.71193772834421e-33 (actually 0)
+         * scale.get.evenness_of_spread() //returns 1
          *
          * let scale = edo.scale([0,1])
-         * scale.get.evenness_of_spread() //returns 0.04340277777777778
+         * scale.get.evenness_of_spread() //returns 0.30555555555555547
          */
-        evenness_of_spread: (set_level=true) => {
-            let scale = this.pitches.map(s=>s/this.edo)
-            const ideal = [...Array(scale.length).keys()].map(e=>e*(12/scale.length/12))
-            const diff = scale.map((e,i)=>e-ideal[i])
-            const mean = diff.reduce((ag,e)=>ag+e)/diff.length
-            const diff_from_mean = diff.map(e=>e-mean)
-            const variance_2 = diff_from_mean.map(e=>Math.pow(e,2)).reduce((ag,e)=>ag+e)/diff.length
-            return variance_2
+        evenness_of_spread: () => {
+            const scale = this.pitches.map(s=>s/this.edo)
+            const ideal = [...Array(scale.length).keys()].map(e=>e*(this.edo/scale.length/this.edo))
+            const worst = [...Array(scale.length).keys()].map(e=>0)
+            const diff_scale = scale.map((e,i)=>e-ideal[i])
+            const diff_worst = worst.map((e,i)=>e-ideal[i])
+            const mean_scale = diff_scale.reduce((ag,e)=>ag+e)/diff_scale.length
+            const mean_worst = diff_worst.reduce((ag,e)=>ag+e)/diff_worst.length
+            const diff_from_mean_scale = diff_scale.map(e=>e-mean_scale)
+            const diff_from_mean_worst = diff_worst.map(e=>e-mean_worst)
+
+            const variance_2_scale = diff_from_mean_scale.map(e=>Math.pow(e,2)).reduce((ag,e)=>ag+e)/diff_scale.length
+            const variance_2_worst = diff_from_mean_worst.map(e=>Math.pow(e,2)).reduce((ag,e)=>ag+e)/diff_worst.length
+
+            const normalized = 1-(variance_2_scale/variance_2_worst)
+            return normalized
         },
 
         /**
