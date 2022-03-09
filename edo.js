@@ -1,6 +1,6 @@
 const environment = (typeof window === 'undefined') ? "server" : "browser"
-import { createRequire } from "module";
-const require = createRequire(import.meta.url);
+// import { createRequire } from "module";
+// const require = createRequire(import.meta.url);
 
 let fs, parseXML, midiParser
 if (environment == 'server') {
