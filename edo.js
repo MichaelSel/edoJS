@@ -1561,23 +1561,23 @@ class EDO {
          * ]
 
          */
-        scale_fragments: ({max_length = 4,min_length = 1, min_step = 1, max_step = this.edo, span = this.edo},cache=true) => {
-            if(this.cat_getset(["scale_fragments",max_length,min_length,min_step,max_step,cache])) return this.cat_getset(["scale_fragments",max_length,min_length,min_step,max_step,cache])
-            let possible_steps = [...Array((max_step-min_step)+1).keys()].map(k=>k+min_step)
-            let possible_fragments = this.get.partitioned_subsets(Array(max_length).fill(possible_steps))
-                .filter (f=>f.reduce((ag,e)=>ag+e)<=span)
-
-            let fragments = []
-            for (let i = min_length; i <= max_length; i++) {
-                fragments.push(...this.get.unique_elements(possible_fragments.map(s=>s.slice(0,i))))
+        scale_fragments: ({max_length = 4,min_length = 1, steps=[1,2], span = this.edo},cache=true) => {
+            if(this.cat_getset(["scale_fragments",max_length,min_length,steps,span])) return this.cat_getset(["scale_fragments",max_length,min_length,steps,span])
+            let possible_steps = steps
+            let possible_fragments = []
+            for (let length = min_length; length <=max_length ; length++) {
+                let temp = this.get.partitioned_subsets([...Array(length).fill(possible_steps)])
+                for (let el of temp) possible_fragments.push(el)
             }
-            fragments = fragments.map(p=>{
-                let span=p.reduce((ag,e)=>ag+e)
-                let repeat = this.edo/span
-                let v_cardinality = p.length*repeat
-                return {fragment:p,cardinality:v_cardinality}
-            }).sort((a,b)=>b.fragment.length-a.fragment.length || a.cardinality-b.cardinality)
-            if(cache) this.cat_getset(["scale_fragments",max_length,min_length,min_step,max_step,cache],fragments)
+            let fragments = possible_fragments
+                .filter(f=>f.reduce((ag,e)=>ag+e,0)==span)
+                .map(p=>{
+                    let repeat = this.edo/span
+                    let v_cardinality = p.length*repeat
+                    return {fragment:p,cardinality:v_cardinality}
+                })
+                .sort((a,b)=>b.fragment.length-a.fragment.length || a.cardinality-b.cardinality)
+            if(cache) this.cat_getset(["scale_fragments",max_length,min_length,steps,span],fragments)
             return fragments
         },
 
@@ -2712,6 +2712,7 @@ class EDO {
 
             recur(arr)
             findings = findings.map((subset) => subset.map((el) => el[0]))
+
             return findings
 
 
@@ -4037,19 +4038,32 @@ class EDO {
          * Returns true if some collection of pitches (thing) is a subset of another collection of pitches (thing2)
          * @param  {Array<Number>} thing - a collection of pitches (not necessarily pitch classes)
          * @param  {Array<Number>} thing2 - a collection of pitches (not necessarily pitch classes)
+         * @param  {Boolean} track_quantities - If true, the number of quantities needs to match as well. So every item will only be counted once.
          * @return {Boolean}
          * @memberOf EDO#is
          * @example
          * let edo = new EDO(12) // define a tuning system
          * edo.is.subset([2,4],[1,2,3,4,5])
          * //returns true (the set [2,4] IS a subset of [1,2,3,4,5])
-         * @example
-         * let edo = new EDO(12) // define a tuning system
-         * edo.is.subset([2,4],[1,2,3,5])
-         * //returns false (the set [2,4] is NOT a subset of [1,2,3,5])
+         *
+         * edo.is.subset([2,2,4],[1,2,3,4,5])
+         * //returns true (the set [2,4] IS a subset of [1,2,3,4,5])
+         *
+         * edo.is.subset([2,2,4],[1,2,3,4,5],track_quantities=true)
+         * //returns true (the set [2,2,4] is NOT a subset of [1,2,3,4,5])
+         *
+         * edo.is.subset([2,2,4],[1,2,3,2,4,5],track_quantities=true)
+         * //returns true (the set [2,2,4] IS a subset of [1,2,3,2,4,5])
          */
-        subset: (thing, thing2) => {
-            return thing.every(note=>thing2.includes(note))
+        subset: (thing, thing2,track_quantities=false) => {
+            if(!track_quantities) return thing.every(note=>thing2.includes(note))
+            while (thing.length>0) {
+                let index = thing2.indexOf(thing[0])
+                if(index==-1) return false
+                thing = thing.slice(1)
+                thing2.splice(index,1)
+            }
+            return true
         },
 
         /**
@@ -5574,18 +5588,34 @@ class Scale {
             const scale = this.pitches.map(s=>s/this.edo)
             const ideal = [...Array(scale.length).keys()].map(e=>e*(this.edo/scale.length/this.edo))
             const worst = [...Array(scale.length).keys()].map(e=>0)
-            const diff_scale = scale.map((e,i)=>e-ideal[i])
+
+            const diff_scale = scale.map((e,i)=>e-ideal[i]) // Difference of each node from ideal scale
             const diff_worst = worst.map((e,i)=>e-ideal[i])
-            const mean_scale = diff_scale.reduce((ag,e)=>ag+e)/diff_scale.length
+
+            const mean_scale = diff_scale.reduce((ag,e)=>ag+e)/diff_scale.length // The mean of the differences
             const mean_worst = diff_worst.reduce((ag,e)=>ag+e)/diff_worst.length
-            const diff_from_mean_scale = diff_scale.map(e=>e-mean_scale)
+
+            const diff_from_mean_scale = diff_scale.map(e=>e-mean_scale) //the difference of the differences from the mean difference (read it slowly :)
             const diff_from_mean_worst = diff_worst.map(e=>e-mean_worst)
 
             const variance_2_scale = diff_from_mean_scale.map(e=>Math.pow(e,2)).reduce((ag,e)=>ag+e)/diff_scale.length
             const variance_2_worst = diff_from_mean_worst.map(e=>Math.pow(e,2)).reduce((ag,e)=>ag+e)/diff_worst.length
 
-            const normalized = 1-(variance_2_scale/variance_2_worst)
-            return normalized
+            const diff_abs_scale = diff_from_mean_scale.map(e=>Math.abs(e)).reduce((ag,e)=>ag+e)/diff_scale.length
+            const diff_abs_worst = diff_from_mean_worst.map(e=>Math.abs(e)).reduce((ag,e)=>ag+e)/diff_worst.length
+
+            // const worst_in_cardinality = [...Array(scale.length).keys()].map(s=>s/this.edo)
+            // const diff_worstIC = worst_in_cardinality.map((e,i)=>e-ideal[i])
+            // const mean_worstIC = diff_worstIC.reduce((ag,e)=>ag+e)/diff_worstIC.length
+            // const diff_from_mean_worstIC = diff_worstIC.map(e=>e-mean_worstIC)
+            // const diff_abs_worstIC = diff_from_mean_worstIC.map(e=>Math.abs(e)).reduce((ag,e)=>ag+e)/diff_worstIC.length
+            // const norm_worst_in_cardinality = 1-(diff_abs_worstIC/diff_abs_worst)
+
+            const normalized = 1-(diff_abs_scale/diff_abs_worst)
+
+
+            // return normalized
+            return variance_2_scale
         },
 
         /**
@@ -5869,44 +5899,38 @@ class Scale {
         },
 
         //TODO: Write documentation
-        fragments: ({max_fragment_length = Math.ceil(this.count.pitches() / 2), min_step = 1, max_step = this.edo}={},cache=this.cache) => {
-            if(this.cat_getset(['fragments',max_fragment_length])) return this.cat_getset(['fragments',max_fragment_length])
-
-            let steps = this.to.steps()
-            let span = this.get.generic_intervals(max_fragment_length).reduce((ag,e)=>(e.specific>ag)?e.specific:ag,0)
-            let fragments = this.parent.get.scale_fragments({max_fragment_length:max_fragment_length,min_step:Math.min(...steps), max_step:Math.max(...steps), span:span},cache)
-            let parsed = []
-            let unparsed = [...steps]
-            while(unparsed.length>0) {
-                loop1:
-                for (let i = max_fragment_length; i >0 ; i--) {
-                    let slice = unparsed.slice(0,i)
-                    loop2:
-                    for (let j = 0; j < fragments.length; j++) {
-                        if(fragments[j].fragment.length<slice.length) break loop1
-                        if(fragments[j].fragment.length>slice.length) continue loop2
-                        if(this.parent.is.same(slice,fragments[j].fragment)) {
-                            unparsed.splice(0,slice.length)
-                            parsed.push(fragments[j])
-
-                            break loop1
-
-                        }
-                    }
-                }
+        partition: ({pivots=[6]}={},cache=this.cache) => {
+            pivots = [0,...pivots,this.edo]
+            let pitches = [...this.pitches,this.edo]
+            let fragments = []
+            while(pivots.length>1) {
+                fragments.push(pitches.filter(p=>p>=pivots[0] && p<=pivots[1]))
+                pivots.splice(0,1)
             }
-            let shared_fragment = parsed.sort((a,b)=>b.fragment.length-a.fragment.length).reduce((ag,e,i,a)=>this.parent.is.same(e.fragment,a[0].fragment.slice(0,e.fragment.length)) && ag,true)
-            let cardinality = parsed.reduce((ag,e)=>ag+e.cardinality,0)/parsed.length
+            return fragments
 
-            return {pitches:this.pitches,cardinality,shared_fragment,fragments:parsed}
         },
 
         /** <p>Returns the mean of the scale's pitches. This is useful if you need to quantify how sharp/flat a scale is.</p>
          * @returns {Number} - The mean of the pitches
          * @memberOf Scale#get
          */
-        mean: () => {
-            return this.pitches.reduce((ag,e)=>ag+e,0)/this.count.pitches()
+        mean: (normalize=false) => {
+            const mean = this.pitches.reduce((ag,e)=>ag+e,0)/this.count.pitches()
+            if(!normalize) return mean
+            const s = this.edo
+            const c = this.count.pitches()
+            const sum_min = [...Array(c).keys(),s].reduce((ag,e)=>ag+e,0)
+            const sum_max = [...Array(c).keys()].map(e=>s-e).reduce((ag,e)=>ag+e,0)
+            const sum_actual = [...this.pitches,s].reduce((ag,e)=>ag+e,0)
+            const normalizer = 1/(s*(c+1))
+            const min = normalizer*sum_min
+            const max = normalizer*sum_max
+            const actual = normalizer*sum_actual
+            return Math.round(((((actual-min)/(max-min))-0.5)*2)*1000000)/1000000
+
+
+
         },
 
         /** <p>Returns a melody by providing a list of generic intervals to traverse within the scale.</p>
@@ -6553,15 +6577,16 @@ class Scale {
          *         As such, the name for this scale will be 4-5</p>
          * @memberOf Scale#get
          * */
-        name: (cache = this.cache) => {
-            if(this.cat_getset('name')) return this.cat_getset('name')
-            let normal = this.get.normal_order()
+        name: (normal=true,cache = this.cache) => {
+            if(this.cat_getset(['name',normal])) return this.cat_getset(['name',normal])
+
+            let pitches = (normal)?this.get.normal_order():this.pitches
             let total = 0
-            normal.forEach((i) => {
+            pitches.forEach((i) => {
                 total += Math.pow(2, i)
             })
             let name = String(this.parent.edo) + "-" + String(parseInt(total))
-            if(cache) this.cat_getset('name',name)
+            if(cache) this.cat_getset(['name',normal],name)
             return name
 
 
@@ -7045,20 +7070,20 @@ class Scale {
 
         },
 
-        /** Returns the scale as steps, broken to their repetitive segments.
+        /** Returns the scale as steps, broken to their repetitive segments (runs).
          * @param  {Boolean} [minimize=false] - when true, the scale will be rotated to the mode that minimizes the number of segments
          * @returns {Array<Array<Number>>} An array containing the scale's steps in segments
          * @memberOf Scale#get
          * @example
          * let edo = new EDO(12) //define context
          * let scale = edo.scale([0,2,4,5,7,9,11]) //major scale
-         * scale.get.segments()
+         * scale.get.runs()
          * //returns [[2,2],[1],[2,2,2],[1]]
          *
          * let scale2 = edo.scale([0,2,4,7,10])
-         * scale2.get.segments(true) // returns [[3,3],[2,2,2]] (rather than [[2,2],[3,3],[2]] without minimizing)
+         * scale2.get.runs(true) // returns [[3,3],[2,2,2]] (rather than [[2,2],[3,3],[2]] without minimizing)
          */
-        segments: (minimize=false, cache = this.cache) => {
+        runs: (minimize=false, cache = this.cache) => {
             if(this.cat_getset(["segments",(minimize)?"minimized":"unminimized"])) return this.cat_getset(["segments",(minimize)?"minimized":"unminimized"])
             let steps = this.to.steps()
             if (minimize) {
