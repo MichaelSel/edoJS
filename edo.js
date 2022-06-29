@@ -298,7 +298,6 @@ const GCD = (...n) => n.length === 2 ? n[1] ? GCD(n[1], n[0] % n[1]) : n[0] : n.
 
 
 /** Class representing some EDO tuning system.*/
-
 class EDO {
 
     /**
@@ -311,7 +310,7 @@ class EDO {
      *  <li> [EDO.is]{@link EDO#is} is a set of functions used for boolean truth statements.</li>
      *  <li> [EDO.show]{@link EDO#show} is a set of functions used for visualization.</li>
      *  <li> [EDO.midi]{@link EDO#midi} is a set of functions used for importing and processing midi files.</li>
-     *  <li> [EDO.xml]{@link EDO#xml} is a set of functions used for importing and processing musicXML files.</li>
+     *  <li> [EDO.xml]{@link EDO#xml} is a set of functions used for- importing and processing musicXML files.</li>
      *  <li> [EDO.export]{@link EDO#export} is a set of functions used for exporting the output to various formats.</li>
      *  </ul>
      * @param {number} edo - The number of equal divisions of the octave.
@@ -5568,21 +5567,11 @@ class Scale {
             return I
         },
 
-        /** <p>Returns a normalized measure of evenness of spread , where 1 is perfectly even (all the steps are distributed evenely as possibly around the octave), and 0 is maximally uneven (as if all the notes of the set (at the given cardinality) are infinitly close together).</p>
-         * <p>This measure is normalized for comparison across different EDOs</p>
+        /** <p>Returns the variance value between the current scale, and a perfectly even scale. So 0 is maximally even.</p>
          * @returns {Number}
          * @see https://math.stackexchange.com/questions/4371073/quantifying-the-evenness-of-distribution-of-nodes-within-a-necklace
          * @memberOf Scale#get
          * @example
-         * let edo = new EDO(12) //define context
-         * let scale = edo.scale([0,2,4,5,7,9,11]) //major scale
-         * scale.get.evenness_of_spread() //returns 0.9930555555555556
-         *
-         * let scale = edo.scale([0,2,4,6,8,10]) //whole-tones
-         * scale.get.evenness_of_spread() //returns 1
-         *
-         * let scale = edo.scale([0,1])
-         * scale.get.evenness_of_spread() //returns 0.30555555555555547
          */
         evenness_of_spread: () => {
             const scale = this.pitches.map(s=>s/this.edo)
@@ -5598,11 +5587,11 @@ class Scale {
             const diff_from_mean_scale = diff_scale.map(e=>e-mean_scale) //the difference of the differences from the mean difference (read it slowly :)
             const diff_from_mean_worst = diff_worst.map(e=>e-mean_worst)
 
-            const variance_2_scale = diff_from_mean_scale.map(e=>Math.pow(e,2)).reduce((ag,e)=>ag+e)/diff_scale.length
-            const variance_2_worst = diff_from_mean_worst.map(e=>Math.pow(e,2)).reduce((ag,e)=>ag+e)/diff_worst.length
+            const variance_scale = diff_from_mean_scale.map(e=>Math.pow(e,2)).reduce((ag,e)=>ag+e)/diff_scale.length
+            const variance_worst = diff_from_mean_worst.map(e=>Math.pow(e,2)).reduce((ag,e)=>ag+e)/diff_worst.length
 
-            const diff_abs_scale = diff_from_mean_scale.map(e=>Math.abs(e)).reduce((ag,e)=>ag+e)/diff_scale.length
-            const diff_abs_worst = diff_from_mean_worst.map(e=>Math.abs(e)).reduce((ag,e)=>ag+e)/diff_worst.length
+            // const diff_abs_scale = diff_from_mean_scale.map(e=>Math.abs(e)).reduce((ag,e)=>ag+e)/diff_scale.length
+            // const diff_abs_worst = diff_from_mean_worst.map(e=>Math.abs(e)).reduce((ag,e)=>ag+e)/diff_worst.length
 
             // const worst_in_cardinality = [...Array(scale.length).keys()].map(s=>s/this.edo)
             // const diff_worstIC = worst_in_cardinality.map((e,i)=>e-ideal[i])
@@ -5611,11 +5600,21 @@ class Scale {
             // const diff_abs_worstIC = diff_from_mean_worstIC.map(e=>Math.abs(e)).reduce((ag,e)=>ag+e)/diff_worstIC.length
             // const norm_worst_in_cardinality = 1-(diff_abs_worstIC/diff_abs_worst)
 
-            const normalized = 1-(diff_abs_scale/diff_abs_worst)
+            // const normalized = 1-(diff_abs_scale/diff_abs_worst)
 
 
             // return normalized
-            return variance_2_scale
+            return variance_scale
+        },
+
+        *iterator(pitches=this.pitches()) {
+            let ind = 0
+            while(true) {
+                let skip = yield pitches[ind%pitches.length]
+                skip = skip?skip:1
+                ind+=skip
+            }
+
         },
 
         /**

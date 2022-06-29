@@ -244,7 +244,7 @@ function unit_tests() {
                     sameness_quotient: [dia.get.sameness_quotient,[], 0.5555555555555556],
                     coherence_quotient: [penta.get.coherence_quotient,[],1],
                     scale_degree_transpositions: [dia.get.scale_degree_transpositions,[],[[ [0, 2, 4, 5, 7, 9, 11], 0 ],[ [0, 2, 4, 5, 7, 9, 10], 1 ],[ [0, 2, 4, 6, 7, 9, 11], 1 ],[ [1, 2, 4, 6, 7, 9, 11], 2 ],[ [1, 2, 4, 6, 8, 9, 11], 3 ],[ [1, 3, 4, 6, 8, 9, 11], 4 ],[ [1, 3, 4, 6, 8, 10, 11], 5 ] ]],
-                    segments: [dia.get.segments,[],[[2,2],[1],[2,2,2],[1]]],
+                    // segments: [dia.get.segments,[],[[2,2],[1],[2,2,2],[1]]],
                     sequence_transposition: [penta.get.sequence_transposition,[[0,2,4],1], [ 2, 4, 7 ]],
                     // shortest_path: [],
                     stacks: [dia.get.stacks,[5,2], [[ 0, 5, 11, 4, 9 ],[ 0, 5, 10, 3, 9 ],[ 0, 5, 10, 3, 8 ],[ 0, 6, 11, 4, 9 ],[ 0, 5, 10, 4, 9 ] ]],
