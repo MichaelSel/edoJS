@@ -2554,30 +2554,30 @@ class EDO {
          * edo.get.stacked([0,2,4,6,9],[3,4,5],true)
          * //returns [ [ 0, 4, 9, 14, 18 ], [ 0, 4, 7, 10, 14 ] ]
          * */
-        stacked: (pitches, intervals,transposed_to_0=false) => {
-            let perms = this.get.permutations(pitches)
+        stacked: (pitches,intervals,transposed_to_0=false) => {
+            const winners = []
+            const recur = (pitches, intervals,result=[]) => {
+                if(pitches.length==0) return winners.push(result)
+                const pitch = result[result.length-1]%this.edo
+                for (let i = 0; i < pitches.length; i++) {
+                    let kosher = true
+                    if(!Number.isNaN(pitch)) {
+                        const delta = this.mod(pitches[i]-pitch,this.edo)
+                        if(intervals.indexOf(delta)==-1) {
+                            kosher=false
+                        }
+                    }
 
-            let available =[]
-            for (let perm = 0; perm < perms.length; perm++) {
-                let p = perms[perm]
-                for (let i = 0; i <p.length; i++) {
-                    if(i==0) 1+1
-                    let multiplier =1
-                    while(p[i]<p[i-1]) {
-                        p.splice(i,1,p[i]+(this.edo*multiplier))
-                        multiplier++
+                    if(kosher) {
+                        const newPitches = [...pitches.slice(0,i),...pitches.slice(i+1)]
+                        const newResult = [...result,pitches[i]]
+                        recur(newPitches,intervals,newResult)
                     }
-                    if(intervals.indexOf(p[i]-p[i-1])==-1 && i!=0) {
-                        p=false
-                        continue
-                    }
-                }
-                if(p) {
-                    if(transposed_to_0) available.push(this.get.transposition(p,p[0]*-1,false))
-                    else available.push(p)
                 }
             }
-            return available
+            recur(pitches,intervals)
+            if(transposed_to_0) return winners.map(el=>this.get.transposition(el,el[0]*-1,false).map(note=>this.mod(note,this.edo)))
+            return winners
         },
 
 
@@ -5474,14 +5474,17 @@ class Scale {
          * @see EDO#get.diagnostic_intervals
          * @see EDO#get.minimal_diagnostic_combination
          */
-        diagnostic_combinations: (cache = this.cache) => {
+        diagnostic_combinations: (normal = false, cache = this.cache) => {
             if(this.cat_getset('diagnostic_combinations')) return this.cat_getset('diagnostic_combinations')
             let combinations = []
             for (let i = 2; i < this.count.pitches(); i++) {
                 let n_chords = this.get.n_chords(i,false)
                 n_chords = n_chords.map(n=>[n,this.get.position_of_quality(n).length])
                 n_chords.forEach(n=>{
-                    if(n[1]==1) combinations.push(n[0])
+                    if(n[1]==1) {
+                        if(normal) combinations.push(this.parent.get.normal_order(n[0]))
+                        else combinations.push(n[0])
+                    }
                 })
             }
             if(cache) this.cat_getset('diagnostic_combinations',combinations)
@@ -5546,7 +5549,7 @@ class Scale {
          */
         edo: () => this.edo,
 
-        /** <p>Returns the entropy (in bits) representing how much the space of possible transpositions of this scale are narrowed down given this combination of pitches.</p>
+        /** <p>from Information Theory: Returns the self-information (in bits) representing how much the space of possible transpositions of this scale are narrowed down given this combination of pitches.</p>
          * <p>For instance, in the set [0,2,4,7,9] the combination [0 5] can appear in 4 combinations: [10,0,2,5,7], [8,10,0,3,5], [5,7,9,0,2], and [3,5,7,10,0]
          * Therefore, the combination narrows down the space of possible transposition from 12 to 4, which is a factor of 3, or 1.584962500721156 bits of entropy</p>
          * <p>Similarly, [0,2] cuts the space by a factor of 4, or 2 bits.<p/>
@@ -5559,36 +5562,54 @@ class Scale {
          * scale.get.entropy([0,4]) // returns 3.584962500721156
          * scale.get.entropy([0,3,5]) // returns 2.584962500721156
          */
-        entropy: (combination) => {
-            let transpositions = this.count.transpositions()
+        information: (combination) => {
+            let transpositions = this.edo
             let manifestations = this.get.position_of_quality(combination).length
             let p = manifestations/transpositions
-            let I = Math.log2(1/p)
+            let I = -Math.log2(p)
+
             return I
+        },
+
+        /** <p>from Information Theory: Returns the (weighted) average (in bits) representing how much information on average, an n-chord of cardinality n provides. .</p>
+         * @returns {Number}
+         * @memberOf Scale#get
+         */
+        entropy: (n) => {
+            let sum = 0
+            const nk = this.parent.get.n_choose_k(this.pitches,n).map(e=>this.parent.get.normal_order(e).join("."))
+            const unique = Array.from(new Set(nk))
+                .sort()
+            const totalChords = nk.length
+            unique.forEach(c=>{
+                const p = nk.filter(e=>e==c).length/totalChords
+                const i = this.get.information(c.split('.').map(e=>parseInt(e)))
+                sum+=p*i
+            })
+            return sum
         },
 
         /** <p>Returns the variance value between the current scale, and a perfectly even scale. So 0 is maximally even.</p>
          * @returns {Number}
          * @see https://math.stackexchange.com/questions/4371073/quantifying-the-evenness-of-distribution-of-nodes-within-a-necklace
          * @memberOf Scale#get
-         * @example
          */
         evenness_of_spread: () => {
             const scale = this.pitches.map(s=>s/this.edo)
             const ideal = [...Array(scale.length).keys()].map(e=>e*(this.edo/scale.length/this.edo))
-            const worst = [...Array(scale.length).keys()].map(e=>0)
+            // const worst = [...Array(scale.length).keys()].map(e=>0)
 
             const diff_scale = scale.map((e,i)=>e-ideal[i]) // Difference of each node from ideal scale
-            const diff_worst = worst.map((e,i)=>e-ideal[i])
+            // const diff_worst = worst.map((e,i)=>e-ideal[i])
 
             const mean_scale = diff_scale.reduce((ag,e)=>ag+e)/diff_scale.length // The mean of the differences
-            const mean_worst = diff_worst.reduce((ag,e)=>ag+e)/diff_worst.length
+            // const mean_worst = diff_worst.reduce((ag,e)=>ag+e)/diff_worst.length
 
             const diff_from_mean_scale = diff_scale.map(e=>e-mean_scale) //the difference of the differences from the mean difference (read it slowly :)
-            const diff_from_mean_worst = diff_worst.map(e=>e-mean_worst)
+            // const diff_from_mean_worst = diff_worst.map(e=>e-mean_worst)
 
             const variance_scale = diff_from_mean_scale.map(e=>Math.pow(e,2)).reduce((ag,e)=>ag+e)/diff_scale.length
-            const variance_worst = diff_from_mean_worst.map(e=>Math.pow(e,2)).reduce((ag,e)=>ag+e)/diff_worst.length
+            // const variance_worst = diff_from_mean_worst.map(e=>Math.pow(e,2)).reduce((ag,e)=>ag+e)/diff_worst.length
 
             // const diff_abs_scale = diff_from_mean_scale.map(e=>Math.abs(e)).reduce((ag,e)=>ag+e)/diff_scale.length
             // const diff_abs_worst = diff_from_mean_worst.map(e=>Math.abs(e)).reduce((ag,e)=>ag+e)/diff_worst.length
@@ -7112,7 +7133,66 @@ class Scale {
             return all
         },
 
+        /** Returns the pitches of the scales about which the scale is symmetrical by reflection.
+         * @returns {Array<Array<Number>>} An array containing the scale's steps about which it is symmetrical by reflection
+         * @memberOf Scale#get
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0, 1, 3, 5, 6, 7, 9, 11])
+         * scale.get.reflectional_symmetry() //returns [0, 3, 6, 9]
+         *
+         * let edo = new EDO(13) //define context
+         * let scale = edo.scale([0, 1, 4, 6, 7, 9, 12])
+         * scale.get.reflectional_symmetry() //returns [0]
+         */
+        reflectional_symmetry: () => {
+            const scale = this
+            let modeCount = scale.pitches.indexOf(...scale.pitches.filter(e=>e<this.edo/2).slice(-1))
+            let symmetryPoints = []
+            for (let i = 0; i <=modeCount ; i++) {
+                let mode = scale.mode(i)
+                let frag1 = mode.pitches.filter(e=>e<this.edo/2)
+                let frag2 = [...mode.pitches.filter(e=>e>this.edo/2),this.edo]
+                frag2 = frag2.map(e=>e-frag2[0])
 
+                const frag1_edo = new EDO(frag1[frag1.length-1])
+                const frag2_edo = new EDO(frag1[frag2.length-1])
+
+                frag1 = frag1_edo.scale(frag1).to.steps()
+                frag2 = frag2_edo.scale(frag2).to.steps()
+                const frag2_reverse = frag2.reverse()
+                let symmetrical = this.parent.is.same(frag1,frag2_reverse)
+                let pitch = scale.pitches[i]
+                if(symmetrical) symmetryPoints.push(pitch)
+                if(symmetrical && mode.pitches.indexOf(this.edo/2)!=-1) {
+                    symmetryPoints.push((pitch+(this.edo/2))%this.edo)
+                }
+            }
+            return symmetryPoints.sort((a,b)=>a-b)
+        },
+
+        /** Returns the pitches of the scales about which the scale is symmetrical by rotation.
+         * @returns {Array<Array<Number>>} An array containing the scale's steps about which it is symmetrical by rotation
+         * @memberOf Scale#get
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,3,6,9])
+         * scale.get.rotational_symmetry() //returns [0, 3, 6, 9]
+         *
+         * let scale = edo.scale([0, 1, 7, 9])
+         * scale.get.rotational_symmetry() //returns [0]
+         */
+        rotational_symmetry: () => {
+            let scale = this
+            let modes = scale.count.pitches()
+            let steps = scale.to.steps()
+            let rotations = [0]
+            for (let i = 1; i < modes; i++) {
+                let rotatedSteps = scale.mode(i).to.steps()
+                if(this.parent.is.same(steps,rotatedSteps)) rotations.push(scale.pitches[i])
+            }
+            return rotations
+        },
 
         /** <p>Transposes a melody within the scale by a given number of scale degrees</p>
          * @param {Array<Number>} seq - The original melody / sequence to be "transposed"
@@ -7893,6 +7973,10 @@ class Scale {
                 if (is_subset_of_one(this.pitches, scale)) return true
             }
             return false
+        },
+
+        uniqueness: () => {
+            return this.count.transpositions()==this.edo
         },
 
     }
