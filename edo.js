@@ -5708,7 +5708,7 @@ class Scale {
          * @memberOf Scale#get
          * @example
          */
-        evenness_of_spread: (normalize_to_edo=false) => {
+        evenness_of_spread: () => {
             const scale = this.pitches.map(s=>s/this.edo)
             const ideal = [...Array(scale.length).keys()].map(e=>e*(this.edo/scale.length/this.edo))
 
@@ -5722,9 +5722,6 @@ class Scale {
             // const diff_from_mean_worst = diff_worst.map(e=>e-mean_worst)
 
             const variance_scale = diff_from_mean_scale.map(e=>Math.pow(e,2)).reduce((ag,e)=>ag+e)/diff_scale.length
-
-            if(normalize_to_edo)
-                return Math.sqrt((variance_scale*Math.pow(this.edo,2)))
 
 
             return variance_scale
