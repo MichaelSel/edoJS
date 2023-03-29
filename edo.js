@@ -1,6 +1,6 @@
 const environment = (typeof window === 'undefined') ? "server" : "browser"
-// import { createRequire } from "module";
-// const require = createRequire(import.meta.url);
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
 
 let fs, parseXML, midiParser
 if (environment == 'server') {
@@ -294,6 +294,18 @@ const rescale = (num, in_min, in_max, out_min, out_max) => {
 }
 const GCD = (...n) => n.length === 2 ? n[1] ? GCD(n[1], n[0] % n[1]) : n[0] : n.reduce((a, c) => a = GCD(a, c));
 
+function choose(n, k) {
+    if (k == 0) return 1
+    return (n * choose(n - 1, k - 1)) / k
+}
+function factorialize(num) {
+    if (num === 0 || num === 1)
+        return 1;
+    for (var i = num - 1; i >= 1; i--) {
+        num *= i;
+    }
+    return num;
+}
 
 
 
@@ -1658,6 +1670,22 @@ class EDO {
             }
             combinations(arr,k)
             return results
+        },
+
+        sterling2: (n, k) => {
+            const computed = {}
+            const runit = (n,k) => {
+                const key = `${n}-${k}`
+                if(computed[key]) return computed[key]
+                if(n==k && k==0) return 1
+                if((n>0 && k==0) || (n==0 && k>0)) return 0
+                if(n==k) return 1
+                if(k>n) return 0
+                const result = k * runit(n - 1, k) + runit(n - 1, k - 1)
+                computed[key] = result
+                return result
+            }
+            return runit(n,k)
         },
 
         /** <p>Returns the closest approximation within the current EDO from a list of pitches in cents and the difference between the EDO version to the original in cents.</p>
@@ -4827,6 +4855,31 @@ class Scale {
 
         },
 
+        /** Returns the number of distinct pitch combinations in the scale only considering neighboring constituents in neighborhoods defined by the skip parameter
+         *  As such, when skip is 0 the algorithm counts all pitches with 0 diatonic skips between them in all modes. (in diatonic: 02, 024, 0245, etc.)
+         *  When skip is 1 the algorithm counts all pitches with 1 diatonic skips between them in all modes. (in diatonic: 04, 047, 047E, etc.)
+         *  Finally, the algorithm returns the total number of distinct neighbor pitch combinations in the scale.
+         * @returns {number}
+         * @memberOf Scale#count
+         */
+        combosWithNeighbors: () => {
+            const list = new Set()
+            const scale = this
+            for (let mode = 0; mode < scale.count.pitches(); mode++) {
+                for (let skip = 0; skip < Math.floor(scale.count.pitches()/2); skip++) {
+                    const combo = scale.mode(mode).pitches.filter((p, i) => i%(skip+1) ===0)
+                    // get all sequential combos of length 2 to combo.length
+                    for (let length = 2; length <= combo.length; length++) {
+                        for (let start = 0; start <= combo.length-length; start++) {
+                            const subCombo = combo.slice(start, start+length)
+                            list.add(scale.parent.get.normal_order(subCombo).join(' '))
+                        }
+                    }
+                }
+            }
+            return list.size
+        },
+
         /**
          * Returns the number of imperfections (notes that do not have a P5 above them) in the scale.
          * @param {Number} [tolerance=10] - allowed tolerance in cents (away from pure P5)
@@ -5556,11 +5609,6 @@ class Scale {
          *
          * @returns {Number}
          * @memberOf Scale#get
-         * @example
-         * let edo = new EDO(12) //define context
-         * let scale = edo.scale([0,2,4,7,9])
-         * scale.get.entropy([0,4]) // returns 3.584962500721156
-         * scale.get.entropy([0,3,5]) // returns 2.584962500721156
          */
         information: (combination) => {
             let transpositions = this.edo
@@ -5575,7 +5623,7 @@ class Scale {
          * @returns {Number}
          * @memberOf Scale#get
          */
-        entropy: (n) => {
+        entropyNChord: (n) => {
             let sum = 0
             const nk = this.parent.get.n_choose_k(this.pitches,n).map(e=>this.parent.get.normal_order(e).join("."))
             const unique = Array.from(new Set(nk))
@@ -5589,15 +5637,80 @@ class Scale {
             return sum
         },
 
+        /** <p>from Information Theory: Returns the (non-weighted) sum (in bits) representing how much information on average we get when picking n notes at random. .</p>
+         * @returns {Number}
+         * @memberOf Scale#get
+         */
+        entropyAtDrawing: (n) => {
+            const entropies = []
+            const m = this.count.pitches()
+            const multi = Math.pow(m, -n)
+            for (let k = 1; k <= m; k++) {
+                const sterling = this.parent.get.sterling2(n,k)
+                const binomial = choose(m, k)
+                const factorial = factorialize(k)
+                const entropy = this.get.entropyNChord(k)
+                entropies.push(multi * sterling * binomial * factorial* entropy)
+            }
+            return entropies.reduce((ag,e)=>ag+e)
+        },
+
+        /** <p>Gets a measure of the entropy (in bits) found when given a random note combination from the scale</p>
+         * @returns {Number}
+         * @memberOf Scale#get
+         */
+        entropy: () => {
+            let total_combinations = 0
+            const entropies = []
+            for (let i = 0; i < this.count.pitches(); i++) {
+                total_combinations += choose(this.count.pitches(), i)
+            }
+            for (let i = 1; i <= this.count.pitches(); i++) {
+                const ent = this.get.entropyNChord(i)
+                const p = choose(this.count.pitches(),i)/total_combinations
+                entropies.push(p*ent)
+            }
+            // Scaling the result to account for 100% of the space
+            return entropies.reduce((ag,e)=>ag+e)
+        },
+
+        /** <p>Gets the area of the polygon generated when drawing and plotting a given number of iterations, with a given limit</p>
+         * @returns {Number}
+         * @memberOf Scale#get
+         */
+        entropy_AUC: (iterations, limit = 3.5849620967493694) => {
+            const points = []
+            const areaSlices = []
+            for (let i = 1; i <= iterations; i++) {
+                const entropy = this.get.entropyAtDrawing(i)
+                const normalized = (((entropy)/limit)*-1)+1
+                points.push(normalized)
+            }
+            for (let i = 1; i <points.length ; i++) {
+                const pn = points[i]
+                const pn1 = points[i-1]
+                const area = (pn+pn1)/2
+                areaSlices.push(area)
+            }
+            const sum = areaSlices.reduce((a,b)=>a+b,0)
+            return sum
+        },
+
+        /** <p>from Information Theory: Returns the tonal ambiguity (average number of possible transpositions) given a random note combination from the scale. </p>
+         * @returns {Number}
+         * @memberOf Scale#get
+         */
+        tonal_ambiguity: () => 12/Math.pow(2,this.get.entropy()),
+
         /** <p>Returns the variance value between the current scale, and a perfectly even scale. So 0 is maximally even.</p>
          * @returns {Number}
          * @see https://math.stackexchange.com/questions/4371073/quantifying-the-evenness-of-distribution-of-nodes-within-a-necklace
          * @memberOf Scale#get
+         * @example
          */
-        evenness_of_spread: () => {
+        evenness_of_spread: (normalize_to_edo=false) => {
             const scale = this.pitches.map(s=>s/this.edo)
             const ideal = [...Array(scale.length).keys()].map(e=>e*(this.edo/scale.length/this.edo))
-            // const worst = [...Array(scale.length).keys()].map(e=>0)
 
             const diff_scale = scale.map((e,i)=>e-ideal[i]) // Difference of each node from ideal scale
             // const diff_worst = worst.map((e,i)=>e-ideal[i])
@@ -5609,22 +5722,11 @@ class Scale {
             // const diff_from_mean_worst = diff_worst.map(e=>e-mean_worst)
 
             const variance_scale = diff_from_mean_scale.map(e=>Math.pow(e,2)).reduce((ag,e)=>ag+e)/diff_scale.length
-            // const variance_worst = diff_from_mean_worst.map(e=>Math.pow(e,2)).reduce((ag,e)=>ag+e)/diff_worst.length
 
-            // const diff_abs_scale = diff_from_mean_scale.map(e=>Math.abs(e)).reduce((ag,e)=>ag+e)/diff_scale.length
-            // const diff_abs_worst = diff_from_mean_worst.map(e=>Math.abs(e)).reduce((ag,e)=>ag+e)/diff_worst.length
-
-            // const worst_in_cardinality = [...Array(scale.length).keys()].map(s=>s/this.edo)
-            // const diff_worstIC = worst_in_cardinality.map((e,i)=>e-ideal[i])
-            // const mean_worstIC = diff_worstIC.reduce((ag,e)=>ag+e)/diff_worstIC.length
-            // const diff_from_mean_worstIC = diff_worstIC.map(e=>e-mean_worstIC)
-            // const diff_abs_worstIC = diff_from_mean_worstIC.map(e=>Math.abs(e)).reduce((ag,e)=>ag+e)/diff_worstIC.length
-            // const norm_worst_in_cardinality = 1-(diff_abs_worstIC/diff_abs_worst)
-
-            // const normalized = 1-(diff_abs_scale/diff_abs_worst)
+            if(normalize_to_edo)
+                return Math.sqrt((variance_scale*Math.pow(this.edo,2)))
 
 
-            // return normalized
             return variance_scale
         },
 
@@ -5704,6 +5806,8 @@ class Scale {
             if(cache) this.cat_getset(["self_similarity",min_n,max_n,verbose],result)
             return result
         },
+
+
 
         /** Returns the difference between the current scale and a given set.
          * @param  {Array<Number>} [set = [0,2,4,5,7,9,11]] - The set the current scale is compared to
@@ -7312,7 +7416,7 @@ class Scale {
             return mean_err
         },
 
-        /** <p>returns a measure of self similarity in the scale's steps. The more similar the steps are to one another the closer the value is to 1. The less similar the steps are to one another, the closer they are to 0.</p>
+        /** <p>returns the normalized standard deviation of the distinct step sizes in a scale. so for the scale so for a scale with two step sizes, 1, and 3, the result will be computed for those values.</p>
          * @returns {Number} The self-similarity measure
          * @memberOf Scale#get
          * @example
@@ -7328,17 +7432,20 @@ class Scale {
          */
         step_similarity: (cache = this.cache) => {
             if(this.cat_getset(['step_similarity'])) return this.cat_getset(['step_similarity'])
-            let steps = this.to.steps()
-            let mean_step = this.edo/steps.length
-            let step_err = steps.map(s=>Math.abs(s-mean_step))
-            let total_err = step_err.reduce((ag,e)=>ag+e,0)
-            let mean_err = total_err/steps.length
-            let norm_err = 1-(mean_err/this.edo)*2
-            if(cache) this.cat_getset(['step_similarity'],norm_err)
-            return norm_err
+            const steps = this.get.step_sizes()
+            const normSteps = steps.map(s=>s/steps.reduce((ag,e)=>ag+e))
+            const meanStep = normSteps.reduce((ag,e)=>ag+e)/steps.length
+            const variance = normSteps
+                .map(s=>Math.pow(s-meanStep,2))
+                .reduce((ag,e)=>ag+e)/normSteps.length
+            const std = Math.sqrt(variance)
+            const normStd = std
+            const inverted = 1-(normStd*2)
+            if(cache) this.cat_getset(['step_similarity'],inverted)
+            return inverted
         },
 
-        /** <p>returns a measure of self similarity in the scale's steps sizes (not to be confused with Scale#get.step_similarity() which takes all steps into account). The more similar the sizes are to one another the closer the value is to 1. The less similar the sizes are to one another, the closer they are to 0.</p>
+        /** <p>returns the normalized standard deviation of all the step sizes in a scale. so for the scale so for a scale with steps [2,2,1,2,2,2,1], the result will be computed for those values. (not to be confused with Scale#get.step_similarity() which only the distinct sizes into account). </p>
          * @returns {Number} The self-similarity measure
          * @memberOf Scale#get
          * @see Scale#get.step_similarity()
@@ -7355,14 +7462,17 @@ class Scale {
          */
         constituent_similarity: (cache = this.cache) => {
             if(this.cat_getset(['constituent_similarity'])) return this.cat_getset(['constituent_similarity'])
-            let steps = this.get.step_sizes()
-            let avg_step = steps.reduce((a,b)=>a+b,0)/steps.length
-            let step_err = steps.map(s=>Math.abs(s-avg_step))
-            let total_err = step_err.reduce((ag,e)=>ag+e,0)
-            let mean_err = total_err/steps.length
-            let norm_err = 1-(mean_err/this.edo)*2
-            if(cache) this.cat_getset(['constituent_similarity'],norm_err)
-            return norm_err
+            const steps = this.to.steps()
+            const normSteps = steps.map(s=>s/this.edo)
+            const meanStep = normSteps.reduce((ag,e)=>ag+e)/steps.length
+            const variance = normSteps
+                .map(s=>Math.pow(s-meanStep,2))
+                .reduce((ag,e)=>ag+e)/normSteps.length
+            const std = Math.sqrt(variance)
+            const normStd = std
+            const inverted = 1-(normStd*2)
+            if(cache) this.cat_getset(['constituent_similarity'],inverted)
+            return inverted
         },
 
 
@@ -7614,9 +7724,9 @@ class Scale {
 
         },
 
-        /** <p>Returns a numeric value of how unevenlyy a set's steps are distributed.</p>
+        /** <p>Returns a numeric value of how unevenly a set's steps are distributed.</p>
          *<p>The measure is done by splitting the set into n parts and checking by how much each part differs from an ideal even split of the set (the current edo / n).</p>
-         *<p>For example, 2 whole-steps and 2 major-3rds can be represented as [2 2 4 4], [2 ,4, 2, 4]. While the first distribution is imbalanced (the small steps are bunched together, and the big steps are bunched together), the 2nd distribution represents an even split</p>
+         *<p>For example, 2 whole-steps and 2 major-3rds can be represented as [2 2 4 4], [2 4 2 4]. While the first distribution is imbalanced (the small steps are bunched together, and the big steps are bunched together), the 2nd distribution represents an even split</p>
          *<p>The normalization occurs within the current EDO and cardinality. 1 for the most uneven set in the tuning context with the same number of notes; and 0 for the most even set within that context</p>
          * @returns {Number}
          * @see Clough, John, and Jack Douthett. "Maximally even sets." Journal of music theory 35.1/2 (1991): 93-173.
@@ -7688,9 +7798,7 @@ class Scale {
         virtual_cardinality: () => {
             for (let j = this.count.pitches(); j <= this.edo; j++) {
                 let mixture = this.parent.get.mixture_in_cardinality(j,true,Infinity)
-                let interval_map = {
-
-                }
+                let interval_map = {}
                 for (let i = 0; i < this.edo ; i++) {
                     interval_map[i] = mixture.map(SD=>SD.indexOf(i)!=-1).map((el,i)=>(el)?i+1:undefined).filter(el=>el!=undefined)
                 }

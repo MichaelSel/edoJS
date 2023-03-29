@@ -1,6 +1,7 @@
 {
   "name": "edo.js",
   "version": "1.3.80",
+  "type": "module",
   "description": "A set of functions for manipulating musical pitches within a given EDO",
   "main": "index.js",
   "browser": {
@@ -52,6 +53,7 @@
     "csv-writer": "^1.6.0",
     "fs": "0.0.1-security",
     "midi-parser-js": "^4.0.4",
+    "statly": "^0.0.1",
     "xml2js": "^0.4.23"
   },
   "repository": {
