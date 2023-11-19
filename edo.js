@@ -5708,9 +5708,9 @@ class Scale {
          * @memberOf Scale#get
          * @example
          */
-        evenness_of_spread: () => {
-            const scale = this.pitches.map(s=>s/this.edo)
-            const ideal = [...Array(scale.length).keys()].map(e=>e*(this.edo/scale.length/this.edo))
+        evenness_of_spread: (generalizeEdo=true, value='variance' | 'std') => {
+            const scale = this.pitches.map(s=>generalizeEdo?s/this.edo:s)
+            const ideal = [...Array(scale.length).keys()].map(e=>e*(this.edo/scale.length/(generalizeEdo?this.edo:1)))
 
             const diff_scale = scale.map((e,i)=>e-ideal[i]) // Difference of each node from ideal scale
             // const diff_worst = worst.map((e,i)=>e-ideal[i])
@@ -5723,7 +5723,7 @@ class Scale {
 
             const variance_scale = diff_from_mean_scale.map(e=>Math.pow(e,2)).reduce((ag,e)=>ag+e)/diff_scale.length
 
-
+            if(value=='std') return Math.sqrt(variance_scale)
             return variance_scale
         },
 
@@ -7604,6 +7604,30 @@ class Scale {
             */
             let tetrachords = this.get.n_chords(4, true,false, cache)
             return tetrachords
+        },
+
+        /**
+         * <p>Returns the number of common notes the scale shares with all of its transpositions. </p>
+         * @param  {Boolean} [relative=false] - When true, the result will indicate the proportion (from 0 to 1) of how many of the scale notes appear in its transpositions
+         * @param  {Boolean} [average=false] - When true, the result will represent the value of the average transposibility of the scale
+         * @example
+         * let edo = new EDO(12) //define context
+         * let scale = edo.scale([0,2,4,5,7,9,11]) //the diatonic set
+         * scale.get.transposibility() // 3.81... (on average the set shares 3.81 notes any given transposition)
+         * scale.get.transposibility(true) // 0.54... (on average the set shares about 54% of its notes with any given transposition)
+         * scale.get.transposibility(false, false) // 42 (The sum of common tones between the scale and all of its transpositions is 42)
+         */
+        transposibility: (relative=false, average=true) => {
+            const sums = []
+            for (let i = 1; i < this.count.transpositions(); i++) {
+                let comp_scale = this.pitches.map(p=>(p+i)%this.edo).sort((a,b)=>a-b)
+                let sum = comp_scale.map((p,i)=>this.pitches.indexOf(p)!==-1?1:0).reduce((ag,e)=>ag+e)
+                if(relative) sum = sum / this.count.pitches()
+                sums.push(sum)
+            }
+            let result = sums.reduce((ag,e)=>ag+e)
+            if(average) result = result/sums.length
+            return result
         },
 
         /** <p>Returns every possible interpretation of the scale's intervals in terms of their possible scale degree</p>
